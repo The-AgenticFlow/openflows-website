@@ -5,13 +5,10 @@ on:
     branches: [main]
   workflow_dispatch:
 
-# Allow this workflow to push to the repository
 permissions:
   contents: write
   pages: write
   id-token: write
-
-
 
 concurrency:
   group: "pages"
