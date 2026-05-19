@@ -1,0 +1,1190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OpenFlows — Your Autonomous Engineering Team</title>
+    <meta name="description" content="Turn GitHub issues into production code while you sleep. A complete dev team of AI agents.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-primary: #0a0a0f;
+            --bg-secondary: #12121a;
+            --bg-tertiary: #1a1a24;
+            --bg-card: #16161f;
+            --text-primary: #ffffff;
+            --text-secondary: #a0a0b0;
+            --text-muted: #606070;
+            --accent-primary: #e94560;
+            --accent-secondary: #a855f7;
+            --accent-tertiary: #3b82f6;
+            --accent-success: #22c55e;
+            --accent-warning: #f59e0b;
+            --gradient-primary: linear-gradient(135deg, #e94560 0%, #a855f7 100%);
+            --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%);
+            --border-color: #2a2a3a;
+            --glow-primary: 0 0 40px rgba(233, 69, 96, 0.3);
+            --glow-secondary: 0 0 40px rgba(168, 85, 247, 0.3);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Animated Background */
+        .bg-grid {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+            background-image: 
+                linear-gradient(rgba(233, 69, 96, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(233, 69, 96, 0.03) 1px, transparent 1px);
+            background-size: 50px 50px;
+        }
+
+        .bg-glow {
+            position: fixed;
+            width: 600px;
+            height: 600px;
+            border-radius: 50%;
+            filter: blur(150px);
+            opacity: 0.15;
+            pointer-events: none;
+            z-index: -1;
+        }
+
+        .bg-glow-1 {
+            top: -200px;
+            right: -200px;
+            background: var(--accent-primary);
+        }
+
+        .bg-glow-2 {
+            bottom: -200px;
+            left: -200px;
+            background: var(--accent-secondary);
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            padding: 1rem 2rem;
+            background: rgba(10, 10, 15, 0.8);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .nav-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-weight: 700;
+            font-size: 1.5rem;
+            text-decoration: none;
+            color: var(--text-primary);
+        }
+
+        .logo-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--gradient-primary);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.25rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.2s;
+        }
+
+        .nav-links a:hover {
+            color: var(--text-primary);
+        }
+
+        .nav-cta {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .nav-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow-primary);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 8rem 2rem 4rem;
+            position: relative;
+        }
+
+        .hero-container {
+            max-width: 1400px;
+            width: 100%;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-content {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
+            padding: 0.5rem 1rem;
+            border-radius: 100px;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+        }
+
+        .badge-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--accent-success);
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .hero h1 {
+            font-size: 4rem;
+            font-weight: 800;
+            line-height: 1.1;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #fff 0%, #a0a0b0 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero h1 span {
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero-subtitle {
+            font-size: 1.25rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 500px;
+        }
+
+        .hero-ctas {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--gradient-primary);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--glow-primary);
+        }
+
+        .btn-secondary {
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            text-decoration: none;
+            font-weight: 600;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            transition: all 0.2s;
+            border: 1px solid var(--border-color);
+        }
+
+        .btn-secondary:hover {
+            background: var(--bg-card);
+            border-color: var(--accent-primary);
+        }
+
+        /* Hero Visual */
+        .hero-visual {
+            position: relative;
+            animation: fadeInUp 0.8s ease-out 0.2s both;
+        }
+
+        .agent-team {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .agent-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .agent-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+        }
+
+        .agent-card:hover::before {
+            opacity: 1;
+        }
+
+        .agent-icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .agent-nexus .agent-icon { background: rgba(233, 69, 96, 0.2); }
+        .agent-forge .agent-icon { background: rgba(59, 130, 246, 0.2); }
+        .agent-sentinel .agent-icon { background: rgba(168, 85, 247, 0.2); }
+        .agent-vessel .agent-icon { background: rgba(34, 197, 94, 0.2); }
+        .agent-lore .agent-icon { background: rgba(245, 158, 11, 0.2); }
+
+        .agent-name {
+            font-weight: 700;
+            font-size: 1.125rem;
+            margin-bottom: 0.25rem;
+        }
+
+        .agent-role {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        /* Stats Section */
+        .stats {
+            padding: 4rem 2rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .stats-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+        }
+
+        .stat-number {
+            font-size: 3rem;
+            font-weight: 800;
+            background: var(--gradient-primary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+        }
+
+        /* How It Works */
+        .how-it-works {
+            padding: 6rem 2rem;
+        }
+
+        .section-container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        .section-header {
+            text-align: center;
+            margin-bottom: 4rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        .steps {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .step {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            position: relative;
+            transition: all 0.3s;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+        }
+
+        .step-number {
+            width: 48px;
+            height: 48px;
+            background: var(--gradient-primary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .step h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+
+        .step p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        /* Agents Section */
+        .agents {
+            padding: 6rem 2rem;
+            background: var(--bg-secondary);
+        }
+
+        .agents-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 1.5rem;
+        }
+
+        .agent-detail {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s;
+        }
+
+        .agent-detail:hover {
+            transform: translateY(-5px);
+            border-color: var(--accent-primary);
+        }
+
+        .agent-detail .agent-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+        }
+
+        .agent-detail h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .agent-detail .role {
+            color: var(--accent-primary);
+            font-weight: 600;
+            font-size: 0.875rem;
+            margin-bottom: 1rem;
+        }
+
+        .agent-detail p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        /* Comparison Section */
+        .comparison {
+            padding: 6rem 2rem;
+        }
+
+        .comparison-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+        }
+
+        .comparison-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2rem;
+        }
+
+        .comparison-card.highlight {
+            border-color: var(--accent-primary);
+            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(233, 69, 96, 0.05) 100%);
+        }
+
+        .comparison-card h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .comparison-card p {
+            color: var(--text-secondary);
+            font-size: 0.9375rem;
+        }
+
+        /* Roadmap Section */
+        .roadmap {
+            padding: 6rem 2rem;
+            background: var(--bg-secondary);
+        }
+
+        .roadmap-phases {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 1.5rem;
+        }
+
+        .phase {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            position: relative;
+        }
+
+        .phase.complete {
+            border-color: var(--accent-success);
+        }
+
+        .phase.in-progress {
+            border-color: var(--accent-tertiary);
+        }
+
+        .phase-header {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+
+        .phase-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .phase.complete .phase-status { background: var(--accent-success); }
+        .phase.in-progress .phase-status { background: var(--accent-tertiary); }
+        .phase.planned .phase-status { background: var(--text-muted); }
+
+        .phase h3 {
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .phase-features {
+            list-style: none;
+        }
+
+        .phase-features li {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            padding: 0.5rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .phase-features li:last-child {
+            border-bottom: none;
+        }
+
+        /* Installation Section */
+        .install {
+            padding: 6rem 2rem;
+        }
+
+        .install-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .code-block {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
+            padding: 1.5rem;
+            margin-top: 2rem;
+            text-align: left;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .code-block::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-primary);
+        }
+
+        .code-header {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .code-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .code-dot:nth-child(1) { background: #ff5f56; }
+        .code-dot:nth-child(2) { background: #ffbd2e; }
+        .code-dot:nth-child(3) { background: #27c93f; }
+
+        pre {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            overflow-x: auto;
+        }
+
+        code {
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .code-comment {
+            color: var(--text-muted);
+        }
+
+        .code-command {
+            color: var(--accent-primary);
+        }
+
+        /* Footer */
+        footer {
+            padding: 4rem 2rem;
+            background: var(--bg-secondary);
+            border-top: 1px solid var(--border-color);
+        }
+
+        .footer-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 4rem;
+        }
+
+        .footer-brand p {
+            color: var(--text-secondary);
+            margin-top: 1rem;
+            font-size: 0.9375rem;
+        }
+
+        .footer-links h4 {
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links li {
+            margin-bottom: 0.5rem;
+        }
+
+        .footer-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .footer-links a:hover {
+            color: var(--accent-primary);
+        }
+
+        .footer-bottom {
+            max-width: 1400px;
+            margin: 4rem auto 0;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        /* Animations */
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .hero-container {
+                grid-template-columns: 1fr;
+                text-align: center;
+            }
+
+            .hero h1 {
+                font-size: 3rem;
+            }
+
+            .hero-subtitle {
+                margin-left: auto;
+                margin-right: auto;
+            }
+
+            .hero-visual {
+                order: -1;
+            }
+
+            .agent-team {
+                max-width: 400px;
+                margin: 0 auto;
+            }
+
+            .stats-container {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .steps {
+                grid-template-columns: 1fr;
+            }
+
+            .agents-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .comparison-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .roadmap-phases {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .nav-links {
+                display: none;
+            }
+
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .stats-container {
+                grid-template-columns: 1fr;
+            }
+
+            .agents-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .roadmap-phases {
+                grid-template-columns: 1fr;
+            }
+
+            .footer-container {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+
+            .footer-bottom {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-grid"></div>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <a href="#" class="logo">
+                <div class="logo-icon">🌊</div>
+                OpenFlows
+            </a>
+            <div class="nav-links">
+                <a href="#how-it-works">How It Works</a>
+                <a href="#agents">Agents</a>
+                <a href="#roadmap">Roadmap</a>
+                <a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank">GitHub</a>
+                <a href="#install" class="nav-cta">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-container">
+            <div class="hero-content">
+                <div class="badge">
+                    <span class="badge-dot"></span>
+                    Now in Open Beta
+                </div>
+                <h1>Your <span>Autonomous</span> Engineering Team</h1>
+                <p class="hero-subtitle">Turn GitHub issues into production code while you sleep. A complete dev team of AI agents — Scrum Master, Senior Developer, Security Auditor, DevOps Engineer, and Technical Writer.</p>
+                <div class="hero-ctas">
+                    <a href="#install" class="btn-primary">
+                        Get Started
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M5 12h14M12 5l7 7-7 7"/>
+                        </svg>
+                    </a>
+                    <a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" class="btn-secondary">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
+                        </svg>
+                        View on GitHub
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="agent-team">
+                    <div class="agent-card agent-nexus">
+                        <div class="agent-icon">👑</div>
+                        <div class="agent-name">NEXUS</div>
+                        <div class="agent-role">Orchestrator</div>
+                    </div>
+                    <div class="agent-card agent-forge">
+                        <div class="agent-icon">⚒️</div>
+                        <div class="agent-name">FORGE</div>
+                        <div class="agent-role">Senior Engineer</div>
+                    </div>
+                    <div class="agent-card agent-sentinel">
+                        <div class="agent-icon">🛡️</div>
+                        <div class="agent-name">SENTINEL</div>
+                        <div class="agent-role">Security Auditor</div>
+                    </div>
+                    <div class="agent-card agent-vessel">
+                        <div class="agent-icon">🚢</div>
+                        <div class="agent-name">VESSEL</div>
+                        <div class="agent-role">DevOps Engineer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Stats Section -->
+    <section class="stats">
+        <div class="stats-container">
+            <div class="stat-item">
+                <div class="stat-number">47</div>
+                <div class="stat-label">Tickets → Production PRs</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">6h</div>
+                <div class="stat-label">Average Issue to Merge</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">12</div>
+                <div class="stat-label">Security Issues Caught Pre-Merge</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number">8%</div>
+                <div class="stat-label">Human Escalation Rate</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- How It Works -->
+    <section class="how-it-works" id="how-it-works">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>How It Works</h2>
+                <p>From GitHub issue to merged PR — fully autonomous. You focus on the vision, agents handle the execution.</p>
+            </div>
+            <div class="steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <h3>Create an Issue</h3>
+                    <p>Describe what you want in GitHub. Natural language, no special formatting required. The agents understand context and intent.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <h3>Agents Work</h3>
+                    <p>NEXUS assigns tickets, FORGE writes code, SENTINEL reviews for security, VESSEL handles CI/CD, LORE documents everything.</p>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <h3>Review the PR</h3>
+                    <p>Wake up to completed, tested, documented code. Review the PR, merge when ready. Only 8% of tasks need human clarification.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Agents Section -->
+    <section class="agents" id="agents">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>The 5-Agent Team</h2>
+                <p>Each agent has a specialized role, working together like a human engineering team. They communicate, collaborate, and hand off work seamlessly.</p>
+            </div>
+            <div class="agents-grid">
+                <div class="agent-detail agent-nexus">
+                    <div class="agent-icon">👑</div>
+                    <h3>NEXUS</h3>
+                    <div class="role">Orchestrator & Scrum Master</div>
+                    <p>Plans sprints, assigns tickets, detects broken states, and ensures flow completion. The brain of the pipeline.</p>
+                </div>
+                <div class="agent-detail agent-forge">
+                    <div class="agent-icon">⚒️</div>
+                    <h3>FORGE</h3>
+                    <div class="role">Senior Engineer & Builder</div>
+                    <p>Writes code, tests, and opens PRs via Claude Code integration. Transforms tickets into working implementations.</p>
+                </div>
+                <div class="agent-detail agent-sentinel">
+                    <div class="agent-icon">🛡️</div>
+                    <h3>SENTINEL</h3>
+                    <div class="role">Security Auditor & Reviewer</div>
+                    <p>Reviews PRs for security, quality, and test coverage. The last line of defense before merge.</p>
+                </div>
+                <div class="agent-detail agent-vessel">
+                    <div class="agent-icon">🚢</div>
+                    <h3>VESSEL</h3>
+                    <div class="role">DevOps Engineer</div>
+                    <p>Manages CI/CD, resolves conflicts, and squash-merges green PRs. Ensures deployment never breaks.</p>
+                </div>
+                <div class="agent-detail agent-lore">
+                    <div class="agent-icon">📚</div>
+                    <h3>LORE</h3>
+                    <div class="role">Technical Writer</div>
+                    <p>Writes ADRs, maintains changelogs, and preserves institutional memory. Documentation that stays current.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Comparison Section -->
+    <section class="comparison">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Why OpenFlows?</h2>
+                <p>Not just another AI coding tool. A complete autonomous engineering team.</p>
+            </div>
+            <div class="comparison-grid">
+                <div class="comparison-card">
+                    <h3>🤖 vs GitHub Copilot</h3>
+                    <p>Copilot suggests code as you type. OpenFlows ships complete features from issue to merged PR — planning, implementation, review, and deployment.</p>
+                </div>
+                <div class="comparison-card highlight">
+                    <h3>⚡ OpenFlows</h3>
+                    <p>A complete autonomous engineering team. 5 specialized agents working 24/7. From issue to production without human intervention. $0 to self-host.</p>
+                </div>
+                <div class="comparison-card">
+                    <h3>👥 vs Hiring Engineers</h3>
+                    <p>Hiring costs $50K+ per engineer annually. OpenFlows runs 24/7, never takes vacation, and scales elastically from 1 to 10+ contributors instantly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Roadmap Section -->
+    <section class="roadmap" id="roadmap">
+        <div class="section-container">
+            <div class="section-header">
+                <h2>Roadmap</h2>
+                <p>Building toward a global autonomous engineering network. Here's where we are and where we're headed.</p>
+            </div>
+            <div class="roadmap-phases">
+                <div class="phase complete">
+                    <div class="phase-header">
+                        <div class="phase-status"></div>
+                        <h3>✓ Foundation</h3>
+                    </div>
+                    <ul class="phase-features">
+                        <li>PocketFlow Core Engine</li>
+                        <li>Multi-provider LLM Client</li>
+                        <li>5 Core Agents (NEXUS, FORGE, SENTINEL, VESSEL, LORE)</li>
+                        <li>GitHub Integration</li>
+                        <li>Worktree Isolation</li>
+                    </ul>
+                </div>
+                <div class="phase in-progress">
+                    <div class="phase-header">
+                        <div class="phase-status"></div>
+                        <h3>▶ Headless Mode</h3>
+                    </div>
+                    <ul class="phase-features">
+                        <li>Auto-Discovery</li>
+                        <li>Self-Decomposition</li>
+                        <li>Auto-Assignment</li>
+                        <li>Zero-config Startup</li>
+                        <li>10+ Contributors</li>
+                    </ul>
+                </div>
+                <div class="phase planned">
+                    <div class="phase-header">
+                        <div class="phase-status"></div>
+                        <h3>○ Agent Economy</h3>
+                    </div>
+                    <ul class="phase-features">
+                        <li>Individual Agent Wallets</li>
+                        <li>Per-Project Budgets</li>
+                        <li>Cost Attribution</li>
+                        <li>Agent Rates</li>
+                        <li>Financial Controls</li>
+                    </ul>
+                </div>
+                <div class="phase planned">
+                    <div class="phase-header">
+                        <div class="phase-status"></div>
+                        <h3>○ Distributed Network</h3>
+                    </div>
+                    <ul class="phase-features">
+                        <li>Bounty Marketplace</li>
+                        <li>External Agent Onboarding</li>
+                        <li>Agent Swarms</li>
+                        <li>Proof of Work</li>
+                        <li>Reward Distribution</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Installation Section -->
+    <section class="install" id="install">
+        <div class="section-container">
+            <div class="install-content">
+                <div class="section-header">
+                    <h2>Get Started in Seconds</h2>
+                    <p>Self-hosted and open source. No API keys required to start. Run your own autonomous engineering team.</p>
+                </div>
+                <div class="code-block">
+                    <div class="code-header">
+                        <div class="code-dot"></div>
+                        <div class="code-dot"></div>
+                        <div class="code-dot"></div>
+                    </div>
+                    <pre><code><span class="code-comment"># One-line install (recommended)</span>
+<span class="code-command">curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/AgentFlow/main/scripts/install.sh | bash</span>
+
+<span class="code-comment"># Or install via cargo</span>
+<span class="code-command">cargo install openflows</span>
+<span class="code-command">openflows-setup</span>
+<span class="code-command">openflows</span></code></pre>
+                </div>
+                <div style="margin-top: 2rem;">
+                    <a href="https://github.com/The-AgenticFlow/OpenFlows/blob/main/INSTALL.md" target="_blank" class="btn-secondary">
+                        Read Full Documentation
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="#" class="logo">
+                    <div class="logo-icon">🌊</div>
+                    OpenFlows
+                </a>
+                <p>Autonomous AI development team that turns GitHub issues into merged PRs. Open source, self-hosted, always on.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="#how-it-works">How It Works</a></li>
+                    <li><a href="#agents">Agents</a></li>
+                    <li><a href="#roadmap">Roadmap</a></li>
+                    <li><a href="#install">Installation</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows/blob/main/README.md" target="_blank">Documentation</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows/blob/main/TUTORIAL.md" target="_blank">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows/issues" target="_blank">Issues</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank">GitHub</a></li>
+                    <li><a href="https://discord.gg/openflows" target="_blank">Discord</a></li>
+                    <li><a href="https://twitter.com/openflows" target="_blank">Twitter</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>© 2026 OpenFlows. MIT License.</p>
+            <p>Built with 🖤 by The AgenticFlow Team</p>
+        </div>
+    </footer>
+
+    <script>
+        // Smooth scroll for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // Add scroll effect to nav
+        let lastScroll = 0;
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            const currentScroll = window.pageYOffset;
+            
+            if (currentScroll > 100) {
+                nav.style.background = 'rgba(10, 10, 15, 0.95)';
+            } else {
+                nav.style.background = 'rgba(10, 10, 15, 0.8)';
+            }
+            
+            lastScroll = currentScroll;
+        });
+    </script>
+</body>
+</html>
