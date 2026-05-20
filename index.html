@@ -3,160 +3,333 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>OpenFlows — Your Autonomous Engineering Team</title>
-    <meta name="description" content="Turn GitHub issues into production code while you sleep. A complete dev team of AI agents.">
+    <title>Openflows — Autonomous AI Development Team</title>
+    <meta name="description" content="An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.">
+    <meta property="og:title" content="Openflows — Autonomous AI Development Team">
+    <meta property="og:description" content="An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.">
+    <meta property="og:image" content="assets/banner.png">
+    <meta property="og:url" content="https://openflows.dev">
+    <meta name="twitter:card" content="summary_large_image">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <noscript>
+        <style>
+            .reveal { opacity: 1 !important; transform: none !important; }
+        </style>
+    </noscript>
     <style>
         :root {
-            --bg-primary: #0a0a0f;
-            --bg-secondary: #12121a;
-            --bg-tertiary: #1a1a24;
-            --bg-card: #16161f;
-            --text-primary: #ffffff;
-            --text-secondary: #a0a0b0;
-            --text-muted: #606070;
-            --accent-primary: #e94560;
-            --accent-secondary: #a855f7;
-            --accent-tertiary: #3b82f6;
-            --accent-success: #22c55e;
-            --accent-warning: #f59e0b;
-            --gradient-primary: linear-gradient(135deg, #e94560 0%, #a855f7 100%);
-            --gradient-secondary: linear-gradient(135deg, #3b82f6 0%, #a855f7 100%);
-            --border-color: #2a2a3a;
-            --glow-primary: 0 0 40px rgba(233, 69, 96, 0.3);
-            --glow-secondary: 0 0 40px rgba(168, 85, 247, 0.3);
+            --bg-primary: #0c0b09;
+            --bg-surface: #181512;
+            --bg-card: #201c17;
+            --bg-code: #0f0e0c;
+            --bg-elevated: #28231e;
+            --text-primary: #f0ebe3;
+            --text-secondary: #9e9488;
+            --text-muted: #5c554d;
+            --accent-copper: #c26d3d;
+            --accent-copper-dim: rgba(194, 109, 61, 0.12);
+            --accent-copper-glow: rgba(194, 109, 61, 0.25);
+            --accent-teal: #4a9b8e;
+            --accent-teal-dim: rgba(74, 155, 142, 0.12);
+            --accent-gold: #c4a35a;
+            --border-color: #2a2520;
+            --border-dim: #1a1714;
+            --font-display: 'Chakra Petch', sans-serif;
+            --font-body: 'Literata', serif;
+            --font-mono: 'IBM Plex Mono', monospace;
+            --nexus: #82b366;
+            --forge: #888888;
+            --sentinel: #d79b00;
+            --vessel: #b85450;
+            --lore: #6c8ebf;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        html {
-            scroll-behavior: smooth;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
 
         body {
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            font-family: var(--font-body);
             background: var(--bg-primary);
             color: var(--text-primary);
-            line-height: 1.6;
+            line-height: 1.65;
             overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
         }
 
-        /* Animated Background */
+        /* Analog noise texture */
+        .noise-overlay {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 9999;
+            opacity: 0.025;
+            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='5' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+            background-repeat: repeat;
+            background-size: 256px 256px;
+        }
+
+        /* Warm geometric grid background */
         .bg-grid {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: -1;
-            background-image: 
-                linear-gradient(rgba(233, 69, 96, 0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(233, 69, 96, 0.03) 1px, transparent 1px);
-            background-size: 50px 50px;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            pointer-events: none; z-index: -1;
+            background-image:
+                linear-gradient(rgba(194, 109, 61, 0.04) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 155, 142, 0.03) 1px, transparent 1px);
+            background-size: 80px 80px;
+            mask-image: radial-gradient(ellipse 70% 60% at 30% 40%, black 20%, transparent 70%);
+            -webkit-mask-image: radial-gradient(ellipse 70% 60% at 30% 40%, black 20%, transparent 70%);
         }
 
-        .bg-glow {
-            position: fixed;
-            width: 600px;
-            height: 600px;
-            border-radius: 50%;
-            filter: blur(150px);
+        /* Diagonal section separators */
+        .section-separator {
+            height: 120px;
+            position: relative;
+            overflow: hidden;
+        }
+        .section-separator::before {
+            content: '';
+            position: absolute;
+            top: 0; left: -5%; right: -5%;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-copper), transparent);
+            opacity: 0.4;
+        }
+        .section-separator::after {
+            content: '';
+            position: absolute;
+            top: 40px; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent 20%, var(--accent-teal) 50%, transparent 80%);
             opacity: 0.15;
-            pointer-events: none;
-            z-index: -1;
         }
 
-        .bg-glow-1 {
-            top: -200px;
-            right: -200px;
-            background: var(--accent-primary);
+        /* Corner bracket utility */
+        .corner-brackets {
+            position: relative;
         }
-
-        .bg-glow-2 {
-            bottom: -200px;
-            left: -200px;
-            background: var(--accent-secondary);
+        .corner-brackets::before,
+        .corner-brackets::after {
+            content: '';
+            position: absolute;
+            width: 14px; height: 14px;
+            border-color: var(--accent-copper);
+            border-style: solid;
+            opacity: 0.35;
+            transition: opacity 0.4s, width 0.4s, height 0.4s;
+        }
+        .corner-brackets::before {
+            top: -1px; left: -1px;
+            border-width: 1px 0 0 1px;
+        }
+        .corner-brackets::after {
+            bottom: -1px; right: -1px;
+            border-width: 0 1px 1px 0;
+        }
+        .corner-brackets:hover::before,
+        .corner-brackets:hover::after {
+            opacity: 0.8;
+            width: 22px; height: 22px;
         }
 
         /* Navigation */
         nav {
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             z-index: 1000;
-            padding: 1rem 2rem;
-            background: rgba(10, 10, 15, 0.8);
+            padding: 1.5rem 2.5rem;
+            background: rgba(12, 11, 9, 0.75);
             backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-dim);
+            animation: navSlideDown 0.8s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-
+        @keyframes navSlideDown {
+            from { transform: translateY(-100%); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
         .nav-container {
-            max-width: 1400px;
+            max-width: 1300px;
             margin: 0 auto;
             display: flex;
             justify-content: space-between;
             align-items: center;
         }
-
         .logo {
             display: flex;
             align-items: center;
-            gap: 0.75rem;
-            font-weight: 700;
-            font-size: 1.5rem;
+            gap: 0.875rem;
             text-decoration: none;
             color: var(--text-primary);
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
         }
-
         .logo-icon {
-            width: 40px;
-            height: 40px;
-            background: var(--gradient-primary);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.25rem;
+            width: 38px; height: 38px;
+            border: 1.5px solid var(--accent-copper);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.15rem;
+            position: relative;
+            transition: border-color 0.3s, box-shadow 0.3s;
         }
-
+        .logo-icon:hover {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 20px rgba(196, 163, 90, 0.15);
+        }
+        .logo-icon::before {
+            content: '';
+            position: absolute;
+            top: 3px; left: 3px;
+            width: 5px; height: 5px;
+            background: var(--accent-copper);
+        }
+        .logo-icon::after {
+            content: '';
+            position: absolute;
+            bottom: 3px; right: 3px;
+            width: 5px; height: 5px;
+            background: var(--accent-copper);
+        }
         .nav-links {
             display: flex;
-            gap: 2rem;
+            gap: 2.75rem;
             align-items: center;
         }
-
         .nav-links a {
             color: var(--text-secondary);
             text-decoration: none;
+            font-family: var(--font-body);
             font-weight: 500;
-            transition: color 0.2s;
+            font-size: 0.9rem;
+            letter-spacing: 0.01em;
+            transition: color 0.3s;
+            position: relative;
+        }
+        .nav-links a::after {
+            content: '';
+            position: absolute;
+            bottom: -5px; left: 0;
+            width: 0; height: 1.5px;
+            background: var(--accent-copper);
+            transition: width 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .nav-links a:hover { color: var(--text-primary); }
+        .nav-links a:hover::after { width: 100%; }
+        .nav-cta {
+            background: var(--accent-copper);
+            color: var(--bg-primary);
+            padding: 0.625rem 1.5rem;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.8rem;
+            letter-spacing: 0.06em;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            border: none;
+            position: relative;
+            clip-path: polygon(8px 0, 100% 0, 100% calc(100% - 8px), calc(100% - 8px) 100%, 0 100%, 0 8px);
+        }
+        .nav-cta:hover {
+            background: #d47d4d;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 24px rgba(194, 109, 61, 0.3);
         }
 
-        .nav-links a:hover {
+        /* Sections */
+        section { padding: 8rem 2.5rem; position: relative; }
+        .section-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--accent-copper);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        .section-label::before {
+            content: '//';
+            color: var(--text-muted);
+            letter-spacing: 0.1em;
+        }
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--border-color), transparent);
+            max-width: 120px;
+        }
+        .section-header h2 {
+            font-family: var(--font-display);
+            font-size: clamp(2.5rem, 5.5vw, 4rem);
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            line-height: 1.05;
+            margin-bottom: 1.25rem;
             color: var(--text-primary);
         }
-
-        .nav-cta {
-            background: var(--gradient-primary);
-            color: white;
-            padding: 0.75rem 1.5rem;
-            border-radius: 8px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: transform 0.2s, box-shadow 0.2s;
+        .section-header p {
+            color: var(--text-secondary);
+            font-size: 1.125rem;
+            max-width: 580px;
+            line-height: 1.7;
         }
+        .section-header { margin-bottom: 5rem; }
 
-        .nav-cta:hover {
+        /* Buttons */
+        .btn-primary {
+            background: var(--accent-copper);
+            color: var(--bg-primary);
+            padding: 0.875rem 1.75rem;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.03em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.625rem;
+            transition: all 0.3s;
+            border: none;
+            cursor: pointer;
+            clip-path: polygon(10px 0, 100% 0, 100% calc(100% - 10px), calc(100% - 10px) 100%, 0 100%, 0 10px);
+        }
+        .btn-primary:hover {
+            background: #d47d4d;
             transform: translateY(-2px);
-            box-shadow: var(--glow-primary);
+            box-shadow: 0 6px 28px rgba(194, 109, 61, 0.3);
+        }
+        .btn-secondary {
+            background: transparent;
+            color: var(--text-primary);
+            padding: 0.875rem 1.75rem;
+            text-decoration: none;
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.875rem;
+            letter-spacing: 0.03em;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.625rem;
+            transition: all 0.3s;
+            border: 1.5px solid var(--border-color);
+            position: relative;
+        }
+        .btn-secondary:hover {
+            border-color: var(--accent-copper);
+            color: var(--accent-copper);
+            box-shadow: 0 0 20px rgba(194, 109, 61, 0.1);
         }
 
         /* Hero Section */
@@ -164,689 +337,822 @@
             min-height: 100vh;
             display: flex;
             align-items: center;
-            justify-content: center;
-            padding: 8rem 2rem 4rem;
-            position: relative;
-        }
-
-        .hero-container {
-            max-width: 1400px;
-            width: 100%;
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 4rem;
-            align-items: center;
-        }
-
-        .hero-content {
-            animation: fadeInUp 0.8s ease-out;
-        }
-
-        .badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            background: var(--bg-tertiary);
-            border: 1px solid var(--border-color);
-            padding: 0.5rem 1rem;
-            border-radius: 100px;
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-            margin-bottom: 1.5rem;
-        }
-
-        .badge-dot {
-            width: 8px;
-            height: 8px;
-            background: var(--accent-success);
-            border-radius: 50%;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
-        .hero h1 {
-            font-size: 4rem;
-            font-weight: 800;
-            line-height: 1.1;
-            margin-bottom: 1.5rem;
-            background: linear-gradient(135deg, #fff 0%, #a0a0b0 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero h1 span {
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .hero-subtitle {
-            font-size: 1.25rem;
-            color: var(--text-secondary);
-            margin-bottom: 2rem;
-            max-width: 500px;
-        }
-
-        .hero-ctas {
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .btn-primary {
-            background: var(--gradient-primary);
-            color: white;
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: transform 0.2s, box-shadow 0.2s;
-            border: none;
-            cursor: pointer;
-            font-size: 1rem;
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: var(--glow-primary);
-        }
-
-        .btn-secondary {
-            background: var(--bg-tertiary);
-            color: var(--text-primary);
-            padding: 1rem 2rem;
-            border-radius: 12px;
-            text-decoration: none;
-            font-weight: 600;
-            display: inline-flex;
-            align-items: center;
-            gap: 0.5rem;
-            transition: all 0.2s;
-            border: 1px solid var(--border-color);
-        }
-
-        .btn-secondary:hover {
-            background: var(--bg-card);
-            border-color: var(--accent-primary);
-        }
-
-        /* Hero Visual */
-        .hero-visual {
-            position: relative;
-            animation: fadeInUp 0.8s ease-out 0.2s both;
-        }
-
-        .agent-team {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 1rem;
-        }
-
-        .agent-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
-            transition: all 0.3s;
+            padding: 12rem 2.5rem 8rem;
             position: relative;
             overflow: hidden;
         }
-
-        .agent-card::before {
+        .hero::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient-primary);
-            opacity: 0;
-            transition: opacity 0.3s;
+            top: 20%; right: -10%;
+            width: 500px; height: 500px;
+            background: radial-gradient(circle, rgba(194, 109, 61, 0.06), transparent 70%);
+            pointer-events: none;
+            z-index: -1;
         }
-
-        .agent-card:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-primary);
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: 10%; left: -5%;
+            width: 400px; height: 400px;
+            background: radial-gradient(circle, rgba(74, 155, 142, 0.05), transparent 70%);
+            pointer-events: none;
+            z-index: -1;
         }
-
-        .agent-card:hover::before {
-            opacity: 1;
-        }
-
-        .agent-icon {
-            width: 48px;
-            height: 48px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1.5rem;
-            margin-bottom: 1rem;
-        }
-
-        .agent-nexus .agent-icon { background: rgba(233, 69, 96, 0.2); }
-        .agent-forge .agent-icon { background: rgba(59, 130, 246, 0.2); }
-        .agent-sentinel .agent-icon { background: rgba(168, 85, 247, 0.2); }
-        .agent-vessel .agent-icon { background: rgba(34, 197, 94, 0.2); }
-        .agent-lore .agent-icon { background: rgba(245, 158, 11, 0.2); }
-
-        .agent-name {
-            font-weight: 700;
-            font-size: 1.125rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .agent-role {
-            font-size: 0.875rem;
-            color: var(--text-secondary);
-        }
-
-        /* Stats Section */
-        .stats {
-            padding: 4rem 2rem;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .stats-container {
-            max-width: 1400px;
+        .hero-container {
+            max-width: 1300px;
             margin: 0 auto;
+            width: 100%;
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 2rem;
-        }
-
-        .stat-item {
-            text-align: center;
-        }
-
-        .stat-number {
-            font-size: 3rem;
-            font-weight: 800;
-            background: var(--gradient-primary);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }
-
-        .stat-label {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            margin-top: 0.5rem;
-        }
-
-        /* How It Works */
-        .how-it-works {
-            padding: 6rem 2rem;
-        }
-
-        .section-container {
-            max-width: 1400px;
-            margin: 0 auto;
-        }
-
-        .section-header {
-            text-align: center;
-            margin-bottom: 4rem;
-        }
-
-        .section-header h2 {
-            font-size: 2.5rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-        }
-
-        .section-header p {
-            color: var(--text-secondary);
-            font-size: 1.125rem;
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        .steps {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-        }
-
-        .step {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2rem;
-            position: relative;
-            transition: all 0.3s;
-        }
-
-        .step:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-primary);
-        }
-
-        .step-number {
-            width: 48px;
-            height: 48px;
-            background: var(--gradient-primary);
-            border-radius: 12px;
-            display: flex;
+            grid-template-columns: 1fr 1.15fr;
+            gap: 6rem;
             align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
         }
-
-        .step h3 {
-            font-size: 1.25rem;
+        .hero h1 {
+            font-family: var(--font-display);
+            font-size: clamp(2.75rem, 5.5vw, 4.5rem);
             font-weight: 600;
-            margin-bottom: 0.75rem;
+            line-height: 1.08;
+            letter-spacing: 0.02em;
+            margin-bottom: 1.75rem;
+            color: var(--text-primary);
         }
-
-        .step p {
+        .hero h1 .accent { color: var(--accent-copper); }
+        .hero-tagline {
+            font-size: 1.15rem;
             color: var(--text-secondary);
-            font-size: 0.9375rem;
+            margin-bottom: 3rem;
+            max-width: 520px;
+            line-height: 1.75;
+        }
+        .hero-props {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+            max-width: 520px;
+        }
+        .prop {
+            display: flex;
+            gap: 1.125rem;
+            align-items: flex-start;
+            padding-left: 1.5rem;
+            border-left: 2px solid var(--border-color);
+            transition: border-color 0.3s;
+        }
+        .prop:hover { border-left-color: var(--accent-copper); }
+        .prop-title {
+            font-family: var(--font-display);
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--text-primary);
+            letter-spacing: 0.03em;
+            margin-bottom: 0.35rem;
+        }
+        .prop-desc {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.6;
+        }
+        .hero-ctas { display: flex; gap: 1rem; flex-wrap: wrap; }
+
+        /* Hero visual - architecture preview */
+        .hero-visual {
+            position: relative;
+            animation: heroSlideIn 1s cubic-bezier(0.16, 1, 0.3, 1) 0.3s both;
+        }
+        @keyframes heroSlideIn {
+            from { opacity: 0; transform: translateX(40px) rotate(1deg); }
+            to { opacity: 1; transform: translateX(0) rotate(0deg); }
+        }
+        .arch-preview {
+            background: var(--bg-code);
+            border: 1px solid var(--border-dim);
+            position: relative;
+            overflow: hidden;
+        }
+        .arch-preview::before {
+            content: 'openflows --status';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            background: var(--bg-surface);
+            padding: 0.875rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-dim);
+            letter-spacing: 0.05em;
+        }
+        .arch-preview::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-copper), var(--accent-gold), var(--accent-copper));
+            opacity: 0.6;
+        }
+        .arch-preview pre {
+            padding: 3.25rem 1.5rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            line-height: 1.85;
+            color: var(--text-secondary);
+            overflow-x: auto;
+        }
+        .arch-preview .c-copper { color: var(--accent-copper); }
+        .arch-preview .c-teal { color: var(--accent-teal); }
+        .arch-preview .c-green { color: var(--nexus); }
+        .arch-preview .c-gray { color: var(--forge); }
+        .arch-preview .c-orange { color: var(--sentinel); }
+        .arch-preview .c-red { color: var(--vessel); }
+        .arch-preview .c-blue { color: var(--lore); }
+        .arch-preview .c-muted { color: var(--text-muted); }
+        .arch-preview .cursor {
+            display: inline-block;
+            width: 8px; height: 1.15em;
+            background: var(--accent-copper);
+            animation: blink 1.2s infinite;
+            vertical-align: text-bottom;
+            margin-left: 3px;
+            box-shadow: 0 0 8px rgba(194, 109, 61, 0.5);
+        }
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.2; }
         }
 
-        /* Agents Section */
-        .agents {
-            padding: 6rem 2rem;
-            background: var(--bg-secondary);
-        }
-
+        /* The Team Section */
         .agents-grid {
             display: grid;
             grid-template-columns: repeat(5, 1fr);
             gap: 1.5rem;
         }
-
-        .agent-detail {
+        .agent-card {
             background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2rem;
+            border: 1px solid var(--border-dim);
+            padding: 2rem 1.5rem;
             text-align: center;
-            transition: all 0.3s;
-        }
-
-        .agent-detail:hover {
-            transform: translateY(-5px);
-            border-color: var(--accent-primary);
-        }
-
-        .agent-detail .agent-icon {
-            width: 64px;
-            height: 64px;
-            margin: 0 auto 1.5rem;
-            font-size: 2rem;
-        }
-
-        .agent-detail h3 {
-            font-size: 1.5rem;
-            font-weight: 700;
-            margin-bottom: 0.5rem;
-        }
-
-        .agent-detail .role {
-            color: var(--accent-primary);
-            font-weight: 600;
-            font-size: 0.875rem;
-            margin-bottom: 1rem;
-        }
-
-        .agent-detail p {
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-        }
-
-        /* Comparison Section */
-        .comparison {
-            padding: 6rem 2rem;
-        }
-
-        .comparison-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 2rem;
-        }
-
-        .comparison-card {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 2rem;
-        }
-
-        .comparison-card.highlight {
-            border-color: var(--accent-primary);
-            background: linear-gradient(135deg, var(--bg-card) 0%, rgba(233, 69, 96, 0.05) 100%);
-        }
-
-        .comparison-card h3 {
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 1rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .comparison-card p {
-            color: var(--text-secondary);
-            font-size: 0.9375rem;
-        }
-
-        /* Roadmap Section */
-        .roadmap {
-            padding: 6rem 2rem;
-            background: var(--bg-secondary);
-        }
-
-        .roadmap-phases {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 1.5rem;
-        }
-
-        .phase {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
-            position: relative;
-        }
-
-        .phase.complete {
-            border-color: var(--accent-success);
-        }
-
-        .phase.in-progress {
-            border-color: var(--accent-tertiary);
-        }
-
-        .phase-header {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            margin-bottom: 1rem;
-        }
-
-        .phase-status {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-        }
-
-        .phase.complete .phase-status { background: var(--accent-success); }
-        .phase.in-progress .phase-status { background: var(--accent-tertiary); }
-        .phase.planned .phase-status { background: var(--text-muted); }
-
-        .phase h3 {
-            font-size: 1rem;
-            font-weight: 600;
-        }
-
-        .phase-features {
-            list-style: none;
-        }
-
-        .phase-features li {
-            color: var(--text-secondary);
-            font-size: 0.875rem;
-            padding: 0.5rem 0;
-            border-bottom: 1px solid var(--border-color);
-        }
-
-        .phase-features li:last-child {
-            border-bottom: none;
-        }
-
-        /* Installation Section */
-        .install {
-            padding: 6rem 2rem;
-        }
-
-        .install-content {
-            max-width: 800px;
-            margin: 0 auto;
-            text-align: center;
-        }
-
-        .code-block {
-            background: var(--bg-card);
-            border: 1px solid var(--border-color);
-            border-radius: 16px;
-            padding: 1.5rem;
-            margin-top: 2rem;
-            text-align: left;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
             position: relative;
             overflow: hidden;
         }
-
-        .code-block::before {
+        .agent-card::before {
             content: '';
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            height: 3px;
-            background: var(--gradient-primary);
+            left: 0; top: 0; bottom: 0;
+            width: 3px;
+            transition: width 0.4s;
         }
-
-        .code-header {
+        .agent-card.nexus::before { background: var(--nexus); }
+        .agent-card.forge::before { background: var(--forge); }
+        .agent-card.sentinel::before { background: var(--sentinel); }
+        .agent-card.vessel::before { background: var(--vessel); }
+        .agent-card.lore::before { background: var(--lore); }
+        .agent-card:hover {
+            transform: translateY(-6px);
+            border-color: var(--border-color);
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.3);
+        }
+        .agent-card:hover::before { width: 5px; }
+        .agent-icon {
+            width: 52px; height: 52px;
             display: flex;
-            gap: 0.5rem;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            margin: 0 auto 1.25rem;
+            position: relative;
+            border: 1px solid var(--border-color);
+        }
+        .agent-card.nexus .agent-icon { background: rgba(130, 179, 102, 0.08); border-color: rgba(130, 179, 102, 0.2); }
+        .agent-card.forge .agent-icon { background: rgba(136, 136, 136, 0.08); border-color: rgba(136, 136, 136, 0.2); }
+        .agent-card.sentinel .agent-icon { background: rgba(215, 155, 0, 0.08); border-color: rgba(215, 155, 0, 0.2); }
+        .agent-card.vessel .agent-icon { background: rgba(184, 84, 80, 0.08); border-color: rgba(184, 84, 80, 0.2); }
+        .agent-card.lore .agent-icon { background: rgba(108, 142, 191, 0.08); border-color: rgba(108, 142, 191, 0.2); }
+        .agent-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.6rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+            margin-bottom: 0.35rem;
+        }
+        .agent-card .role {
+            font-family: var(--font-mono);
+            font-size: 0.62rem;
+            letter-spacing: 0.15em;
+            text-transform: uppercase;
+            font-weight: 500;
             margin-bottom: 1rem;
         }
-
-        .code-dot {
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
+        .agent-card.nexus .role { color: var(--nexus); }
+        .agent-card.forge .role { color: var(--forge); }
+        .agent-card.sentinel .role { color: var(--sentinel); }
+        .agent-card.vessel .role { color: var(--vessel); }
+        .agent-card.lore .role { color: var(--lore); }
+        .agent-card p {
+            font-size: 0.82rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
         }
 
-        .code-dot:nth-child(1) { background: #ff5f56; }
-        .code-dot:nth-child(2) { background: #ffbd2e; }
-        .code-dot:nth-child(3) { background: #27c93f; }
+        /* How It Works - Timeline */
+        .how-it-works { padding: 8rem 2.5rem; }
+        .timeline {
+            position: relative;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 30px;
+            top: 0; bottom: 0;
+            width: 2px;
+            background: linear-gradient(to bottom, var(--accent-copper), rgba(194, 109, 61, 0.1) 80%, transparent);
+        }
+        .timeline-item {
+            display: flex;
+            gap: 2.5rem;
+            padding-bottom: 3.5rem;
+            position: relative;
+        }
+        .timeline-item:last-child { padding-bottom: 0; }
+        .timeline-node {
+            width: 60px; height: 60px;
+            background: var(--bg-surface);
+            border: 2px solid var(--accent-copper);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: var(--font-display);
+            font-size: 0.95rem;
+            font-weight: 600;
+            color: var(--accent-copper);
+            flex-shrink: 0;
+            z-index: 1;
+            transition: all 0.3s;
+            position: relative;
+        }
+        .timeline-node::after {
+            content: '';
+            position: absolute;
+            inset: -4px;
+            border: 1px solid var(--accent-copper);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+        .timeline-item:hover .timeline-node::after { opacity: 0.3; }
+        .timeline-content { padding-top: 0.75rem; }
+        .timeline-content h3 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 600;
+            letter-spacing: 0.02em;
+            margin-bottom: 0.6rem;
+            color: var(--text-primary);
+        }
+        .timeline-content p {
+            color: var(--text-secondary);
+            font-size: 0.95rem;
+            line-height: 1.75;
+        }
+        .timeline-content code {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            background: var(--bg-code);
+            padding: 0.2rem 0.45rem;
+            border: 1px solid var(--border-dim);
+            color: var(--accent-teal);
+        }
 
-        pre {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.875rem;
+        /* Architecture Section */
+        .architecture { background: var(--bg-surface); position: relative; }
+        .architecture::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-copper), transparent);
+            opacity: 0.3;
+        }
+        .pillars {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            margin-bottom: 5rem;
+        }
+        .pillar {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            padding: 2.25rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+        .pillar:nth-child(2) { transform: translateY(24px); }
+        .pillar:hover {
+            border-color: var(--border-color);
+            transform: translateY(-4px);
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.25);
+        }
+        .pillar:nth-child(2):hover { transform: translateY(20px); }
+        .pillar-num {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--accent-copper);
+            letter-spacing: 0.15em;
+            margin-bottom: 1.25rem;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .pillar-num::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: linear-gradient(90deg, var(--accent-copper), transparent);
+            opacity: 0.3;
+        }
+        .pillar h3 {
+            font-family: var(--font-display);
+            font-size: 1.45rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            letter-spacing: 0.02em;
+        }
+        .pillar p {
+            font-size: 0.92rem;
+            color: var(--text-secondary);
+            line-height: 1.75;
+        }
+        .pillar code {
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            background: var(--bg-code);
+            padding: 0.15rem 0.4rem;
+            border: 1px solid var(--border-dim);
+            color: var(--accent-teal);
+        }
+
+        /* Crate diagram */
+        .crate-diagram {
+            background: var(--bg-code);
+            border: 1px solid var(--border-dim);
+            position: relative;
+            overflow: hidden;
+        }
+        .crate-diagram::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-copper), var(--accent-gold), var(--accent-teal));
+            opacity: 0.4;
+        }
+        .crate-diagram .diagram-header {
+            background: var(--bg-surface);
+            padding: 0.875rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-dim);
+            display: flex;
+            align-items: center;
+            gap: 0.625rem;
+            letter-spacing: 0.05em;
+        }
+        .crate-diagram pre {
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            line-height: 1.9;
             color: var(--text-secondary);
             overflow-x: auto;
         }
+        .crate-diagram .c-dir { color: var(--accent-copper); }
+        .crate-diagram .c-comment { color: var(--text-muted); }
+        .crate-diagram .c-name { color: var(--text-primary); }
 
-        code {
-            font-family: 'JetBrains Mono', monospace;
+        /* Key Features */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+        }
+        .feature-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-dim);
+            padding: 2rem;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+        }
+        .feature-card:hover {
+            border-color: var(--border-color);
+            transform: translateY(-4px);
+            box-shadow: 0 10px 36px rgba(0, 0, 0, 0.25);
+        }
+        .feature-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.875rem;
+            letter-spacing: 0.02em;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+        }
+        .feature-card h3::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--accent-copper);
+            transform: rotate(45deg);
+            flex-shrink: 0;
+        }
+        .feature-card p {
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.75;
+        }
+        .feature-card code {
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            background: var(--bg-code);
+            padding: 0.15rem 0.35rem;
+            border: 1px solid var(--border-dim);
+            color: var(--accent-teal);
         }
 
-        .code-comment {
+        /* Live Demo / Logs */
+        .demo-section {
+            background: var(--bg-surface);
+            position: relative;
+        }
+        .demo-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-teal), transparent);
+            opacity: 0.3;
+        }
+        .terminal {
+            background: var(--bg-code);
+            border: 1px solid var(--border-dim);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 60px rgba(194, 109, 61, 0.05);
+        }
+        .terminal::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-copper), var(--accent-gold), var(--accent-teal));
+            opacity: 0.5;
+        }
+        .terminal-header {
+            background: var(--bg-surface);
+            padding: 0.875rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            border-bottom: 1px solid var(--border-dim);
+        }
+        .t-dot { width: 10px; height: 10px; border-radius: 50%; }
+        .t-dot:nth-child(1) { background: #b85450; }
+        .t-dot:nth-child(2) { background: var(--accent-gold); }
+        .t-dot:nth-child(3) { background: var(--nexus); }
+        .terminal-title {
+            margin-left: auto;
+            font-family: var(--font-mono);
+            font-size: 0.7rem;
             color: var(--text-muted);
+            letter-spacing: 0.08em;
+        }
+        .terminal pre {
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            line-height: 2;
+            color: var(--text-secondary);
+            overflow-x: auto;
+            position: relative;
+        }
+        /* Scanline effect */
+        .terminal pre::after {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 3px,
+                rgba(0, 0, 0, 0.12) 3px,
+                rgba(0, 0, 0, 0.12) 6px
+            );
+            pointer-events: none;
+        }
+        .terminal .t-time { color: var(--text-muted); }
+        .terminal .t-level { color: var(--nexus); font-weight: 600; }
+        .terminal .t-msg { color: var(--text-secondary); }
+        .terminal .t-accent { color: var(--accent-copper); }
+        .terminal .t-cursor {
+            display: inline-block;
+            width: 8px; height: 1.15em;
+            background: var(--accent-copper);
+            animation: blink 1.2s infinite;
+            vertical-align: text-bottom;
+            box-shadow: 0 0 10px rgba(194, 109, 61, 0.6);
+        }
+        .demo-caption {
+            text-align: center;
+            margin-top: 1.75rem;
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-style: italic;
         }
 
-        .code-command {
-            color: var(--accent-primary);
+        /* Registry & Routing */
+        .registry-block {
+            background: var(--bg-code);
+            border: 1px solid var(--border-dim);
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 0 50px rgba(74, 155, 142, 0.04);
         }
+        .registry-block::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-teal), var(--accent-gold));
+            opacity: 0.5;
+        }
+        .registry-block .r-header {
+            background: var(--bg-surface);
+            padding: 0.875rem 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            border-bottom: 1px solid var(--border-dim);
+            letter-spacing: 0.08em;
+        }
+        .registry-block pre {
+            padding: 1.5rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            line-height: 1.85;
+            overflow-x: auto;
+        }
+        .registry-block .json-key { color: #c26d3d; }
+        .registry-block .json-string { color: #c4a35a; }
+        .registry-block .json-num { color: #4a9b8e; }
+        .registry-block .json-bool { color: #82b366; }
+        .registry-block .json-punc { color: #9e9488; }
+        .registry-notes {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1.25rem;
+            margin-top: 2.5rem;
+        }
+        .registry-note {
+            display: flex;
+            gap: 0.875rem;
+            align-items: flex-start;
+            font-size: 0.88rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+        .registry-note::before {
+            content: '';
+            width: 6px; height: 6px;
+            background: var(--accent-copper);
+            transform: rotate(45deg);
+            margin-top: 0.5rem;
+            flex-shrink: 0;
+        }
+
+        /* Get Started */
+        .get-started {
+            background: var(--bg-surface);
+            position: relative;
+        }
+        .get-started::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, var(--accent-copper), transparent);
+            opacity: 0.3;
+        }
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2.5rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+        .steps-grid::before {
+            content: '';
+            position: absolute;
+            top: 2.5rem;
+            left: 15%;
+            right: 15%;
+            height: 1px;
+            background: linear-gradient(90deg, var(--accent-copper), var(--accent-gold), var(--accent-copper));
+            opacity: 0.2;
+            z-index: 0;
+        }
+        .step-card {
+            position: relative;
+            z-index: 1;
+        }
+        .step-num {
+            font-family: var(--font-mono);
+            font-size: 0.68rem;
+            color: var(--accent-copper);
+            letter-spacing: 0.15em;
+            margin-bottom: 1rem;
+            display: inline-block;
+            background: var(--bg-surface);
+            padding: 0.25rem 0.75rem;
+            border: 1px solid var(--border-color);
+        }
+        .step-card h3 {
+            font-family: var(--font-display);
+            font-size: 1.35rem;
+            font-weight: 600;
+            margin-bottom: 1.25rem;
+            letter-spacing: 0.02em;
+        }
+        .step-card .code-snippet {
+            background: var(--bg-code);
+            border: 1px solid var(--border-dim);
+            padding: 1.25rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            line-height: 1.85;
+            color: var(--text-secondary);
+            overflow-x: auto;
+            position: relative;
+        }
+        .step-card .code-snippet::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 3px; height: 100%;
+            background: var(--accent-copper);
+            opacity: 0.3;
+        }
+        .step-card .code-snippet .comment { color: var(--text-muted); }
+        .step-card .code-snippet .cmd { color: var(--accent-teal); }
+        .step-card .code-snippet .var { color: #c4a35a; }
+        .req-block {
+            text-align: center;
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-bottom: 2.5rem;
+            padding: 1.25rem;
+            border: 1px solid var(--border-dim);
+            background: var(--bg-card);
+        }
+        .req-block strong { color: var(--text-secondary); font-weight: 600; }
 
         /* Footer */
         footer {
-            padding: 4rem 2rem;
-            background: var(--bg-secondary);
-            border-top: 1px solid var(--border-color);
+            padding: 5rem 2.5rem 3rem;
+            background: var(--bg-code);
+            position: relative;
         }
-
+        footer::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 2.5rem;
+            width: 80px;
+            height: 2px;
+            background: linear-gradient(90deg, var(--accent-copper), var(--accent-gold));
+        }
         .footer-container {
-            max-width: 1400px;
+            max-width: 1200px;
             margin: 0 auto;
             display: grid;
             grid-template-columns: 2fr 1fr 1fr 1fr;
-            gap: 4rem;
+            gap: 3rem;
         }
-
+        .footer-brand .logo-text {
+            font-family: var(--font-display);
+            font-size: 1.85rem;
+            font-weight: 600;
+            letter-spacing: 0.04em;
+        }
         .footer-brand p {
             color: var(--text-secondary);
-            margin-top: 1rem;
-            font-size: 0.9375rem;
+            margin-top: 1.25rem;
+            font-size: 0.88rem;
+            line-height: 1.75;
+            max-width: 320px;
         }
-
         .footer-links h4 {
+            font-family: var(--font-display);
+            font-size: 0.72rem;
+            color: var(--text-muted);
+            letter-spacing: 0.2em;
+            text-transform: uppercase;
+            margin-bottom: 1.5rem;
             font-weight: 600;
-            margin-bottom: 1rem;
         }
-
-        .footer-links ul {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.5rem;
-        }
-
+        .footer-links ul { list-style: none; }
+        .footer-links li { margin-bottom: 0.75rem; }
         .footer-links a {
             color: var(--text-secondary);
             text-decoration: none;
-            transition: color 0.2s;
+            font-size: 0.88rem;
+            transition: color 0.3s;
+            position: relative;
+            padding-left: 0;
+            transition: padding-left 0.3s, color 0.3s;
         }
-
         .footer-links a:hover {
-            color: var(--accent-primary);
+            color: var(--accent-copper);
+            padding-left: 0.5rem;
         }
-
         .footer-bottom {
-            max-width: 1400px;
-            margin: 4rem auto 0;
+            max-width: 1200px;
+            margin: 3.5rem auto 0;
             padding-top: 2rem;
-            border-top: 1px solid var(--border-color);
+            border-top: 1px solid var(--border-dim);
             display: flex;
             justify-content: space-between;
             align-items: center;
             color: var(--text-muted);
-            font-size: 0.875rem;
+            font-family: var(--font-mono);
+            font-size: 0.72rem;
+            letter-spacing: 0.05em;
         }
+        .footer-bottom a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: color 0.3s;
+        }
+        .footer-bottom a:hover { color: var(--accent-copper); }
 
-        /* Animations */
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        /* Scroll-triggered animations */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px) scale(0.98);
+            transition: opacity 0.7s cubic-bezier(0.16, 1, 0.3, 1), transform 0.7s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
         }
 
         /* Responsive */
         @media (max-width: 1024px) {
-            .hero-container {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .hero h1 {
-                font-size: 3rem;
-            }
-
-            .hero-subtitle {
-                margin-left: auto;
-                margin-right: auto;
-            }
-
-            .hero-visual {
-                order: -1;
-            }
-
-            .agent-team {
-                max-width: 400px;
-                margin: 0 auto;
-            }
-
-            .stats-container {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .steps {
-                grid-template-columns: 1fr;
-            }
-
-            .agents-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .comparison-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .roadmap-phases {
-                grid-template-columns: repeat(2, 1fr);
-            }
-
-            .footer-container {
-                grid-template-columns: 1fr 1fr;
-            }
+            .hero-container { grid-template-columns: 1fr; gap: 4rem; }
+            .hero-visual { order: -1; max-width: 600px; margin: 0 auto; }
+            .agents-grid { grid-template-columns: repeat(3, 1fr); }
+            .pillars { grid-template-columns: 1fr; }
+            .pillar:nth-child(2) { transform: none; }
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .steps-grid { grid-template-columns: 1fr; }
+            .steps-grid::before { display: none; }
+            .registry-notes { grid-template-columns: 1fr; }
+            .footer-container { grid-template-columns: 1fr 1fr; }
+            section { padding: 6rem 2rem; }
         }
-
-        @media (max-width: 640px) {
-            .nav-links {
-                display: none;
-            }
-
-            .hero h1 {
-                font-size: 2.5rem;
-            }
-
-            .stats-container {
-                grid-template-columns: 1fr;
-            }
-
-            .agents-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .roadmap-phases {
-                grid-template-columns: 1fr;
-            }
-
-            .footer-container {
-                grid-template-columns: 1fr;
-                gap: 2rem;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                gap: 1rem;
-                text-align: center;
-            }
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            section { padding: 5rem 1.5rem; }
+            .hero { padding: 10rem 1.5rem 5rem; }
+            .hero h1 { font-size: clamp(2.25rem, 9vw, 3rem); }
+            .agents-grid { grid-template-columns: repeat(2, 1fr); }
+            .features-grid { grid-template-columns: 1fr; }
+            .timeline::before { left: 22px; }
+            .timeline-node { width: 46px; height: 46px; font-size: 0.8rem; }
+            .timeline-item { gap: 1.5rem; }
+            .footer-container { grid-template-columns: 1fr; gap: 2.5rem; }
+            .footer-bottom { flex-direction: column; gap: 0.75rem; text-align: center; }
+            .section-header h2 { font-size: clamp(2rem, 8vw, 2.75rem); }
         }
     </style>
 </head>
 <body>
+    <div class="noise-overlay"></div>
     <div class="bg-grid"></div>
-    <div class="bg-glow bg-glow-1"></div>
-    <div class="bg-glow bg-glow-2"></div>
 
-    <!-- Navigation -->
     <nav>
         <div class="nav-container">
             <a href="#" class="logo">
                 <div class="logo-icon">🌊</div>
-                OpenFlows
+                Openflows
             </a>
             <div class="nav-links">
+                <a href="#team">The Team</a>
                 <a href="#how-it-works">How It Works</a>
-                <a href="#agents">Agents</a>
-                <a href="#roadmap">Roadmap</a>
-                <a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank">GitHub</a>
-                <a href="#install" class="nav-cta">Get Started</a>
+                <a href="#architecture">Architecture</a>
+                <a href="#demo">Demo</a>
+                <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="#get-started" class="nav-cta">Get Started</a>
             </div>
         </div>
     </nav>
@@ -855,260 +1161,371 @@
     <section class="hero">
         <div class="hero-container">
             <div class="hero-content">
-                <div class="badge">
-                    <span class="badge-dot"></span>
-                    Now in Open Beta
+                <h1>
+                    Openflows —<br>
+                    <span class="accent">Autonomous AI</span><br>
+                    Development Team
+                </h1>
+                <p class="hero-tagline">A squad of specialized AI agents written in Rust that discovers GitHub issues, writes code, reviews it, opens pull requests, and merges them — all without human intervention.</p>
+                <div class="hero-props">
+                    <div class="prop">
+                        <div>
+                            <div class="prop-title">Fully Autonomous</div>
+                            <div class="prop-desc">From issue discovery to merged PR. You create the ticket; the team ships it.</div>
+                        </div>
+                    </div>
+                    <div class="prop">
+                        <div>
+                            <div class="prop-title">Multi-Agent Quality</div>
+                            <div class="prop-desc">FORGE writes. SENTINEL reviews every segment. VESSEL gates merges. No single point of failure.</div>
+                        </div>
+                    </div>
+                    <div class="prop">
+                        <div>
+                            <div class="prop-title">Model-Routing Optimized</div>
+                            <div class="prop-desc">Route FORGE to Claude Sonnet, SENTINEL to Gemini Pro, VESSEL to Groq — per-agent cost control via LiteLLM.</div>
+                        </div>
+                    </div>
                 </div>
-                <h1>Your <span>Autonomous</span> Engineering Team</h1>
-                <p class="hero-subtitle">Turn GitHub issues into production code while you sleep. A complete dev team of AI agents — Scrum Master, Senior Developer, Security Auditor, DevOps Engineer, and Technical Writer.</p>
                 <div class="hero-ctas">
-                    <a href="#install" class="btn-primary">
-                        Get Started
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M5 12h14M12 5l7 7-7 7"/>
-                        </svg>
+                    <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer" class="btn-primary">
+                        Get Started on GitHub
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
                     </a>
-                    <a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" class="btn-secondary">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                            <path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/>
-                        </svg>
-                        View on GitHub
+                    <a href="#demo" class="btn-secondary">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+                        Watch It Work
                     </a>
                 </div>
             </div>
             <div class="hero-visual">
-                <div class="agent-team">
-                    <div class="agent-card agent-nexus">
-                        <div class="agent-icon">👑</div>
-                        <div class="agent-name">NEXUS</div>
-                        <div class="agent-role">Orchestrator</div>
-                    </div>
-                    <div class="agent-card agent-forge">
-                        <div class="agent-icon">⚒️</div>
-                        <div class="agent-name">FORGE</div>
-                        <div class="agent-role">Senior Engineer</div>
-                    </div>
-                    <div class="agent-card agent-sentinel">
-                        <div class="agent-icon">🛡️</div>
-                        <div class="agent-name">SENTINEL</div>
-                        <div class="agent-role">Security Auditor</div>
-                    </div>
-                    <div class="agent-card agent-vessel">
-                        <div class="agent-icon">🚢</div>
-                        <div class="agent-name">VESSEL</div>
-                        <div class="agent-role">DevOps Engineer</div>
-                    </div>
+                <div class="arch-preview">
+                    <pre><code><span class="c-copper">$</span> <span class="c-muted">openflows --status</span>
+
+<span class="c-green">● NEXUS</span>      <span class="c-muted">Orchestrator      [ACTIVE]  T-004 assigned</span>
+<span class="c-gray">● FORGE-1</span>    <span class="c-muted">Builder           [BUSY]    Segment 3/5</span>
+<span class="c-gray">● FORGE-2</span>    <span class="c-muted">Builder           [IDLE]    Awaiting assignment</span>
+<span class="c-orange">● SENTINEL</span>   <span class="c-muted">Reviewer          [STANDBY] Awaiting segment eval</span>
+<span class="c-red">● VESSEL</span>     <span class="c-muted">DevOps            [MONITOR] CI poll: PR #12</span>
+<span class="c-blue">● LORE</span>       <span class="c-muted">Documenter        [IDLE]    Awaiting merge</span>
+
+<span class="c-muted">SharedStore: 6 tickets · 2 open PRs · 0 conflicts</span>
+<span class="c-muted">Uptime: 14h 32m · LiteLLM proxy: healthy</span>
+<span class="c-copper">❯<span class="cursor"> </span></span></code></pre>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Stats Section -->
-    <section class="stats">
-        <div class="stats-container">
-            <div class="stat-item">
-                <div class="stat-number">47</div>
-                <div class="stat-label">Tickets → Production PRs</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">6h</div>
-                <div class="stat-label">Average Issue to Merge</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">12</div>
-                <div class="stat-label">Security Issues Caught Pre-Merge</div>
-            </div>
-            <div class="stat-item">
-                <div class="stat-number">8%</div>
-                <div class="stat-label">Human Escalation Rate</div>
-            </div>
-        </div>
-    </section>
+    <div class="section-separator"></div>
 
-    <!-- How It Works -->
-    <section class="how-it-works" id="how-it-works">
+    <!-- The Team Section -->
+    <section id="team">
         <div class="section-container">
-            <div class="section-header">
-                <h2>How It Works</h2>
-                <p>From GitHub issue to merged PR — fully autonomous. You focus on the vision, agents handle the execution.</p>
-            </div>
-            <div class="steps">
-                <div class="step">
-                    <div class="step-number">1</div>
-                    <h3>Create an Issue</h3>
-                    <p>Describe what you want in GitHub. Natural language, no special formatting required. The agents understand context and intent.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">2</div>
-                    <h3>Agents Work</h3>
-                    <p>NEXUS assigns tickets, FORGE writes code, SENTINEL reviews for security, VESSEL handles CI/CD, LORE documents everything.</p>
-                </div>
-                <div class="step">
-                    <div class="step-number">3</div>
-                    <h3>Review the PR</h3>
-                    <p>Wake up to completed, tested, documented code. Review the PR, merge when ready. Only 8% of tasks need human clarification.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Agents Section -->
-    <section class="agents" id="agents">
-        <div class="section-container">
-            <div class="section-header">
-                <h2>The 5-Agent Team</h2>
-                <p>Each agent has a specialized role, working together like a human engineering team. They communicate, collaborate, and hand off work seamlessly.</p>
+            <div class="section-header reveal">
+                <div class="section-label">Personnel</div>
+                <h2>Meet The Team</h2>
+                <p>Five agents. One mission. Zero human bottlenecks.</p>
             </div>
             <div class="agents-grid">
-                <div class="agent-detail agent-nexus">
-                    <div class="agent-icon">👑</div>
+                <div class="agent-card nexus reveal">
+                    <div class="agent-icon">NX</div>
                     <h3>NEXUS</h3>
-                    <div class="role">Orchestrator & Scrum Master</div>
-                    <p>Plans sprints, assigns tickets, detects broken states, and ensures flow completion. The brain of the pipeline.</p>
+                    <div class="role">Orchestrator</div>
+                    <p>Scrum Master & Tech Lead. Discovers issues, assigns tickets, recovers broken flows.</p>
                 </div>
-                <div class="agent-detail agent-forge">
-                    <div class="agent-icon">⚒️</div>
+                <div class="agent-card forge reveal">
+                    <div class="agent-icon">FG</div>
                     <h3>FORGE</h3>
-                    <div class="role">Senior Engineer & Builder</div>
-                    <p>Writes code, tests, and opens PRs via Claude Code integration. Transforms tickets into working implementations.</p>
+                    <div class="role">Builder</div>
+                    <p>Senior Engineer. Spawns Claude Code, writes PLAN.md, implements segments, opens PRs.</p>
                 </div>
-                <div class="agent-detail agent-sentinel">
-                    <div class="agent-icon">🛡️</div>
+                <div class="agent-card sentinel reveal">
+                    <div class="agent-icon">ST</div>
                     <h3>SENTINEL</h3>
-                    <div class="role">Security Auditor & Reviewer</div>
-                    <p>Reviews PRs for security, quality, and test coverage. The last line of defense before merge.</p>
+                    <div class="role">Reviewer</div>
+                    <p>Security auditor. Evaluates every code segment against 5 criteria before any merge.</p>
                 </div>
-                <div class="agent-detail agent-vessel">
-                    <div class="agent-icon">🚢</div>
+                <div class="agent-card vessel reveal">
+                    <div class="agent-icon">VS</div>
                     <h3>VESSEL</h3>
-                    <div class="role">DevOps Engineer</div>
-                    <p>Manages CI/CD, resolves conflicts, and squash-merges green PRs. Ensures deployment never breaks.</p>
+                    <div class="role">DevOps</div>
+                    <p>Deployment expert. Polls CI, resolves merge conflicts, squash-merges green PRs.</p>
                 </div>
-                <div class="agent-detail agent-lore">
-                    <div class="agent-icon">📚</div>
+                <div class="agent-card lore reveal">
+                    <div class="agent-icon">LR</div>
                     <h3>LORE</h3>
-                    <div class="role">Technical Writer</div>
-                    <p>Writes ADRs, maintains changelogs, and preserves institutional memory. Documentation that stays current.</p>
+                    <div class="role">Writer</div>
+                    <p>Documenter. Generates ADRs, changelogs, and keeps project history alive.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Comparison Section -->
-    <section class="comparison">
+    <div class="section-separator"></div>
+
+    <!-- How It Works Section -->
+    <section class="how-it-works" id="how-it-works">
         <div class="section-container">
-            <div class="section-header">
-                <h2>Why OpenFlows?</h2>
-                <p>Not just another AI coding tool. A complete autonomous engineering team.</p>
+            <div class="section-header reveal">
+                <div class="section-label">Workflow</div>
+                <h2>How It Works</h2>
+                <p>One cycle. From open issue to merged code.</p>
             </div>
-            <div class="comparison-grid">
-                <div class="comparison-card">
-                    <h3>🤖 vs GitHub Copilot</h3>
-                    <p>Copilot suggests code as you type. OpenFlows ships complete features from issue to merged PR — planning, implementation, review, and deployment.</p>
+            <div class="timeline">
+                <div class="timeline-item reveal">
+                    <div class="timeline-node">01</div>
+                    <div class="timeline-content">
+                        <h3>Discover</h3>
+                        <p>NEXUS syncs open GitHub issues into the SharedStore as tickets (<code>T-001</code>, <code>T-002</code>...).</p>
+                    </div>
                 </div>
-                <div class="comparison-card highlight">
-                    <h3>⚡ OpenFlows</h3>
-                    <p>A complete autonomous engineering team. 5 specialized agents working 24/7. From issue to production without human intervention. $0 to self-host.</p>
+                <div class="timeline-item reveal">
+                    <div class="timeline-node">02</div>
+                    <div class="timeline-content">
+                        <h3>Assign</h3>
+                        <p>NEXUS matches priority tickets to idle FORGE workers (<code>forge-1</code>, <code>forge-2</code>).</p>
+                    </div>
                 </div>
-                <div class="comparison-card">
-                    <h3>👥 vs Hiring Engineers</h3>
-                    <p>Hiring costs $50K+ per engineer annually. OpenFlows runs 24/7, never takes vacation, and scales elastically from 1 to 10+ contributors instantly.</p>
+                <div class="timeline-item reveal">
+                    <div class="timeline-node">03</div>
+                    <div class="timeline-content">
+                        <h3>Plan</h3>
+                        <p>FORGE writes <code>PLAN.md</code> with segment breakdown. SENTINEL reviews → <code>CONTRACT.md</code> (AGREED / CHANGES_REQUESTED).</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-node">04</div>
+                    <div class="timeline-content">
+                        <h3>Build</h3>
+                        <p>FORGE implements segment by segment. After each: commit + <code>WORKLOG.md</code> → SENTINEL eval → <code>segment-N-eval.md</code>.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-node">05</div>
+                    <div class="timeline-content">
+                        <h3>Review</h3>
+                        <p>SENTINEL runs final review (<code>final-review.md</code>). APPROVED → FORGE opens PR.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-node">06</div>
+                    <div class="timeline-content">
+                        <h3>Merge</h3>
+                        <p>VESSEL polls CI (10s interval). Green → squash merge. Conflicts → routes back to same FORGE worker.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-node">07</div>
+                    <div class="timeline-content">
+                        <h3>Document</h3>
+                        <p>LORE writes ADRs and changelogs from merged work.</p>
+                    </div>
+                </div>
+                <div class="timeline-item reveal">
+                    <div class="timeline-node">08</div>
+                    <div class="timeline-content">
+                        <h3>Loop</h3>
+                        <p>NEXUS picks the next ticket. No work left? Halt gracefully.</p>
+                    </div>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Roadmap Section -->
-    <section class="roadmap" id="roadmap">
+    <div class="section-separator"></div>
+
+    <!-- Architecture Deep-Dive Section -->
+    <section class="architecture" id="architecture">
         <div class="section-container">
-            <div class="section-header">
-                <h2>Roadmap</h2>
-                <p>Building toward a global autonomous engineering network. Here's where we are and where we're headed.</p>
+            <div class="section-header reveal">
+                <div class="section-label">System Design</div>
+                <h2>Built for Production</h2>
+                <p>Rust async runtime. Zero-polling event loops. Git worktree isolation.</p>
             </div>
-            <div class="roadmap-phases">
-                <div class="phase complete">
-                    <div class="phase-header">
-                        <div class="phase-status"></div>
-                        <h3>✓ Foundation</h3>
-                    </div>
-                    <ul class="phase-features">
-                        <li>PocketFlow Core Engine</li>
-                        <li>Multi-provider LLM Client</li>
-                        <li>5 Core Agents (NEXUS, FORGE, SENTINEL, VESSEL, LORE)</li>
-                        <li>GitHub Integration</li>
-                        <li>Worktree Isolation</li>
-                    </ul>
+            <div class="pillars">
+                <div class="pillar reveal">
+                    <div class="pillar-num">PILLAR 01</div>
+                    <h3>SharedStore</h3>
+                    <p>Dual-backend state: in-memory for dev/tests, Redis for production. All agents communicate through typed keys: <code>tickets</code>, <code>worker_slots</code>, <code>pending_prs</code>. A 1000-event ring buffer powers real-time TUI monitoring.</p>
                 </div>
-                <div class="phase in-progress">
-                    <div class="phase-header">
-                        <div class="phase-status"></div>
-                        <h3>▶ Headless Mode</h3>
-                    </div>
-                    <ul class="phase-features">
-                        <li>Auto-Discovery</li>
-                        <li>Self-Decomposition</li>
-                        <li>Auto-Assignment</li>
-                        <li>Zero-config Startup</li>
-                        <li>10+ Contributors</li>
-                    </ul>
+                <div class="pillar reveal">
+                    <div class="pillar-num">PILLAR 02</div>
+                    <h3>FORGE-SENTINEL Pair Harness</h3>
+                    <p>Each pair gets an isolated Git worktree on its own branch. File ownership is locked dynamically via <code>flock</code>. Hooks enforce auto-mode permissions: FORGE can commit but never <code>git push</code> directly — MCP tools handle the PR. SENTINEL is read-only and ephemeral.</p>
                 </div>
-                <div class="phase planned">
-                    <div class="phase-header">
-                        <div class="phase-status"></div>
-                        <h3>○ Agent Economy</h3>
-                    </div>
-                    <ul class="phase-features">
-                        <li>Individual Agent Wallets</li>
-                        <li>Per-Project Budgets</li>
-                        <li>Cost Attribution</li>
-                        <li>Agent Rates</li>
-                        <li>Financial Controls</li>
-                    </ul>
+                <div class="pillar reveal">
+                    <div class="pillar-num">PILLAR 03</div>
+                    <h3>Flow Recovery</h3>
+                    <p>NEXUS detects orphaned tickets, stale workers, and unmerged PRs on every cycle. Three consecutive <code>no_work</code> decisions halt the loop. Conflict rework routes directly VESSEL → FORGE without losing context.</p>
                 </div>
-                <div class="phase planned">
-                    <div class="phase-header">
-                        <div class="phase-status"></div>
-                        <h3>○ Distributed Network</h3>
-                    </div>
-                    <ul class="phase-features">
-                        <li>Bounty Marketplace</li>
-                        <li>External Agent Onboarding</li>
-                        <li>Agent Swarms</li>
-                        <li>Proof of Work</li>
-                        <li>Reward Distribution</li>
-                    </ul>
+            </div>
+            <div class="crate-diagram reveal">
+                <div class="diagram-header">
+                    <span>📦</span> crates/
+                </div>
+                <pre><code><span class="c-dir">crates/</span>
+  <span class="c-name">agent-nexus/</span>      <span class="c-comment"># Orchestrator node</span>
+  <span class="c-name">agent-forge/</span>      <span class="c-comment"># Builder node (spawns Claude Code)</span>
+  <span class="c-name">agent-sentinel/</span>   <span class="c-comment"># Reviewer node (ephemeral)</span>
+  <span class="c-name">agent-vessel/</span>     <span class="c-comment"># Merge gatekeeper</span>
+  <span class="c-name">agent-lore/</span>       <span class="c-comment"># Documentation node</span>
+  <span class="c-name">agent-client/</span>     <span class="c-comment"># LLM client + MCP integration</span>
+  <span class="c-name">pair-harness/</span>     <span class="c-comment"># Worktree + pair lifecycle</span>
+  <span class="c-name">pocketflow-core/</span>  <span class="c-comment"># Flow engine, shared store, routing</span></code></pre>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-separator"></div>
+
+    <!-- Key Features Section -->
+    <section id="features">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <div class="section-label">Capabilities</div>
+                <h2>What Makes It Different</h2>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card reveal">
+                    <h3>Auto Mode Permissions</h3>
+                    <p>Claude Code runs with declarative allow/deny lists. FORGE can test and lint; SENTINEL is read-only. Security through constraints, not prompts.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <h3>Dynamic File Locking</h3>
+                    <p><code>pre_write_check.sh</code> intercepts every write. Files are locked per-pair via <code>flock</code>. Race conditions eliminated at the filesystem level.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <h3>Secret Scrubbing</h3>
+                    <p>Before every push, <code>scan_and_scrub_secrets()</code> redacts known patterns. If GH013 rejects, history is rewritten with <code>git filter-branch</code>.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <h3>Per-Agent Model Routing</h3>
+                    <p>LiteLLM proxy routes each agent to the best model for its task. FORGE → Claude Sonnet. SENTINEL → Gemini Pro. VESSEL → Groq (free tier).</p>
+                </div>
+                <div class="feature-card reveal">
+                    <h3>Conflict Rework Loop</h3>
+                    <p>Merge conflicts don't create new PRs. VESSEL writes <code>CONFLICT_RESOLUTION.md</code>, re-assigns the same worker, and re-monitors CI.</p>
+                </div>
+                <div class="feature-card reveal">
+                    <h3>ReAct Nexus (Coming)</h3>
+                    <p>NEXUS will follow iterative Reason→Act→Observe loops for human chat commands, with RAG context injection.</p>
                 </div>
             </div>
         </div>
     </section>
 
-    <!-- Installation Section -->
-    <section class="install" id="install">
-        <div class="section-container">
-            <div class="install-content">
-                <div class="section-header">
-                    <h2>Get Started in Seconds</h2>
-                    <p>Self-hosted and open source. No API keys required to start. Run your own autonomous engineering team.</p>
-                </div>
-                <div class="code-block">
-                    <div class="code-header">
-                        <div class="code-dot"></div>
-                        <div class="code-dot"></div>
-                        <div class="code-dot"></div>
-                    </div>
-                    <pre><code><span class="code-comment"># One-line install (recommended)</span>
-<span class="code-command">curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/AgentFlow/main/scripts/install.sh | bash</span>
+    <div class="section-separator"></div>
 
-<span class="code-comment"># Or install via cargo</span>
-<span class="code-command">cargo install openflows</span>
-<span class="code-command">openflows-setup</span>
-<span class="code-command">openflows</span></code></pre>
+    <!-- Live Demo / Logs Section -->
+    <section class="demo-section" id="demo">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <div class="section-label">Live Run</div>
+                <h2>See It In Action</h2>
+                <p>Real logs from a live orchestration run.</p>
+            </div>
+            <div class="terminal reveal">
+                <div class="terminal-header">
+                    <div class="t-dot"></div>
+                    <div class="t-dot"></div>
+                    <div class="t-dot"></div>
+                    <span class="terminal-title">openflows run --mode real</span>
                 </div>
-                <div style="margin-top: 2rem;">
-                    <a href="https://github.com/The-AgenticFlow/OpenFlows/blob/main/INSTALL.md" target="_blank" class="btn-secondary">
-                        Read Full Documentation
-                    </a>
+                <pre><code><span class="t-time">2026-05-02T00:00:01Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">Starting REAL End-to-End Orchestration</span>
+<span class="t-time">2026-05-02T00:00:05Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">Loaded 6 worker slots: [nexus, forge-1, forge-2, sentinel, vessel, lore]</span>
+<span class="t-time">2026-05-02T00:00:07Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">Found 3 open issues</span>
+<span class="t-time">2026-05-02T00:00:08Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">Assigning issue #1 to forge-1  →  T-001</span>
+<span class="t-time">2026-05-02T00:00:10Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">Worktree created: forge-1/T-001</span>
+<span class="t-time">2026-05-02T00:00:12Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">Spawning Claude Code for forge-1</span>
+<span class="t-time">2026-05-02T00:05:45Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">PLAN.md written — spawning SENTINEL for review</span>
+<span class="t-time">2026-05-02T00:06:12Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">Contract AGREED — implementation starting</span>
+<span class="t-time">2026-05-02T00:15:45Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">Worker forge-1 completed — PR opened: #1</span>
+<span class="t-time">2026-05-02T00:15:56Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">CI status: success for PR #1</span>
+<span class="t-time">2026-05-02T00:15:57Z</span>  <span class="t-level">INFO</span>  <span class="t-msg">PR #1 merged successfully</span>
+<span class="t-time">2026-05-02T00:15:58Z</span>  <span class="t-accent">❯<span class="t-cursor"></span></span></code></pre>
+            </div>
+            <p class="demo-caption">From issue to merged PR in ~16 minutes. No human intervention.</p>
+        </div>
+    </section>
+
+    <div class="section-separator"></div>
+
+    <!-- Registry & Routing Section -->
+    <section id="registry">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <div class="section-label">Configuration</div>
+                <h2>Flexible Agent Configuration</h2>
+                <p>One JSON file controls the entire team.</p>
+            </div>
+            <div class="registry-block reveal">
+                <div class="r-header">registry.json</div>
+                <pre><code><span class="json-punc">{</span>
+  <span class="json-key">"team"</span><span class="json-punc">: [</span>
+    <span class="json-punc">{</span> <span class="json-key">"id"</span><span class="json-punc">:</span> <span class="json-string">"nexus"</span><span class="json-punc">,</span>    <span class="json-key">"cli"</span><span class="json-punc">:</span> <span class="json-string">"Claude"</span><span class="json-punc">,</span> <span class="json-key">"active"</span><span class="json-punc">:</span> <span class="json-bool">true</span><span class="json-punc">,</span>  <span class="json-key">"instances"</span><span class="json-punc">:</span> <span class="json-num">1</span><span class="json-punc">,</span> <span class="json-key">"model_backend"</span><span class="json-punc">:</span> <span class="json-string">"accounts/fireworks/models/kimi-k2p6"</span><span class="json-punc">,</span> <span class="json-key">"routing_key"</span><span class="json-punc">:</span> <span class="json-string">"nexus-key"</span><span class="json-punc">,</span>    <span class="json-key">"github_token_env"</span><span class="json-punc">:</span> <span class="json-string">"AGENT_NEXUS_GITHUB_TOKEN"</span> <span class="json-punc">},</span>
+    <span class="json-punc">{</span> <span class="json-key">"id"</span><span class="json-punc">:</span> <span class="json-string">"forge"</span><span class="json-punc">,</span>    <span class="json-key">"cli"</span><span class="json-punc">:</span> <span class="json-string">"Codex"</span><span class="json-punc">,</span> <span class="json-key">"active"</span><span class="json-punc">:</span> <span class="json-bool">true</span><span class="json-punc">,</span>  <span class="json-key">"instances"</span><span class="json-punc">:</span> <span class="json-num">2</span><span class="json-punc">,</span> <span class="json-key">"model_backend"</span><span class="json-punc">:</span> <span class="json-string">"accounts/fireworks/models/kimi-k2p6"</span><span class="json-punc">,</span> <span class="json-key">"routing_key"</span><span class="json-punc">:</span> <span class="json-string">"forge-key"</span><span class="json-punc">,</span>    <span class="json-key">"github_token_env"</span><span class="json-punc">:</span> <span class="json-string">"AGENT_FORGE_GITHUB_TOKEN"</span> <span class="json-punc">},</span>
+    <span class="json-punc">{</span> <span class="json-key">"id"</span><span class="json-punc">:</span> <span class="json-string">"sentinel"</span><span class="json-punc">,</span> <span class="json-key">"cli"</span><span class="json-punc">:</span> <span class="json-string">"Claude"</span><span class="json-punc">,</span> <span class="json-key">"active"</span><span class="json-punc">:</span> <span class="json-bool">true</span><span class="json-punc">,</span>  <span class="json-key">"instances"</span><span class="json-punc">:</span> <span class="json-num">1</span><span class="json-punc">,</span> <span class="json-key">"model_backend"</span><span class="json-punc">:</span> <span class="json-string">"accounts/fireworks/models/kimi-k2p6"</span><span class="json-punc">,</span> <span class="json-key">"routing_key"</span><span class="json-punc">:</span> <span class="json-string">"sentinel-key"</span><span class="json-punc">,</span> <span class="json-key">"github_token_env"</span><span class="json-punc">:</span> <span class="json-string">"AGENT_SENTINEL_GITHUB_TOKEN"</span> <span class="json-punc">},</span>
+    <span class="json-punc">{</span> <span class="json-key">"id"</span><span class="json-punc">:</span> <span class="json-string">"vessel"</span><span class="json-punc">,</span>   <span class="json-key">"cli"</span><span class="json-punc">:</span> <span class="json-string">"Claude"</span><span class="json-punc">,</span> <span class="json-key">"active"</span><span class="json-punc">:</span> <span class="json-bool">true</span><span class="json-punc">,</span>  <span class="json-key">"instances"</span><span class="json-punc">:</span> <span class="json-num">1</span><span class="json-punc">,</span> <span class="json-key">"model_backend"</span><span class="json-punc">:</span> <span class="json-string">"accounts/fireworks/models/kimi-k2p6"</span><span class="json-punc">,</span> <span class="json-key">"routing_key"</span><span class="json-punc">:</span> <span class="json-string">"vessel-key"</span><span class="json-punc">,</span>   <span class="json-key">"github_token_env"</span><span class="json-punc">:</span> <span class="json-string">"AGENT_VESSEL_GITHUB_TOKEN"</span> <span class="json-punc">},</span>
+    <span class="json-punc">{</span> <span class="json-key">"id"</span><span class="json-punc">:</span> <span class="json-string">"lore"</span><span class="json-punc">,</span>     <span class="json-key">"cli"</span><span class="json-punc">:</span> <span class="json-string">"Codex"</span><span class="json-punc">,</span> <span class="json-key">"active"</span><span class="json-punc">:</span> <span class="json-bool">true</span><span class="json-punc">,</span>  <span class="json-key">"instances"</span><span class="json-punc">:</span> <span class="json-num">1</span><span class="json-punc">,</span> <span class="json-key">"model_backend"</span><span class="json-punc">:</span> <span class="json-string">"accounts/fireworks/models/kimi-k2p6"</span><span class="json-punc">,</span> <span class="json-key">"routing_key"</span><span class="json-punc">:</span> <span class="json-string">"lore-key"</span><span class="json-punc">,</span>     <span class="json-key">"github_token_env"</span><span class="json-punc">:</span> <span class="json-string">"AGENT_LORE_GITHUB_TOKEN"</span> <span class="json-punc">}</span>
+  <span class="json-punc">]</span>
+<span class="json-punc">}</span></code></pre>
+            </div>
+            <div class="registry-notes">
+                <div class="registry-note">Scale FORGE workers by changing <code>instances</code></div>
+                <div class="registry-note">Disable an agent by setting <code>active: false</code></div>
+                <div class="registry-note">Rotate tokens per-agent via <code>github_token_env</code></div>
+                <div class="registry-note">Hot-reloaded on every NEXUS poll — no restart required</div>
+            </div>
+        </div>
+    </section>
+
+    <div class="section-separator"></div>
+
+    <!-- Get Started Section -->
+    <section class="get-started" id="get-started">
+        <div class="section-container">
+            <div class="section-header reveal">
+                <div class="section-label">Deployment</div>
+                <h2>Get Started in 60 Seconds</h2>
+            </div>
+            <div class="steps-grid">
+                <div class="step-card reveal">
+                    <div class="step-num">STEP 01</div>
+                    <h3>Install</h3>
+                    <div class="code-snippet">
+                        <span class="cmd">npm install -g</span> @the-agenticflow/openflows<br>
+                        <span class="cmd">openflows</span> --version
+                    </div>
                 </div>
+                <div class="step-card reveal">
+                    <div class="step-num">STEP 02</div>
+                    <h3>Configure</h3>
+                    <div class="code-snippet">
+                        <span class="cmd">openflows-setup</span><br>
+                        <span class="comment"># Or manually edit .env with your keys:</span><br>
+                        <span class="var">GITHUB_REPOSITORY</span>=your-org/your-repo<br>
+                        <span class="var">GITHUB_PERSONAL_ACCESS_TOKEN</span>=ghp_xxx<br>
+                        <span class="var">ANTHROPIC_API_KEY</span>=sk-ant-xxx
+                    </div>
+                </div>
+                <div class="step-card reveal">
+                    <div class="step-num">STEP 03</div>
+                    <h3>Run</h3>
+                    <div class="code-snippet">
+                        <span class="cmd">openflows-setup</span><br>
+                        <span class="cmd">openflows</span><br>
+                        <span class="comment"># Monitor (optional, separate terminal):</span><br>
+                        <span class="cmd">openflows-dashboard</span><br>
+                        <span class="comment"># Diagnose issues:</span><br>
+                        <span class="cmd">openflows-doctor</span>
+                    </div>
+                </div>
+            </div>
+            <p class="req-block"><strong>Requirements:</strong> Node.js 18+ · npm · Claude Code CLI · GitHub PAT with <code>repo</code> + <code>workflow</code> scopes</p>
+            <div style="text-align: center;">
+                <a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer" class="btn-secondary reveal" style="margin-right: 0.75rem;">Full Tutorial</a>
+                <a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer" class="btn-secondary reveal">Build from Source</a>
             </div>
         </div>
     </section>
@@ -1119,40 +1536,40 @@
             <div class="footer-brand">
                 <a href="#" class="logo">
                     <div class="logo-icon">🌊</div>
-                    OpenFlows
+                    <span class="logo-text">Openflows</span>
                 </a>
-                <p>Autonomous AI development team that turns GitHub issues into merged PRs. Open source, self-hosted, always on.</p>
+                <p>An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.</p>
             </div>
             <div class="footer-links">
                 <h4>Product</h4>
                 <ul>
+                    <li><a href="#team">The Team</a></li>
                     <li><a href="#how-it-works">How It Works</a></li>
-                    <li><a href="#agents">Agents</a></li>
-                    <li><a href="#roadmap">Roadmap</a></li>
-                    <li><a href="#install">Installation</a></li>
+                    <li><a href="#architecture">Architecture</a></li>
+                    <li><a href="#features">Features</a></li>
                 </ul>
             </div>
             <div class="footer-links">
                 <h4>Resources</h4>
                 <ul>
-                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows/blob/main/README.md" target="_blank">Documentation</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows/blob/main/TUTORIAL.md" target="_blank">Tutorial</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows/issues" target="_blank">Issues</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/README.md" target="_blank" rel="noopener noreferrer">Documentation</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/RUN.md" target="_blank" rel="noopener noreferrer">Run Guide</a></li>
                 </ul>
             </div>
             <div class="footer-links">
                 <h4>Community</h4>
                 <ul>
-                    <li><a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank">GitHub</a></li>
-                    <li><a href="https://discord.gg/openflows" target="_blank">Discord</a></li>
-                    <li><a href="https://twitter.com/openflows" target="_blank">Twitter</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>© 2026 OpenFlows. MIT License.</p>
-            <p>Built with 🖤 by The AgenticFlow Team</p>
+            <p>MIT License · <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
+            <p>Built by The AgenticFlow Team</p>
         </div>
     </footer>
 
@@ -1163,27 +1580,41 @@
                 e.preventDefault();
                 const target = document.querySelector(this.getAttribute('href'));
                 if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
+                    target.scrollIntoView({ behavior: 'smooth', block: 'start' });
                 }
             });
         });
 
-        // Add scroll effect to nav
-        let lastScroll = 0;
+        // Nav background on scroll
         window.addEventListener('scroll', () => {
             const nav = document.querySelector('nav');
             const currentScroll = window.pageYOffset;
-            
             if (currentScroll > 100) {
-                nav.style.background = 'rgba(10, 10, 15, 0.95)';
+                nav.style.background = 'rgba(12, 11, 9, 0.92)';
+                nav.style.borderBottomColor = 'var(--border-color)';
             } else {
-                nav.style.background = 'rgba(10, 10, 15, 0.8)';
+                nav.style.background = 'rgba(12, 11, 9, 0.75)';
+                nav.style.borderBottomColor = 'var(--border-dim)';
             }
-            
-            lastScroll = currentScroll;
+        });
+
+        // Intersection Observer for scroll-triggered animations
+        const observerOptions = { root: null, rootMargin: '0px', threshold: 0.1 };
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, observerOptions);
+        document.querySelectorAll('.reveal').forEach(el => { observer.observe(el); });
+
+        // Stagger animations within containers
+        document.querySelectorAll('.agents-grid, .timeline, .pillars, .features-grid, .steps-grid').forEach(container => {
+            container.querySelectorAll('.reveal').forEach((child, index) => {
+                child.style.transitionDelay = `${index * 0.1}s`;
+            });
         });
     </script>
 </body>
