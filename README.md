@@ -11,8 +11,13 @@ Openflows is an autonomous software development team that runs itself. A squad o
 ## Website Features
 
 - 🎨 **Precision Foundry Aesthetic** — warm espresso-charcoal backgrounds with copper/bronze accents, analog noise textures, and geometric grid backgrounds
-- 📱 **Fully responsive** — works on all devices
-- ⚡ **Fast loading** — pure HTML/CSS, no heavy frameworks
+- 📚 **Developer Documentation Hub** — comprehensive guides, API reference, architecture docs, and FAQs
+- 💻 **Interactive Demos** — terminal simulation and step-by-step walkthroughs
+- 🔗 **Use Cases** — real-world before/after comparisons for web dev and DevOps teams
+- 📰 **Blog** — product updates and technical deep dives
+- 🔌 **Developer Resources** — interactive API explorer and integration guides
+- 📱 **Fully responsive** — works on all devices with hamburger navigation
+- ⚡ **Fast loading** — pure HTML/CSS/JS, no heavy frameworks or build steps
 - 🎯 **SEO optimized** with proper meta tags and OG image
 - ♿ **Accessible** — semantic HTML, noscript fallbacks for animations
 - ✨ **Scroll-triggered animations** — staggered reveals with scale transitions via Intersection Observer
@@ -44,19 +49,60 @@ The site is automatically deployed to GitHub Pages via GitHub Actions when chang
 
 ```
 .
-├── index.html          # Main landing page
+├── index.html                # Main landing page
+├── assets/
+│   ├── css/
+│   │   ├── variables.css     # CSS custom properties (design tokens)
+│   │   ├── base.css          # Reset, layout, components (from inline styles)
+│   │   └── docs.css          # Documentation-specific styles
+│   └── js/
+│       ├── shared.js         # Smooth scroll, nav, reveal animations
+│       └── docs.js           # Accordion, copy, search, terminal, tabs, API explorer
+├── docs/
+│   ├── index.html            # Documentation hub landing
+│   ├── getting-started/
+│   │   ├── index.html        # Quick start guide (accordion sections)
+│   │   └── installation.html # Platform-specific install (tab switcher)
+│   ├── guides/
+│   │   ├── index.html        # Guides landing
+│   │   ├── agent-setup.html  # Agent configuration guide
+│   │   └── workflow-integration.html # CI/CD integration guide
+│   ├── api/
+│   │   ├── index.html        # API reference landing
+│   │   ├── endpoints.html    # REST API endpoint table
+│   │   └── authentication.html # API key management
+│   ├── architecture/
+│   │   ├── index.html        # Architecture landing
+│   │   ├── system-design.html # System design overview
+│   │   └── agent-roles.html  # NEXUS, FORGE, SENTINEL, LORE, VESSEL
+│   └── faq.html              # Accordion-based FAQ
+├── demos/
+│   ├── index.html            # Demos landing
+│   ├── terminal.html         # Terminal simulation (typewriter animation)
+│   └── walkthrough.html      # Step-by-step workflow walkthrough
+├── use-cases/
+│   ├── index.html            # Use cases landing
+│   ├── web-development.html  # Web dev before/after comparison
+│   └── devops.html           # DevOps before/after comparison
+├── blog/
+│   ├── index.html            # Blog landing
+│   └── introducing-demos.html # Launch announcement article
+├── developers/
+│   ├── index.html            # Developer resources landing
+│   ├── api-explorer.html     # Interactive API endpoint tester
+│   └── integrations.html     # Integration guides (GitHub, Slack, Docker)
 ├── .github/
 │   └── workflows/
-│       └── deploy.yml  # GitHub Actions deployment
-├── CNAME               # Custom domain config (openflows.dev)
-└── README.md           # This file
+│       └── deploy.yml        # GitHub Actions deployment
+├── CNAME                     # Custom domain config (openflows.dev)
+└── README.md                 # This file
 ```
 
 ## Tech Stack
 
 - **HTML5** — Semantic markup
 - **CSS3** — Custom properties, Grid, Flexbox, clip-path, animations, Intersection Observer API
-- **Vanilla JS** — Smooth scroll, scroll-triggered animations, nav transparency
+- **Vanilla JS** — Smooth scroll, scroll-triggered animations, accordion, code copy, search, terminal simulation, tab switcher, API explorer
 - **Google Fonts** — Chakra Petch (display), Literata (body), IBM Plex Mono (code)
 
 ## Design System

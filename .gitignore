@@ -1,0 +1,6 @@
+.codex/
+.pair-shared/
+.codex-home/
+.pair-shared/.codex/
+.claude/
+.env.local

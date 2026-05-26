@@ -1,0 +1,26 @@
+:root {
+    --bg-primary: #0c0b09;
+    --bg-surface: #181512;
+    --bg-card: #201c17;
+    --bg-code: #0f0e0c;
+    --bg-elevated: #28231e;
+    --text-primary: #f0ebe3;
+    --text-secondary: #9e9488;
+    --text-muted: #5c554d;
+    --accent-copper: #c26d3d;
+    --accent-copper-dim: rgba(194, 109, 61, 0.12);
+    --accent-copper-glow: rgba(194, 109, 61, 0.25);
+    --accent-teal: #4a9b8e;
+    --accent-teal-dim: rgba(74, 155, 142, 0.12);
+    --accent-gold: #c4a35a;
+    --border-color: #2a2520;
+    --border-dim: #1a1714;
+    --font-display: 'Chakra Petch', sans-serif;
+    --font-body: 'Literata', serif;
+    --font-mono: 'IBM Plex Mono', monospace;
+    --nexus: #82b366;
+    --forge: #888888;
+    --sentinel: #d79b00;
+    --vessel: #b85450;
+    --lore: #6c8ebf;
+}

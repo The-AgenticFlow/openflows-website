@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Integration Guides — Openflows</title>
+    <meta name="description" content="Step-by-step guides for integrating Openflows with GitHub, Slack, and other tools.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/docs.css">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="bg-grid"></div>    <nav>
+        <div class="nav-container">
+            <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+            <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
+            <div class="nav-links">
+                <a href="../#team">The Team</a>
+                <a href="../#how-it-works">How It Works</a>
+                <a href="../docs/">Docs</a>
+                <a href="../demos/">Demos</a>
+                <a href="../use-cases/">Use Cases</a>
+                <a href="../blog/">Blog</a>
+                <a href="../developers/">Developers</a>
+                <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="../#get-started" class="nav-cta">Get Started</a>
+            </div>
+        </div>
+    </nav>    <section class="docs-layout" style="padding-top: 6rem;">
+        <main class="docs-content" style="max-width: 900px; margin: 0 auto;">
+            <div class="breadcrumbs">
+                <a href="../">Home</a><span class="separator">›</span>
+                <a href="./">Developers</a><span class="separator">›</span>
+                <span class="current">Integration Guides</span>
+            </div>
+            <h1>Integration Guides</h1>
+            <p>Connect Openflows to your existing development tools and workflows. Each guide provides step-by-step instructions with code samples.</p>
+
+            <h2>GitHub Integration</h2>
+            <p>Openflows integrates deeply with GitHub. Here's how to set up the connection:</p>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-block-lang">bash</span><button class="code-copy-btn">Copy</button></div>
+<pre># 1. Create a GitHub Personal Access Token
+# Go to: Settings → Developer settings → Personal access tokens
+# Required scopes: repo, workflow, read:org
+
+# 2. Set the environment variable
+export GITHUB_TOKEN="ghp_your_token_here"
+
+# 3. Add your repository
+openflows repo add my-org/my-project
+
+# 4. Configure webhook (automatic with GitHub Actions)
+# Openflows listens for: issues, pull_request, push, issue_comment</pre>
+            </div>
+
+            <h2>Slack Integration</h2>
+            <p>Receive agent status updates and review notifications in Slack:</p>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-block-lang">toml</span><button class="code-copy-btn">Copy</button></div>
+<pre>[integrations.slack]
+webhook_url = "https://hooks.slack.com/services/T.../B.../xxx"
+channels = { general = "#dev-ops", reviews = "#code-reviews" }
+events = ["task_completed", "review_ready", "agent_blocked", "pr_merged"]</pre>
+            </div>
+
+            <h2>Docker Integration</h2>
+            <p>Run Openflows as a Docker container for isolated, reproducible deployments:</p>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-block-lang">yaml</span><button class="code-copy-btn">Copy</button></div>
+<pre># docker-compose.yml
+version: "3.8"
+services:
+  openflows:
+    image: ghcr.io/the-agenticflow/openflows:latest
+    environment:
+      - GITHUB_TOKEN=${GITHUB_TOKEN}
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+    volumes:
+      - ./openflows.toml:/etc/openflows/openflows.toml
+    ports:
+      - "8080:8080"</pre>
+            </div>
+
+            <h2>IDE Integration</h2>
+            <p>Use the Openflows CLI from your terminal within VS Code, JetBrains, or any IDE:</p>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-block-lang">bash</span><button class="code-copy-btn">Copy</button></div>
+<pre># From your IDE terminal
+openflows status           # Check current agent activity
+openflows task list        # View active tasks
+openflows task create      # Manually create a task
+openflows agent logs nexus # View NEXUS decision log</pre>
+            </div>
+
+            <div class="callout callout-info">
+                <div class="callout-title">ℹ️ More Integrations Coming</div>
+                <p>We're working on integrations for Jira, Linear, GitLab, and Bitbucket. <a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Request an integration</a> on GitHub.</p>
+            </div>
+        </main>
+    </section>    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+                <p>An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="../#team">The Team</a></li>
+                    <li><a href="../#how-it-works">How It Works</a></li>
+                    <li><a href="../#architecture">Architecture</a></li>
+                    <li><a href="../#features">Features</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="../docs/getting-started/">Getting Started</a></li>
+                    <li><a href="../docs/">Documentation</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>MIT License · <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
+            <p>Built by The AgenticFlow Team</p>
+        </div>
+    </footer>
+    <script src="../assets/js/shared.js"></script>
+    <script src="../assets/js/docs.js"></script>
+</body>
+</html>
