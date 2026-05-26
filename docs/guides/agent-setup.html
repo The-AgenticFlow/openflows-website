@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Agent Setup — Openflows Docs</title>
+    <meta name="description" content="Configure NEXUS, FORGE, SENTINEL, LORE, and VESSEL agents with custom models and permissions.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../../assets/css/variables.css">
+    <link rel="stylesheet" href="../../assets/css/base.css">
+    <link rel="stylesheet" href="../../assets/css/docs.css">
+</head>
+<body>
+    <div class="noise-overlay"></div>
+    <div class="bg-grid"></div>    <nav>
+        <div class="nav-container">
+            <a href="../../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+            <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
+            <div class="nav-links">
+                <a href="../../#team">The Team</a>
+                <a href="../../#how-it-works">How It Works</a>
+                <a href="../../docs/">Docs</a>
+                <a href="../../demos/">Demos</a>
+                <a href="../../use-cases/">Use Cases</a>
+                <a href="../../blog/">Blog</a>
+                <a href="../../developers/">Developers</a>
+                <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="../../#get-started" class="nav-cta">Get Started</a>
+            </div>
+        </div>
+    </nav>
+    <section class="docs-layout" style="padding-top: 6rem;">        <aside class="docs-sidebar">
+            <button class="docs-sidebar-toggle" aria-expanded="false">☰ Menu</button>
+            <div class="docs-search">
+                <span class="docs-search-icon">⌕</span>
+                <input type="text" class="docs-search-input" placeholder="Search docs..." aria-label="Search documentation">
+                <div class="docs-search-results"></div>
+            </div>
+            <div class="docs-sidebar-section">
+                <div class="docs-sidebar-title">Getting Started</div>
+                <ul class="docs-sidebar-nav">
+                    <li><a href="../../docs/getting-started/">Quick Start</a></li>
+                    <li><a href="../../docs/getting-started/installation.html">Installation</a></li>
+                </ul>
+            </div>
+            <div class="docs-sidebar-section">
+                <div class="docs-sidebar-title">Guides</div>
+                <ul class="docs-sidebar-nav">
+                    <li><a href="../../docs/guides/agent-setup.html" class="active">Agent Setup</a></li>
+                    <li><a href="../../docs/guides/workflow-integration.html">Workflow Integration</a></li>
+                </ul>
+            </div>
+            <div class="docs-sidebar-section">
+                <div class="docs-sidebar-title">API Reference</div>
+                <ul class="docs-sidebar-nav">
+                    <li><a href="../../docs/api/endpoints.html">Endpoints</a></li>
+                    <li><a href="../../docs/api/authentication.html">Authentication</a></li>
+                </ul>
+            </div>
+            <div class="docs-sidebar-section">
+                <div class="docs-sidebar-title">Architecture</div>
+                <ul class="docs-sidebar-nav">
+                    <li><a href="../../docs/architecture/system-design.html">System Design</a></li>
+                    <li><a href="../../docs/architecture/agent-roles.html">Agent Roles</a></li>
+                </ul>
+            </div>
+            <div class="docs-sidebar-section">
+                <div class="docs-sidebar-title">Other</div>
+                <ul class="docs-sidebar-nav">
+                    <li><a href="../../docs/faq.html">FAQ</a></li>
+                </ul>
+            </div>
+        </aside>        <main class="docs-content">
+            <div class="breadcrumbs">
+                <a href="../../">Home</a><span class="separator">›</span>
+                <a href="../">Docs</a><span class="separator">›</span>
+                <a href="./">Guides</a><span class="separator">›</span>
+                <span class="current">Agent Setup</span>
+            </div>
+            <h1>Agent Setup</h1>
+            <p>Openflows operates through five specialized agent roles, each with a distinct responsibility. This guide explains how to configure each agent for your project.</p>
+
+            <h2>Agent Roles Overview</h2>
+            <table class="docs-table">
+                <thead><tr><th>Agent</th><th>Role</th><th>Responsibility</th><th>Default Model</th></tr></thead>
+                <tbody>
+                    <tr><td><code style="color:var(--nexus)">NEXUS</code></td><td>Coordinator</td><td>Triages issues, assigns tasks, manages workflow</td><td>gpt-4o</td></tr>
+                    <tr><td><code style="color:var(--forge)">FORGE</code></td><td>Builder</td><td>Writes implementation code for assigned tasks</td><td>gpt-4o</td></tr>
+                    <tr><td><code style="color:var(--sentinel)">SENTINEL</code></td><td>Reviewer</td><td>Reviews code quality, correctness, and safety</td><td>gpt-4o</td></tr>
+                    <tr><td><code style="color:var(--lore)">LORE</code></td><td>Historian</td><td>Maintains institutional knowledge and context</td><td>gpt-4o</td></tr>
+                    <tr><td><code style="color:var(--vessel)">VESSEL</code></td><td>Carrier</td><td>Manages environment, deployment, and infrastructure</td><td>gpt-4o</td></tr>
+                </tbody>
+            </table>
+
+            <h2>Configuration File</h2>
+            <p>Agent configuration lives in <code>openflows.toml</code> at the root of your project:</p>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-block-lang">toml</span><button class="code-copy-btn">Copy</button></div>
+<pre>[agents.nexus]
+model = "gpt-4o"
+system_prompt = "You are NEXUS, the coordinator. Triage issues by priority and assign to FORGE workers."
+max_tokens = 4096
+temperature = 0.3
+
+[agents.forge]
+model = "gpt-4o"
+system_prompt = "You are FORGE, a builder agent. Write clean, tested code."
+max_tokens = 8192
+temperature = 0.2
+
+[agents.sentinel]
+model = "gpt-4o"
+system_prompt = "You are SENTINEL, a reviewer. Check code for bugs, style violations, and security issues."
+max_tokens = 4096
+temperature = 0.1
+
+[agents.lore]
+model = "gpt-4o"
+system_prompt = "You are LORE, the historian. Maintain context about the project's decisions and architecture."
+max_tokens = 2048
+temperature = 0.4
+
+[agents.vessel]
+model = "gpt-4o"
+system_prompt = "You are VESSEL, the carrier. Manage build, test, and deployment pipelines."
+max_tokens = 2048
+temperature = 0.2</pre>
+            </div>
+
+            <h2>Custom System Prompts</h2>
+            <p>Each agent's <code>system_prompt</code> shapes its behavior. Some customization ideas:</p>
+            <ul>
+                <li><strong>FORGE</strong> — Add project-specific coding conventions, preferred libraries, or architectural patterns</li>
+                <li><strong>SENTINEL</strong> — Emphasize specific security policies, code style rules, or test coverage thresholds</li>
+                <li><strong>NEXUS</strong> — Define priority heuristics: label-based triage, effort estimation, or skill matching</li>
+            </ul>
+
+            <div class="callout callout-tip">
+                <div class="callout-title">💡 Tip</div>
+                <p>Start with the default prompts and iterate. Review the agent outputs in early runs and refine prompts based on observed behavior.</p>
+            </div>
+
+            <h2>Model Selection</h2>
+            <p>Each agent can use a different LLM provider and model:</p>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-block-lang">toml</span><button class="code-copy-btn">Copy</button></div>
+<pre>[agents.forge]
+model = "claude-3-opus-20240229"
+provider = "anthropic"
+api_key_env = "ANTHROPIC_API_KEY"
+
+[agents.sentinel]
+model = "gpt-4o"
+provider = "openai"</pre>
+            </div>
+
+            <h2>Permission Boundaries</h2>
+            <p>Control what each agent can do:</p>
+            <div class="code-block">
+                <div class="code-block-header"><span class="code-block-lang">toml</span><button class="code-copy-btn">Copy</button></div>
+<pre>[permissions.forge]
+allow = ["Read", "Write", "Bash", "GitPush"]
+deny = ["Slack"]  # No Slack notifications from builders
+
+[permissions.sentinel]
+allow = ["Read", "Bash"]  # Reviewers only read and run tests
+deny = ["Write", "GitPush"]  # Cannot write code or push</pre>
+            </div>
+
+            <div class="callout callout-info">
+                <div class="callout-title">ℹ️ Next Steps</div>
+                <p>Ready to integrate with your CI/CD? See the <a href="workflow-integration.html">Workflow Integration Guide</a>.</p>
+            </div>
+        </main>
+    </section>    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="../../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+                <p>An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="../../#team">The Team</a></li>
+                    <li><a href="../../#how-it-works">How It Works</a></li>
+                    <li><a href="../../#architecture">Architecture</a></li>
+                    <li><a href="../../#features">Features</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="../../docs/getting-started/">Getting Started</a></li>
+                    <li><a href="../../docs/">Documentation</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>MIT License · <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
+            <p>Built by The AgenticFlow Team</p>
+        </div>
+    </footer>
+    <script src="../../assets/js/shared.js"></script>
+    <script src="../../assets/js/docs.js"></script>
+</body>
+</html>
