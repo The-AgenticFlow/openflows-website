@@ -30,7 +30,7 @@ export default function Home() {
               <a href="/about" style={{ color: '#fff', textDecoration: 'none', borderBottom: '1px solid #666' }}>Read about our mission ›</a>
             </div>
             <div>
-              <img src="https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&q=80&w=1000" alt="About OpenFlows" style={{ width: '100%', borderRadius: '4px' }} />
+              <img src="https://www.nutshell.com/wp-content/uploads/2025/11/best_crm_for_contractors.webp" alt="About OpenFlows" style={{ width: '100%', borderRadius: '4px' }} />
             </div>
           </div>
         </div>

@@ -1,23 +1,23 @@
 .logo {
   display: inline-flex;
   align-items: center;
-  gap: 0.45rem;
+  gap: 0.5rem;
   text-decoration: none;
   flex-shrink: 0;
 }
 
-.mark {
+.wave {
+  font-size: 1.35rem;
+  line-height: 1;
+  /* Render the emoji at a consistent size across platforms */
   display: block;
   flex-shrink: 0;
-  /* Slight lift so it sits optically centred with the text */
-  position: relative;
-  top: 0px;
 }
 
 .name {
   font-size: var(--font-size-base);
-  font-weight: 600;
+  font-weight: 500;
   color: var(--color-text-primary);
-  letter-spacing: -0.02em;
+  letter-spacing: -0.01em;
   line-height: 1;
 }
