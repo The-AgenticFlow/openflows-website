@@ -1,6 +1,7 @@
 .footer {
   border-top: 1px solid var(--color-border);
-  padding: var(--space-20) 0 var(--space-8);
+  padding-top: var(--space-16);
+  padding-bottom: var(--space-8);
   font-size: var(--font-size-sm);
 }
 
@@ -10,11 +11,12 @@
   padding-inline: var(--space-6);
 }
 
+/* ── Link columns ── */
 .columns {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: var(--space-8);
-  margin-bottom: var(--space-20);
+  padding-bottom: var(--space-16);
 }
 
 .columnHeading {
@@ -22,6 +24,7 @@
   font-weight: 500;
   color: var(--color-text-primary);
   margin-bottom: var(--space-5);
+  letter-spacing: 0;
 }
 
 .linkList {
@@ -33,13 +36,16 @@
 .link {
   color: var(--color-text-secondary);
   text-decoration: none;
+  font-size: var(--font-size-sm);
   transition: color var(--transition-fast);
+  line-height: 1.5;
 }
 
 .link:hover {
   color: var(--color-text-primary);
 }
 
+/* ── Bottom bar ── */
 .bottom {
   display: flex;
   align-items: center;
@@ -47,13 +53,13 @@
   padding-top: var(--space-6);
   border-top: 1px solid var(--color-border);
   flex-wrap: wrap;
-  gap: var(--space-6);
+  gap: var(--space-4);
 }
 
 .bottomLeft {
   display: flex;
   align-items: center;
-  gap: var(--space-8);
+  gap: var(--space-6);
 }
 
 .socials {
@@ -63,8 +69,12 @@
 }
 
 .socialLink {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: var(--color-text-secondary);
   transition: color var(--transition-fast);
+  line-height: 1;
 }
 
 .socialLink:hover {
@@ -72,7 +82,9 @@
 }
 
 .copyright {
+  font-size: var(--font-size-sm);
   color: var(--color-text-muted);
+  line-height: 1.5;
 }
 
 .policyLink {
@@ -85,19 +97,23 @@
   color: var(--color-text-secondary);
 }
 
-@media (max-width: 900px) {
+/* ── Responsive ── */
+@media (max-width: 1024px) {
   .columns {
     grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-10);
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 640px) {
   .columns {
-    grid-template-columns: 1fr;
-    gap: var(--space-10);
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-8);
   }
+
   .bottom {
     flex-direction: column;
     align-items: flex-start;
+    gap: var(--space-5);
   }
 }

@@ -1,19 +1,23 @@
 .logo {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-  gap: 0.4rem;
+  gap: 0.45rem;
   text-decoration: none;
   flex-shrink: 0;
 }
 
-.icon {
-  font-size: 1.25rem;
-  line-height: 1;
+.mark {
+  display: block;
+  flex-shrink: 0;
+  /* Slight lift so it sits optically centred with the text */
+  position: relative;
+  top: 0px;
 }
 
 .name {
   font-size: var(--font-size-base);
   font-weight: 600;
   color: var(--color-text-primary);
-  letter-spacing: -0.01em;
+  letter-spacing: -0.02em;
+  line-height: 1;
 }
