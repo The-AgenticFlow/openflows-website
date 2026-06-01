@@ -31,16 +31,16 @@
 .subtitle {
   font-size: var(--font-size-lg);
   color: var(--color-text-secondary);
-  max-width: 650px;
+  max-width: 700px; /* Slightly wider for flow */
   margin-inline: auto;
-  line-height: 1.6;
+  line-height: 1.8; /* Increased from 1.6 */
 }
 
 /* Vision Section */
 .visionSection {
-  padding-block: var(--space-64);
+  padding-block: var(--space-128); /* Drastic increase */
   background-color: #000;
-  margin-bottom: var(--space-32);
+  margin-bottom: var(--space-64);
 }
 
 .visionGrid {
@@ -103,11 +103,11 @@
 
 /* Quote Section */
 .quoteSection {
-  padding-block: var(--space-128); /* Doubled from 64 */
+  padding-block: var(--space-160); /* Even more space */
   text-align: center;
   border-top: 1px solid var(--color-border);
   border-bottom: 1px solid var(--color-border);
-  margin-block: var(--space-32);
+  margin-block: var(--space-64);
 }
 
 .quoteText {
@@ -121,8 +121,8 @@
 
 /* Team Section */
 .teamSection {
-  padding-block: var(--space-80);
-  margin-bottom: var(--space-32);
+  padding-block: var(--space-128);
+  margin-bottom: var(--space-64);
 }
 
 .teamImage {
@@ -134,7 +134,7 @@
 
 /* Structure Section */
 .structureSection {
-  padding-block: var(--space-80);
+  padding-block: var(--space-128);
   border-top: 1px solid var(--color-border);
 }
 
