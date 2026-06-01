@@ -7,7 +7,7 @@ export const NEWS_ITEMS = [
     title: 'Introducing Openflows v1.0 — Autonomous AI Dev Team Goes Stable',
     excerpt: 'The first stable release of Openflows ships with a full FORGE-SENTINEL pair harness, Redis-backed SharedStore, and LiteLLM proxy support.',
     href: '/blog/openflows-v1',
-    image: null,
+    image: '/images/v1-stable.png',
     featured: true,
   },
   {
@@ -17,7 +17,7 @@ export const NEWS_ITEMS = [
     title: 'How multi-agent code review reduces PR defect rate by 3×',
     excerpt: 'A deep dive into the SENTINEL evaluation framework and the 5 criteria it checks on every code segment before approving a merge.',
     href: '/blog/multi-agent-review',
-    image: null,
+    image: '/images/code-review.png',
     featured: false,
   },
   {
@@ -27,7 +27,7 @@ export const NEWS_ITEMS = [
     title: 'Per-agent model routing: give each AI the right brain for its job',
     excerpt: 'Route FORGE to Claude Sonnet, SENTINEL to Gemini Pro, VESSEL to Groq — all from a single registry.json file.',
     href: '/blog/model-routing',
-    image: null,
+    image: '/images/model-routing.png',
     featured: false,
   },
   {
@@ -37,7 +37,7 @@ export const NEWS_ITEMS = [
     title: "Openflows joins the Open Source Initiative's affiliate program",
     excerpt: "We're proud to announce our affiliation with the OSI as part of our commitment to open, collaborative AI tooling.",
     href: '/blog/osi-affiliate',
-    image: null,
+    image: '/images/osi-affiliate.png', // New unique asset (to be moved)
     featured: false,
   },
   {
@@ -47,7 +47,7 @@ export const NEWS_ITEMS = [
     title: 'New: interactive API explorer in the developer portal',
     excerpt: 'Test every Openflows REST endpoint live — authenticate, fire requests, and inspect responses without leaving the browser.',
     href: '/developers/api-explorer',
-    image: null,
+    image: '/images/api-explorer.png', // New unique asset (to be moved)
     featured: false,
   },
   {
@@ -57,7 +57,7 @@ export const NEWS_ITEMS = [
     title: 'VESSEL conflict rework loop eliminates manual rebase churn',
     excerpt: 'VESSEL now writes CONFLICT_RESOLUTION.md and re-routes the same FORGE worker — no context loss, no new branches.',
     href: '/blog/vessel-conflict-rework',
-    image: null,
+    image: '/images/vessel-loop.png', // New unique asset (to be moved)
     featured: false,
   },
 ]
@@ -70,7 +70,7 @@ export const STORIES = [
     date: 'May 2026',
     title: 'How a 2-person team shipped 40 features in a month with Openflows',
     href: '/stories/startup-40-features',
-    image: null,
+    image: '/images/startup-success.png', // New unique asset (to be moved)
   },
   {
     id: 2,
@@ -78,7 +78,7 @@ export const STORIES = [
     date: 'May 2026',
     title: 'Using VESSEL to fully automate CI/CD pipelines on GitHub Actions',
     href: '/stories/devops-cicd',
-    image: null,
+    image: '/images/cicd-automation.png', // New unique asset (to be moved)
   },
   {
     id: 3,
@@ -86,6 +86,6 @@ export const STORIES = [
     date: 'Apr 2026',
     title: 'Openflows maintaining its own backlog — eating the dog food at scale',
     href: '/stories/self-maintaining',
-    image: null,
+    image: '/images/self-healing.png', // New unique asset (to be moved)
   },
 ]

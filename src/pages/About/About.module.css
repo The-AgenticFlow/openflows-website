@@ -1,0 +1,172 @@
+.heroSection {
+  padding-top: calc(var(--nav-height) + var(--space-20));
+  padding-bottom: var(--space-24);
+  background-color: #000;
+  text-align: center;
+}
+
+.container {
+  max-width: var(--max-width);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.eyebrow {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  margin-bottom: var(--space-12);
+  color: var(--color-text-primary);
+}
+
+.subtitle {
+  font-size: var(--font-size-xl);
+  color: var(--color-text-secondary);
+  max-width: 700px;
+  margin-inline: auto;
+  line-height: 1.5;
+}
+
+/* Vision Section */
+.visionSection {
+  padding-block: var(--space-24);
+  background-color: #000;
+}
+
+.visionGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  align-items: center;
+}
+
+.visionHeading {
+  font-size: var(--font-size-3xl);
+  font-weight: 500;
+  margin-bottom: var(--space-8);
+  color: var(--color-text-primary);
+}
+
+.visionDescription {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-12);
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-8);
+}
+
+.visionLink {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.3);
+  padding-bottom: 2px;
+  transition: border-color 0.2s ease;
+}
+
+.visionLink:hover {
+  border-color: var(--color-text-primary);
+}
+
+.visionImageWrap {
+  position: relative;
+}
+
+.visionImage {
+  width: 100%;
+  aspect-ratio: 1/1;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+.imageCaption {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  margin-top: var(--space-4);
+}
+
+/* Quote Section */
+.quoteSection {
+  padding-block: var(--space-32);
+  text-align: center;
+}
+
+.quoteText {
+  font-size: var(--font-size-2xl);
+  font-weight: 500;
+  max-width: 800px;
+  margin-inline: auto;
+  color: var(--color-text-primary);
+  line-height: 1.4;
+}
+
+/* Team Section */
+.teamSection {
+  padding-bottom: var(--space-32);
+}
+
+.teamImage {
+  width: 100%;
+  aspect-ratio: 16/7;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+/* Structure Section */
+.structureSection {
+  padding-block: var(--space-32);
+  border-top: 1px solid var(--color-border);
+}
+
+.structureGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-12);
+  align-items: flex-start;
+}
+
+.structureHeading {
+  font-size: var(--font-size-3xl);
+  font-weight: 500;
+  margin-bottom: var(--space-8);
+  color: var(--color-text-primary);
+}
+
+.structureDescription {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-secondary);
+  line-height: 1.6;
+  margin-bottom: var(--space-12);
+}
+
+.structureLink {
+  color: var(--color-text-primary);
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+}
+
+.structureImage {
+  width: 100%;
+  aspect-ratio: 4/3;
+  object-fit: cover;
+  border-radius: var(--radius-sm);
+}
+
+@media (max-width: 900px) {
+  .visionGrid, .structureGrid {
+    grid-template-columns: 1fr;
+  }
+}
