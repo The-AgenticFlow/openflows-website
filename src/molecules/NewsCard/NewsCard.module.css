@@ -5,7 +5,7 @@
   text-decoration: none;
   transition: opacity var(--transition-base);
   cursor: pointer;
-  gap: var(--space-8);
+  gap: var(--space-4); /* Reduced from 8 */
   align-items: center;
 }
 
@@ -14,8 +14,8 @@
 }
 
 .imageWrap {
-  width: 140px;
-  height: 140px;
+  width: 90px;  /* Reduced from 140px */
+  height: 90px; /* Reduced from 140px */
   border-radius: var(--radius-sm);
   overflow: hidden;
   background-color: var(--color-surface-2);

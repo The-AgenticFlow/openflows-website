@@ -4,7 +4,7 @@ import styles from './FeaturedPost.module.css'
 
 export default function FeaturedPost() {
   const featured = NEWS_ITEMS.find((item) => item.featured)
-  const secondary = NEWS_ITEMS.filter((item) => !item.featured).slice(0, 2)
+  const secondary = NEWS_ITEMS.filter((item) => !item.featured)
 
   if (!featured) return null
 
@@ -12,11 +12,15 @@ export default function FeaturedPost() {
     <section className={styles.section} aria-label="Latest release">
       <div className={styles.container}>
         <div className={styles.grid}>
-          <NewsCard item={featured} variant="wide" />
-          <div className={styles.secondaryStack}>
-            {secondary.map((item) => (
-              <NewsCard key={item.id} item={item} />
-            ))}
+          <div className={styles.mainFeatured}>
+            <NewsCard item={featured} variant="wide" />
+          </div>
+          <div className={styles.sidebar}>
+            <div className={styles.sidebarScroll}>
+              {secondary.map((item) => (
+                <NewsCard key={item.id} item={item} />
+              ))}
+            </div>
           </div>
         </div>
       </div>
