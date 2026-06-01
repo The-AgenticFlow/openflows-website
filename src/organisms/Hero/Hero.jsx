@@ -3,22 +3,24 @@ import Badge from '@/atoms/Badge/Badge'
 import styles from './Hero.module.css'
 
 const TYPEWRITER_LINES = [
-  'nexus fetching 4 open issues...',
-  'forge-1 assigned T-004 → writing PLAN.md',
-  'sentinel reviewing CONTRACT.md → AGREED',
-  'forge-1 implementing segment 3/5...',
-  'forge-1 opened PR #42 → CI running',
-  'CI: success ✓ → vessel merging PR #42',
-  'lore writing ADR-012 → docs updated',
-  'nexus: all tickets closed. halting.',
+  'nexus: syncing 3 open issues from github...',
+  'nexus: assigning T-001 → forge-1',
+  'forge-1: worktree created → writing PLAN.md',
+  'sentinel: reviewing CONTRACT.md → AGREED',
+  'forge-1: implementing segment 2/4...',
+  'sentinel: segment-2-eval.md → APPROVED',
+  'forge-1: all segments done → opening PR #7',
+  'vessel: CI success ✓ → squash-merging PR #7',
+  'lore: writing ADR-003 → docs committed',
+  'nexus: T-001 merged. picking next ticket.',
 ]
 
 const QUICK_LINKS = [
   { label: 'Install in 60 seconds', href: '#get-started' },
   { label: 'How it works', href: '#how-it-works' },
-  { label: 'Meet the agents', href: '#agents' },
-  { label: 'API docs', href: '/developers' },
-  { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/Openflows' },
+  { label: 'Meet the agents', href: '/agents' },
+  { label: 'Documentation', href: '/docs' },
+  { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
 ]
 
 function useTypewriter(lines, speed = 38) {
@@ -69,9 +71,9 @@ export default function Hero() {
 
         {/* Sub-heading */}
         <p className={`${styles.sub} fade-up delay-2`}>
-          Openflows automates the entire software lifecycle — from issue discovery 
-          to pull request merge — using a programmatic state machine and 
-          multi-agent coordination.
+          OpenFlows is a squad of specialized AI agents — written in Rust — that discovers
+          your GitHub issues, writes code, reviews it, opens pull requests, and merges them.
+          All without you writing a single line of code.
         </p>
 
         {/* Terminal animation */}

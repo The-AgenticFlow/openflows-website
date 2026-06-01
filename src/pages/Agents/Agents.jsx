@@ -3,11 +3,11 @@ import { AGENT_DATA } from '@/data/agents';
 import styles from './Agents.module.css';
 
 const ORCHESTRATION_STEPS = [
-  { agent: 'NEXUS', action: 'Orchestration', desc: 'Discovers issues and segments them into actionable tasks.' },
-  { agent: 'FORGE', action: 'Implementation', desc: 'Writes code in isolated, high-performance environments.' },
-  { agent: 'SENTINEL', action: 'Review', desc: 'Gatekeeps every commit against technical contracts.' },
-  { agent: 'VESSEL', action: 'Release', desc: 'Coordinates CI/CD success and secure production merges.' },
-  { agent: 'LORE', action: 'Archival', desc: 'Maintains documentation and architecture records.' },
+  { agent: 'NEXUS', action: 'Orchestrate', desc: 'Discovers open GitHub issues, assigns tickets to idle FORGE workers, and supervises the entire pipeline.' },
+  { agent: 'FORGE', action: 'Build', desc: 'Creates an isolated Git worktree, writes PLAN.md, implements code segment by segment, runs tests.' },
+  { agent: 'SENTINEL', action: 'Review', desc: 'Evaluates every segment against 5 criteria. Writes CONTRACT.md, segment-N-eval.md, and final-review.md.' },
+  { agent: 'VESSEL', action: 'Merge', desc: 'Polls CI, detects conflicts early, attempts automated resolution, squash-merges green PRs.' },
+  { agent: 'LORE', action: 'Document', desc: 'Generates ADRs and updates CHANGELOG.md after every successful merge. No human effort required.' },
 ];
 
 export default function Agents() {
@@ -18,11 +18,12 @@ export default function Agents() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.container}>
-          <p className={styles.eyebrow}>The Ecosystem</p>
-          <h1 className={styles.title}>The Multi-Agent <br/> Orchestration Engine</h1>
+          <p className={styles.eyebrow}>The Team</p>
+          <h1 className={styles.title}>Five agents. One pipeline.<br/> Zero manual steps.</h1>
           <p className={styles.subtitle}>
-            OpenFlows coordinates specialized agents into a deterministic development lifecycle, 
-            eliminating manual churn and ensuring high-reliability code generation.
+            OpenFlows coordinates five specialized AI agents through a deterministic, event-driven
+            pipeline. Each agent has a distinct role, isolated permissions, and its own GitHub identity —
+            just like a real engineering team.
           </p>
         </div>
       </section>
@@ -32,7 +33,10 @@ export default function Agents() {
         <div className={styles.container}>
           <div className={styles.loopHeader}>
             <h2 className={styles.sectionHeading}>The Orchestration Loop</h2>
-            <p className={styles.sectionDesc}>How our agents collaborate in real-time via the SharedStore state machine.</p>
+            <p className={styles.sectionDesc}>
+              Every agent communicates through the SharedStore — a Redis-backed state machine with typed keys.
+              NEXUS supervises the entire loop and recovers broken states automatically.
+            </p>
           </div>
           
           <div className={styles.loopVisual}>
@@ -63,7 +67,7 @@ export default function Agents() {
                 <div className={styles.agentContent}>
                   <p className={styles.agentRole}>{data.role}</p>
                   <h3 className={styles.agentName}>{data.name}</h3>
-                  <p className={styles.agentMission}>{data.mission.slice(0, 100)}...</p>
+                  <p className={styles.agentMission}>{data.mission.slice(0, 120)}...</p>
                   <span className={styles.learnMore}>Explore {data.name} ›</span>
                 </div>
                 <div className={styles.agentImageWrap}>
@@ -80,14 +84,15 @@ export default function Agents() {
         <div className={styles.container}>
           <div className={styles.archBox}>
             <div className={styles.archText}>
-              <p className={styles.eyebrow}>Governance & State</p>
+              <p className={styles.eyebrow}>State & Governance</p>
               <h2 className={styles.archTitle}>Powered by SharedStore</h2>
               <p className={styles.archDesc}>
-                Every agent interaction is persisted in a Redis-backed programmatic state machine. 
-                This ensures total observability, safe rework loops, and deterministic outcomes — 
-                no matter the complexity of the codebase.
+                Every agent interaction is persisted in a Redis-backed state machine with typed keys:
+                <code> tickets</code>, <code>worker_slots</code>, <code>pending_prs</code>.
+                A 1000-event ring buffer powers real-time TUI monitoring. In-memory for dev and tests,
+                Redis for production — zero config change required.
               </p>
-              <a href="/platform/shared-store" className={styles.archLink}>Learn about SharedStore ›</a>
+              <a href="/docs/architecture/system-design" className={styles.archLink}>Read the architecture docs ›</a>
             </div>
           </div>
         </div>

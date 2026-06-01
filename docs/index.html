@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Documentation — Openflows</title>
-    <meta name="description" content="Openflows documentation hub — guides, API reference, architecture, and FAQs.">
+    <title>Documentation — OpenFlows</title>
+    <meta name="description" content="OpenFlows documentation — installation, agent setup, architecture, API reference, and FAQ.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -20,19 +20,19 @@
         <div class="nav-container">
             <a href="../" class="logo">
                 <div class="logo-icon">🌊</div>
-                <span class="logo-text">Openflows</span>
+                <span class="logo-text">OpenFlows</span>
             </a>
             <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
             <div class="nav-links">
-                <a href="../#team">The Team</a>
-                <a href="../#how-it-works">How It Works</a>
+                <a href="/agents">The Team</a>
+                <a href="/#how-it-works">How It Works</a>
                 <a href="../docs/">Docs</a>
                 <a href="../demos/">Demos</a>
                 <a href="../use-cases/">Use Cases</a>
                 <a href="../blog/">Blog</a>
                 <a href="../developers/">Developers</a>
-                <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="../#get-started" class="nav-cta">Get Started</a>
+                <a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="/docs/getting-started/installation.html" class="nav-cta">Get Started</a>
             </div>
         </div>
     </nav>
@@ -88,38 +88,38 @@
             </div>
 
             <h1>Documentation</h1>
-            <p>Welcome to the Openflows documentation hub. Everything you need to set up, configure, and operate your autonomous AI development team.</p>
+            <p>Everything you need to install, configure, and operate your autonomous AI development team. Five agents, one pipeline, zero manual steps.</p>
 
             <div class="doc-cards">
                 <a href="getting-started/" class="doc-card">
                     <div class="doc-card-icon">🚀</div>
                     <div class="doc-card-title">Getting Started</div>
-                    <div class="doc-card-desc">Install Openflows and run your first autonomous workflow in minutes. Covers prerequisites, installation, and quick start.</div>
+                    <div class="doc-card-desc">Install OpenFlows and run your first autonomous workflow in minutes. Covers prerequisites, install methods, and configuration.</div>
+                </a>
+                <a href="getting-started/installation.html" class="doc-card">
+                    <div class="doc-card-icon">⚙️</div>
+                    <div class="doc-card-title">Installation Guide</div>
+                    <div class="doc-card-desc">All install methods: npm, one-liner, cargo, Docker, Homebrew, and build from source. With required environment variables.</div>
                 </a>
                 <a href="guides/agent-setup.html" class="doc-card">
-                    <div class="doc-card-icon">⚙️</div>
+                    <div class="doc-card-icon">🤖</div>
                     <div class="doc-card-title">Agent Setup</div>
-                    <div class="doc-card-desc">Configure NEXUS, FORGE, SENTINEL, LORE, and VESSEL agents with custom models, prompts, and permissions.</div>
-                </a>
-                <a href="api/endpoints.html" class="doc-card">
-                    <div class="doc-card-icon">🔌</div>
-                    <div class="doc-card-title">API Reference</div>
-                    <div class="doc-card-desc">REST API endpoints for managing agents, tasks, and workflows programmatically.</div>
+                    <div class="doc-card-desc">Configure NEXUS, FORGE, SENTINEL, VESSEL, and LORE — model routing, GitHub tokens, worker scaling, and registry.json.</div>
                 </a>
                 <a href="architecture/system-design.html" class="doc-card">
                     <div class="doc-card-icon">🏗️</div>
-                    <div class="doc-card-title">Architecture</div>
-                    <div class="doc-card-desc">Understand the system design, data flow, and how the five agent roles collaborate.</div>
+                    <div class="doc-card-title">System Design</div>
+                    <div class="doc-card-desc">PocketFlow engine, SharedStore state machine, data flow from issue to merged PR, and core design principles.</div>
                 </a>
-                <a href="guides/workflow-integration.html" class="doc-card">
-                    <div class="doc-card-icon">🔗</div>
-                    <div class="doc-card-title">Workflow Integration</div>
-                    <div class="doc-card-desc">Integrate Openflows with GitHub Actions, CI/CD pipelines, and existing development workflows.</div>
+                <a href="architecture/agent-roles.html" class="doc-card">
+                    <div class="doc-card-icon">👥</div>
+                    <div class="doc-card-title">Agent Roles</div>
+                    <div class="doc-card-desc">Deep dive into each agent — NEXUS, FORGE, SENTINEL, VESSEL, LORE — their permissions, workflows, and how they interact.</div>
                 </a>
                 <a href="faq.html" class="doc-card">
                     <div class="doc-card-icon">❓</div>
                     <div class="doc-card-title">FAQ</div>
-                    <div class="doc-card-desc">Answers to commonly asked questions about Openflows setup, configuration, and usage.</div>
+                    <div class="doc-card-desc">Answers to common questions about setup, LLM providers, GitHub tokens, CI integration, and troubleshooting.</div>
                 </a>
             </div>
         </main>
@@ -130,17 +130,17 @@
             <div class="footer-brand">
                 <a href="../" class="logo">
                     <div class="logo-icon">🌊</div>
-                    <span class="logo-text">Openflows</span>
+                    <span class="logo-text">OpenFlows</span>
                 </a>
-                <p>An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.</p>
+                <p>Five specialized AI agents — NEXUS, FORGE, SENTINEL, VESSEL, and LORE — that turn your GitHub issues into merged, documented pull requests. No human intervention required.</p>
             </div>
             <div class="footer-links">
                 <h4>Product</h4>
                 <ul>
-                    <li><a href="../#team">The Team</a></li>
-                    <li><a href="../#how-it-works">How It Works</a></li>
-                    <li><a href="../#architecture">Architecture</a></li>
-                    <li><a href="../#features">Features</a></li>
+                    <li><a href="/agents">The Team</a></li>
+                    <li><a href="/#how-it-works">How It Works</a></li>
+                    <li><a href="/docs/architecture">Architecture</a></li>
+                    <li><a href="/docs">Features</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -148,21 +148,21 @@
                 <ul>
                     <li><a href="getting-started/">Getting Started</a></li>
                     <li><a href="../docs/">Documentation</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
                 </ul>
             </div>
             <div class="footer-links">
                 <h4>Community</h4>
                 <ul>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>MIT License · <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
+            <p>MIT License · <a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
             <p>Built by The AgenticFlow Team</p>
         </div>
     </footer>

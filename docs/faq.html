@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>FAQ — Openflows Docs</title>
-    <meta name="description" content="Frequently asked questions about Openflows setup, usage, and configuration.">
+    <title>FAQ — OpenFlows Docs</title>
+    <meta name="description" content="Frequently asked questions about OpenFlows — LLM providers, GitHub tokens, SENTINEL review, parallel workers, and cost.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,18 +16,18 @@
     <div class="noise-overlay"></div>
     <div class="bg-grid"></div>    <nav>
         <div class="nav-container">
-            <a href="../../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+            <a href="../../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">OpenFlows</span></a>
             <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
             <div class="nav-links">
-                <a href="../../#team">The Team</a>
-                <a href="../../#how-it-works">How It Works</a>
+                <a href="/agents">The Team</a>
+                <a href="/#how-it-works">How It Works</a>
                 <a href="../../docs/">Docs</a>
                 <a href="../../demos/">Demos</a>
                 <a href="../../use-cases/">Use Cases</a>
                 <a href="../../blog/">Blog</a>
                 <a href="../../developers/">Developers</a>
-                <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="../../#get-started" class="nav-cta">Get Started</a>
+                <a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="/docs/getting-started/installation.html" class="nav-cta">Get Started</a>
             </div>
         </div>
     </nav>
@@ -79,61 +79,61 @@
                 <span class="current">FAQ</span>
             </div>
             <h1>Frequently Asked Questions</h1>
-            <p>Common questions about Openflows answered. Can't find what you're looking for? <a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions</a>.</p>
+            <p>Common questions about OpenFlows answered. Can't find what you're looking for? <a href="https://github.com/The-AgenticFlow/AgentFlow/discussions" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions</a>.</p>
 
             <div class="accordion">
                 <div class="accordion-item open">
                     <div class="accordion-header">
-                        <span class="accordion-header-title">What LLM providers does Openflows support?</span>
+                        <span class="accordion-header-title">What LLM providers does OpenFlows support?</span>
                         <span class="accordion-icon">▼</span>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Openflows supports any OpenAI-compatible API, including OpenAI (GPT-4o, GPT-4, GPT-3.5), Anthropic (Claude 3 Opus/Sonnet/Haiku), and local models via Ollama or LM Studio. Configure the provider per-agent in <code>openflows.toml</code>.</p>
+                            <p>OpenFlows supports Anthropic (Claude), OpenAI, Google Gemini, Fireworks, and Groq out of the box via the <code>agent-client</code> crate. Each agent can use a different provider and model, configured in <code>orchestration/agent/registry.json</code>. A LiteLLM proxy is supported for advanced per-agent routing. The recommended setup is Codex CLI + Fireworks (Mode A) — no proxy needed.</p>
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span class="accordion-header-title">Can I run Openflows on a private repository?</span>
+                        <span class="accordion-header-title">Can I run OpenFlows on a private repository?</span>
                         <span class="accordion-icon">▼</span>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Yes. Your GitHub token needs <code>repo</code> scope to access private repositories. Openflows treats private repos identically — it clones, reads, writes, and creates PRs the same way.</p>
+                            <p>Yes. Your GitHub PAT needs <code>repo</code> + <code>workflow</code> scopes. Set <code>GITHUB_REPOSITORY=owner/repo</code> in your <code>.env</code>. OpenFlows treats private repos identically — it clones, creates worktrees, writes code, and opens PRs the same way. Each agent can have its own token via <code>AGENT_FORGE_GITHUB_TOKEN</code> etc. for rate limit isolation.</p>
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span class="accordion-header-title">How does SENTINEL decide whether to approve or reject a PR?</span>
+                        <span class="accordion-header-title">How does SENTINEL decide whether to approve or reject code?</span>
                         <span class="accordion-icon">▼</span>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>SENTINEL evaluates code on multiple dimensions: correctness (does it solve the task?), style (does it follow conventions?), security (any vulnerabilities?), and testing (are there adequate tests?). Each dimension produces a score; the overall score determines approve/request-changes/block.</p>
+                            <p>SENTINEL evaluates against 5 criteria on every segment: correctness, security vulnerabilities, test coverage, standards compliance, and no regressions. It writes <code>segment-N-eval.md</code> after each FORGE commit and <code>final-review.md</code> at the end. SENTINEL is ephemeral — spawned fresh per evaluation — so it has no accumulated bias. It is read-only and cannot modify code.</p>
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span class="accordion-header-title">What happens if FORGE writes buggy code?</span>
+                        <span class="accordion-header-title">What happens if FORGE gets blocked or times out?</span>
                         <span class="accordion-icon">▼</span>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>If SENTINEL catches the bug during review, it requests changes and FORGE gets another attempt. If a bug slips through and is merged, the next NEXUS scan cycle may discover it as a new issue. Review gates can be configured to require human approval for critical paths.</p>
+                            <p>FORGE writes a <code>STATUS.json</code> with <code>status: "BLOCKED"</code> and a specific, answerable question. NEXUS detects this on the next cycle and can re-assign the ticket or escalate. If a worker times out (default 30 min), the ticket is marked <code>failed</code> and retried up to 3 times before being marked <code>exhausted</code>. NEXUS never re-assigns an exhausted ticket.</p>
                         </div>
                     </div>
                 </div>
                 <div class="accordion-item">
                     <div class="accordion-header">
-                        <span class="accordion-header-title">How much does Openflows cost to run?</span>
+                        <span class="accordion-header-title">How much does OpenFlows cost to run?</span>
                         <span class="accordion-icon">▼</span>
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Openflows itself is free and open source. The main cost is LLM API usage. A typical task cycle (NEXUS triage + FORGE implementation + SENTINEL review) uses approximately 30,000–80,000 tokens, which costs $0.15–$1.20 per task depending on model choice. Using GPT-3.5-turbo for simpler agents can reduce costs significantly.</p>
+                            <p>OpenFlows itself is free and MIT licensed. The cost is LLM API usage. A typical full cycle (NEXUS + FORGE + SENTINEL + VESSEL + LORE) uses roughly 50,000–150,000 tokens depending on task complexity. Using Fireworks with Kimi K2 for FORGE and Groq for VESSEL (free tier) can bring the per-task cost well under $0.10. Per-agent model routing via <code>registry.json</code> lets you optimize cost per role.</p>
                         </div>
                     </div>
                 </div>
@@ -144,7 +144,7 @@
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Yes. Configure multiple FORGE instances in <code>openflows.toml</code>. Each works on a separate task branch. NEXUS automatically distributes tasks across available workers. The default is 2 workers; you can scale up to match your LLM rate limits.</p>
+                            <p>Yes. Set <code>"instances": 4</code> for FORGE in <code>registry.json</code> to get <code>forge-1</code> through <code>forge-4</code> running in parallel. Each gets its own isolated Git worktree and branch. NEXUS automatically distributes tickets across idle workers. Scale is limited only by your LLM rate limits and disk space for worktrees.</p>
                         </div>
                     </div>
                 </div>
@@ -155,7 +155,18 @@
                     </div>
                     <div class="accordion-body">
                         <div class="accordion-body-inner">
-                            <p>Code context is sent only to the LLM provider you configure. If you use OpenAI or Anthropic, their API data policies apply. For maximum privacy, use a local model provider like Ollama — no data leaves your machine. Openflows itself does not send code to any third-party service.</p>
+                            <p>Code context is sent only to the LLM provider you configure in <code>registry.json</code>. If you use Anthropic or Fireworks, their API data policies apply. OpenFlows itself does not send code to any third-party service. For maximum privacy, use a self-hosted LiteLLM proxy pointing to a local model — no data leaves your infrastructure.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="accordion-item">
+                    <div class="accordion-header">
+                        <span class="accordion-header-title">What happens when there are merge conflicts?</span>
+                        <span class="accordion-icon">▼</span>
+                    </div>
+                    <div class="accordion-body">
+                        <div class="accordion-body-inner">
+                            <p>VESSEL detects conflicts early via GitHub's <code>mergeable</code> field before CI even completes. It attempts automated resolution via GitHub's update-branch API or a local rebase. If it can't resolve automatically, it writes <code>CONFLICT_RESOLUTION.md</code> with context and re-routes the ticket back to the same FORGE worker — no new branch, no context loss. FORGE reworks the implementation and re-opens the PR.</p>
                         </div>
                     </div>
                 </div>
@@ -164,16 +175,16 @@
     </section>    <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <a href="../../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
-                <p>An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.</p>
+                <a href="../../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">OpenFlows</span></a>
+                <p>Five specialized AI agents — NEXUS, FORGE, SENTINEL, VESSEL, and LORE — that turn your GitHub issues into merged, documented pull requests. No human intervention required.</p>
             </div>
             <div class="footer-links">
                 <h4>Product</h4>
                 <ul>
-                    <li><a href="../../#team">The Team</a></li>
-                    <li><a href="../../#how-it-works">How It Works</a></li>
-                    <li><a href="../../#architecture">Architecture</a></li>
-                    <li><a href="../../#features">Features</a></li>
+                    <li><a href="/agents">The Team</a></li>
+                    <li><a href="/#how-it-works">How It Works</a></li>
+                    <li><a href="/docs/architecture">Architecture</a></li>
+                    <li><a href="/docs">Features</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -181,21 +192,21 @@
                 <ul>
                     <li><a href="../../docs/getting-started/">Getting Started</a></li>
                     <li><a href="../../docs/">Documentation</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
                 </ul>
             </div>
             <div class="footer-links">
                 <h4>Community</h4>
                 <ul>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>MIT License · <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
+            <p>MIT License · <a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
             <p>Built by The AgenticFlow Team</p>
         </div>
     </footer>

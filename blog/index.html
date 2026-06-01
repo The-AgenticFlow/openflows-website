@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blog — Openflows</title>
-    <meta name="description" content="Openflows blog — product updates, technical deep dives, and community stories.">
+    <title>Blog — OpenFlows</title>
+    <meta name="description" content="OpenFlows blog — product updates, technical deep dives, and open source stories.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,45 +16,60 @@
     <div class="noise-overlay"></div>
     <div class="bg-grid"></div>    <nav>
         <div class="nav-container">
-            <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+            <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">OpenFlows</span></a>
             <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
             <div class="nav-links">
-                <a href="../#team">The Team</a>
-                <a href="../#how-it-works">How It Works</a>
+                <a href="/agents">The Team</a>
+                <a href="/#how-it-works">How It Works</a>
                 <a href="../docs/">Docs</a>
                 <a href="../demos/">Demos</a>
                 <a href="../use-cases/">Use Cases</a>
                 <a href="../blog/">Blog</a>
                 <a href="../developers/">Developers</a>
-                <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="../#get-started" class="nav-cta">Get Started</a>
+                <a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="/docs/getting-started/installation.html" class="nav-cta">Get Started</a>
             </div>
         </div>
     </nav>    <section class="docs-layout" style="padding-top: 6rem;">
         <main class="docs-content" style="max-width: 900px; margin: 0 auto;">
             <h1>Blog</h1>
-            <p>Product updates, technical deep dives, and community stories from the Openflows team.</p>
+            <p>Product updates, technical deep dives, and open source stories from the OpenFlows team.</p>
             <div class="doc-cards">
                 <a href="introducing-demos.html" class="doc-card">
                     <div class="doc-card-icon">📰</div>
                     <div class="doc-card-title">Introducing the Developer Documentation Hub</div>
-                    <div class="doc-card-desc">We've launched a comprehensive documentation hub with interactive demos, API reference, and real-world use cases to help you get started with Openflows.</div>
+                    <div class="doc-card-desc">We've launched a comprehensive documentation hub with interactive demos, architecture guides, and real-world use cases to help you get started with OpenFlows.</div>
+                </a>
+                <a href="#" class="doc-card">
+                    <div class="doc-card-icon">🚀</div>
+                    <div class="doc-card-title">OpenFlows v1.0 — Autonomous AI Dev Team Goes Stable</div>
+                    <div class="doc-card-desc">The first stable release ships with the full FORGE-SENTINEL pair harness, Redis-backed SharedStore, LiteLLM proxy routing, and a TUI setup wizard.</div>
+                </a>
+                <a href="#" class="doc-card">
+                    <div class="doc-card-icon">🔬</div>
+                    <div class="doc-card-title">How multi-agent code review cuts PR defect rate by 3×</div>
+                    <div class="doc-card-desc">A deep dive into the SENTINEL evaluation framework — the 5 criteria it checks on every code segment before approving a merge.</div>
+                </a>
+                <a href="#" class="doc-card">
+                    <div class="doc-card-icon">⚡</div>
+                    <div class="doc-card-title">Per-agent model routing: give each AI the right brain</div>
+                    <div class="doc-card-desc">Route FORGE to Claude Sonnet, SENTINEL to Gemini Pro, VESSEL to Groq — all from a single registry.json. Hot-reloaded on every NEXUS poll.</div>
                 </a>
             </div>
         </main>
     </section>    <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
-                <p>An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.</p>
+                <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">OpenFlows</span></a>
+                <p>Five specialized AI agents — NEXUS, FORGE, SENTINEL, VESSEL, and LORE — that turn your GitHub issues into merged, documented pull requests. No human intervention required.</p>
             </div>
             <div class="footer-links">
                 <h4>Product</h4>
                 <ul>
-                    <li><a href="../#team">The Team</a></li>
-                    <li><a href="../#how-it-works">How It Works</a></li>
-                    <li><a href="../#architecture">Architecture</a></li>
-                    <li><a href="../#features">Features</a></li>
+                    <li><a href="/agents">The Team</a></li>
+                    <li><a href="/#how-it-works">How It Works</a></li>
+                    <li><a href="/docs/architecture">Architecture</a></li>
+                    <li><a href="/docs">Features</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -62,21 +77,21 @@
                 <ul>
                     <li><a href="../docs/getting-started/">Getting Started</a></li>
                     <li><a href="../docs/">Documentation</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
                 </ul>
             </div>
             <div class="footer-links">
                 <h4>Community</h4>
                 <ul>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>MIT License · <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
+            <p>MIT License · <a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
             <p>Built by The AgenticFlow Team</p>
         </div>
     </footer>

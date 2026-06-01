@@ -16,7 +16,7 @@ export default function AgentDetail() {
       {/* Hero Section */}
       <section className={styles.hero}>
         <div className={styles.container}>
-          <p className={styles.eyebrow}>The Agentic Ecosystem</p>
+          <p className={styles.eyebrow}>The OpenFlows Team</p>
           <h1 className={styles.name}>{agent.name}</h1>
           <p className={styles.role}>{agent.role}</p>
         </div>
@@ -69,11 +69,14 @@ export default function AgentDetail() {
       <section className={styles.ctaSection}>
         <div className={styles.container}>
           <div className={styles.ctaBox}>
-            <h2>Ready to deploy {agent.name}?</h2>
-            <p>Integrate autonomous orchestration into your GitHub workflow in minutes.</p>
+            <h2>Deploy {agent.name} on your repo</h2>
+            <p>
+              Install OpenFlows, point it at a GitHub repository with open issues,
+              and {agent.name} will be running in minutes.
+            </p>
             <div className={styles.actions}>
-              <a href="https://github.com/The-AgenticFlow/Openflows" className={styles.primaryBtn}>View on GitHub</a>
-              <a href="/docs" className={styles.secondaryBtn}>Read Documentation ›</a>
+              <a href="https://github.com/The-AgenticFlow/AgentFlow" className={styles.primaryBtn} target="_blank" rel="noopener noreferrer">View on GitHub</a>
+              <a href="/docs/getting-started/installation" className={styles.secondaryBtn}>Installation Guide ›</a>
             </div>
           </div>
         </div>

@@ -10,14 +10,15 @@ const NAV_DATA = [
     dropdown: {
       heading: 'Explore Platform',
       items: [
-        { label: 'Orchestration Hub', href: '/platform/orchestration' },
-        { label: 'SharedStore', href: '/platform/shared-store' },
-        { label: 'Agent Mesh', href: '/platform/agent-mesh' },
-        { label: 'Security & Safety', href: '/platform/safety' },
+        { label: 'How It Works', href: '/#how-it-works' },
+        { label: 'SharedStore', href: '/docs/architecture/system-design' },
+        { label: 'FORGE-SENTINEL Pair Harness', href: '/docs/architecture/agent-roles' },
+        { label: 'Flow Recovery', href: '/docs/architecture/system-design' },
+        { label: 'Security & Safety', href: '/docs/guides/agent-setup' },
       ],
       advancements: [
-        { label: 'AgentFlow v1.2', href: '/advancements/agentflow-1-2' },
-        { label: 'FORGE-SENTINEL Rework', href: '/advancements/forge-sentinel' },
+        { label: 'OpenFlows v1.0 Stable', href: '/blog/openflows-v1' },
+        { label: 'VESSEL Conflict Rework Loop', href: '/blog/vessel-conflict-rework' },
       ]
     }
   },
@@ -27,24 +28,25 @@ const NAV_DATA = [
     dropdown: {
       heading: 'Meet the Agents',
       items: [
-        { label: 'NEXUS (Manager)', href: '/agents/nexus' },
-        { label: 'FORGE (Developer)', href: '/agents/forge' },
-        { label: 'SENTINEL (Reviewer)', href: '/agents/sentinel' },
-        { label: 'VESSEL (Operator)', href: '/agents/vessel' },
-        { label: 'LORE (Archivist)', href: '/agents/lore' },
+        { label: 'NEXUS — Orchestrator', href: '/agents/nexus' },
+        { label: 'FORGE — Builder', href: '/agents/forge' },
+        { label: 'SENTINEL — Reviewer', href: '/agents/sentinel' },
+        { label: 'VESSEL — DevOps', href: '/agents/vessel' },
+        { label: 'LORE — Documenter', href: '/agents/lore' },
       ]
     }
   },
   {
-    label: 'Enterprise',
-    href: '/enterprise',
+    label: 'Docs',
+    href: '/docs',
     dropdown: {
-      heading: 'Enterprise Solutions',
+      heading: 'Documentation',
       items: [
-        { label: 'Dedicated Clusters', href: '/enterprise/clusters' },
-        { label: 'Private Model Support', href: '/enterprise/models' },
-        { label: 'Custom Agent Workflows', href: '/enterprise/workflows' },
-        { label: 'Compliance & Audit', href: '/enterprise/compliance' },
+        { label: 'Getting Started', href: '/docs/getting-started' },
+        { label: 'Installation Guide', href: '/docs/getting-started/installation' },
+        { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
+        { label: 'Architecture Overview', href: '/docs/architecture' },
+        { label: 'FAQ', href: '/docs/faq' },
       ]
     }
   },
@@ -54,28 +56,28 @@ const NAV_DATA = [
     dropdown: {
       heading: 'Developer Resources',
       items: [
-        { label: 'Documentation', href: '/docs', external: true },
-        { label: 'API Reference', href: '/developers/api', external: true },
-        { label: 'Agent SDK', href: '/developers/sdk' },
-        { label: 'Openflows CLI', href: '/developers/cli' },
+        { label: 'API Reference', href: '/developers/api-explorer' },
+        { label: 'Integrations', href: '/developers/integrations' },
+        { label: 'OpenFlows CLI', href: '/docs/getting-started/installation' },
+        { label: 'GitHub Repository', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
       ]
     }
   },
   {
     label: 'Company',
-    href: '/company',
+    href: '/about',
     dropdown: {
-      heading: 'About Openflows',
+      heading: 'About OpenFlows',
       items: [
         { label: 'About Us', href: '/about' },
-        { label: 'Careers', href: '/careers' },
-        { label: 'News', href: '/blog' },
-        { label: 'Stories', href: '/stories' },
-        { label: 'Brand Guidelines', href: '/brand' },
+        { label: 'Blog', href: '/blog' },
+        { label: 'Use Cases', href: '/use-cases' },
+        { label: 'Demos', href: '/demos' },
+        { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
       ]
     }
   },
-  { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/Openflows', external: true },
+  { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
 ]
 
 export default function Navbar() {
@@ -174,10 +176,10 @@ export default function Navbar() {
           <div className={styles.actions}>
             {!isSearchOpen && (
               <>
-                <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">
                   GitHub
                 </Button>
-                <Button variant="primary" size="sm" href="#get-started">
+                <Button variant="primary" size="sm" href="/docs/getting-started">
                   Get Started
                 </Button>
               </>
@@ -244,7 +246,7 @@ export default function Navbar() {
               ref={searchInputRef}
               type="text" 
               className={styles.largeSearchInput} 
-              placeholder="Ask me about research at OpenFlows"
+              placeholder="Search OpenFlows docs, agents, guides..."
             />
             <button className={styles.searchSubmit} aria-label="Submit search">
               <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">

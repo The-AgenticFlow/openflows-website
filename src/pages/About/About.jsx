@@ -6,12 +6,12 @@ export default function About() {
     <Layout>
       <section className={styles.heroSection}>
         <div className={styles.container}>
-          <p className={styles.eyebrow}>Company</p>
-          <h1 className={styles.title}>About</h1>
+          <p className={styles.eyebrow}>About</p>
+          <h1 className={styles.title}>An autonomous AI development team that runs itself.</h1>
           <p className={styles.subtitle}>
-            Openflows is an autonomous orchestration company. Our mission is 
-            to empower software teams through the robust coordination of 
-            specialized AI agents and programmatic state management.
+            OpenFlows is a squad of specialized AI agents — written in Rust — that discovers
+            your GitHub issues, writes code, reviews it, opens pull requests, and merges them.
+            All without human intervention. You stay as the product owner.
           </p>
         </div>
       </section>
@@ -20,16 +20,17 @@ export default function About() {
         <div className={styles.container}>
           <div className={styles.visionGrid}>
             <div className={styles.visionText}>
-              <h2 className={styles.visionHeading}>Unlocking the potential of multi-agent engineering</h2>
+              <h2 className={styles.visionHeading}>The big idea: you stay the product owner</h2>
               <p className={styles.visionDescription}>
-                We believe the future of software development lies in the 
-                orchestration of specialized agents. By combining builders (FORGE) 
-                and reviewers (SENTINEL) into a programmatic logic harness, we 
-                eliminate the variance of single-agent code generation.
+                Each AI agent gets their own GitHub account and identity. They create branches,
+                open PRs, review code, run CI/CD, and deploy — just like human developers.
+                NEXUS (the orchestrator) notifies you only when necessary: spec ambiguity,
+                security concerns, or resource limits. Otherwise, the team runs autonomously.
+                You wake up to completed features, reviewed PRs, and updated documentation.
               </p>
               <div className={styles.actions}>
-                <a href="#architecture" className={styles.visionLink}>Our Architecture ›</a>
-                <a href="https://github.com/The-AgenticFlow/Openflows" className={styles.visionLink} target="_blank" rel="noopener noreferrer">View on GitHub</a>
+                <a href="/docs/architecture" className={styles.visionLink}>Architecture Overview ›</a>
+                <a href="https://github.com/The-AgenticFlow/AgentFlow" className={styles.visionLink} target="_blank" rel="noopener noreferrer">View on GitHub ›</a>
               </div>
             </div>
             <div className={styles.visionImageWrap}>
@@ -38,7 +39,6 @@ export default function About() {
                 alt="AI Neural Network Visualization" 
                 className={styles.visionImage} 
               />
-              <p className={styles.imageCaption}>Illustration via OpenSource Community</p>
             </div>
           </div>
         </div>
@@ -47,9 +47,9 @@ export default function About() {
       <section className={styles.quoteSection}>
         <div className={styles.container}>
           <p className={styles.quoteText}>
-            "Our goal is to build safe, deterministic autonomous orchestration 
-            that empowers teams to focus on architecture while AI handles 
-            the implementation lifecycle."
+            "Imagine having a complete engineering team — Scrum Master, Senior Developer,
+            Security Auditor, DevOps Engineer, and Technical Writer — that works 24/7 to turn
+            your GitHub issues into production-ready code and pull requests."
           </p>
         </div>
       </section>
@@ -70,20 +70,20 @@ export default function About() {
         <div className={styles.container}>
           <div className={styles.structureGrid}>
             <div className={styles.structureContent}>
-              <h2 className={styles.structureHeading}>Our structure</h2>
+              <h2 className={styles.structureHeading}>Open source, MIT licensed</h2>
               <p className={styles.structureDescription}>
-                Openflows consists of the nonprofit Openflows Foundation and 
-                the for-profit Openflows Group. The Foundation governs the 
-                Group, which operates as a public benefit corporation. The 
-                Openflows mission advances through the combined impact 
-                of both organizations.
+                OpenFlows is fully open source under the MIT license. The project is maintained
+                by The AgenticFlow team and welcomes contributions from the community.
+                Install via npm, cargo, Homebrew, Docker, or a one-line curl installer.
+                The entire orchestration engine — from PocketFlow core to the TUI setup wizard —
+                is available on GitHub.
               </p>
-              <a href="/charter" className={styles.structureLink}>Our structure ›</a>
+              <a href="https://github.com/The-AgenticFlow/AgentFlow" className={styles.structureLink} target="_blank" rel="noopener noreferrer">View the repository ›</a>
             </div>
             <div className={styles.structureImageWrap}>
               <img 
                 src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=800" 
-                alt="Minimal landscape representing structure" 
+                alt="Open source collaboration" 
                 className={styles.structureImage} 
               />
             </div>

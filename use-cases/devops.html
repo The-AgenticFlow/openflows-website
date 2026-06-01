@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>DevOps Automation Use Case — Openflows</title>
-    <meta name="description" content="How DevOps teams use Openflows to automate infrastructure and pipeline management.">
+    <title>DevOps Automation Use Case — OpenFlows</title>
+    <meta name="description" content="How DevOps teams use OpenFlows to automate CI/CD pipelines, security patches, and infrastructure updates across multiple repos.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@400;500;600;700&family=Literata:ital,opsz,wght@0,7..72,300;0,7..72,400;0,7..72,500;0,7..72,600;0,7..72,700;1,7..72,400&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
@@ -16,18 +16,18 @@
     <div class="noise-overlay"></div>
     <div class="bg-grid"></div>    <nav>
         <div class="nav-container">
-            <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+            <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">OpenFlows</span></a>
             <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
             <div class="nav-links">
-                <a href="../#team">The Team</a>
-                <a href="../#how-it-works">How It Works</a>
+                <a href="/agents">The Team</a>
+                <a href="/#how-it-works">How It Works</a>
                 <a href="../docs/">Docs</a>
                 <a href="../demos/">Demos</a>
                 <a href="../use-cases/">Use Cases</a>
                 <a href="../blog/">Blog</a>
                 <a href="../developers/">Developers</a>
-                <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a>
-                <a href="../#get-started" class="nav-cta">Get Started</a>
+                <a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <a href="/docs/getting-started/installation.html" class="nav-cta">Get Started</a>
             </div>
         </div>
     </nav>    <section class="docs-layout" style="padding-top: 6rem;">
@@ -38,74 +38,69 @@
                 <span class="current">DevOps Automation</span>
             </div>
             <h1>DevOps Automation</h1>
-            <p>How a platform engineering team uses Openflows to manage infrastructure code, CI/CD pipelines, and deployment configurations autonomously.</p>
+            <p>How a platform engineering team uses OpenFlows to automate CI/CD pipelines, security patches, and infrastructure updates — with VESSEL as the merge gatekeeper.</p>
 
-            <h2>The Challenge</h2>
-            <p>A DevOps team manages 30+ microservices with Terraform, Kubernetes manifests, and GitHub Actions workflows. Configuration drift and pipeline updates consume most of their sprint capacity.</p>
+            <h2>The Scenario</h2>
+            <p>A DevOps team manages 15+ microservices on GitHub Actions. Merge conflicts, flaky CI, and manual rebase churn consume most of their sprint capacity. Security patches take days to propagate across all repos.</p>
 
             <div class="comparison">
                 <div class="comparison-column before">
-                    <div class="comparison-label">✕ Before Openflows</div>
+                    <div class="comparison-label">✕ Before OpenFlows</div>
                     <ul class="comparison-list">
-                        <li>Config updates require manual PRs across 30 repos</li>
-                        <li>Pipeline template changes take 1-2 days to propagate</li>
-                        <li>Security patches applied inconsistently</li>
-                        <li>Dockerfile updates are tedious and error-prone</li>
+                        <li>Merge conflicts require manual rebase every time</li>
+                        <li>Security patches take 2–3 days to propagate</li>
+                        <li>CI failures block PRs with no automated retry</li>
                         <li>No consistent review of infrastructure changes</li>
-                        <li>Drift detection is reactive, not proactive</li>
+                        <li>Dockerfile updates are tedious and error-prone</li>
+                        <li>No documentation of infrastructure decisions</li>
                     </ul>
                 </div>
                 <div class="comparison-column after">
-                    <div class="comparison-label">✓ With Openflows</div>
+                    <div class="comparison-label">✓ With OpenFlows</div>
                     <ul class="comparison-list">
-                        <li>NEXUS detects config drift and creates tasks automatically</li>
-                        <li>FORGE propagates pipeline changes across all repos</li>
-                        <li>SENTINEL validates Terraform plans before merge</li>
-                        <li>Dockerfiles updated consistently with security best practices</li>
-                        <li>Every infrastructure change gets an automated review</li>
-                        <li>LORE tracks infrastructure decisions and patterns</li>
+                        <li>VESSEL detects conflicts early, attempts automated resolution</li>
+                        <li>FORGE propagates patches across all repos in parallel</li>
+                        <li>VESSEL polls CI at 10s intervals, merges when green</li>
+                        <li>SENTINEL validates every infrastructure change</li>
+                        <li>Conflict rework loop: same worker, no new branch, no context loss</li>
+                        <li>LORE writes ADRs for every infrastructure decision</li>
                     </ul>
                 </div>
             </div>
 
-            <h2>Example: Automated Security Patch</h2>
+            <h2>VESSEL's Conflict Rework Loop</h2>
+            <p>When VESSEL detects a merge conflict, it doesn't create a new branch or lose context. It writes <code>CONFLICT_RESOLUTION.md</code> with the conflict details and re-routes the ticket back to the same FORGE worker. FORGE reworks the implementation with full context, re-commits, and VESSEL re-monitors CI. No human intervention needed.</p>
+
             <div class="code-block">
                 <div class="code-block-header"><span class="code-block-lang">bash</span><button class="code-copy-btn">Copy</button></div>
-<pre># NEXUS detects vulnerable base image via scheduled scan
-[NEXUS] Found CVE-2024-1234 in alpine:3.18 across 12 services
-[NEXUS] Creating tasks forFORGE to update Dockerfiles
-
-# FORGE updates each service
-[FORGE-1] Updating my-service/Dockerfile: alpine:3.18 → alpine:3.19
-[FORGE-2] Updating api-gateway/Dockerfile: alpine:3.18 → alpine:3.19
-...
-
-# SENTINEL validates changes
-[SENTINEL] ✓ Dockerfile syntax valid
-[SENTINEL] ✓ Base image updated to patched version
-[SENTINEL] ✓ No breaking changes in alpine 3.18→3.19
-
-# All 12 PRs merged within 2 hours</pre>
+<pre>INFO  vessel: PR #14 — mergeable: false (conflict detected)
+INFO  vessel: Writing CONFLICT_RESOLUTION.md
+INFO  vessel: Re-routing T-009 → forge-1 for rework
+INFO  forge-1: Received conflict context, rebasing implementation
+INFO  forge-1: Re-opened PR #15 on updated branch
+INFO  vessel: CI polling PR #15 (10s interval)
+INFO  vessel: CI success ✓ — squash-merging PR #15
+INFO  lore: ADR-007 written and committed</pre>
             </div>
 
             <div class="callout callout-tip">
                 <div class="callout-title">💡 Result</div>
-                <p>DevOps teams using Openflows report 90% reduction in time-to-patch for security vulnerabilities, and consistent infrastructure management across all services without manual coordination.</p>
+                <p>The conflict rework loop eliminates manual rebase churn entirely. VESSEL handles the full merge lifecycle — conflict detection, resolution attempt, rework routing, CI polling, and final merge — without any human involvement.</p>
             </div>
         </main>
     </section>    <footer>
         <div class="footer-container">
             <div class="footer-brand">
-                <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
-                <p>An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.</p>
+                <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">OpenFlows</span></a>
+                <p>Five specialized AI agents — NEXUS, FORGE, SENTINEL, VESSEL, and LORE — that turn your GitHub issues into merged, documented pull requests. No human intervention required.</p>
             </div>
             <div class="footer-links">
                 <h4>Product</h4>
                 <ul>
-                    <li><a href="../#team">The Team</a></li>
-                    <li><a href="../#how-it-works">How It Works</a></li>
-                    <li><a href="../#architecture">Architecture</a></li>
-                    <li><a href="../#features">Features</a></li>
+                    <li><a href="/agents">The Team</a></li>
+                    <li><a href="/#how-it-works">How It Works</a></li>
+                    <li><a href="/docs/architecture">Architecture</a></li>
+                    <li><a href="/docs">Features</a></li>
                 </ul>
             </div>
             <div class="footer-links">
@@ -113,21 +108,21 @@
                 <ul>
                     <li><a href="../docs/getting-started/">Getting Started</a></li>
                     <li><a href="../docs/">Documentation</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
                 </ul>
             </div>
             <div class="footer-links">
                 <h4>Community</h4>
                 <ul>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
-                    <li><a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/AgentFlow/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
                 </ul>
             </div>
         </div>
         <div class="footer-bottom">
-            <p>MIT License · <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
+            <p>MIT License · <a href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
             <p>Built by The AgenticFlow Team</p>
         </div>
     </footer>

@@ -7,13 +7,16 @@ export default function GetStartedBanner() {
       <div className={styles.container}>
         <div className={styles.card}>
           <h2 id="get-started-title" className={styles.heading}>
-            Get started with Openflows
+            Get started with OpenFlows
           </h2>
+          <p className={styles.sub}>
+            Install in 60 seconds. Point it at a GitHub repo with open issues. Watch your team ship.
+          </p>
           <div className={styles.actions}>
             <Button
               variant="outline"
               size="md"
-              href="https://github.com/The-AgenticFlow/Openflows"
+              href="https://github.com/The-AgenticFlow/AgentFlow"
               target="_blank"
               rel="noopener noreferrer"
             >
@@ -22,9 +25,9 @@ export default function GetStartedBanner() {
             <Button
               variant="primary"
               size="md"
-              href="/docs/getting-started"
+              href="/docs/getting-started/installation"
             >
-              Read the docs
+              Installation Guide →
             </Button>
           </div>
         </div>
