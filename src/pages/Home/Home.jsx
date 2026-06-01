@@ -19,7 +19,7 @@ export default function Home() {
           <p style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>About</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
             <div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: '500', marginBottom: '2.5rem', lineHeight: '1.2' }}>Our mission is to build artificial general intelligence that benefits all of humanity.</h2>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: '500', marginBottom: '2.5rem', lineHeight: '1.2' }}>Our mission is to build the autonomous orchestration engine for the next generation of software teams.</h2>
               <a href="/about" style={{ color: '#fff', textDecoration: 'none', borderBottom: '1px solid #666' }}>Read about our mission ›</a>
             </div>
             <div>

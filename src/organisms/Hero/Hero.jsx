@@ -69,8 +69,9 @@ export default function Hero() {
 
         {/* Sub-heading */}
         <p className={`${styles.sub} fade-up delay-2`}>
-          Openflows orchestrates specialized AI agents that discover GitHub issues,
-          write code, review it, and merge pull requests — entirely on autopilot.
+          Openflows automates the entire software lifecycle — from issue discovery 
+          to pull request merge — using a programmatic state machine and 
+          multi-agent coordination.
         </p>
 
         {/* Terminal animation */}

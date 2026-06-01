@@ -9,9 +9,9 @@ export default function About() {
           <p className={styles.eyebrow}>Company</p>
           <h1 className={styles.title}>About</h1>
           <p className={styles.subtitle}>
-            Openflows is an AI research and development company. Our mission is 
-            to ensure that artificial general intelligence benefits all of humanity, 
-            starting with the autonomous orchestration of development workflows.
+            Openflows is an autonomous orchestration company. Our mission is 
+            to empower software teams through the robust coordination of 
+            specialized AI agents and programmatic state management.
           </p>
         </div>
       </section>
@@ -20,16 +20,16 @@ export default function About() {
         <div className={styles.container}>
           <div className={styles.visionGrid}>
             <div className={styles.visionText}>
-              <h2 className={styles.visionHeading}>Our vision for the future of AGI</h2>
+              <h2 className={styles.visionHeading}>Unlocking the potential of multi-agent engineering</h2>
               <p className={styles.visionDescription}>
-                Our mission is to build artificial general intelligence 
-                (AGI) systems that are generally smarter than humans — 
-                tools that can think, code, and solve problems with the 
-                context and nuance of a senior software engineer.
+                We believe the future of software development lies in the 
+                orchestration of specialized agents. By combining builders (FORGE) 
+                and reviewers (SENTINEL) into a programmatic logic harness, we 
+                eliminate the variance of single-agent code generation.
               </p>
               <div className={styles.actions}>
-                <a href="/research" className={styles.visionLink}>Our plan for AGI</a>
-                <a href="/charter" className={styles.visionLink}>Our Charter ›</a>
+                <a href="#architecture" className={styles.visionLink}>Our Architecture ›</a>
+                <a href="https://github.com/The-AgenticFlow/Openflows" className={styles.visionLink} target="_blank" rel="noopener noreferrer">View on GitHub</a>
               </div>
             </div>
             <div className={styles.visionImageWrap}>
@@ -47,8 +47,9 @@ export default function About() {
       <section className={styles.quoteSection}>
         <div className={styles.container}>
           <p className={styles.quoteText}>
-            "We are building safe and beneficial AGI, but will also consider our 
-            mission fulfilled if our work aids others to achieve this outcome."
+            "Our goal is to build safe, deterministic autonomous orchestration 
+            that empowers teams to focus on architecture while AI handles 
+            the implementation lifecycle."
           </p>
         </div>
       </section>
