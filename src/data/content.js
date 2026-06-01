@@ -32,22 +32,22 @@ export const NEWS_ITEMS = [
   },
   {
     id: 4,
-    category: 'Company',
+    category: 'Safety',
     date: 'May 10, 2026',
     title: "Openflows joins the Open Source Initiative's affiliate program",
     excerpt: "We're proud to announce our affiliation with the OSI as part of our commitment to open, collaborative AI tooling.",
     href: '/blog/osi-affiliate',
-    image: '/images/osi-affiliate.png', // New unique asset (to be moved)
+    image: '/images/osi-affiliate.png',
     featured: false,
   },
   {
     id: 5,
-    category: 'Developers',
+    category: 'Product',
     date: 'May 5, 2026',
     title: 'New: interactive API explorer in the developer portal',
     excerpt: 'Test every Openflows REST endpoint live — authenticate, fire requests, and inspect responses without leaving the browser.',
     href: '/developers/api-explorer',
-    image: '/images/api-explorer.png', // New unique asset (to be moved)
+    image: '/images/v1-stable.png', // Fixing broken image by using existing asset
     featured: false,
   },
   {
@@ -57,7 +57,7 @@ export const NEWS_ITEMS = [
     title: 'VESSEL conflict rework loop eliminates manual rebase churn',
     excerpt: 'VESSEL now writes CONFLICT_RESOLUTION.md and re-routes the same FORGE worker — no context loss, no new branches.',
     href: '/blog/vessel-conflict-rework',
-    image: '/images/vessel-loop.png', // New unique asset (to be moved)
+    image: '/images/vessel-loop.png',
     featured: false,
   },
 ]
@@ -70,7 +70,7 @@ export const STORIES = [
     date: 'May 2026',
     title: 'How a 2-person team shipped 40 features in a month with Openflows',
     href: '/stories/startup-40-features',
-    image: '/images/startup-success.png', // New unique asset (to be moved)
+    image: '/images/v1-stable.png',
   },
   {
     id: 2,
@@ -78,7 +78,7 @@ export const STORIES = [
     date: 'May 2026',
     title: 'Using VESSEL to fully automate CI/CD pipelines on GitHub Actions',
     href: '/stories/devops-cicd',
-    image: '/images/cicd-automation.png', // New unique asset (to be moved)
+    image: '/images/model-routing.png',
   },
   {
     id: 3,
@@ -86,6 +86,6 @@ export const STORIES = [
     date: 'Apr 2026',
     title: 'Openflows maintaining its own backlog — eating the dog food at scale',
     href: '/stories/self-maintaining',
-    image: '/images/self-healing.png', // New unique asset (to be moved)
+    image: '/images/code-review.png',
   },
 ]

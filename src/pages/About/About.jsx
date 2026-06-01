@@ -34,8 +34,8 @@ export default function About() {
             </div>
             <div className={styles.visionImageWrap}>
               <img 
-                src="https://images.unsplash.com/photo-1620712943543-bcc4628c6bb5?auto=format&fit=crop&q=80&w=1000" 
-                alt="Abstract AI vision" 
+                src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=1000" 
+                alt="AI Neural Network Visualization" 
                 className={styles.visionImage} 
               />
               <p className={styles.imageCaption}>Illustration via OpenSource Community</p>
