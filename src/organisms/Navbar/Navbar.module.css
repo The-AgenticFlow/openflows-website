@@ -38,7 +38,8 @@
   align-items: center;
   gap: var(--space-1);
   flex: 1;
-  justify-content: center;
+  justify-content: flex-start;
+  margin-left: var(--space-4);
 }
 
 .navLinkWrapper {
@@ -75,11 +76,92 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-left: var(--space-2);
+  margin-left: auto; /* Push search to the right of links but within desktopNav */
 }
 
 .searchButton:hover {
   color: var(--color-text-primary);
+}
+
+.navbar.searchActive {
+  background-color: var(--color-bg);
+  border-bottom-color: transparent;
+}
+
+/* Search Overlay */
+.searchOverlay {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  background-color: rgba(0, 0, 0, 0.8);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.searchOverlayVisible {
+  opacity: 1;
+  pointer-events: all;
+}
+
+.searchContent {
+  width: 100%;
+  max-width: 800px;
+  padding: var(--space-6);
+  transform: translateY(-5svh);
+}
+
+.searchInputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+  border-bottom: 2px solid var(--color-border);
+  transition: border-color var(--transition-base);
+}
+
+.searchInputWrapper:focus-within {
+  border-color: var(--color-text-primary);
+}
+
+.largeSearchInput {
+  width: 100%;
+  background: transparent;
+  border: none;
+  color: var(--color-text-primary);
+  font-size: clamp(1.5rem, 4vw, 3rem);
+  font-weight: 500;
+  outline: none;
+  padding: var(--space-6) 0;
+  font-family: var(--font-family);
+  letter-spacing: -0.02em;
+}
+
+.largeSearchInput::placeholder {
+  color: var(--color-text-muted);
+  opacity: 0.4;
+}
+
+.searchSubmit {
+  background: var(--color-surface-2);
+  color: var(--color-text-primary);
+  border-radius: 50%;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s ease, background-color 0.2s ease;
+}
+
+.searchSubmit:hover {
+  background-color: var(--color-text-primary);
+  color: var(--color-bg);
+  transform: scale(1.05);
 }
 
 /* Mega Panel */

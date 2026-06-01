@@ -82,6 +82,8 @@ export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
+  const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const searchInputRef = useRef(null)
   const dropdownTimerRef = useRef(null)
 
   const handleScroll = useCallback(() => {
@@ -92,6 +94,12 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [handleScroll])
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus()
+    }
+  }, [isSearchOpen])
 
   const handleMouseEnter = (index) => {
     if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current)
@@ -114,7 +122,8 @@ export default function Navbar() {
         className={[
           styles.navbar, 
           scrolled ? styles.scrolled : '',
-          activeDropdown !== null ? styles.dropdownActive : ''
+          activeDropdown !== null ? styles.dropdownActive : '',
+          isSearchOpen ? styles.searchActive : ''
         ].join(' ')}
         onMouseLeave={handleMouseLeave}
       >
@@ -142,22 +151,37 @@ export default function Navbar() {
               </div>
             ))}
             
-            {/* Search Icon */}
-            <button className={styles.searchButton} aria-label="Search">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="11" cy="11" r="8"></circle>
-                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-              </svg>
+            {/* Search Toggle */}
+            <button 
+              className={styles.searchButton} 
+              aria-label={isSearchOpen ? "Close search" : "Search"}
+              onClick={() => setIsSearchOpen(!isSearchOpen)}
+            >
+              {!isSearchOpen ? (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+              ) : (
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="18" y1="6" x2="6" y2="18"></line>
+                  <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+              )}
             </button>
           </nav>
 
           <div className={styles.actions}>
-            <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">
-              GitHub
-            </Button>
-            <Button variant="primary" size="sm" href="#get-started">
-              Get Started
-            </Button>
+            {!isSearchOpen && (
+              <>
+                <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">
+                  GitHub
+                </Button>
+                <Button variant="primary" size="sm" href="#get-started">
+                  Get Started
+                </Button>
+              </>
+            )}
           </div>
 
           <button
@@ -212,7 +236,27 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Mobile Drawer (Truncated for brevity, but still functional) */}
+      {/* Search Overlay */}
+      <div className={[styles.searchOverlay, isSearchOpen ? styles.searchOverlayVisible : ''].join(' ')}>
+        <div className={styles.searchContent}>
+          <div className={styles.searchInputWrapper}>
+            <input 
+              ref={searchInputRef}
+              type="text" 
+              className={styles.largeSearchInput} 
+              placeholder="Ask me about research at OpenFlows"
+            />
+            <button className={styles.searchSubmit} aria-label="Submit search">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                <line x1="12" y1="19" x2="12" y2="5"></line>
+                <polyline points="5 12 12 5 19 12"></polyline>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      {/* Mobile Drawer */}
       <div className={[styles.mobileMenu, menuOpen ? styles.mobileMenuOpen : ''].join(' ')}>
         {/* ... mobile links ... */}
       </div>
