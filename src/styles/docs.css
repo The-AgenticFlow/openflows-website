@@ -70,11 +70,20 @@
   font-weight: 500;
 }
 
+/* Main content outer wrapper — fills the right column */
+.contentOuter {
+  display: flex;
+  justify-content: center;
+  padding: 0 2rem;
+  min-width: 0;
+}
+
 /* Main content */
 .content {
-  padding: 3rem 3rem 6rem;
+  padding: 3rem 0 6rem;
+  width: 100%;
+  max-width: 780px;
   min-width: 0;
-  max-width: 860px;
 }
 
 /* Breadcrumbs */
@@ -697,8 +706,12 @@
     padding: 1.25rem;
   }
 
+  .contentOuter {
+    padding: 0 1rem;
+  }
+
   .content {
-    padding: 2rem 1.25rem 4rem;
+    padding: 2rem 0 4rem;
   }
 
   .comparison {

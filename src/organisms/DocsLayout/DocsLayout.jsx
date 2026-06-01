@@ -68,21 +68,23 @@ export default function DocsLayout({ children, breadcrumbs }) {
           ))}
         </aside>
 
-        {/* Main content */}
-        <main className="content">
-          {breadcrumbs && (
-            <nav className="breadcrumbs" aria-label="Breadcrumb">
-              <a href="/">Home</a>
-              {breadcrumbs.map(({ label, href }, i) => (
-                <span key={i}>
-                  <span className="sep">›</span>
-                  {href ? <a href={href}>{label}</a> : <span className="current">{label}</span>}
-                </span>
-              ))}
-            </nav>
-          )}
-          {children}
-        </main>
+        {/* Main content — centered within the right column */}
+        <div className="contentOuter">
+          <main className="content">
+            {breadcrumbs && (
+              <nav className="breadcrumbs" aria-label="Breadcrumb">
+                <a href="/">Home</a>
+                {breadcrumbs.map(({ label, href }, i) => (
+                  <span key={i}>
+                    <span className="sep">›</span>
+                    {href ? <a href={href}>{label}</a> : <span className="current">{label}</span>}
+                  </span>
+                ))}
+              </nav>
+            )}
+            {children}
+          </main>
+        </div>
       </div>
     </Layout>
   )
