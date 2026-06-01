@@ -61,11 +61,6 @@ export default function Hero() {
   return (
     <section className={styles.hero} aria-label="Hero section">
       <div className={styles.content}>
-        {/* Eyebrow badge */}
-        <div className={`${styles.eyebrow} fade-up`}>
-          <Badge variant="accent">🚀 Open Source · Built in Rust</Badge>
-        </div>
-
         {/* Main heading */}
         <h1 className={`${styles.heading} fade-up delay-1`}>
           Your autonomous <br className={styles.br} />

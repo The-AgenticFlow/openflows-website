@@ -1,13 +1,14 @@
 .logo {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.4rem;
   text-decoration: none;
   flex-shrink: 0;
 }
 
 .icon {
-  flex-shrink: 0;
+  font-size: 1.25rem;
+  line-height: 1;
 }
 
 .name {
