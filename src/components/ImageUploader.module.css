@@ -1,0 +1,144 @@
+.uploader {
+    width: 100%;
+}
+
+.dropzone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2.5rem 1.5rem;
+    border: 2px dashed var(--color-border);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.dropzone:hover {
+    border-color: var(--color-accent);
+    background: rgba(16, 163, 127, 0.05);
+}
+
+.dropzone.dragOver {
+    border-color: var(--color-accent);
+    background: rgba(16, 163, 127, 0.1);
+}
+
+.dropzone svg {
+    color: var(--color-text-muted);
+    margin-bottom: 1rem;
+}
+
+.dropText {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    margin-bottom: 0.5rem;
+}
+
+.dropText span {
+    color: var(--color-accent);
+    font-weight: 500;
+}
+
+.hint {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+}
+
+.uploading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.spinner {
+    width: 24px;
+    height: 24px;
+    border: 2px solid var(--color-border);
+    border-top-color: var(--color-accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.preview {
+    position: relative;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background: var(--color-surface);
+}
+
+.preview img {
+    width: 100%;
+    max-height: 300px;
+    object-fit: cover;
+    border-radius: var(--radius-lg);
+}
+
+.previewActions {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    display: flex;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 1rem;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+}
+
+.replaceBtn,
+.removeBtn {
+    padding: 0.5rem 1rem;
+    border-radius: var(--radius-md);
+    font-size: 0.875rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.replaceBtn {
+    background: var(--color-accent);
+    color: #000;
+    border: none;
+}
+
+.replaceBtn:hover {
+    background: var(--color-accent-hover);
+}
+
+.removeBtn {
+    background: transparent;
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.removeBtn:hover {
+    background: rgba(248, 113, 113, 0.2);
+    border-color: #f87171;
+    color: #f87171;
+}
+
+.error {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+    padding: 0.75rem;
+    background: rgba(248, 113, 113, 0.1);
+    border: 1px solid rgba(248, 113, 113, 0.3);
+    border-radius: var(--radius-md);
+    color: #f87171;
+    font-size: 0.875rem;
+}
+
+.hiddenInput {
+    display: none;
+}
