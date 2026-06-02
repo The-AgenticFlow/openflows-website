@@ -128,11 +128,18 @@ export default function BlogEditor() {
         }
     }
 
-    // Handle image upload
-    const handleImageUpload = (url) => {
+    // Handle image uploads
+    const handleCoverUpload = (url) => {
         setForm(prev => ({
             ...prev,
             cover_image_url: url,
+        }))
+    }
+
+    const handleAvatarUpload = (url) => {
+        setForm(prev => ({
+            ...prev,
+            author_avatar_url: url,
         }))
     }
 
@@ -370,7 +377,7 @@ export default function BlogEditor() {
                                 <label>Cover Image</label>
                                 <ImageUploader
                                     currentUrl={form.cover_image_url}
-                                    onUpload={handleImageUpload}
+                                    onUpload={handleCoverUpload}
                                 />
                             </div>
 
@@ -435,14 +442,12 @@ export default function BlogEditor() {
                                     />
                                 </div>
                                 <div className={styles.field}>
-                                    <label htmlFor="author_avatar_url">Avatar URL</label>
-                                    <input
-                                        id="author_avatar_url"
-                                        name="author_avatar_url"
-                                        type="url"
-                                        value={form.author_avatar_url}
-                                        onChange={handleChange}
-                                        placeholder="https://example.com/avatar.jpg"
+                                    <label htmlFor="author_avatar_url">Avatar</label>
+                                    <ImageUploader
+                                        currentUrl={form.author_avatar_url}
+                                        onUpload={handleAvatarUpload}
+                                        size="compact"
+                                        alt="Author avatar"
                                     />
                                 </div>
                             </div>

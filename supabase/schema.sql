@@ -212,9 +212,7 @@
     -- STORAGE BUCKET FOR BLOG IMAGES
     -- =====================================================
 
-    -- Note: Storage buckets are created via Supabase Dashboard or API
-    -- Run this in Supabase SQL Editor after creating the bucket:
-    /*
+    -- Ensure bucket is created (idempotent)
     insert into storage.buckets (id, name, public)
     values ('blog-images', 'blog-images', true)
     on conflict (id) do nothing;
@@ -238,7 +236,6 @@
     on storage.objects for delete
     to authenticated
     using (bucket_id = 'blog-images');
-    */
 
     -- =====================================================
     -- INITIAL ADMIN USER (Set via Supabase Dashboard)

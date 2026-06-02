@@ -2,10 +2,11 @@ import { useState, useRef } from 'react'
 import { supabase, isSupabaseConfigured, BLOG_IMAGES_BUCKET } from '@/lib/supabase'
 import styles from './ImageUploader.module.css'
 
-export default function ImageUploader({ currentUrl, onUpload }) {
+export default function ImageUploader({ currentUrl, onUpload, size = 'default', alt = 'Image preview' }) {
     const [uploading, setUploading] = useState(false)
     const [error, setError] = useState(null)
     const [dragOver, setDragOver] = useState(false)
+    const [imgError, setImgError] = useState(false)
     const fileInputRef = useRef(null)
 
     const handleFileSelect = async (file) => {
@@ -53,6 +54,7 @@ export default function ImageUploader({ currentUrl, onUpload }) {
                 .getPublicUrl(filePath)
 
             onUpload(urlData.publicUrl)
+            setImgError(false)
         } catch (err) {
             console.error('Error uploading image:', err)
             setError(err.message || 'Failed to upload image')
@@ -90,25 +92,48 @@ export default function ImageUploader({ currentUrl, onUpload }) {
 
     const handleRemove = () => {
         onUpload('')
+        setImgError(false)
     }
 
     return (
-        <div className={styles.uploader}>
+        <div className={`${styles.uploader} ${size === 'compact' ? styles.compact : ''}`}>
             {currentUrl ? (
-                <div className={styles.preview}>
-                    <img src={currentUrl} alt="Cover preview" />
+                <div
+                    className={styles.preview}
+                    onClick={() => size === 'compact' && fileInputRef.current?.click()}
+                >
+                    {imgError ? (
+                        <div className={styles.fallbackIcon}>
+                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
+                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                                <circle cx="12" cy="7" r="4" />
+                            </svg>
+                        </div>
+                    ) : (
+                        <img
+                            src={currentUrl}
+                            alt={alt}
+                            onError={() => setImgError(true)}
+                        />
+                    )}
                     <div className={styles.previewActions}>
                         <button
                             type="button"
                             className={styles.replaceBtn}
-                            onClick={() => fileInputRef.current?.click()}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                fileInputRef.current?.click()
+                            }}
                         >
                             Replace
                         </button>
                         <button
                             type="button"
                             className={styles.removeBtn}
-                            onClick={handleRemove}
+                            onClick={(e) => {
+                                e.stopPropagation()
+                                handleRemove()
+                            }}
                         >
                             Remove
                         </button>
