@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Navigate } from 'react-router-dom'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
+import ReactMarkdown from 'react-markdown'
 import styles from './Blog.module.css'
 
 export default function BlogPost() {
@@ -139,10 +140,9 @@ export default function BlogPost() {
                 )}
 
                 {/* Content */}
-                <div
-                    className={styles.articleBody}
-                    dangerouslySetInnerHTML={{ __html: post.content }}
-                />
+                <div className={styles.articleBody}>
+                    <ReactMarkdown>{post.content}</ReactMarkdown>
+                </div>
 
                 {/* Footer */}
                 <footer className={styles.articleFooter}>
