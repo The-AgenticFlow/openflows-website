@@ -783,6 +783,8 @@
 .authorCard {
   display: flex;
   align-items: flex-start;
+  flex-direction: row-reverse;
+  justify-content: flex-end;
   gap: 1.5rem;
 }
 
