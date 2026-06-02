@@ -415,6 +415,31 @@
     border-color: var(--color-text-primary);
 }
 
+.backBtn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: var(--color-text-primary);
+    padding: 0.6rem;
+    border-radius: var(--radius-md);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all var(--transition-fast);
+}
+
+.backBtn:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: rgba(255, 255, 255, 0.2);
+    transform: translateX(-2px);
+}
+
+.previewToggle.active {
+    background: var(--color-text-primary);
+    color: #000;
+    border-color: var(--color-text-primary);
+}
+
 .newPostBtn {
     display: flex;
     align-items: center;
@@ -717,6 +742,51 @@
     display: flex;
     flex-direction: column;
     gap: 1.5rem;
+}
+
+.editorMainHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: -1rem;
+}
+
+.previewArea {
+    padding: 2rem;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--radius-lg);
+    min-height: 400px;
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+}
+
+.previewArea h1, .previewArea h2, .previewArea h3 {
+    color: var(--color-text-primary);
+    margin-top: 1.5rem;
+    margin-bottom: 0.75rem;
+}
+
+.previewArea code {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 0.2rem 0.4rem;
+    border-radius: 4px;
+    font-family: monospace;
+}
+
+.previewArea pre {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    overflow-x: auto;
+    margin: 1rem 0;
+}
+
+.previewArea blockquote {
+    border-left: 3px solid rgba(255, 255, 255, 0.2);
+    padding-left: 1.5rem;
+    margin: 1.5rem 0;
+    font-style: italic;
 }
 
 .editorSidebar {

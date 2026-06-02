@@ -10,7 +10,6 @@ export default function ProtectedRoute({
     const { isAuthenticated, loading, isConfigured, adminUser } = useAuth()
     const location = useLocation()
 
-    console.log('[ProtectedRoute] state:', { isAuthenticated, loading, isConfigured, hasAdminUser: !!adminUser });
 
     // Show loading state
     if (loading) {

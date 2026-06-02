@@ -4,6 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { supabase, isSupabaseConfigured, BLOG_IMAGES_BUCKET } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
 import ImageUploader from '@/components/ImageUploader'
+import ReactMarkdown from 'react-markdown'
 import styles from './Admin.module.css'
 
 const DEFAULT_FORM = {
@@ -34,6 +35,7 @@ export default function BlogEditor() {
     const [saving, setSaving] = useState(false)
     const [error, setError] = useState(null)
     const [success, setSuccess] = useState(null)
+    const [isPreview, setIsPreview] = useState(false)
 
     // Check permissions
     useEffect(() => {
@@ -240,15 +242,37 @@ export default function BlogEditor() {
             <div className={styles.dashboard}>
                 {/* Header */}
                 <header className={styles.dashboardHeader}>
-                    <h1 className={styles.dashboardTitle}>
-                        {isEditing ? 'Edit Post' : 'New Post'}
-                    </h1>
-                    <button
-                        className={styles.cancelBtn}
-                        onClick={() => navigate('/admin')}
-                    >
-                        Cancel
-                    </button>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <button
+                            type="button"
+                            className={styles.actionBtn}
+                            onClick={() => navigate('/admin')}
+                            title="Back to Dashboard"
+                        >
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                <path d="m15 18-6-6 6-6" />
+                            </svg>
+                        </button>
+                        <h1 className={styles.dashboardTitle}>
+                            {isEditing ? 'Edit Post' : 'New Post'}
+                        </h1>
+                    </div>
+                    <div style={{ display: 'flex', gap: '1rem' }}>
+                        <button
+                            type="button"
+                            className={`${styles.filterBtn} ${isPreview ? styles.active : ''}`}
+                            onClick={() => setIsPreview(!isPreview)}
+                        >
+                            {isPreview ? 'Edit Content' : 'Preview Markdown'}
+                        </button>
+                        <button
+                            type="button"
+                            className={styles.cancelBtn}
+                            onClick={() => navigate('/admin')}
+                        >
+                            Cancel
+                        </button>
+                    </div>
                 </header>
 
                 {/* Form */}
@@ -320,16 +344,22 @@ export default function BlogEditor() {
                             {/* Content */}
                             <div className={styles.field}>
                                 <label htmlFor="content">Content *</label>
-                                <textarea
-                                    id="content"
-                                    name="content"
-                                    value={form.content}
-                                    onChange={handleChange}
-                                    placeholder="Write your post content here... (Markdown supported)"
-                                    rows={20}
-                                    className={styles.contentEditor}
-                                    required
-                                />
+                                {isPreview ? (
+                                    <div className={styles.previewArea}>
+                                        <ReactMarkdown>{form.content || '*No content to preview*'}</ReactMarkdown>
+                                    </div>
+                                ) : (
+                                    <textarea
+                                        id="content"
+                                        name="content"
+                                        value={form.content}
+                                        onChange={handleChange}
+                                        placeholder="Write your post content here... (Markdown supported)"
+                                        rows={20}
+                                        className={styles.contentEditor}
+                                        required
+                                    />
+                                )}
                                 <span className={styles.hint}>
                                     Estimated read time: {calculateReadTime(form.content)} min
                                 </span>
