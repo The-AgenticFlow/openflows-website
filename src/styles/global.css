@@ -12,8 +12,8 @@
   --color-border-hover: rgba(255, 255, 255, 0.25);
 
   --color-text-primary:   #ffffff;
-  --color-text-secondary: #aaaaaa;
-  --color-text-muted:     #666666;
+  --color-text-secondary: #e5e5e5;
+  --color-text-muted:     #999999;
 
   --color-accent:       #10a37f;  /* OpenAI-green adapted for terminal/agent elements */
   --color-accent-hover: #0d9070;
@@ -28,14 +28,14 @@
 
   --font-size-xs:   0.75rem;
   --font-size-sm:   0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg:   1.125rem;
-  --font-size-xl:   1.25rem;
-  --font-size-2xl:  1.5rem;
-  --font-size-3xl:  1.875rem;
-  --font-size-4xl:  2.25rem;
-  --font-size-5xl:  3rem;
-  --font-size-6xl:  3.75rem;
+  --font-size-base: 1.125rem;
+  --font-size-lg:   1.25rem;
+  --font-size-xl:   1.5rem;
+  --font-size-2xl:  1.875rem;
+  --font-size-3xl:  2.25rem;
+  --font-size-4xl:  3rem;
+  --font-size-5xl:  3.75rem;
+  --font-size-6xl:  4.5rem;
 
   /* Spacing */
   --space-1:  0.25rem;
@@ -86,10 +86,17 @@ body {
   font-family: var(--font-family);
   background-color: var(--color-bg);
   color: var(--color-text-primary);
-  line-height: 1.6;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
+  font-weight: 400;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
 }
 
 img,
