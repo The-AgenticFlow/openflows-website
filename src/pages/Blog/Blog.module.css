@@ -40,7 +40,7 @@
 
 /* Article */
 .article {
-  max-width: 720px;
+  max-width: 1100px;
   margin-inline: auto;
   padding: calc(var(--nav-height) + 3rem) var(--space-6) 6rem;
 }
@@ -239,23 +239,33 @@
 }
 
 .authorAvatar {
-  width: 48px;
-  height: 48px;
+  width: 64px;
+  height: 64px;
   border-radius: 50%;
   object-fit: cover;
+  border: 2px solid rgba(255, 255, 255, 0.1);
+  padding: 3px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  transition: transform var(--transition-fast);
+}
+
+.authorAvatar:hover {
+  transform: scale(1.05);
+  border-color: var(--color-text-primary);
 }
 
 .authorAvatarPlaceholder {
-  width: 48px;
-  height: 48px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: var(--color-surface-2);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 600;
-  color: var(--color-accent);
-  font-size: 1.25rem;
+  color: var(--color-text-primary);
+  font-size: 1.5rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .authorInfo {
@@ -407,6 +417,19 @@
   border: 1px solid var(--color-border);
   color: var(--color-text-secondary);
   transition: all var(--transition-fast);
+}
+
+.uploader.compact .preview {
+  width: 80px;
+  height: 80px;
+  margin: 0 auto 1.5rem;
+  border-radius: 50%;
+  border: 2px solid var(--color-border);
+  padding: 3px;
+  background: var(--color-surface);
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  box-shadow: 0 0 20px rgba(255, 255, 255, 0.05);
 }
 
 .shareBtn:hover {

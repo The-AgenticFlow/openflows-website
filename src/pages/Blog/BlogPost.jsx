@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react'
-import { useParams, Navigate } from 'react-router-dom'
+import { useParams, Navigate, Link } from 'react-router-dom'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
 import ReactMarkdown from 'react-markdown'
@@ -91,6 +91,14 @@ export default function BlogPost() {
     return (
         <Layout>
             <article className={styles.article}>
+                {/* Back Button */}
+                <Link to="/blog" className={styles.backLink}>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="m15 18-6-6 6-6" />
+                    </svg>
+                    Back to Blog
+                </Link>
+
                 {/* Header */}
                 <header className={styles.articleHeader}>
                     {post.category && (
