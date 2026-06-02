@@ -761,7 +761,9 @@
     line-height: 1.8;
 }
 
-.previewArea h1, .previewArea h2, .previewArea h3 {
+.previewArea h1,
+.previewArea h2,
+.previewArea h3 {
     color: var(--color-text-primary);
     margin-top: 1.5rem;
     margin-bottom: 0.75rem;
@@ -815,11 +817,13 @@
     resize: vertical;
     min-height: 100px;
 }
+
 /* Re-applying select background fixing transparency/white issue */
-.select, 
+.select,
 .select option {
     padding: 0.75rem 1rem;
-    background: #111; /* Use solid dark for native options to ensure readability */
+    background: #111;
+    /* Use solid dark for native options to ensure readability */
     border: 1px solid rgba(255, 255, 255, 0.1);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
@@ -936,5 +940,109 @@
     .blogActions {
         width: 100%;
         justify-content: flex-end;
+    }
+
+    /* ===================================================
+   MULTI-AUTHOR EDITOR STYLES
+   =================================================== */
+
+    .addAuthorBtn {
+        background: rgba(255, 255, 255, 0.05);
+        border: 1px solid rgba(255, 255, 255, 0.15);
+        border-radius: var(--radius-sm);
+        color: var(--color-text-primary);
+        font-size: 0.75rem;
+        font-weight: 600;
+        padding: 0.4rem 0.75rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .addAuthorBtn:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .authorEntry {
+        margin-bottom: 1.5rem;
+    }
+
+    .authorEntry:first-of-type {
+        margin-top: 0.5rem;
+    }
+
+    .authorEntryHeader {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+
+    .authorEntryLabel {
+        font-size: 0.7rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--color-text-muted);
+    }
+
+    .removeAuthorBtn {
+        background: transparent;
+        border: 1px solid rgba(255, 100, 100, 0.3);
+        border-radius: var(--radius-sm);
+        color: #ff6b6b;
+        font-size: 0.7rem;
+        padding: 0.25rem 0.5rem;
+        cursor: pointer;
+        transition: all var(--transition-fast);
+    }
+
+    .removeAuthorBtn:hover {
+        background: rgba(255, 100, 100, 0.1);
+        border-color: rgba(255, 100, 100, 0.5);
+    }
+
+    .authorDivider {
+        height: 1px;
+        background: rgba(255, 255, 255, 0.08);
+        margin: 1.5rem 0;
+    }
+
+    .socialInputs {
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    .socialRow {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        background: rgba(255, 255, 255, 0.03);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        border-radius: var(--radius-sm);
+        padding: 0.5rem 0.75rem;
+    }
+
+    .socialRow input {
+        flex: 1;
+        background: transparent;
+        border: none;
+        color: var(--color-text-primary);
+        font-size: 0.8rem;
+        outline: none;
+    }
+
+    .socialRow input::placeholder {
+        color: var(--color-text-muted);
+        opacity: 0.6;
+    }
+
+    .socialIcon {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: var(--color-text-muted);
+        flex-shrink: 0;
     }
 }

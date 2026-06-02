@@ -7,6 +7,8 @@ import ImageUploader from '@/components/ImageUploader'
 import ReactMarkdown from 'react-markdown'
 import styles from './Admin.module.css'
 
+const DEFAULT_AUTHOR = { name: '', role: '', avatar_url: '', linkedin: '', github: '', twitter: '', website: '' }
+
 const DEFAULT_FORM = {
     title: '',
     slug: '',
@@ -30,6 +32,7 @@ export default function BlogEditor() {
     const isEditing = Boolean(id)
 
     const [form, setForm] = useState(DEFAULT_FORM)
+    const [authors, setAuthors] = useState([{ ...DEFAULT_AUTHOR }])
     const [categories, setCategories] = useState([])
     const [loading, setLoading] = useState(false)
     const [saving, setSaving] = useState(false)
@@ -91,6 +94,12 @@ export default function BlogEditor() {
                     meta_title: data.meta_title || '',
                     meta_description: data.meta_description || '',
                 })
+                // Load authors (fallback to legacy single author)
+                if (data.authors && data.authors.length > 0) {
+                    setAuthors(data.authors)
+                } else if (data.author_name) {
+                    setAuthors([{ name: data.author_name, role: '', avatar_url: data.author_avatar_url || '', linkedin: '', github: '', twitter: '', website: '' }])
+                }
             } catch (err) {
                 console.error('Error fetching blog:', err)
                 setError(err.message)
@@ -137,10 +146,24 @@ export default function BlogEditor() {
     }
 
     const handleAvatarUpload = (url) => {
-        setForm(prev => ({
-            ...prev,
-            author_avatar_url: url,
-        }))
+        setForm(prev => ({ ...prev, author_avatar_url: url }))
+    }
+
+    // --- Multi-author helpers ---
+    const handleAuthorChange = (index, field, value) => {
+        setAuthors(prev => prev.map((a, i) => i === index ? { ...a, [field]: value } : a))
+    }
+
+    const handleAuthorAvatarUpload = (index, url) => {
+        setAuthors(prev => prev.map((a, i) => i === index ? { ...a, avatar_url: url } : a))
+    }
+
+    const addAuthor = () => {
+        setAuthors(prev => [...prev, { ...DEFAULT_AUTHOR }])
+    }
+
+    const removeAuthor = (index) => {
+        setAuthors(prev => prev.filter((_, i) => i !== index))
     }
 
     // Handle form submit
@@ -170,6 +193,13 @@ export default function BlogEditor() {
                 throw new Error('A post with this slug already exists')
             }
 
+            // Validate at least one author has a name
+            const validAuthors = authors.filter(a => a.name.trim())
+            if (validAuthors.length === 0) throw new Error('At least one author name is required')
+
+            // Sync legacy fields from first author
+            const primaryAuthor = validAuthors[0]
+
             const blogData = {
                 title: form.title.trim(),
                 slug: form.slug.trim(),
@@ -177,8 +207,9 @@ export default function BlogEditor() {
                 content: form.content.trim(),
                 cover_image_url: form.cover_image_url || null,
                 cover_image_alt: form.cover_image_alt || null,
-                author_name: form.author_name.trim(),
-                author_avatar_url: form.author_avatar_url || null,
+                author_name: primaryAuthor.name.trim(),
+                author_avatar_url: primaryAuthor.avatar_url || null,
+                authors: validAuthors,
                 category_id: form.category_id || null,
                 status: form.status,
                 is_featured: form.is_featured,
@@ -426,30 +457,93 @@ export default function BlogEditor() {
                                 <p className={styles.hint}>Featured posts appear prominently on the homepage</p>
                             </div>
 
-                            {/* Author */}
+                            {/* Authors — Multi-author support */}
                             <div className={styles.sidebarCard}>
-                                <h3>Author</h3>
-                                <div className={styles.field}>
-                                    <label htmlFor="author_name">Name *</label>
-                                    <input
-                                        id="author_name"
-                                        name="author_name"
-                                        type="text"
-                                        value={form.author_name}
-                                        onChange={handleChange}
-                                        placeholder="Author name"
-                                        required
-                                    />
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
+                                    <h3 style={{ margin: 0 }}>Authors</h3>
+                                    <button type="button" className={styles.addAuthorBtn} onClick={addAuthor}>
+                                        + Add
+                                    </button>
                                 </div>
-                                <div className={styles.field}>
-                                    <label htmlFor="author_avatar_url">Avatar</label>
-                                    <ImageUploader
-                                        currentUrl={form.author_avatar_url}
-                                        onUpload={handleAvatarUpload}
-                                        size="compact"
-                                        alt="Author avatar"
-                                    />
-                                </div>
+
+                                {authors.map((author, index) => (
+                                    <div key={index} className={styles.authorEntry}>
+                                        <div className={styles.authorEntryHeader}>
+                                            <span className={styles.authorEntryLabel}>Author {authors.length > 1 ? index + 1 : ''}</span>
+                                            {authors.length > 1 && (
+                                                <button type="button" className={styles.removeAuthorBtn} onClick={() => removeAuthor(index)}>
+                                                    Remove
+                                                </button>
+                                            )}
+                                        </div>
+
+                                        {/* Avatar */}
+                                        <div className={styles.field}>
+                                            <label>Avatar</label>
+                                            <ImageUploader
+                                                currentUrl={author.avatar_url}
+                                                onUpload={(url) => handleAuthorAvatarUpload(index, url)}
+                                                size="compact"
+                                                alt={author.name || 'Author avatar'}
+                                            />
+                                        </div>
+
+                                        {/* Name */}
+                                        <div className={styles.field}>
+                                            <label>Name *</label>
+                                            <input
+                                                type="text"
+                                                value={author.name}
+                                                onChange={e => handleAuthorChange(index, 'name', e.target.value)}
+                                                placeholder="Full name"
+                                            />
+                                        </div>
+
+                                        {/* Role */}
+                                        <div className={styles.field}>
+                                            <label>Role / Title</label>
+                                            <input
+                                                type="text"
+                                                value={author.role}
+                                                onChange={e => handleAuthorChange(index, 'role', e.target.value)}
+                                                placeholder="e.g. Founder, Engineer"
+                                            />
+                                        </div>
+
+                                        {/* Social Links */}
+                                        <div className={styles.field}>
+                                            <label>Social Links</label>
+                                            <div className={styles.socialInputs}>
+                                                <div className={styles.socialRow}>
+                                                    <span className={styles.socialIcon} title="GitHub">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.57v-2c-3.33.72-4.03-1.6-4.03-1.6-.55-1.4-1.34-1.77-1.34-1.77-1.08-.74.08-.72.08-.72 1.2.08 1.83 1.23 1.83 1.23 1.06 1.82 2.8 1.3 3.48.99.1-.77.42-1.3.76-1.6-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0C18 4.68 19 5 19 5c.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.21.69.82.57C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+                                                    </span>
+                                                    <input type="url" value={author.github} onChange={e => handleAuthorChange(index, 'github', e.target.value)} placeholder="github.com/username" />
+                                                </div>
+                                                <div className={styles.socialRow}>
+                                                    <span className={styles.socialIcon} title="X / Twitter">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
+                                                    </span>
+                                                    <input type="url" value={author.twitter} onChange={e => handleAuthorChange(index, 'twitter', e.target.value)} placeholder="x.com/username" />
+                                                </div>
+                                                <div className={styles.socialRow}>
+                                                    <span className={styles.socialIcon} title="LinkedIn">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z"/></svg>
+                                                    </span>
+                                                    <input type="url" value={author.linkedin} onChange={e => handleAuthorChange(index, 'linkedin', e.target.value)} placeholder="linkedin.com/in/username" />
+                                                </div>
+                                                <div className={styles.socialRow}>
+                                                    <span className={styles.socialIcon} title="Website">
+                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+                                                    </span>
+                                                    <input type="url" value={author.website} onChange={e => handleAuthorChange(index, 'website', e.target.value)} placeholder="yoursite.com" />
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        {index < authors.length - 1 && <div className={styles.authorDivider} />}
+                                    </div>
+                                ))}
                             </div>
 
                             {/* Category */}

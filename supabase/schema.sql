@@ -55,8 +55,9 @@
     cover_image_alt text,
     
     -- Metadata
-    author_name text not null,
-    author_avatar_url text,
+    author_name text not null,       -- Legacy: single author name
+    author_avatar_url text,          -- Legacy: single author avatar
+    authors jsonb default '[]'::jsonb, -- Multi-author: [{name,role,avatar_url,linkedin,github,twitter,website}]
     category_id uuid references blog_categories(id) on delete set null,
     
     -- Status & Visibility
@@ -81,6 +82,16 @@
     -- Soft delete
     deleted_at timestamptz
     );
+
+    -- Migration: add authors column to existing databases (idempotent)
+    do $$ begin
+        if not exists (
+            select 1 from information_schema.columns
+            where table_name = 'blogs' and column_name = 'authors'
+        ) then
+            alter table blogs add column authors jsonb default '[]'::jsonb;
+        end if;
+    end $$;
 
     -- Create index for faster queries
     create index if not exists blogs_status_idx on blogs(status);
