@@ -442,6 +442,38 @@
   font-weight: 500;
 }
 
+.postAuthor {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.postAuthorAvatar {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.postAuthorAvatarPlaceholder {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: var(--color-surface-2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--color-text-primary);
+}
+
+.postAuthorName {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+
 /* Post List (The OpenClaw-inspired View) */
 .postsList {
   display: flex;
@@ -759,10 +791,9 @@
 .authorsSection {
   max-width: 1000px;
   margin: 5rem auto 0;
-  padding: 3rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
+  padding: 0;
+  background: transparent;
+  border: none;
 }
 
 .authorsSectionLabel {
@@ -771,13 +802,15 @@
   text-transform: uppercase;
   letter-spacing: 0.12em;
   color: var(--color-text-muted);
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid var(--color-border);
 }
 
 .authorsGrid {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1.5rem;
 }
 
 .authorCard {
@@ -785,7 +818,17 @@
   align-items: flex-start;
   flex-direction: row-reverse;
   justify-content: flex-end;
-  gap: 1.5rem;
+  gap: 1rem;
+  padding: 1.5rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  transition: all var(--transition-fast);
+}
+
+.authorCard:hover {
+  border-color: var(--color-border-hover);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
 }
 
 .authorCardLeft {
@@ -793,23 +836,23 @@
 }
 
 .authorCardAvatar {
-  width: 72px;
-  height: 72px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid var(--color-border);
 }
 
 .authorCardAvatarPlaceholder {
-  width: 72px;
-  height: 72px;
+  width: 56px;
+  height: 56px;
   border-radius: 50%;
   background: var(--color-surface-2);
   display: flex;
   align-items: center;
   justify-content: center;
   font-weight: 700;
-  font-size: 1.5rem;
+  font-size: 1.25rem;
   color: var(--color-text-primary);
   border: 2px solid var(--color-border);
 }

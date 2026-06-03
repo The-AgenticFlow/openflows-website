@@ -262,9 +262,25 @@ export default function BlogIndex() {
                               <p className={styles.postExcerpt}>{post.excerpt}</p>
                               <div className={styles.postFooter}>
                                 <span className={styles.readMore}>Read more →</span>
-                                {post.author_name && (
-                                  <span className={styles.authorBadge}>{post.author_name}</span>
-                                )}
+                                {(() => {
+                                  const resolvedAuthors = (post.authors && post.authors.length > 0)
+                                    ? post.authors
+                                    : post.author_name
+                                      ? [{ name: post.author_name, avatar_url: post.author_avatar_url }]
+                                      : []
+                                  if (!resolvedAuthors.length) return null
+                                  const author = resolvedAuthors[0]
+                                  return (
+                                    <div className={styles.postAuthor}>
+                                      {author.avatar_url ? (
+                                        <img src={author.avatar_url} alt={author.name} className={styles.postAuthorAvatar} />
+                                      ) : (
+                                        <div className={styles.postAuthorAvatarPlaceholder}>{author.name?.charAt(0).toUpperCase()}</div>
+                                      )}
+                                      <span className={styles.postAuthorName}>{author.name}</span>
+                                    </div>
+                                  )
+                                })()}
                               </div>
                             </div>
                           </>
