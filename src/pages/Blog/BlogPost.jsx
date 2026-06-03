@@ -148,12 +148,6 @@ export default function BlogPost() {
                     </div>
                 </header>
 
-                {/* Content */}
-                <div className={styles.articleBody}>
-                    <ReactMarkdown>{post.content}</ReactMarkdown>
-                </div>
-
-
                 {/* Authors Section */}
                 {(() => {
                     // Resolve authors: prefer JSONB array, fallback to legacy fields
@@ -214,6 +208,14 @@ export default function BlogPost() {
                         </section>
                     )
                 })()}
+
+                {/* Content */}
+
+                <div className={styles.articleBody}>
+                    <ReactMarkdown>{post.content}</ReactMarkdown>
+                </div>
+
+
 
                 {/* Footer — Share */}
                 <footer className={styles.articleFooter}>
