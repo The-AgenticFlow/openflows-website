@@ -85,8 +85,28 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
   const [isSearchOpen, setIsSearchOpen] = useState(false)
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchResults, setSearchResults] = useState([])
+  const [activeFilter, setActiveFilter] = useState('All')
+  
   const searchInputRef = useRef(null)
   const dropdownTimerRef = useRef(null)
+
+  const handleSearchChange = (e) => {
+    const query = e.target.value
+    setSearchQuery(query)
+    
+    // Dynamic import to keep nav bundle light
+    import('@/data/searchIndex').then(({ searchSite }) => {
+      setSearchResults(searchSite(query))
+    })
+  }
+
+  const filteredResults = activeFilter === 'All' 
+    ? searchResults 
+    : searchResults.filter(r => r.type === activeFilter)
+
+  const CATEGORIES = ['All', 'Agent', 'Docs', 'Blog', 'Use Case']
 
   const handleScroll = useCallback(() => {
     setScrolled(window.scrollY > 8)
@@ -98,9 +118,22 @@ export default function Navbar() {
   }, [handleScroll])
 
   useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
-      searchInputRef.current.focus()
+    const handleEsc = (e) => {
+      if (e.key === 'Escape') setIsSearchOpen(false)
     }
+    
+    if (isSearchOpen) {
+      if (searchInputRef.current) searchInputRef.current.focus()
+      document.body.style.overflow = 'hidden'
+      window.addEventListener('keydown', handleEsc)
+    } else {
+      document.body.style.overflow = ''
+      setSearchQuery('')
+      setSearchResults([])
+      window.removeEventListener('keydown', handleEsc)
+    }
+    
+    return () => window.removeEventListener('keydown', handleEsc)
   }, [isSearchOpen])
 
   const handleMouseEnter = (index) => {
@@ -247,14 +280,55 @@ export default function Navbar() {
               type="text" 
               className={styles.largeSearchInput} 
               placeholder="Search OpenFlows docs, agents, guides..."
+              value={searchQuery}
+              onChange={handleSearchChange}
             />
-            <button className={styles.searchSubmit} aria-label="Submit search">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="12" y1="19" x2="12" y2="5"></line>
-                <polyline points="5 12 12 5 19 12"></polyline>
-              </svg>
-            </button>
+            {searchQuery && (
+              <button 
+                className={styles.clearBtn} 
+                onClick={() => { setSearchQuery(''); setSearchResults([]); }}
+                aria-label="Clear search"
+              >
+                ✕
+              </button>
+            )}
           </div>
+
+          {searchQuery.length >= 2 && (
+            <div className={styles.resultsContainer}>
+              <div className={styles.searchFilters}>
+                {CATEGORIES.map(cat => (
+                  <button
+                    key={cat}
+                    onClick={() => setActiveFilter(cat)}
+                    className={[styles.filterBtn, activeFilter === cat ? styles.filterActive : ''].join(' ')}
+                  >
+                    {cat}
+                  </button>
+                ))}
+              </div>
+
+              <div className={styles.searchResults}>
+                {filteredResults.length > 0 ? (
+                  filteredResults.map(result => (
+                    <a key={result.id} href={result.href} onClick={() => setIsSearchOpen(false)} className={styles.resultItem}>
+                      <div className={styles.resultHeader}>
+                        <span className={styles.resultTitle}>{result.title}</span>
+                        <span className={styles.resultType}>{result.type}</span>
+                      </div>
+                      {result.description && (
+                        <p className={styles.resultSnippet}>{result.description}</p>
+                      )}
+                    </a>
+                  ))
+                ) : (
+                  <div className={styles.emptyState}>
+                    No results found for "{searchQuery}"
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
