@@ -3,6 +3,7 @@ import { useParams, Navigate, Link } from 'react-router-dom'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
 import ReactMarkdown from 'react-markdown'
+import TextToSpeechPlayer from '../../components/TextToSpeechPlayer/TextToSpeechPlayer'
 import styles from './Blog.module.css'
 
 export default function BlogPost() {
@@ -209,8 +210,12 @@ export default function BlogPost() {
                     )
                 })()}
 
-                {/* Content */}
+                {/* Text To Speech Player */}
+                <div style={{ maxWidth: '1000px', margin: '1.5rem auto 2.5rem', display: 'flex', justifyContent: 'flex-start' }}>
+                    <TextToSpeechPlayer title={post.title} text={post.content} />
+                </div>
 
+                {/* Content */}
                 <div className={styles.articleBody}>
                     <ReactMarkdown>{post.content}</ReactMarkdown>
                 </div>
