@@ -32,7 +32,7 @@ export function TextToSpeechPlayer({ title, text }) {
     const [isPaused, setIsPaused] = useState(false);
     const [isSupported, setIsSupported] = useState(false);
     const [listeningTime, setListeningTime] = useState(0);
-    
+
     // Core state for chunked playback
     const chunksRef = useRef([]);
     const currentChunkIndexRef = useRef(0);
@@ -67,7 +67,7 @@ export function TextToSpeechPlayer({ title, text }) {
 
     const playNextChunk = () => {
         if (stopRequestedRef.current) return;
-        
+
         const index = currentChunkIndexRef.current;
         if (index >= chunksRef.current.length) {
             // Finished all chunks
@@ -86,15 +86,16 @@ export function TextToSpeechPlayer({ title, text }) {
         const utterance = new SpeechSynthesisUtterance(chunkText);
         activeUtteranceRef.current = utterance; // Protect from GC
 
-        // Voice selection
+        // Voice selection - prefer male voices
         const voices = window.speechSynthesis.getVoices();
         if (voices.length > 0) {
-            const preferredVoice = voices.find(v => 
+            // Common male voice names across platforms
+            const maleVoiceNames = ['Daniel', 'Alex', 'Tom', 'Fred', 'Junior', 'Ralph', 'Bruce', 'Fred', 'Victor', 'Albert', 'Bad News', 'Bahh', 'Bells', 'Boing', 'Bubbles', 'Cellos', 'Good News', 'Jester', 'Organ', 'Superstar', 'Whisper', 'Zarvox'];
+
+            const preferredVoice = voices.find(v =>
                 v.lang.startsWith('en') && (
-                    v.name.includes('Google') || 
-                    v.name.includes('Siri') || 
-                    v.name.includes('Samantha') ||
-                    v.name.includes('Premium')
+                    maleVoiceNames.some(maleName => v.name.includes(maleName)) ||
+                    v.name.toLowerCase().includes('male')
                 )
             ) || voices.find(v => v.lang.startsWith('en'));
             if (preferredVoice) utterance.voice = preferredVoice;
@@ -138,7 +139,7 @@ export function TextToSpeechPlayer({ title, text }) {
         // This is the most resilient way to handle Chrome's TTS bugs
         const regex = /.{1,160}(?:\.|\?|!|\s|$)/g;
         const chunkMatches = fullText.match(regex) || [fullText];
-        
+
         chunksRef.current = chunkMatches.map(c => c.trim()).filter(c => c.length > 0);
         currentChunkIndexRef.current = 0;
 
@@ -172,8 +173,8 @@ export function TextToSpeechPlayer({ title, text }) {
 
     return (
         <div className={styles.ttsContainer}>
-            <button 
-                onClick={handleToggle} 
+            <button
+                onClick={handleToggle}
                 className={styles.playBtn}
                 title={isPlaying ? "Pause" : "Listen"}
             >
@@ -185,7 +186,7 @@ export function TextToSpeechPlayer({ title, text }) {
                     {isPlaying ? 'Speaking...' : isPaused ? 'Paused' : `${listeningTime} min listen • Browser AI`}
                 </span>
             </div>
-            
+
             <div className={styles.visualizer}>
                 <div className={`${styles.bar} ${isPlaying ? styles.animating : ''}`} style={{ height: isPlaying ? '100%' : '4px' }}></div>
                 <div className={`${styles.bar} ${isPlaying ? styles.animating : ''}`} style={{ height: isPlaying ? '60%' : '4px' }}></div>
