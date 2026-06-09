@@ -89,14 +89,29 @@ export function TextToSpeechPlayer({ title, text }) {
         // Voice selection - prefer male voices
         const voices = window.speechSynthesis.getVoices();
         if (voices.length > 0) {
-            // Common male voice names across platforms
-            const maleVoiceNames = ['Daniel', 'Alex', 'Tom', 'Fred', 'Junior', 'Ralph', 'Bruce', 'Fred', 'Victor', 'Albert', 'Bad News', 'Bahh', 'Bells', 'Boing', 'Bubbles', 'Cellos', 'Good News', 'Jester', 'Organ', 'Superstar', 'Whisper', 'Zarvox'];
+            // Known male voice identifiers across platforms
+            const maleVoiceNames = [
+                'Daniel', 'Alex', 'Tom', 'Fred', 'Junior', 'Ralph',
+                'Bruce', 'Victor', 'Albert', 'David', 'Mark', 'James',
+                'Google UK English Male', 'Microsoft David', 'Microsoft Mark',
+                'Microsoft Richard', 'Microsoft George',
+            ];
+
+            // Known female voice names to explicitly avoid
+            const femaleVoiceNames = [
+                'Samantha', 'Victoria', 'Karen', 'Moira', 'Tessa', 'Fiona',
+                'Kate', 'Zuzana', 'Ellen', 'Allison', 'Ava', 'Joana', 'Paulina',
+                'Monica', 'Alice', 'Google UK English Female', 'Microsoft Zira',
+                'Microsoft Hazel', 'Microsoft Susan', 'Microsoft Linda',
+                'Microsoft Heather', 'Microsoft Catherine',
+            ];
 
             const preferredVoice = voices.find(v =>
-                v.lang.startsWith('en') && (
-                    maleVoiceNames.some(maleName => v.name.includes(maleName)) ||
-                    v.name.toLowerCase().includes('male')
-                )
+                v.lang.startsWith('en') && maleVoiceNames.some(m => v.name.includes(m))
+            ) || voices.find(v =>
+                v.lang.startsWith('en') && v.name.toLowerCase().includes('male')
+            ) || voices.find(v =>
+                v.lang.startsWith('en') && !femaleVoiceNames.some(f => v.name.includes(f))
             ) || voices.find(v => v.lang.startsWith('en'));
             if (preferredVoice) utterance.voice = preferredVoice;
         }
