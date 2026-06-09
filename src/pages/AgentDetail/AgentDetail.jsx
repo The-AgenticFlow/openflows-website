@@ -1,5 +1,6 @@
 import { useParams, Navigate } from 'react-router-dom';
 import Layout from '@/organisms/Layout/Layout';
+import Button from '@/atoms/Button/Button';
 import { AGENT_DATA } from '@/data/agents';
 import styles from './AgentDetail.module.css';
 
@@ -75,8 +76,12 @@ export default function AgentDetail() {
               and {agent.name} will be running in minutes.
             </p>
             <div className={styles.actions}>
-              <a href="https://github.com/The-AgenticFlow/AgentFlow" className={styles.primaryBtn} target="_blank" rel="noopener noreferrer">View on GitHub</a>
-              <a href="/docs/getting-started/installation" className={styles.secondaryBtn}>Installation Guide ›</a>
+              <Button variant="outline" size="md" href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">
+                View on GitHub
+              </Button>
+              <Button variant="cyan" size="md" href="/docs/getting-started/installation">
+                Installation Guide →
+              </Button>
             </div>
           </div>
         </div>

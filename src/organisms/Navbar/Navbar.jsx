@@ -212,7 +212,7 @@ export default function Navbar() {
                 <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">
                   GitHub
                 </Button>
-                <Button variant="primary" size="sm" href="/docs/getting-started">
+                <Button variant="cyan" size="sm" href="/docs/getting-started">
                   Get Started
                 </Button>
               </>

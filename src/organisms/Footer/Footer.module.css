@@ -21,10 +21,12 @@
 
 .columnHeading {
   font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--color-text-primary);
+  font-weight: 600;
+  color: var(--color-cyan);
   margin-bottom: var(--space-5);
-  letter-spacing: 0;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  opacity: 0.9;
 }
 
 .linkList {
@@ -37,12 +39,14 @@
   color: var(--color-text-secondary);
   text-decoration: none;
   font-size: var(--font-size-sm);
-  transition: color var(--transition-fast);
+  transition: color var(--transition-fast), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
   line-height: 1.5;
+  display: inline-block;
 }
 
 .link:hover {
-  color: var(--color-text-primary);
+  color: var(--color-cyan);
+  transform: translateX(6px);
 }
 
 /* ── Bottom bar ── */
@@ -73,12 +77,13 @@
   align-items: center;
   justify-content: center;
   color: var(--color-text-secondary);
-  transition: color var(--transition-fast);
+  transition: color var(--transition-fast), transform var(--transition-fast);
   line-height: 1;
 }
 
 .socialLink:hover {
-  color: var(--color-text-primary);
+  color: var(--color-cyan);
+  transform: scale(1.2);
 }
 
 .copyright {

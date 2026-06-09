@@ -23,7 +23,7 @@ export default function GetStartedBanner() {
               View on GitHub
             </Button>
             <Button
-              variant="primary"
+              variant="cyan"
               size="md"
               href="/docs/getting-started/installation"
             >

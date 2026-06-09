@@ -16,10 +16,10 @@ export default function Home() {
       {/* About Section */}
       <section className="about-home-section" style={{ paddingBlock: '8rem', borderTop: '1px solid rgba(255,255,255,0.1)' }}>
         <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
-          <p style={{ fontSize: '0.75rem', color: '#666', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>About</p>
+          <p style={{ fontSize: '0.75rem', color: 'var(--color-cyan)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>About</p>
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
             <div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: '500', marginBottom: '2.5rem', lineHeight: '1.2' }}>
+              <h2 style={{ fontSize: '2.5rem', fontWeight: '500', marginBottom: '2.5rem', lineHeight: '1.2', color: 'var(--color-cyan)' }}>
                 OpenFlows is an autonomous AI development team that runs itself — 24/7, on your GitHub repo.
               </h2>
               <p style={{ color: '#aaa', lineHeight: '1.7', marginBottom: '2rem' }}>

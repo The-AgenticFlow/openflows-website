@@ -10,7 +10,9 @@
 }
 
 .card:hover {
-  opacity: 0.8;
+  opacity: 1;
+  background-color: var(--color-cyan-surface);
+  box-shadow: 0 0 10px rgba(0, 245, 255, 0.05);
 }
 
 .imageWrap {
@@ -60,17 +62,20 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-4);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--glass-cyan-bg);
+  border: 1px solid var(--glass-cyan-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   padding: 0;
   border-radius: var(--radius-lg);
-  transition: transform 0.2s ease, border-color 0.2s ease, opacity 1s ease;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+  box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
 
 .vertical:hover, .wide:hover {
-  transform: translateY(-2px);
-  border-color: var(--color-border-hover);
-  opacity: 1;
+  transform: translateY(-4px);
+  border-color: var(--color-cyan);
+  box-shadow: var(--glow-cyan-intense), inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .vertical .imageWrap, .wide .imageWrap {
