@@ -1,6 +1,6 @@
 .hero {
-  padding-top: calc(var(--nav-height) + var(--space-32));
-  padding-bottom: var(--space-64);
+  padding-top: calc(var(--nav-height) + var(--space-20));
+  padding-bottom: var(--space-32);
   background-color: var(--color-bg);
   text-align: center;
 }
@@ -17,14 +17,14 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 600;
-  margin-bottom: var(--space-6);
+  margin-bottom: var(--space-4);
 }
 
 .title {
-  font-size: clamp(2.25rem, 6vw, 4rem);
+  font-size: clamp(1.75rem, 5vw, 3rem);
   font-weight: 500;
   letter-spacing: -0.02em;
-  margin-bottom: var(--space-16);
+  margin-bottom: var(--space-10);
   line-height: 1.1;
 }
 
@@ -164,9 +164,9 @@
 }
 
 .agentName {
-  font-size: var(--font-size-3xl);
+  font-size: var(--font-size-xl);
   font-weight: 500;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
 .agentMission {
@@ -294,7 +294,7 @@
   }
 
   .agentName {
-    font-size: var(--font-size-2xl);
+    font-size: var(--font-size-lg);
   }
 
   .sectionHeading {

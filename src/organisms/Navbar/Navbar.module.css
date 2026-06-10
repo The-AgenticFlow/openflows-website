@@ -382,18 +382,18 @@
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-3);
   font-weight: 600;
 }
 
 .dropdownLinks {
   display: flex;
   flex-direction: column;
-  gap: var(--space-3);
+  gap: var(--space-2);
 }
 
 .megaLink {
-  font-size: var(--font-size-lg);
+  font-size: var(--font-size-base);
   font-weight: 500;
   color: var(--color-text-primary);
   text-decoration: none;
@@ -402,12 +402,12 @@
 
 .megaLink:hover {
   color: var(--color-cyan);
-  transform: translateX(8px);
+  transform: translateX(6px);
   opacity: 1;
 }
 
 .advLink {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   font-weight: 500;
   color: var(--color-text-primary);
   text-decoration: none;
