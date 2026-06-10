@@ -27,6 +27,7 @@ export default function FlowDiagram() {
         setTranslate({ x: 0, y: 0 })
     }, [])
 
+    // ── Mouse events ──
     const handleMouseDown = useCallback((e) => {
         if (scale <= 1) return
         setIsDragging(true)
@@ -49,6 +50,34 @@ export default function FlowDiagram() {
         setIsDragging(false)
     }, [])
 
+    // ── Touch events ──
+    const handleTouchStart = useCallback((e) => {
+        if (scale <= 1) return
+        if (e.touches.length === 1) {
+            setIsDragging(true)
+            const touch = e.touches[0]
+            dragStart.current = { x: touch.clientX, y: touch.clientY }
+            translateStart.current = { ...translate }
+        }
+    }, [scale, translate])
+
+    const handleTouchMove = useCallback((e) => {
+        if (!isDragging || e.touches.length !== 1) return
+        e.preventDefault()
+        const touch = e.touches[0]
+        const dx = touch.clientX - dragStart.current.x
+        const dy = touch.clientY - dragStart.current.y
+        setTranslate({
+            x: translateStart.current.x + dx,
+            y: translateStart.current.y + dy,
+        })
+    }, [isDragging])
+
+    const handleTouchEnd = useCallback(() => {
+        setIsDragging(false)
+    }, [])
+
+    // ── Wheel zoom ──
     const handleWheel = useCallback((e) => {
         e.preventDefault()
         const delta = e.deltaY > 0 ? -0.1 : 0.1
@@ -58,6 +87,8 @@ export default function FlowDiagram() {
             return next
         })
     }, [])
+
+    const canPan = scale > 1
 
     return (
         <section className={styles.section} aria-labelledby="flow-title">
@@ -122,8 +153,12 @@ export default function FlowDiagram() {
                         onMouseMove={handleMouseMove}
                         onMouseUp={handleMouseUp}
                         onMouseLeave={handleMouseUp}
+                        onTouchStart={handleTouchStart}
+                        onTouchMove={handleTouchMove}
+                        onTouchEnd={handleTouchEnd}
                         style={{
-                            cursor: isDragging ? 'grabbing' : scale > 1 ? 'grab' : 'default',
+                            cursor: isDragging ? 'grabbing' : canPan ? 'grab' : 'default',
+                            touchAction: canPan ? 'none' : 'pan-y',
                         }}
                     >
                         <div
