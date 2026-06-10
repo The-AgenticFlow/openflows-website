@@ -47,7 +47,82 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
     padding: var(--space-6);
-    overflow-x: auto;
+    position: relative;
+}
+
+/* ===== Zoom Controls ===== */
+.zoomControls {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    position: absolute;
+    top: var(--space-3);
+    right: var(--space-3);
+    z-index: 10;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md, 8px);
+    padding: 4px;
+    backdrop-filter: blur(8px);
+}
+
+.zoomBtn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
+    -webkit-tap-highlight-color: transparent;
+    transition: background var(--transition-fast), color var(--transition-fast);
+}
+
+.zoomBtn:hover {
+    background: var(--color-accent);
+    color: var(--color-text-primary);
+}
+
+.zoomBtn:active {
+    transform: scale(0.95);
+    background: transparent;
+    color: var(--color-text-secondary);
+}
+
+.zoomBtn:focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+}
+
+.zoomBtn:focus:not(:focus-visible) {
+    outline: none;
+    background: transparent;
+}
+
+.zoomLevel {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    min-width: 36px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+    padding-right: 4px;
+}
+
+/* ===== Diagram Viewport (pan/zoom container) ===== */
+.diagramViewport {
+    overflow: hidden;
+    border-radius: var(--radius-md, 8px);
+    position: relative;
+}
+
+.diagramContent {
+    transition: transform 0.2s ease-out;
+    will-change: transform;
 }
 
 .diagramSvg {
@@ -114,5 +189,21 @@
 
     .title {
         font-size: clamp(var(--font-size-xl), 5vw, var(--font-size-3xl));
+    }
+
+    .zoomControls {
+        top: var(--space-2);
+        right: var(--space-2);
+        padding: 2px;
+    }
+
+    .zoomBtn {
+        width: 28px;
+        height: 28px;
+    }
+
+    .zoomLevel {
+        font-size: 0.65rem;
+        min-width: 30px;
     }
 }
