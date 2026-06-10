@@ -616,7 +616,7 @@
 .modalOverlay {
     position: fixed;
     inset: 0;
-    background: rgba(0, 0, 0, 0.8);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -823,8 +823,8 @@
 .select,
 .select option {
     padding: 0.75rem 1rem;
-    background: #111;
-    /* Use solid dark for native options to ensure readability */
+    background: var(--color-surface-2);
+    /* Use solid surface for native options to ensure readability */
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
@@ -838,7 +838,7 @@
 
 .field select,
 .field option {
-    background-color: #111;
+    background-color: var(--color-surface-2);
     color: var(--color-text-primary);
 }
 

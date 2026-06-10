@@ -1,17 +1,17 @@
 import Layout from '@/organisms/Layout/Layout'
 import Hero from '@/organisms/Hero/Hero'
-import FeaturedPost from '@/organisms/FeaturedPost/FeaturedPost'
+import FlowDiagram from '@/organisms/FlowDiagram/FlowDiagram'
 import RecentNews from '@/organisms/RecentNews/RecentNews'
 import Stories from '@/organisms/Stories/Stories'
+import FAQ from '@/organisms/FAQ/FAQ'
 import GetStartedBanner from '@/organisms/GetStartedBanner/GetStartedBanner'
 
 export default function Home() {
   return (
     <Layout>
       <Hero />
-      <FeaturedPost />
+      <FlowDiagram />
       <RecentNews />
-      <Stories />
 
       {/* About Section */}
       <section className="about-home-section" style={{ paddingBlock: '8rem', borderTop: '1px solid var(--color-border)' }}>
@@ -36,6 +36,8 @@ export default function Home() {
         </div>
       </section>
 
+      <Stories />
+      <FAQ />
       <GetStartedBanner />
     </Layout>
   )
