@@ -12,6 +12,7 @@
     color var(--transition-fast),
     border-color var(--transition-fast),
     box-shadow var(--transition-fast),
+    backdrop-filter var(--transition-fast),
     opacity var(--transition-fast);
   cursor: pointer;
   text-decoration: none;
@@ -19,7 +20,7 @@
 }
 
 .button:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-cyan);
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-accent);
 }
 
 /* --- Sizes --- */
@@ -46,7 +47,7 @@
 }
 
 .primary:hover {
-  background-color: #e0e0e0;
+  opacity: 0.85;
 }
 
 .secondary {
@@ -67,8 +68,8 @@
 }
 
 .ghost:hover {
-  color: var(--color-cyan);
-  background-color: var(--color-cyan-surface);
+  color: var(--color-text-primary);
+  background-color: var(--color-surface-2);
   transform: translateY(-1px);
 }
 
@@ -80,42 +81,50 @@
 }
 
 .outline:hover {
-  color: var(--color-cyan);
-  border-color: var(--color-cyan);
-  background-color: var(--color-cyan-surface);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-hover);
+  background-color: var(--color-surface-2);
   transform: translateY(-1px) scale(1.02);
 }
 
+/* Primary CTA — transparent with glassmorphism on hover */
 .cyan {
-  background-color: var(--color-cyan);
-  color: var(--color-bg);
-  border: 1px solid var(--color-cyan);
-  box-shadow: var(--glow-cyan);
+  background-color: transparent;
+  color: var(--color-text-primary);
+  border: 1px solid var(--color-border);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
 }
 
 .cyan:hover {
-  background-color: #234A1E;
-  box-shadow: var(--glow-cyan-intense);
+  background-color: var(--glass-cyan-bg);
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-cyan);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   transform: translateY(-2px);
 }
 
+/* Glass variant — always glassy */
 .glassCyan {
   background-color: var(--glass-cyan-bg);
-  color: var(--color-cyan);
-  border: 1px solid var(--glass-cyan-border);
+  color: var(--color-text-primary);
+  border: 1px solid var(--glass-border);
   backdrop-filter: var(--glass-blur);
   -webkit-backdrop-filter: var(--glass-blur);
   box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
 
 .glassCyan:hover {
-  background-color: rgba(45, 90, 39, 0.15);
-  border-color: var(--color-cyan);
-  box-shadow: var(--glow-cyan), inset 0 1px 0 rgba(26, 26, 26, 0.1);
+  background-color: var(--glass-cyan-bg);
+  border-color: var(--color-border-hover);
+  box-shadow: var(--shadow-cyan), inset 0 1px 0 var(--glass-highlight);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
   transform: translateY(-1px);
 }
 
 .glassCyan:active {
   transform: translateY(0);
-  background-color: rgba(45, 90, 39, 0.2);
+  background-color: var(--color-surface-2);
 }

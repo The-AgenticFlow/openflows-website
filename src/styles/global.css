@@ -4,7 +4,7 @@
 
 /* --- Design Tokens --- */
 :root {
-  /* Colors — Mesa-inspired warm palette */
+  /* Colors — Warm editorial palette (light mode) */
   --color-bg: #F8F2EB;
   --color-surface: #FDFCF8;
   --color-surface-2: #F0EBE3;
@@ -15,18 +15,17 @@
   --color-text-secondary: #444444;
   --color-text-muted: #777777;
 
-  --color-accent: #2D5A27;
-  /* Mesa forest green */
-  --color-accent-hover: #234A1E;
+  --color-accent: #1A1A1A;
+  --color-accent-hover: #333333;
 
-  /* Green Highlight System (replaces Cyan) */
-  --color-cyan: #2D5A27;
-  --color-cyan-glow: rgba(45, 90, 39, 0.3);
-  --color-cyan-muted: rgba(45, 90, 39, 0.1);
-  --color-cyan-surface: rgba(45, 90, 39, 0.05);
+  /* Neutral accent system — headings & emphasis use dark, not green */
+  --color-cyan: #1A1A1A;
+  --color-cyan-glow: rgba(26, 26, 26, 0.12);
+  --color-cyan-muted: rgba(26, 26, 26, 0.08);
+  --color-cyan-surface: rgba(26, 26, 26, 0.04);
 
   --color-agent-forge: #a78bfa;
-  --color-agent-nexus: #2D5A27;
+  --color-agent-nexus: #1A1A1A;
   --color-agent-sentinel: #f59e0b;
   --color-agent-vessel: #f87171;
   --color-agent-lore: #60a5fa;
@@ -72,21 +71,59 @@
 
   /* Glow Effects */
   --glow-cyan: 0 0 20px var(--color-cyan-glow);
-  --glow-cyan-intense: 0 0 40px rgba(45, 90, 39, 0.4);
+  --glow-cyan-intense: 0 0 40px rgba(26, 26, 26, 0.15);
   --shadow-cyan: 0 4px 24px -1px var(--color-cyan-glow);
 
   /* Glassmorphism System */
-  --glass-bg: rgba(45, 90, 39, 0.03);
-  --glass-cyan-bg: rgba(45, 90, 39, 0.05);
+  --glass-bg: rgba(26, 26, 26, 0.02);
+  --glass-cyan-bg: rgba(26, 26, 26, 0.04);
   --glass-border: #D4CEC4;
-  --glass-cyan-border: rgba(45, 90, 39, 0.2);
+  --glass-cyan-border: rgba(26, 26, 26, 0.15);
   --glass-blur: blur(12px);
-  --glass-highlight: rgba(45, 90, 39, 0.05);
+  --glass-highlight: rgba(26, 26, 26, 0.04);
 
   /* Transitions */
   --transition-fast: 150ms ease;
   --transition-base: 250ms ease;
   --transition-slow: 400ms ease;
+}
+
+/* --- Dark Theme Overrides --- */
+[data-theme="dark"] {
+  --color-bg: #000000;
+  --color-surface: #111111;
+  --color-surface-2: #1a1a1a;
+  --color-border: rgba(255, 255, 255, 0.1);
+  --color-border-hover: rgba(255, 255, 255, 0.25);
+
+  --color-text-primary: #ffffff;
+  --color-text-secondary: #e5e5e5;
+  --color-text-muted: #999999;
+
+  --color-accent: #00f5ff;
+  --color-accent-hover: #00d4e0;
+
+  --color-cyan: #00f5ff;
+  --color-cyan-glow: rgba(0, 245, 255, 0.3);
+  --color-cyan-muted: rgba(0, 245, 255, 0.1);
+  --color-cyan-surface: rgba(0, 245, 255, 0.05);
+
+  --color-agent-nexus: #00f5ff;
+
+  --glow-cyan: 0 0 20px var(--color-cyan-glow);
+  --glow-cyan-intense: 0 0 40px rgba(0, 245, 255, 0.4);
+  --shadow-cyan: 0 4px 24px -1px var(--color-cyan-glow);
+
+  --glass-bg: rgba(0, 245, 255, 0.03);
+  --glass-cyan-bg: rgba(0, 245, 255, 0.05);
+  --glass-border: rgba(255, 255, 255, 0.08);
+  --glass-cyan-border: rgba(0, 245, 255, 0.2);
+  --glass-highlight: rgba(0, 245, 255, 0.05);
+}
+
+/* Smooth theme transition */
+html[data-theme] {
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 /* --- Reset --- */
@@ -126,7 +163,11 @@ h6 {
 }
 
 h1 {
-  text-shadow: 0 0 40px rgba(45, 90, 39, 0.15);
+  text-shadow: 0 0 40px rgba(26, 26, 26, 0.08);
+}
+
+[data-theme="dark"] h1 {
+  text-shadow: 0 0 40px rgba(0, 245, 255, 0.15);
 }
 
 img,

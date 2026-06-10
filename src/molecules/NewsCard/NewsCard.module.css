@@ -13,7 +13,7 @@
 .card:hover {
   opacity: 1;
   background-color: var(--color-cyan-surface);
-  box-shadow: 0 0 10px rgba(45, 90, 39, 0.05);
+  box-shadow: 0 0 10px var(--color-cyan-muted);
 }
 
 .imageWrap {

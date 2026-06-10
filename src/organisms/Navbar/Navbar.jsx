@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Logo from '@/atoms/Logo/Logo'
 import Button from '@/atoms/Button/Button'
+import { useTheme } from '@/contexts/ThemeContext'
 import styles from './Navbar.module.css'
 
 const NAV_DATA = [
@@ -81,6 +82,7 @@ const NAV_DATA = [
 ]
 
 export default function Navbar() {
+  const { theme, toggleTheme } = useTheme()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
@@ -88,22 +90,22 @@ export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState('')
   const [searchResults, setSearchResults] = useState([])
   const [activeFilter, setActiveFilter] = useState('All')
-  
+
   const searchInputRef = useRef(null)
   const dropdownTimerRef = useRef(null)
 
   const handleSearchChange = (e) => {
     const query = e.target.value
     setSearchQuery(query)
-    
+
     // Dynamic import to keep nav bundle light
     import('@/data/searchIndex').then(({ searchSite }) => {
       setSearchResults(searchSite(query))
     })
   }
 
-  const filteredResults = activeFilter === 'All' 
-    ? searchResults 
+  const filteredResults = activeFilter === 'All'
+    ? searchResults
     : searchResults.filter(r => r.type === activeFilter)
 
   const CATEGORIES = ['All', 'Agent', 'Docs', 'Blog', 'Use Case']
@@ -121,7 +123,7 @@ export default function Navbar() {
     const handleEsc = (e) => {
       if (e.key === 'Escape') setIsSearchOpen(false)
     }
-    
+
     if (isSearchOpen) {
       if (searchInputRef.current) searchInputRef.current.focus()
       document.body.style.overflow = 'hidden'
@@ -132,7 +134,7 @@ export default function Navbar() {
       setSearchResults([])
       window.removeEventListener('keydown', handleEsc)
     }
-    
+
     return () => window.removeEventListener('keydown', handleEsc)
   }, [isSearchOpen])
 
@@ -153,9 +155,9 @@ export default function Navbar() {
 
   return (
     <>
-      <header 
+      <header
         className={[
-          styles.navbar, 
+          styles.navbar,
           scrolled ? styles.scrolled : '',
           activeDropdown !== null ? styles.dropdownActive : '',
           isSearchOpen ? styles.searchActive : ''
@@ -167,8 +169,8 @@ export default function Navbar() {
 
           <nav className={styles.desktopNav} aria-label="Main navigation">
             {NAV_DATA.map((item, index) => (
-              <div 
-                key={item.label} 
+              <div
+                key={item.label}
                 className={styles.navLinkWrapper}
                 onMouseEnter={() => handleMouseEnter(index)}
               >
@@ -185,10 +187,10 @@ export default function Navbar() {
                 </a>
               </div>
             ))}
-            
+
             {/* Search Toggle */}
-            <button 
-              className={styles.searchButton} 
+            <button
+              className={styles.searchButton}
               aria-label={isSearchOpen ? "Close search" : "Search"}
               onClick={() => setIsSearchOpen(!isSearchOpen)}
             >
@@ -209,6 +211,30 @@ export default function Navbar() {
           <div className={styles.actions}>
             {!isSearchOpen && (
               <>
+                <button
+                  className={styles.themeToggle}
+                  onClick={toggleTheme}
+                  aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                  title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+                >
+                  {theme === 'light' ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                    </svg>
+                  ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                      <circle cx="12" cy="12" r="5"></circle>
+                      <line x1="12" y1="1" x2="12" y2="3"></line>
+                      <line x1="12" y1="21" x2="12" y2="23"></line>
+                      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                      <line x1="1" y1="12" x2="3" y2="12"></line>
+                      <line x1="21" y1="12" x2="23" y2="12"></line>
+                      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                    </svg>
+                  )}
+                </button>
                 <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">
                   GitHub
                 </Button>
@@ -230,7 +256,7 @@ export default function Navbar() {
         </div>
 
         {/* Mega Dropdown Panel */}
-        <div 
+        <div
           className={[
             styles.megaPanel,
             activeDropdown !== null ? styles.panelVisible : ''
@@ -275,17 +301,17 @@ export default function Navbar() {
       <div className={[styles.searchOverlay, isSearchOpen ? styles.searchOverlayVisible : ''].join(' ')}>
         <div className={styles.searchContent}>
           <div className={styles.searchInputWrapper}>
-            <input 
+            <input
               ref={searchInputRef}
-              type="text" 
-              className={styles.largeSearchInput} 
+              type="text"
+              className={styles.largeSearchInput}
               placeholder="Search OpenFlows docs, agents, guides..."
               value={searchQuery}
               onChange={handleSearchChange}
             />
             {searchQuery && (
-              <button 
-                className={styles.clearBtn} 
+              <button
+                className={styles.clearBtn}
                 onClick={() => { setSearchQuery(''); setSearchResults([]); }}
                 aria-label="Clear search"
               >
