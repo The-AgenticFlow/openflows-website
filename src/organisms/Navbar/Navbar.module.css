@@ -382,18 +382,18 @@
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-4);
   font-weight: 600;
 }
 
 .dropdownLinks {
   display: flex;
   flex-direction: column;
-  gap: var(--space-5);
+  gap: var(--space-3);
 }
 
 .megaLink {
-  font-size: var(--font-size-2xl);
+  font-size: var(--font-size-lg);
   font-weight: 500;
   color: var(--color-text-primary);
   text-decoration: none;
@@ -407,7 +407,7 @@
 }
 
 .advLink {
-  font-size: var(--font-size-base);
+  font-size: var(--font-size-sm);
   font-weight: 500;
   color: var(--color-text-primary);
   text-decoration: none;
