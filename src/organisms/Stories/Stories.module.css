@@ -121,8 +121,30 @@
   }
 }
 
+@media (max-width: 768px) {
+  .section {
+    padding: var(--space-10) 0;
+  }
+
+  .header {
+    margin-bottom: var(--space-6);
+  }
+}
+
 @media (max-width: 600px) {
   .grid {
     grid-template-columns: 1fr;
+  }
+
+  .container {
+    padding-inline: var(--space-4);
+  }
+
+  .body {
+    padding: var(--space-3) var(--space-4);
+  }
+
+  .cardTitle {
+    font-size: var(--font-size-sm);
   }
 }

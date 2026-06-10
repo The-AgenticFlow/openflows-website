@@ -261,7 +261,7 @@
 
 /* ─────────────────────────────────────────
    Responsive
-───────────────────────────────────────── */
+   ───────────────────────────────────────── */
 @media (max-width: 900px) {
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
@@ -292,15 +292,67 @@
   .br {
     display: none;
   }
+
+  .container {
+    padding-inline: var(--space-4);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 3rem);
+    padding-bottom: 3rem;
+  }
+
+  .heroTitle {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+  }
+
+  .statsBar {
+    padding-block: var(--space-6);
+  }
+
+  .split {
+    padding-block: 4rem;
+  }
+
+  .splitGrid {
+    gap: 2rem;
+  }
+
+  .splitImage {
+    height: 200px;
+  }
+
+  .fullImage {
+    height: 200px;
+  }
+
+  .quoteSection {
+    padding-block: 3rem;
+  }
+
+  .valuesSection {
+    padding-block: 4rem;
+  }
+
+  .valueCard {
+    padding: var(--space-5);
+  }
 }
 
 @media (max-width: 480px) {
   .statsGrid {
     grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-5);
   }
 
   .hero {
-    padding-top: calc(var(--nav-height) + 3rem);
-    padding-bottom: 3rem;
+    padding-top: calc(var(--nav-height) + 2rem);
+    padding-bottom: 2rem;
+  }
+
+  .statValue {
+    font-size: clamp(1.25rem, 4vw, 1.75rem);
   }
 }

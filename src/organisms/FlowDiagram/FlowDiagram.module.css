@@ -84,8 +84,35 @@
 }
 
 /* ===== Responsive ===== */
+@media (max-width: 900px) {
+    .header {
+        margin-bottom: var(--space-10);
+    }
+
+    .subtitle {
+        font-size: var(--font-size-sm);
+    }
+}
+
 @media (max-width: 600px) {
+    .section {
+        padding-block: var(--space-12);
+    }
+
+    .container {
+        padding-inline: var(--space-4);
+    }
+
     .diagramWrap {
         padding: var(--space-3);
+        border-radius: var(--radius-md);
+    }
+
+    .diagramSvg {
+        min-width: 400px;
+    }
+
+    .title {
+        font-size: clamp(var(--font-size-xl), 5vw, var(--font-size-3xl));
     }
 }

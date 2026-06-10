@@ -121,7 +121,10 @@ export default function Navbar() {
 
   useEffect(() => {
     const handleEsc = (e) => {
-      if (e.key === 'Escape') setIsSearchOpen(false)
+      if (e.key === 'Escape') {
+        setIsSearchOpen(false)
+        setMenuOpen(false)
+      }
     }
 
     if (isSearchOpen) {
@@ -137,6 +140,16 @@ export default function Navbar() {
 
     return () => window.removeEventListener('keydown', handleEsc)
   }, [isSearchOpen])
+
+  // Lock body scroll when mobile menu is open
+  useEffect(() => {
+    if (menuOpen) {
+      document.body.style.overflow = 'hidden'
+    } else {
+      document.body.style.overflow = ''
+    }
+    return () => { document.body.style.overflow = '' }
+  }, [menuOpen])
 
   const handleMouseEnter = (index) => {
     if (dropdownTimerRef.current) clearTimeout(dropdownTimerRef.current)
@@ -360,7 +373,70 @@ export default function Navbar() {
 
       {/* Mobile Drawer */}
       <div className={[styles.mobileMenu, menuOpen ? styles.mobileMenuOpen : ''].join(' ')}>
-        {/* ... mobile links ... */}
+        <nav className={styles.mobileNav}>
+          {NAV_DATA.map((item) => (
+            <div key={item.label}>
+              <a
+                href={item.href}
+                className={styles.mobileNavLink}
+                target={item.external ? '_blank' : undefined}
+                rel={item.external ? 'noopener noreferrer' : undefined}
+                onClick={() => setMenuOpen(false)}
+              >
+                {item.label}
+                {item.external && <span className={styles.mobileNavLinkExternal}>↗</span>}
+              </a>
+              {item.dropdown && (
+                <div className={styles.mobileSubSection}>
+                  <p className={styles.mobileSubHeading}>{item.dropdown.heading}</p>
+                  {item.dropdown.items.map((subItem) => (
+                    <a
+                      key={subItem.label}
+                      href={subItem.href}
+                      className={styles.mobileSubLink}
+                      target={subItem.external ? '_blank' : undefined}
+                      rel={subItem.external ? 'noopener noreferrer' : undefined}
+                      onClick={() => setMenuOpen(false)}
+                    >
+                      {subItem.label}
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          ))}
+        </nav>
+        <div className={styles.mobileActions}>
+          <div className={styles.mobileThemeRow}>
+            <span>Theme</span>
+            <button
+              className={styles.themeToggle}
+              onClick={toggleTheme}
+              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+            >
+              {theme === 'light' ? (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
+                </svg>
+              ) : (
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="12" cy="12" r="5"></circle>
+                  <line x1="12" y1="1" x2="12" y2="3"></line>
+                  <line x1="12" y1="21" x2="12" y2="23"></line>
+                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
+                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
+                  <line x1="1" y1="12" x2="3" y2="12"></line>
+                  <line x1="21" y1="12" x2="23" y2="12"></line>
+                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
+                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
+                </svg>
+              )}
+            </button>
+          </div>
+          <Button variant="cyan" size="md" href="/docs/getting-started" onClick={() => setMenuOpen(false)} style={{ width: '100%', justifyContent: 'center' }}>
+            Get Started
+          </Button>
+        </div>
       </div>
     </>
   )

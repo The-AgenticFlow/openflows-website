@@ -43,3 +43,29 @@
   margin-inline: auto;
   padding: calc(var(--nav-height) + 3rem) var(--space-6) 6rem;
 }
+
+@media (max-width: 768px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 2rem);
+    padding-bottom: 2rem;
+  }
+
+  .section {
+    padding-block: 2rem 4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 1.5rem);
+    padding-bottom: 1.5rem;
+  }
+
+  .page {
+    padding: calc(var(--nav-height) + 1.5rem) var(--space-4) 4rem;
+  }
+
+  .container {
+    padding-inline: var(--space-4);
+  }
+}

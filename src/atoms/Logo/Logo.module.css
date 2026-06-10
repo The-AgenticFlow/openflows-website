@@ -7,8 +7,8 @@
 }
 
 .icon {
-  width: 96px;
-  height: 96px;
+  width: 32px;
+  height: 32px;
   display: block;
   flex-shrink: 0;
   object-fit: contain;
@@ -26,4 +26,10 @@
   background-clip: text;
   text-shadow: none;
   filter: drop-shadow(0 0 6px var(--color-cyan-glow));
+}
+
+@media (max-width: 480px) {
+  .name {
+    font-size: 1.1rem;
+  }
 }

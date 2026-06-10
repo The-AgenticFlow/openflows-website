@@ -79,4 +79,37 @@
   margin-top: 2px;
 }
 
-.stepList li:last-child { border-bottom: none; }
+.stepList li:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 2rem);
+    padding-bottom: 2rem;
+  }
+
+  .section {
+    padding-block: 2rem 4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 1.5rem);
+    padding-bottom: 1.5rem;
+  }
+
+  .page {
+    padding: calc(var(--nav-height) + 1.5rem) var(--space-4) 4rem;
+  }
+
+  .container {
+    padding-inline: var(--space-4);
+  }
+
+  .stepList li {
+    font-size: var(--font-size-xs);
+    gap: 0.75rem;
+  }
+}

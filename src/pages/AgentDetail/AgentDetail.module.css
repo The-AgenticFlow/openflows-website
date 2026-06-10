@@ -204,3 +204,74 @@
     width: 100%;
   }
 }
+
+@media (max-width: 768px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + var(--space-16));
+    padding-bottom: var(--space-24);
+  }
+
+  .container {
+    padding-inline: var(--space-4);
+  }
+
+  .missionSection {
+    padding-block: var(--space-64);
+  }
+
+  .workflowSection {
+    padding-block: var(--space-64);
+  }
+
+  .ctaSection {
+    padding-block: var(--space-64);
+  }
+
+  .sectionHeading {
+    font-size: var(--font-size-2xl);
+  }
+
+  .description {
+    font-size: var(--font-size-base);
+  }
+
+  .ctaBox {
+    padding: var(--space-12) var(--space-6);
+  }
+
+  .ctaBox h2 {
+    font-size: var(--font-size-2xl);
+  }
+
+  .actions {
+    flex-direction: column;
+    align-items: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + var(--space-8));
+    padding-bottom: var(--space-16);
+  }
+
+  .flowGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .flowCard {
+    padding: var(--space-5);
+  }
+
+  .capList {
+    grid-template-columns: 1fr;
+  }
+
+  .name {
+    font-size: clamp(2rem, 10vw, 3.5rem);
+  }
+
+  .role {
+    font-size: var(--font-size-base);
+  }
+}

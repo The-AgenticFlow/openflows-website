@@ -43,8 +43,35 @@
   justify-content: center;
 }
 
+@media (max-width: 768px) {
+  .section {
+    padding: var(--space-12) 0;
+  }
+
+  .card {
+    padding: var(--space-12) var(--space-6);
+  }
+}
+
 @media (max-width: 480px) {
   .card {
-    padding: var(--space-12) var(--space-5);
+    padding: var(--space-10) var(--space-5);
+  }
+
+  .heading {
+    font-size: clamp(var(--font-size-xl), 5vw, var(--font-size-2xl));
+  }
+
+  .sub {
+    font-size: var(--font-size-sm);
+  }
+
+  .actions {
+    flex-direction: column;
+    width: 100%;
+  }
+
+  .actions>* {
+    width: 100%;
   }
 }

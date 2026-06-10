@@ -287,3 +287,71 @@ ol {
 .delay-5 {
   animation-delay: 500ms;
 }
+
+/* --- Responsive Utilities --- */
+@media (max-width: 1200px) {
+  :root {
+    --font-size-6xl: 3.5rem;
+    --font-size-5xl: 3rem;
+    --font-size-4xl: 2.25rem;
+  }
+}
+
+@media (max-width: 900px) {
+  :root {
+    --font-size-6xl: 2.75rem;
+    --font-size-5xl: 2.25rem;
+    --font-size-4xl: 2rem;
+    --space-24: 4rem;
+    --space-20: 4rem;
+    --space-16: 3rem;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --font-size-6xl: 2.25rem;
+    --font-size-5xl: 1.875rem;
+    --font-size-4xl: 1.5rem;
+    --font-size-3xl: 1.5rem;
+    --space-24: 3rem;
+    --space-20: 3rem;
+    --space-16: 2.5rem;
+    --space-12: 2rem;
+    --space-10: 1.5rem;
+  }
+
+  .container {
+    padding-inline: var(--space-4);
+  }
+}
+
+/* Prevent horizontal overflow on all pages */
+html,
+body {
+  overflow-x: hidden;
+}
+
+/* Ensure images never overflow */
+img,
+video,
+svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Better touch targets on mobile */
+@media (max-width: 600px) {
+
+  a,
+  button {
+    min-height: 44px;
+  }
+}
+
+/* Scrollbar styling for mobile overflow containers */
+@media (max-width: 600px) {
+  .container {
+    padding-inline: var(--space-4);
+  }
+}

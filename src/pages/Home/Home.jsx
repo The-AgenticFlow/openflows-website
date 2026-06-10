@@ -5,6 +5,7 @@ import RecentNews from '@/organisms/RecentNews/RecentNews'
 import Stories from '@/organisms/Stories/Stories'
 import FAQ from '@/organisms/FAQ/FAQ'
 import GetStartedBanner from '@/organisms/GetStartedBanner/GetStartedBanner'
+import styles from './Home.module.css'
 
 export default function Home() {
   return (
@@ -14,23 +15,23 @@ export default function Home() {
       <RecentNews />
 
       {/* About Section */}
-      <section className="about-home-section" style={{ paddingBlock: '8rem', borderTop: '1px solid var(--color-border)' }}>
-        <div style={{ maxWidth: '1200px', margin: '0 auto', padding: '0 2rem' }}>
-          <p style={{ fontSize: '0.75rem', color: 'var(--color-accent)', textTransform: 'uppercase', letterSpacing: '0.1em', marginBottom: '1rem' }}>About</p>
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '4rem', alignItems: 'center' }}>
-            <div>
-              <h2 style={{ fontSize: '2.5rem', fontWeight: '500', marginBottom: '2.5rem', lineHeight: '1.2', color: 'var(--color-accent)' }}>
+      <section className={styles.aboutSection}>
+        <div className={styles.aboutContainer}>
+          <p className={styles.aboutEyebrow}>About</p>
+          <div className={styles.aboutGrid}>
+            <div className={styles.aboutText}>
+              <h2 className={styles.aboutHeading}>
                 OpenFlows is an autonomous AI development team that runs itself — 24/7, on your GitHub repo.
               </h2>
-              <p style={{ color: 'var(--color-text-muted)', lineHeight: '1.7', marginBottom: '2rem' }}>
+              <p className={styles.aboutDesc}>
                 Five specialized agents — NEXUS, FORGE, SENTINEL, VESSEL, and LORE — collaborate through a
                 Redis-backed state machine to take GitHub issues all the way to merged, documented pull requests.
                 You stay as the product owner. The team handles the rest.
               </p>
-              <a href="/about" style={{ color: 'var(--color-text-primary)', textDecoration: 'none', borderBottom: '1px solid var(--color-border)' }}>Read about our mission ›</a>
+              <a href="/about" className={styles.aboutLink}>Read about our mission ›</a>
             </div>
-            <div>
-              <img src="https://www.nutshell.com/wp-content/uploads/2025/11/best_crm_for_contractors.webp" alt="About OpenFlows" style={{ width: '100%', borderRadius: '4px' }} />
+            <div className={styles.aboutImageWrap}>
+              <img src="https://www.nutshell.com/wp-content/uploads/2025/11/best_crm_for_contractors.webp" alt="About OpenFlows" className={styles.aboutImage} />
             </div>
           </div>
         </div>
