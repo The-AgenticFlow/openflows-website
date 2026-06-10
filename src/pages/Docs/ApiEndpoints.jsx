@@ -2,25 +2,25 @@ import DocsLayout from '@/organisms/DocsLayout/DocsLayout'
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents'
 
 const AGENT_ROWS = [
-  ['<code style="color:#10a37f">GET</code>', '<code>/api/v1/agents</code>', 'List all active agents and their status'],
-  ['<code style="color:#10a37f">GET</code>', '<code>/api/v1/agents/{id}</code>', 'Get details for a specific agent'],
-  ['<code style="color:#34d399">POST</code>', '<code>/api/v1/agents/{id}/restart</code>', 'Restart a stuck or idle agent'],
+  ['<code style="color:#2D5A27">GET</code>', '<code>/api/v1/agents</code>', 'List all active agents and their status'],
+  ['<code style="color:#2D5A27">GET</code>', '<code>/api/v1/agents/{id}</code>', 'Get details for a specific agent'],
+  ['<code style="color:#3a7a33">POST</code>', '<code>/api/v1/agents/{id}/restart</code>', 'Restart a stuck or idle agent'],
   ['<code style="color:#f87171">DELETE</code>', '<code>/api/v1/agents/{id}</code>', 'Stop and remove an agent'],
 ]
 
 const TASK_ROWS = [
-  ['<code style="color:#10a37f">GET</code>', '<code>/api/v1/tasks</code>', 'List all tasks with filter support'],
-  ['<code style="color:#10a37f">GET</code>', '<code>/api/v1/tasks/{id}</code>', 'Get task details and execution log'],
-  ['<code style="color:#34d399">POST</code>', '<code>/api/v1/tasks</code>', 'Create a new task manually'],
+  ['<code style="color:#2D5A27">GET</code>', '<code>/api/v1/tasks</code>', 'List all tasks with filter support'],
+  ['<code style="color:#2D5A27">GET</code>', '<code>/api/v1/tasks/{id}</code>', 'Get task details and execution log'],
+  ['<code style="color:#3a7a33">POST</code>', '<code>/api/v1/tasks</code>', 'Create a new task manually'],
   ['<code style="color:#f59e0b">PUT</code>', '<code>/api/v1/tasks/{id}/assign</code>', 'Assign task to a specific agent'],
   ['<code style="color:#f87171">DELETE</code>', '<code>/api/v1/tasks/{id}</code>', 'Cancel a pending or in-progress task'],
 ]
 
 const WORKFLOW_ROWS = [
-  ['<code style="color:#10a37f">GET</code>', '<code>/api/v1/workflows</code>', 'List configured workflows'],
-  ['<code style="color:#34d399">POST</code>', '<code>/api/v1/workflows</code>', 'Create a new workflow definition'],
+  ['<code style="color:#2D5A27">GET</code>', '<code>/api/v1/workflows</code>', 'List configured workflows'],
+  ['<code style="color:#3a7a33">POST</code>', '<code>/api/v1/workflows</code>', 'Create a new workflow definition'],
   ['<code style="color:#f59e0b">PUT</code>', '<code>/api/v1/workflows/{id}</code>', 'Update workflow configuration'],
-  ['<code style="color:#10a37f">GET</code>', '<code>/api/v1/workflows/{id}/runs</code>', 'Get execution history for a workflow'],
+  ['<code style="color:#2D5A27">GET</code>', '<code>/api/v1/workflows/{id}/runs</code>', 'Get execution history for a workflow'],
 ]
 
 export default function ApiEndpoints() {

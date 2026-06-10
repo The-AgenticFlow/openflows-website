@@ -12,7 +12,7 @@
   display: block;
   flex-shrink: 0;
   object-fit: contain;
-  filter: drop-shadow(0 0 14px rgba(0, 245, 255, 0.55));
+  filter: drop-shadow(0 0 14px rgba(45, 90, 39, 0.55));
 }
 
 .name {
@@ -20,10 +20,10 @@
   font-weight: 700;
   letter-spacing: -0.02em;
   line-height: 1;
-  background: linear-gradient(135deg, var(--color-cyan) 0%, #ffffff 70%);
+  background: linear-gradient(135deg, var(--color-cyan) 0%, #1A1A1A 70%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
   text-shadow: none;
-  filter: drop-shadow(0 0 6px rgba(0, 245, 255, 0.3));
+  filter: drop-shadow(0 0 6px rgba(45, 90, 39, 0.3));
 }

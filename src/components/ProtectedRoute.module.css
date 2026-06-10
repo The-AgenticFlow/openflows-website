@@ -11,7 +11,7 @@
 .spinner {
     width: 40px;
     height: 40px;
-    border: 2px solid rgba(255, 255, 255, 0.1);
+    border: 2px solid var(--color-border);
     border-top-color: var(--color-text-primary);
     border-radius: 50%;
     animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
@@ -58,7 +58,7 @@
 }
 
 .error code {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-cyan-surface);
     padding: 0.2rem 0.5rem;
     border-radius: 4px;
     font-family: 'SF Mono', 'Fira Code', monospace;

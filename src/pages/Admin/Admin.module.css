@@ -14,12 +14,12 @@
 .loginCard {
     width: 100%;
     max-width: 420px;
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--color-surface);
     backdrop-filter: blur(20px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: 2.5rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
 
 .header {
@@ -61,8 +61,8 @@
 .field textarea,
 .field select {
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: 1rem;
@@ -73,8 +73,8 @@
 .field textarea:focus,
 .field select:focus {
     outline: none;
-    background: rgba(255, 255, 255, 0.08);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: var(--color-border);
+    border-color: var(--color-border-hover);
 }
 
 .field input::placeholder {
@@ -111,7 +111,7 @@
 
 .submitBtn:hover:not(:disabled) {
     background: var(--color-text-primary);
-    color: #000;
+    color: var(--color-text-primary);
     border-color: var(--color-text-primary);
 }
 
@@ -250,13 +250,13 @@
     width: 36px;
     height: 36px;
     border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--color-border);
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 600;
     color: var(--color-text-primary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
 }
 
 .userName {
@@ -296,16 +296,16 @@
 }
 
 .statCard {
-    background: rgba(255, 255, 255, 0.03);
+    background: var(--color-surface);
     backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: 1.5rem;
     transition: transform var(--transition-fast), border-color var(--transition-fast);
 }
 
 .statCard:hover {
-    border-color: rgba(255, 255, 255, 0.2);
+    border-color: var(--color-border-hover);
     transform: translateY(-2px);
 }
 
@@ -352,8 +352,8 @@
     display: flex;
     align-items: center;
     gap: 0.75rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: 0.5rem 1rem;
     flex: 1;
@@ -362,8 +362,8 @@
 }
 
 .searchBox:focus-within {
-    border-color: rgba(255, 255, 255, 0.3);
-    background: rgba(255, 255, 255, 0.08);
+    border-color: var(--color-border-hover);
+    background: var(--color-border);
 }
 
 .searchBox svg {
@@ -411,13 +411,13 @@
 
 .filterBtn.active {
     background: var(--color-text-primary);
-    color: #000;
+    color: var(--color-text-primary);
     border-color: var(--color-text-primary);
 }
 
 .backBtn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
     color: var(--color-text-primary);
     padding: 0.6rem;
     border-radius: var(--radius-md);
@@ -429,14 +429,14 @@
 }
 
 .backBtn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.2);
+    background: var(--color-border);
+    border-color: var(--color-border-hover);
     transform: translateX(-2px);
 }
 
 .previewToggle.active {
     background: var(--color-text-primary);
-    color: #000;
+    color: var(--color-text-primary);
     border-color: var(--color-text-primary);
 }
 
@@ -446,7 +446,7 @@
     gap: 0.5rem;
     padding: 0.625rem 1.25rem;
     background: var(--color-text-primary);
-    color: #000;
+    color: var(--color-text-primary);
     font-weight: 600;
     font-size: 0.875rem;
     border-radius: var(--radius-md);
@@ -455,7 +455,7 @@
 }
 
 .newPostBtn:hover {
-    background: rgba(255, 255, 255, 0.85);
+    background: var(--color-surface);
     transform: translateY(-1px);
 }
 
@@ -469,16 +469,16 @@
     align-items: flex-start;
     gap: 1.5rem;
     padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     margin-bottom: 1rem;
     transition: all var(--transition-fast);
 }
 
 .blogItem:hover {
-    border-color: rgba(255, 255, 255, 0.2);
-    background: rgba(255, 255, 255, 0.04);
+    border-color: var(--color-border-hover);
+    background: var(--color-surface-2);
 }
 
 .blogImage {
@@ -527,8 +527,8 @@
 
 .blogCategory {
     padding: 0.2rem 0.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
     border-radius: 4px;
     color: var(--color-text-primary);
     font-weight: 500;
@@ -544,12 +544,12 @@
 }
 
 .blogStatus.draft {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-surface-2);
     color: var(--color-text-muted);
 }
 
 .blogStatus.published {
-    background: rgba(255, 255, 255, 0.1);
+    background: var(--color-border);
     color: var(--color-text-primary);
 }
 
@@ -625,13 +625,13 @@
 }
 
 .modal {
-    background: #0a0a0a;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-bg);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     width: 100%;
     max-width: 480px;
     padding: 2rem;
-    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.2);
 }
 
 .modalHeader {
@@ -676,7 +676,7 @@
     background: #f87171;
     border: none;
     border-radius: var(--radius-md);
-    color: #fff;
+    color: var(--color-text-primary);
     font-weight: 600;
     font-size: 0.875rem;
     cursor: pointer;
@@ -714,7 +714,7 @@
 
 .pageBtn.active {
     background: var(--color-accent);
-    color: #000;
+    color: var(--color-text-primary);
     border-color: var(--color-accent);
 }
 
@@ -754,8 +754,8 @@
 
 .previewArea {
     padding: 2rem;
-    background: rgba(255, 255, 255, 0.02);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     min-height: 400px;
     color: var(--color-text-secondary);
@@ -771,14 +771,14 @@
 }
 
 .previewArea code {
-    background: rgba(255, 255, 255, 0.05);
+    background: var(--color-surface-2);
     padding: 0.2rem 0.4rem;
     border-radius: 4px;
     font-family: monospace;
 }
 
 .previewArea pre {
-    background: rgba(0, 0, 0, 0.3);
+    background: var(--color-surface-2);
     padding: 1.5rem;
     border-radius: var(--radius-md);
     overflow-x: auto;
@@ -786,7 +786,7 @@
 }
 
 .previewArea blockquote {
-    border-left: 3px solid rgba(255, 255, 255, 0.2);
+    border-left: 3px solid var(--color-border-hover);
     padding-left: 1.5rem;
     margin: 1.5rem 0;
     font-style: italic;
@@ -799,8 +799,8 @@
 }
 
 .sidebarCard {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     padding: 1.5rem;
 }
@@ -825,7 +825,7 @@
     padding: 0.75rem 1rem;
     background: #111;
     /* Use solid dark for native options to ensure readability */
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     cursor: pointer;
@@ -833,7 +833,7 @@
 
 .select:focus {
     outline: none;
-    border-color: rgba(255, 255, 255, 0.3);
+    border-color: var(--color-border-hover);
 }
 
 .field select,
@@ -889,8 +889,8 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1rem;
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     color: var(--color-text-primary);
     font-size: 0.875rem;
@@ -949,8 +949,8 @@
    =================================================== */
 
 .addAuthorBtn {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.15);
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     color: var(--color-text-primary);
     font-size: 0.75rem;
@@ -961,8 +961,8 @@
 }
 
 .addAuthorBtn:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: rgba(255, 255, 255, 0.3);
+    background: var(--color-border);
+    border-color: var(--color-border-hover);
 }
 
 .authorEntry {
@@ -1006,7 +1006,7 @@
 
 .authorDivider {
     height: 1px;
-    background: rgba(255, 255, 255, 0.08);
+    background: var(--color-border);
     margin: 1.5rem 0;
 }
 
@@ -1020,8 +1020,8 @@
     display: flex;
     align-items: center;
     gap: 0.5rem;
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.08);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     border-radius: var(--radius-sm);
     padding: 0.5rem 0.75rem;
 }

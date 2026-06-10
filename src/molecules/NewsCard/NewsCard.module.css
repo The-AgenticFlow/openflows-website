@@ -5,19 +5,22 @@
   text-decoration: none;
   transition: opacity var(--transition-base);
   cursor: pointer;
-  gap: var(--space-4); /* Reduced from 8 */
+  gap: var(--space-4);
+  /* Reduced from 8 */
   align-items: center;
 }
 
 .card:hover {
   opacity: 1;
   background-color: var(--color-cyan-surface);
-  box-shadow: 0 0 10px rgba(0, 245, 255, 0.05);
+  box-shadow: 0 0 10px rgba(45, 90, 39, 0.05);
 }
 
 .imageWrap {
-  width: 90px;  /* Reduced from 140px */
-  height: 90px; /* Reduced from 140px */
+  width: 90px;
+  /* Reduced from 140px */
+  height: 90px;
+  /* Reduced from 140px */
   border-radius: var(--radius-sm);
   overflow: hidden;
   background-color: var(--color-surface-2);
@@ -58,7 +61,8 @@
 }
 
 /* Stories / Vertical Variant */
-.vertical, .wide {
+.vertical,
+.wide {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-4);
@@ -72,24 +76,28 @@
   box-shadow: inset 0 1px 0 var(--glass-highlight);
 }
 
-.vertical:hover, .wide:hover {
+.vertical:hover,
+.wide:hover {
   transform: translateY(-4px);
   border-color: var(--color-cyan);
-  box-shadow: var(--glow-cyan-intense), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: var(--glow-cyan-intense), inset 0 1px 0 rgba(26, 26, 26, 0.1);
 }
 
-.vertical .imageWrap, .wide .imageWrap {
+.vertical .imageWrap,
+.wide .imageWrap {
   width: 100%;
   height: auto;
   aspect-ratio: 16/9;
   border-radius: 0;
 }
 
-.vertical .body, .wide .body {
+.vertical .body,
+.wide .body {
   padding: var(--space-6);
 }
 
-.vertical .title, .wide .title {
+.vertical .title,
+.wide .title {
   font-size: var(--font-size-base);
 }
 

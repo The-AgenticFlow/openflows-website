@@ -9,10 +9,10 @@
   white-space: nowrap;
   border-radius: var(--radius-full);
   transition: background-color var(--transition-fast),
-              color var(--transition-fast),
-              border-color var(--transition-fast),
-              box-shadow var(--transition-fast),
-              opacity var(--transition-fast);
+    color var(--transition-fast),
+    border-color var(--transition-fast),
+    box-shadow var(--transition-fast),
+    opacity var(--transition-fast);
   cursor: pointer;
   text-decoration: none;
   outline: none;
@@ -57,7 +57,7 @@
 
 .secondary:hover {
   border-color: var(--color-border-hover);
-  background-color: rgba(255,255,255,0.05);
+  background-color: var(--color-surface-2);
 }
 
 .ghost {
@@ -94,7 +94,7 @@
 }
 
 .cyan:hover {
-  background-color: #00e5ee;
+  background-color: #234A1E;
   box-shadow: var(--glow-cyan-intense);
   transform: translateY(-2px);
 }
@@ -109,13 +109,13 @@
 }
 
 .glassCyan:hover {
-  background-color: rgba(0, 245, 255, 0.15);
+  background-color: rgba(45, 90, 39, 0.15);
   border-color: var(--color-cyan);
-  box-shadow: var(--glow-cyan), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  box-shadow: var(--glow-cyan), inset 0 1px 0 rgba(26, 26, 26, 0.1);
   transform: translateY(-1px);
 }
 
 .glassCyan:active {
   transform: translateY(0);
-  background-color: rgba(0, 245, 255, 0.2);
+  background-color: rgba(45, 90, 39, 0.2);
 }
