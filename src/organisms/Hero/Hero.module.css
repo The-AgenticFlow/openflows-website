@@ -1,0 +1,215 @@
+.hero {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100svh;
+  padding: calc(var(--nav-height) + var(--space-12)) var(--space-6) var(--space-20);
+  overflow: hidden;
+}
+
+.hero::after {
+  content: '';
+  position: absolute;
+  top: 40%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 600px;
+  height: 600px;
+  background: radial-gradient(circle, var(--color-cyan-surface) 0%, transparent 70%);
+  z-index: -1;
+  pointer-events: none;
+}
+
+.content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  max-width: 720px;
+  width: 100%;
+  gap: var(--space-6);
+}
+
+.eyebrow {
+  margin-bottom: var(--space-2);
+}
+
+.heading {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.03em;
+  background: linear-gradient(135deg, var(--color-cyan) 0%, #1A1A1A 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.br {
+  display: block;
+}
+
+.sub {
+  font-size: clamp(var(--font-size-base), 2vw, var(--font-size-lg));
+  color: var(--color-text-secondary);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+/* Terminal */
+.terminal {
+  width: 100%;
+  max-width: 600px;
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  text-align: left;
+}
+
+.terminalHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: rgba(26, 26, 26, 0.15);
+}
+
+.terminalTitle {
+  margin-left: 8px;
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  font-family: 'IBM Plex Mono', monospace;
+  letter-spacing: 0.04em;
+}
+
+.terminalBody {
+  padding: 16px;
+  min-height: 160px;
+  font-family: 'IBM Plex Mono', 'Fira Code', monospace;
+  font-size: 0.78rem;
+  line-height: 1.8;
+}
+
+.line {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  color: var(--color-text-secondary);
+  overflow: hidden;
+}
+
+.prompt {
+  color: var(--color-cyan);
+  text-shadow: 0 0 10px var(--color-cyan-glow);
+  flex-shrink: 0;
+}
+
+.cursor {
+  display: inline-block;
+  width: 1ch;
+  height: 1em;
+  background-color: var(--color-text-primary);
+  border-radius: 1px;
+  margin-left: 1px;
+  animation: blink 1s step-end infinite;
+  vertical-align: middle;
+}
+
+/* Quick-link pills */
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  justify-content: center;
+}
+
+.pill {
+  display: inline-flex;
+  align-items: center;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  padding: 0.35rem 0.875rem;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-border);
+  background: transparent;
+  transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.pill:hover {
+  color: var(--color-cyan);
+  border-color: var(--color-cyan);
+  background-color: var(--color-cyan-surface);
+  box-shadow: 0 0 15px var(--color-cyan-muted);
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding: calc(var(--nav-height) + var(--space-8)) var(--space-4) var(--space-16);
+  }
+
+  .content {
+    gap: var(--space-5);
+  }
+
+  .terminal {
+    max-width: 100%;
+  }
+
+  .terminalBody {
+    font-size: 0.7rem;
+    padding: 12px;
+    min-height: 120px;
+  }
+}
+
+@media (max-width: 600px) {
+  .heading {
+    font-size: 2.2rem;
+  }
+
+  .br {
+    display: none;
+  }
+
+  .sub {
+    font-size: var(--font-size-base);
+    line-height: 1.6;
+  }
+
+  .pills {
+    gap: var(--space-1);
+  }
+
+  .pill {
+    font-size: var(--font-size-xs);
+    padding: 0.25rem 0.6rem;
+  }
+
+  .terminalBody {
+    font-size: 0.65rem;
+    line-height: 1.6;
+    min-height: 100px;
+  }
+}
+
+@media (max-width: 400px) {
+  .heading {
+    font-size: 1.8rem;
+  }
+
+  .hero::after {
+    width: 300px;
+    height: 300px;
+  }
+}

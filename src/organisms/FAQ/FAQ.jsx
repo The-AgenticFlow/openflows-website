@@ -1,0 +1,63 @@
+import { useState } from 'react'
+import styles from './FAQ.module.css'
+
+const FAQ_ITEMS = [
+    {
+        question: 'What is OpenFlows?',
+        answer: 'OpenFlows is an autonomous AI development team that runs itself 24/7 on your GitHub repo. Five specialized agents — NEXUS, FORGE, SENTINEL, VESSEL, and LORE — collaborate through a Redis-backed state machine to take GitHub issues all the way to merged, documented pull requests.',
+    },
+    {
+        question: 'Do I need to write any code?',
+        answer: 'No. You stay as the product owner — creating issues, setting priorities, and reviewing final results. The agents handle implementation, review, testing, merging, and documentation autonomously.',
+    },
+    {
+        question: 'How does SENTINEL ensure code quality?',
+        answer: "SENTINEL is ephemeral — spawned fresh for each evaluation with no accumulated bias. It reviews FORGE's plan before any code is written, evaluates every segment after commit against 5 criteria, and performs a holistic final review before any PR is opened.",
+    },
+    {
+        question: 'What happens when merge conflicts arise?',
+        answer: "VESSEL detects conflicts early via GitHub's mergeable field before CI completes. It attempts automated rebase and resolution, and if needed, routes the conflict back to FORGE through a rework loop — no new branches required.",
+    },
+    {
+        question: 'Is OpenFlows open source?',
+        answer: 'Yes. OpenFlows is fully open source under a permissive license. You can inspect the code, contribute, and self-host. The entire agent orchestration system is transparent and auditable.',
+    },
+    {
+        question: 'How does the agent loop work?',
+        answer: 'NEXUS discovers GitHub issues and assigns them to FORGE. FORGE writes a plan, which SENTINEL reviews. After approval, FORGE implements code segment by segment with SENTINEL evaluating each one. VESSEL handles CI and merging, then LORE documents everything. NEXUS picks the next ticket and the cycle repeats.',
+    },
+]
+
+export default function FAQ() {
+    const [openFaq, setOpenFaq] = useState(null)
+
+    return (
+        <section className={styles.section} aria-labelledby="faq-title">
+            <div className={styles.container}>
+                <div className={styles.header}>
+                    <p className={styles.eyebrow}>FAQ</p>
+                    <h2 id="faq-title" className={styles.title}>Frequently asked questions</h2>
+                </div>
+                <div className={styles.faqGrid}>
+                    {FAQ_ITEMS.map((item, i) => (
+                        <div
+                            key={i}
+                            className={`${styles.faqItem} ${openFaq === i ? styles.faqItemOpen : ''}`}
+                        >
+                            <button
+                                className={styles.faqQuestion}
+                                onClick={() => setOpenFaq(openFaq === i ? null : i)}
+                            >
+                                <span>{item.question}</span>
+                                <span className={styles.faqToggle}>{openFaq === i ? '−' : '+'}</span>
+                            </button>
+                            {openFaq === i && (
+                                <p className={styles.faqAnswer}>{item.answer}</p>
+                            )}
+                        </div>
+                    ))}
+                </div>
+            </div>
+        </section>
+    )
+}

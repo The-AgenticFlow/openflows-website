@@ -1,0 +1,115 @@
+.hero {
+  padding-top: calc(var(--nav-height) + 4rem);
+  padding-bottom: 3rem;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+.eyebrow {
+  font-size: var(--font-size-xs);
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.12em;
+  font-weight: 600;
+  margin-bottom: var(--space-4);
+}
+
+.title {
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-4);
+}
+
+.sub {
+  font-size: var(--font-size-base);
+  color: var(--color-text-secondary);
+  max-width: 560px;
+  line-height: 1.7;
+}
+
+.section {
+  padding-block: 3rem 6rem;
+}
+
+.page {
+  max-width: 860px;
+  margin-inline: auto;
+  padding: calc(var(--nav-height) + 3rem) var(--space-6) 6rem;
+}
+
+.stepList {
+  counter-reset: step;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.stepList li {
+  counter-increment: step;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-border);
+  color: var(--color-text-secondary);
+  font-size: var(--font-size-sm);
+  line-height: 1.7;
+}
+
+.stepList li::before {
+  content: counter(step);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  background-color: var(--color-accent);
+  color: var(--color-text-primary);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: 700;
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.stepList li:last-child {
+  border-bottom: none;
+}
+
+@media (max-width: 768px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 2rem);
+    padding-bottom: 2rem;
+  }
+
+  .section {
+    padding-block: 2rem 4rem;
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 1.5rem);
+    padding-bottom: 1.5rem;
+  }
+
+  .page {
+    padding: calc(var(--nav-height) + 1.5rem) var(--space-4) 4rem;
+  }
+
+  .container {
+    padding-inline: var(--space-4);
+  }
+
+  .stepList li {
+    font-size: var(--font-size-xs);
+    gap: 0.75rem;
+  }
+}
