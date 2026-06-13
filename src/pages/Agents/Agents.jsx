@@ -23,7 +23,7 @@ export default function Agents() {
           <p className={styles.subtitle}>
             OpenFlows coordinates five specialized AI agents through a deterministic, event-driven
             pipeline. Each agent has a distinct role, isolated permissions, and its own GitHub identity —
-            just like a real engineering team.
+            just like a real development team.
           </p>
         </div>
       </section>
