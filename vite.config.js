@@ -1,9 +1,24 @@
 import { defineConfig } from 'vite'
 import react from '@vitejs/plugin-react'
 import { fileURLToPath, URL } from 'node:url'
+import fs from 'node:fs'
+import path from 'node:path'
 
 export default defineConfig({
-  plugins: [react()],
+  plugins: [
+    react(),
+    {
+      name: 'spa-404',
+      apply: 'build',
+      closeBundle() {
+        const dist = path.resolve('dist')
+        fs.copyFileSync(
+          path.join(dist, 'index.html'),
+          path.join(dist, '404.html')
+        )
+      },
+    },
+  ],
 
   server: {
     host: true,
