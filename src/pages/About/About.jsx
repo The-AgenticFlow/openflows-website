@@ -22,6 +22,10 @@ const VALUES = [
     desc: 'Flow recovery detects orphaned tickets, stale workers, and unmerged PRs on every cycle. The pipeline resumes at the correct phase automatically.',
   },
   {
+    title: 'Model-agnostic, adversarial by design',
+    desc: 'You choose the model behind each agent. NEXUS can run Claude, FORGE can run Kimi, SENTINEL can run Gemini. Different models create natural adversarial behavior - the reviewer catches what the builder misses.',
+  },
+  {
     title: 'Open source, MIT licensed',
     desc: 'The entire orchestration engine - from PocketFlow core to the TUI setup wizard - is on GitHub. Install via npm, cargo, Docker, or a one-line curl installer.',
   },
