@@ -24,7 +24,7 @@ const FOOTER_LINKS = [
     heading: 'Developers',
     links: [
       { label: 'Documentation →', href: '/docs' },
-      { label: 'API Explorer →', href: '/developers/api-explorer' },
+
       { label: 'Integrations →', href: '/developers/integrations' },
       { label: 'GitHub →', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
     ],

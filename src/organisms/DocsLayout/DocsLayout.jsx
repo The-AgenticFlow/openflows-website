@@ -17,14 +17,6 @@ const SIDEBAR = [
     ],
   },
   {
-    title: 'API Reference',
-    links: [
-      { label: 'Overview', href: '/docs/api' },
-      { label: 'Endpoints', href: '/docs/api/endpoints' },
-      { label: 'Authentication', href: '/docs/api/authentication' },
-    ],
-  },
-  {
     title: 'Architecture',
     links: [
       { label: 'Overview', href: '/docs/architecture' },

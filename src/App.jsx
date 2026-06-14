@@ -18,9 +18,7 @@ import GettingStarted from '@/pages/Docs/GettingStarted'
 import Installation from '@/pages/Docs/Installation'
 import GuidesHome from '@/pages/Docs/GuidesHome'
 import AgentSetup from '@/pages/Docs/AgentSetup'
-import ApiHome from '@/pages/Docs/ApiHome'
-import ApiEndpoints from '@/pages/Docs/ApiEndpoints'
-import ApiAuthentication from '@/pages/Docs/ApiAuthentication'
+
 import ArchitectureHome from '@/pages/Docs/ArchitectureHome'
 import SystemDesign from '@/pages/Docs/SystemDesign'
 import AgentRoles from '@/pages/Docs/AgentRoles'
@@ -45,7 +43,6 @@ import Walkthrough from '@/pages/Demos/Walkthrough'
 
 // Developers
 import DevelopersIndex from '@/pages/Developers/DevelopersIndex'
-import ApiExplorer from '@/pages/Developers/ApiExplorer'
 import Integrations from '@/pages/Developers/Integrations'
 
 // Use Cases
@@ -74,9 +71,6 @@ export default function App() {
           <Route path="/docs/guides" element={<GuidesHome />} />
           <Route path="/docs/guides/agent-setup" element={<AgentSetup />} />
 
-          <Route path="/docs/api" element={<ApiHome />} />
-          <Route path="/docs/api/endpoints" element={<ApiEndpoints />} />
-          <Route path="/docs/api/authentication" element={<ApiAuthentication />} />
           <Route path="/docs/architecture" element={<ArchitectureHome />} />
           <Route path="/docs/architecture/system-design" element={<SystemDesign />} />
           <Route path="/docs/architecture/agent-roles" element={<AgentRoles />} />
@@ -145,7 +139,6 @@ export default function App() {
 
           {/* Developers */}
           <Route path="/developers" element={<DevelopersIndex />} />
-          <Route path="/developers/api-explorer" element={<ApiExplorer />} />
           <Route path="/developers/integrations" element={<Integrations />} />
 
           {/* Use Cases */}

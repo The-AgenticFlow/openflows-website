@@ -41,16 +41,6 @@ export const NEWS_ITEMS = [
     featured: false,
   },
   {
-    id: 5,
-    category: 'Product',
-    date: 'May 5, 2026',
-    title: 'New: interactive API explorer in the developer portal',
-    excerpt: 'Test every OpenFlows REST endpoint live - authenticate, fire requests, and inspect responses without leaving the browser. No Postman required.',
-    href: '/developers/api-explorer',
-    image: '/images/v1-stable.png',
-    featured: false,
-  },
-  {
     id: 6,
     category: 'Product',
     date: 'Apr 28, 2026',
