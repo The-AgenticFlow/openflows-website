@@ -45,6 +45,8 @@
   position: relative;
   z-index: 2;
   max-width: 900px;
+  margin-inline: auto;
+  text-align: center;
 }
 
 .heroEyebrow {
