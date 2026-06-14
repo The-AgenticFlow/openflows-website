@@ -18,7 +18,6 @@ import GettingStarted from '@/pages/Docs/GettingStarted'
 import Installation from '@/pages/Docs/Installation'
 import GuidesHome from '@/pages/Docs/GuidesHome'
 import AgentSetup from '@/pages/Docs/AgentSetup'
-import WorkflowIntegration from '@/pages/Docs/WorkflowIntegration'
 import ApiHome from '@/pages/Docs/ApiHome'
 import ApiEndpoints from '@/pages/Docs/ApiEndpoints'
 import ApiAuthentication from '@/pages/Docs/ApiAuthentication'
@@ -74,7 +73,7 @@ export default function App() {
           <Route path="/docs/getting-started/installation" element={<Installation />} />
           <Route path="/docs/guides" element={<GuidesHome />} />
           <Route path="/docs/guides/agent-setup" element={<AgentSetup />} />
-          <Route path="/docs/guides/workflow-integration" element={<WorkflowIntegration />} />
+
           <Route path="/docs/api" element={<ApiHome />} />
           <Route path="/docs/api/endpoints" element={<ApiEndpoints />} />
           <Route path="/docs/api/authentication" element={<ApiAuthentication />} />

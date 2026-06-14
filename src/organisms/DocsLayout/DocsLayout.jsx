@@ -14,7 +14,6 @@ const SIDEBAR = [
     title: 'Guides',
     links: [
       { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
-      { label: 'Workflow Integration', href: '/docs/guides/workflow-integration' },
     ],
   },
   {
