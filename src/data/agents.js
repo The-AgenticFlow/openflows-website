@@ -14,6 +14,7 @@ export const AGENT_DATA = {
       "Multi-worker Task Assignment",
       "Pipeline Failure Detection & Recovery",
       "CommandGate — approves dangerous bash commands",
+      "Human-to-System Communication — users ask questions, send commands, and receive updates via NEXUS",
       "CI Readiness Enforcement",
       "SharedStore State Supervision"
     ],
