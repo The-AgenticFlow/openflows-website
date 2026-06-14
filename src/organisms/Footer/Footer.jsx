@@ -3,15 +3,6 @@ import styles from './Footer.module.css'
 
 const FOOTER_LINKS = [
   {
-    heading: 'Platform',
-    links: [
-      { label: 'How It Works', href: '/#how-it-works' },
-      { label: 'The Agents', href: '/agents' },
-      { label: 'Architecture', href: '/docs/architecture' },
-      { label: 'SharedStore', href: '/docs/architecture/system-design' },
-    ],
-  },
-  {
     heading: 'OpenFlows',
     links: [
       { label: 'Get Started →', href: '/docs/getting-started' },
