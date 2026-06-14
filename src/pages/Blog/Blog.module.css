@@ -1140,3 +1140,40 @@
     flex-wrap: wrap;
   }
 }
+
+/* Empty state */
+.emptyState {
+  text-align: center;
+  padding: var(--space-20) 0;
+}
+
+.emptyTitle {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-3);
+}
+
+.emptyText {
+  color: var(--color-text-secondary);
+  margin-bottom: var(--space-6);
+}
+
+.emptyCta {
+  display: inline-block;
+  padding: var(--space-3) var(--space-6);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text-primary);
+  font-weight: 500;
+  text-decoration: none;
+  font-size: var(--font-size-sm);
+  transition: all var(--transition-fast);
+}
+
+.emptyCta:hover {
+  border-color: var(--color-border-hover);
+  background: var(--color-cyan-surface);
+  color: var(--color-cyan);
+}

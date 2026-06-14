@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import { Link } from 'react-router-dom'
 import Layout from '@/organisms/Layout/Layout'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import { NEWS_ITEMS } from '@/data/content'
 import styles from './Blog.module.css'
 
 export default function BlogIndex() {
@@ -14,7 +13,6 @@ export default function BlogIndex() {
   useEffect(() => {
     const fetchPosts = async () => {
       if (!isSupabaseConfigured() || !supabase) {
-        // Fall back to static content if Supabase is not configured
         setLoading(false)
         return
       }
@@ -72,24 +70,10 @@ export default function BlogIndex() {
 
   const [viewMode, setViewMode] = useState('grid') // Default view mode
 
-  // Use static content if Supabase is not configured or no posts
-  const staticPosts = NEWS_ITEMS.map(item => ({
-    id: item.id,
-    title: item.title,
-    slug: item.href.replace('/blog/', ''),
-    excerpt: item.excerpt,
-    cover_image_url: item.image,
-    category: { name: item.category },
-    published_at: item.date,
-    is_featured: item.featured,
-  }))
-
   // Filter posts by category
-  const filteredPosts = filter === 'all'
+  const allPosts = filter === 'all'
     ? posts
     : posts.filter(p => p.category?.name === filter)
-
-  const allPosts = posts.length > 0 ? filteredPosts : staticPosts
 
   // Split: first post is featured hero, rest go into the grid/list
   const [featuredPost, ...remainingPosts] = allPosts
@@ -175,6 +159,12 @@ export default function BlogIndex() {
             ) : error ? (
               <div className={styles.error}>
                 <p>Failed to load posts. Please try again later.</p>
+              </div>
+            ) : posts.length === 0 ? (
+              <div className={styles.emptyState}>
+                <p className={styles.emptyTitle}>No posts yet.</p>
+                <p className={styles.emptyText}>Blog content will appear here once published.</p>
+                <Link to="/admin/blog/new" className={styles.emptyCta}>Write the first post</Link>
               </div>
             ) : (
               <>
