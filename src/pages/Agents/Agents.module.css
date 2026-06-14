@@ -36,89 +36,10 @@
   line-height: 1.8;
 }
 
-/* Loop Section */
-.loopSection {
-  padding-block: var(--space-128);
-  background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-surface) 100%);
-}
-
-.loopHeader {
-  text-align: center;
-  margin-bottom: var(--space-24);
-}
-
 .sectionHeading {
   font-size: var(--font-size-3xl);
   font-weight: 500;
   margin-bottom: var(--space-4);
-}
-
-.sectionDesc {
-  color: var(--color-text-secondary);
-  font-size: var(--font-size-lg);
-}
-
-.loopVisual {
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-4);
-  position: relative;
-  margin-top: var(--space-16);
-}
-
-.loopStep {
-  position: relative;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: var(--space-8);
-  border-radius: var(--radius-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-6);
-  z-index: 2;
-}
-
-.stepHeader {
-  display: flex;
-  align-items: center;
-  gap: var(--space-3);
-}
-
-.stepDot {
-  width: 8px;
-  height: 8px;
-  background-color: var(--color-accent);
-  border-radius: 50%;
-  box-shadow: 0 0 10px var(--color-accent);
-}
-
-.stepAgent {
-  font-size: var(--font-size-xs);
-  font-weight: 700;
-  letter-spacing: 0.05em;
-  color: var(--color-accent);
-}
-
-.stepAction {
-  font-size: var(--font-size-lg);
-  font-weight: 500;
-  margin-bottom: var(--space-2);
-}
-
-.stepDesc {
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  line-height: 1.6;
-}
-
-.stepConnector {
-  position: absolute;
-  top: 50%;
-  right: -2rem;
-  width: 4rem;
-  height: 1px;
-  background: linear-gradient(90deg, var(--color-border) 0%, transparent 100%);
-  z-index: 1;
 }
 
 /* Agent Grid */
@@ -234,13 +155,6 @@
   padding-bottom: 2px;
 }
 
-@media (max-width: 1200px) {
-  .loopVisual {
-    grid-template-columns: 1fr;
-    gap: var(--space-12);
-  }
-}
-
 @media (max-width: 900px) {
   .hero {
     padding-top: calc(var(--nav-height) + var(--space-16));
@@ -249,10 +163,6 @@
 
   .subtitle {
     font-size: var(--font-size-base);
-  }
-
-  .loopSection {
-    padding-block: var(--space-64);
   }
 
   .gridSection {
@@ -300,10 +210,6 @@
   .sectionHeading {
     font-size: var(--font-size-2xl);
   }
-
-  .stepConnector {
-    display: none;
-  }
 }
 
 @media (max-width: 600px) {
@@ -314,17 +220,5 @@
 
   .container {
     padding-inline: var(--space-4);
-  }
-
-  .loopStep {
-    padding: var(--space-5);
-  }
-
-  .stepAction {
-    font-size: var(--font-size-base);
-  }
-
-  .capList {
-    grid-template-columns: 1fr;
   }
 }

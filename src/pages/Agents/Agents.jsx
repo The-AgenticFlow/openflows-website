@@ -2,14 +2,6 @@ import Layout from '@/organisms/Layout/Layout';
 import { AGENT_DATA } from '@/data/agents';
 import styles from './Agents.module.css';
 
-const ORCHESTRATION_STEPS = [
-  { agent: 'NEXUS', action: 'Orchestrate', desc: 'Discovers open GitHub issues, assigns tickets to idle FORGE workers, and supervises the entire pipeline.' },
-  { agent: 'FORGE', action: 'Build', desc: 'Creates an isolated Git worktree, writes PLAN.md, implements code segment by segment, runs tests.' },
-  { agent: 'SENTINEL', action: 'Review', desc: 'Evaluates every segment against 5 criteria. Writes CONTRACT.md, segment-N-eval.md, and final-review.md.' },
-  { agent: 'VESSEL', action: 'Merge', desc: 'Polls CI, detects conflicts early, attempts automated resolution, squash-merges green PRs.' },
-  { agent: 'LORE', action: 'Document', desc: 'Generates ADRs and updates CHANGELOG.md after every successful merge. No human effort required.' },
-];
-
 export default function Agents() {
   const agents = Object.entries(AGENT_DATA);
 
@@ -25,35 +17,6 @@ export default function Agents() {
             pipeline. Each agent has a distinct role, isolated permissions, and its own GitHub identity -
             just like a real development team.
           </p>
-        </div>
-      </section>
-
-      {/* Orchestration Loop Visual */}
-      <section className={styles.loopSection}>
-        <div className={styles.container}>
-          <div className={styles.loopHeader}>
-            <h2 className={styles.sectionHeading}>The Orchestration Loop</h2>
-            <p className={styles.sectionDesc}>
-              Every agent communicates through the SharedStore - a Redis-backed state machine with typed keys.
-              NEXUS supervises the entire loop and recovers broken states automatically.
-            </p>
-          </div>
-          
-          <div className={styles.loopVisual}>
-            {ORCHESTRATION_STEPS.map((step, i) => (
-              <div key={step.agent} className={styles.loopStep}>
-                <div className={styles.stepHeader}>
-                  <div className={styles.stepDot} />
-                  <span className={styles.stepAgent}>{step.agent}</span>
-                </div>
-                <div className={styles.stepContent}>
-                  <h3 className={styles.stepAction}>{step.action}</h3>
-                  <p className={styles.stepDesc}>{step.desc}</p>
-                </div>
-                {i < ORCHESTRATION_STEPS.length - 1 && <div className={styles.stepConnector} />}
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
