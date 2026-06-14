@@ -6,24 +6,6 @@ import styles from './Navbar.module.css'
 
 const NAV_DATA = [
   {
-    label: 'Platform',
-    href: '/platform',
-    dropdown: {
-      heading: 'Explore Platform',
-      items: [
-        { label: 'How It Works', href: '/#how-it-works' },
-        { label: 'SharedStore', href: '/docs/architecture/system-design' },
-        { label: 'FORGE-SENTINEL Pair Harness', href: '/docs/architecture/agent-roles' },
-        { label: 'Flow Recovery', href: '/docs/architecture/system-design' },
-        { label: 'Security & Safety', href: '/docs/guides/agent-setup' },
-      ],
-      advancements: [
-        { label: 'OpenFlows v1.0 Stable', href: '/blog/openflows-v1' },
-        { label: 'VESSEL Conflict Rework Loop', href: '/blog/vessel-conflict-rework' },
-      ]
-    }
-  },
-  {
     label: 'Agents',
     href: '/agents',
     dropdown: {
