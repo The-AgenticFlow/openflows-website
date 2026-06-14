@@ -21,15 +21,6 @@ const FOOTER_LINKS = [
     ],
   },
   {
-    heading: 'Developers',
-    links: [
-      { label: 'Documentation →', href: '/docs' },
-
-      { label: 'Integrations →', href: '/developers/integrations' },
-      { label: 'GitHub →', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
-    ],
-  },
-  {
     heading: 'Company',
     links: [
       { label: 'About', href: '/about' },

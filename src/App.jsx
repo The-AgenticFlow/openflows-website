@@ -41,10 +41,6 @@ import DemosIndex from '@/pages/Demos/DemosIndex'
 import Terminal from '@/pages/Demos/Terminal'
 import Walkthrough from '@/pages/Demos/Walkthrough'
 
-// Developers
-import DevelopersIndex from '@/pages/Developers/DevelopersIndex'
-import Integrations from '@/pages/Developers/Integrations'
-
 // Use Cases
 import UseCasesIndex from '@/pages/UseCases/UseCasesIndex'
 import WebDevelopment from '@/pages/UseCases/WebDevelopment'
@@ -136,10 +132,6 @@ export default function App() {
           <Route path="/demos" element={<DemosIndex />} />
           <Route path="/demos/terminal" element={<Terminal />} />
           <Route path="/demos/walkthrough" element={<Walkthrough />} />
-
-          {/* Developers */}
-          <Route path="/developers" element={<DevelopersIndex />} />
-          <Route path="/developers/integrations" element={<Integrations />} />
 
           {/* Use Cases */}
           <Route path="/use-cases" element={<UseCasesIndex />} />

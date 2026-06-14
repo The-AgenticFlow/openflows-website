@@ -52,19 +52,6 @@ const NAV_DATA = [
     }
   },
   {
-    label: 'Developers',
-    href: '/developers',
-    dropdown: {
-      heading: 'Developer Resources',
-      items: [
-        { label: 'API Reference', href: '/developers/api-explorer' },
-        { label: 'Integrations', href: '/developers/integrations' },
-        { label: 'OpenFlows CLI', href: '/docs/getting-started/installation' },
-        { label: 'GitHub Repository', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
-      ]
-    }
-  },
-  {
     label: 'Company',
     href: '/about',
     dropdown: {
