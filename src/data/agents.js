@@ -58,7 +58,7 @@ export const AGENT_DATA = {
       "Structured Machine-Readable Feedback",
       "Read-Only Permissions - Cannot Modify Code"
     ],
-    image: "https://images.unsplash.com/photo-1558488214-5d9c791338a0?auto=format&fit=crop&q=80&w=1000"
+    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=1000"
   },
   vessel: {
     name: "VESSEL",
