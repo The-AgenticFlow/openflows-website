@@ -36,6 +36,8 @@ import IntroducingDemos from '@/pages/Blog/IntroducingDemos'
 import AdminLogin from '@/pages/Admin/AdminLogin'
 import AdminDashboard from '@/pages/Admin/AdminDashboard'
 import BlogEditor from '@/pages/Admin/BlogEditor'
+import StoriesManager from '@/pages/Admin/StoriesManager'
+import StoriesEditor from '@/pages/Admin/StoriesEditor'
 
 // Demos
 import DemosIndex from '@/pages/Demos/DemosIndex'
@@ -109,6 +111,30 @@ export default function App() {
             element={
               <ProtectedRoute requiredRole="editor">
                 <BlogEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/stories"
+            element={
+              <ProtectedRoute requiredRole="viewer">
+                <StoriesManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/stories/new"
+            element={
+              <ProtectedRoute requiredRole="editor">
+                <StoriesEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/stories/edit/:id"
+            element={
+              <ProtectedRoute requiredRole="editor">
+                <StoriesEditor />
               </ProtectedRoute>
             }
           />

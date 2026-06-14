@@ -170,7 +170,16 @@ export default function AdminDashboard() {
             <div className={styles.dashboard}>
                 {/* Header */}
                 <header className={styles.dashboardHeader}>
-                    <h1 className={styles.dashboardTitle}>Blog Management</h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <h1 className={styles.dashboardTitle}>Blog Management</h1>
+                        <button
+                            className={styles.filterBtn}
+                            onClick={() => navigate('/admin/stories')}
+                            title="Manage Stories"
+                        >
+                            Manage Stories
+                        </button>
+                    </div>
                     <div className={styles.userInfo}>
                         <div className={styles.userAvatar}>
                             {getInitials(adminUser?.display_name || user?.email)}

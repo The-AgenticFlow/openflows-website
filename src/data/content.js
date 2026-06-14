@@ -63,29 +63,4 @@ export const NEWS_ITEMS = [
 ]
 
 /** @type {import('./types').StoryItem[]} */
-export const STORIES = [
-  {
-    id: 1,
-    category: 'Startup',
-    date: 'May 2026',
-    title: 'How a 2-person team shipped 40 features in a month - without writing a single line of code',
-    href: '/use-cases/web-development',
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    id: 2,
-    category: 'DevOps',
-    date: 'May 2026',
-    title: 'VESSEL\'s conflict rework loop: zero manual rebases across 15 microservices',
-    href: '/use-cases/devops',
-    image: 'https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=800',
-  },
-  {
-    id: 3,
-    category: 'Open Source',
-    date: 'Apr 2026',
-    title: 'OpenFlows uses itself to maintain its own GitHub backlog - NEXUS, FORGE, and SENTINEL all the way down',
-    href: '/blog/introducing-demos',
-    image: 'https://images.unsplash.com/photo-1556075798-4825dfaaf498?auto=format&fit=crop&q=80&w=800',
-  },
-]
+export const STORIES = []
