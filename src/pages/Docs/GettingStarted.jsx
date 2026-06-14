@@ -6,11 +6,11 @@ const ACCORDION_ITEMS = [
     title: '1. Prerequisites',
     content: (
       <ul>
-        <li><strong>Node.js 18+</strong> — Required for the GitHub MCP server and npm install</li>
-        <li><strong>Claude Code CLI</strong> — <code>npm install -g @anthropic-ai/claude-code</code></li>
-        <li><strong>GitHub PAT</strong> — With <code>repo</code> + <code>workflow</code> scopes</li>
-        <li><strong>LLM API key</strong> — Anthropic, Fireworks, or OpenAI</li>
-        <li><strong>Rust 1.70+</strong> — Only needed if building from source</li>
+        <li><strong>Node.js 18+</strong> - Required for the GitHub MCP server and npm install</li>
+        <li><strong>Claude Code CLI</strong> - <code>npm install -g @anthropic-ai/claude-code</code></li>
+        <li><strong>GitHub PAT</strong> - With <code>repo</code> + <code>workflow</code> scopes</li>
+        <li><strong>LLM API key</strong> - Anthropic, Fireworks, or OpenAI</li>
+        <li><strong>Rust 1.70+</strong> - Only needed if building from source</li>
       </ul>
     ),
   },
@@ -18,7 +18,7 @@ const ACCORDION_ITEMS = [
     title: '2. Install OpenFlows',
     content: (
       <>
-        <p>The fastest way — install via npm:</p>
+        <p>The fastest way - install via npm:</p>
         <CodeBlock lang="bash">npm install -g @the-agenticflow/openflows</CodeBlock>
         <p>Or use the one-line installer (downloads pre-built binary):</p>
         <CodeBlock lang="bash">curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/AgentFlow/main/scripts/install.sh | bash</CodeBlock>
@@ -30,7 +30,7 @@ const ACCORDION_ITEMS = [
     title: '3. Configure Your Environment',
     content: (
       <>
-        <p>Run the interactive TUI setup wizard — it writes your <code>.env</code> and <code>registry.json</code> for you:</p>
+        <p>Run the interactive TUI setup wizard - it writes your <code>.env</code> and <code>registry.json</code> for you:</p>
         <CodeBlock lang="bash">openflows-setup</CodeBlock>
         <p>Or configure manually. Minimum required in <code>.env</code>:</p>
         <CodeBlock lang="bash">{`DEFAULT_CLI=codex
@@ -48,7 +48,7 @@ FIREWORKS_API_KEY=your_fireworks_key`}</CodeBlock>
         <CodeBlock lang="bash">{`# Start the orchestration
 openflows
 
-# In a separate terminal — monitor workers in real-time
+# In a separate terminal - monitor workers in real-time
 openflows-dashboard`}</CodeBlock>
         <Callout type="tip" title="What happens next">
           NEXUS discovers your open GitHub issues, assigns them to FORGE workers, SENTINEL reviews every code segment, VESSEL merges approved PRs, and LORE writes the ADRs. You only get notified when human input is genuinely needed.
@@ -62,7 +62,7 @@ export default function GettingStarted() {
   return (
     <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started' }]}>
       <h1>Getting Started</h1>
-      <p>Get OpenFlows running in minutes. This guide walks you through installation, configuration, and your first autonomous workflow — from open GitHub issue to merged pull request.</p>
+      <p>Get OpenFlows running in minutes. This guide walks you through installation, configuration, and your first autonomous workflow - from open GitHub issue to merged pull request.</p>
 
       <Accordion items={ACCORDION_ITEMS} />
 
@@ -74,9 +74,9 @@ INFO  Found 3 open issues
 INFO  Assigning issue #1 to forge-1  →  T-001
 INFO  Worktree created: forge-1/T-001
 INFO  Spawning Claude Code for forge-1
-INFO  PLAN.md written — spawning SENTINEL for review
-INFO  Contract AGREED — implementation starting
-INFO  Worker forge-1 completed — PR opened: #1
+INFO  PLAN.md written - spawning SENTINEL for review
+INFO  Contract AGREED - implementation starting
+INFO  Worker forge-1 completed - PR opened: #1
 INFO  CI status: success for PR #1
 INFO  PR #1 merged successfully
 INFO  LORE: ADR-001 written and committed`}</CodeBlock>

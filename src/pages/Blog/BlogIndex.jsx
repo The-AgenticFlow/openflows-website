@@ -130,7 +130,7 @@ export default function BlogIndex() {
                 <p className={styles.eyebrow}>Blog</p>
                 <h1 className={styles.title}>What we&apos;re building, fixing, and learning.</h1>
                 <p className={styles.sub}>
-                  Stories from the OpenFlows team — releases, research, and open source news.
+                  Stories from the OpenFlows team - releases, research, and open source news.
                 </p>
               </div>
 
@@ -178,7 +178,7 @@ export default function BlogIndex() {
               </div>
             ) : (
               <>
-                {/* Featured / Most Recent Post — Hero Card */}
+                {/* Featured / Most Recent Post - Hero Card */}
                 {featuredPost && (
                   <Link to={`/blog/${featuredPost.slug}`} className={styles.featuredCard}>
                     {featuredPost.cover_image_url && (

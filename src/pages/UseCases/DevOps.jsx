@@ -27,7 +27,7 @@ export default function DevOps() {
         <p className={styles.eyebrow}>Use Cases</p>
         <h1 className={styles.title}>DevOps Automation</h1>
         <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
-          How a platform engineering team uses OpenFlows to automate CI/CD pipelines, security patches, and infrastructure updates — with VESSEL as the merge gatekeeper.
+          How a platform engineering team uses OpenFlows to automate CI/CD pipelines, security patches, and infrastructure updates - with VESSEL as the merge gatekeeper.
         </p>
 
         <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>The Scenario</h2>
@@ -41,17 +41,17 @@ export default function DevOps() {
         <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem', lineHeight: 1.7 }}>
           When VESSEL detects a merge conflict, it doesn't create a new branch or lose context. It writes <code>CONFLICT_RESOLUTION.md</code> and re-routes the ticket back to the same FORGE worker. FORGE reworks the implementation with full context, re-commits, and VESSEL re-monitors CI.
         </p>
-        <CodeBlock lang="bash">{`INFO  vessel: PR #14 — mergeable: false (conflict detected)
+        <CodeBlock lang="bash">{`INFO  vessel: PR #14 - mergeable: false (conflict detected)
 INFO  vessel: Writing CONFLICT_RESOLUTION.md
 INFO  vessel: Re-routing T-009 → forge-1 for rework
 INFO  forge-1: Received conflict context, rebasing implementation
 INFO  forge-1: Re-opened PR #15 on updated branch
 INFO  vessel: CI polling PR #15 (10s interval)
-INFO  vessel: CI success ✓ — squash-merging PR #15
+INFO  vessel: CI success ✓ - squash-merging PR #15
 INFO  lore: ADR-007 written and committed`}</CodeBlock>
 
         <Callout type="tip" title="Result">
-          The conflict rework loop eliminates manual rebase churn entirely. VESSEL handles the full merge lifecycle — conflict detection, resolution attempt, rework routing, CI polling, and final merge — without any human involvement.
+          The conflict rework loop eliminates manual rebase churn entirely. VESSEL handles the full merge lifecycle - conflict detection, resolution attempt, rework routing, CI polling, and final merge - without any human involvement.
         </Callout>
       </div>
     </Layout>

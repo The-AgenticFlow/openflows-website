@@ -456,7 +456,7 @@ export default function BlogEditor() {
                                 <p className={styles.hint}>Featured posts appear prominently on the homepage</p>
                             </div>
 
-                            {/* Authors — Multi-author support */}
+                            {/* Authors - Multi-author support */}
                             <div className={styles.sidebarCard}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                     <h3 style={{ margin: 0 }}>Authors</h3>

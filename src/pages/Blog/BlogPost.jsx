@@ -222,7 +222,7 @@ export default function BlogPost() {
 
 
 
-                {/* Footer — Share */}
+                {/* Footer - Share */}
                 <footer className={styles.articleFooter}>
                     <div className={styles.shareButtons}>
                         <span className={styles.shareLabel}>Share this article</span>

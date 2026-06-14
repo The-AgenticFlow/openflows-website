@@ -22,7 +22,7 @@ openflows auth generate-key
 
 # Output:
 # API Key: ofk_live_a1b2c3d4e5f6g7h8i9j0
-# Store this key securely — it won't be shown again.`}</CodeBlock>
+# Store this key securely - it won't be shown again.`}</CodeBlock>
 
       <h2>Using Your API Key</h2>
       <p>Include the API key in the <code>Authorization</code> header of every request:</p>

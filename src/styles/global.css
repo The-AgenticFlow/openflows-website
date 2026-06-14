@@ -1,10 +1,10 @@
 /* ===================================================
-   GLOBAL STYLES — OpenFlows (Mesa-Inspired Design)
+   GLOBAL STYLES - OpenFlows (Mesa-Inspired Design)
    =================================================== */
 
 /* --- Design Tokens --- */
 :root {
-  /* Colors — Warm editorial palette (light mode) */
+  /* Colors - Warm editorial palette (light mode) */
   --color-bg: #F8F2EB;
   --color-surface: #FDFCF8;
   --color-surface-2: #F0EBE3;
@@ -18,7 +18,7 @@
   --color-accent: #1A1A1A;
   --color-accent-hover: #333333;
 
-  /* Neutral accent system — headings & emphasis use dark, not green */
+  /* Neutral accent system - headings & emphasis use dark, not green */
   --color-cyan: #1A1A1A;
   --color-cyan-glow: rgba(26, 26, 26, 0.12);
   --color-cyan-muted: rgba(26, 26, 26, 0.08);

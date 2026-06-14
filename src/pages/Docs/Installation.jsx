@@ -89,7 +89,7 @@ export default function Installation() {
       <TabSwitcher tabs={TABS} />
 
       <h2>Required Environment Variables</h2>
-      <CodeBlock lang="bash">{`# Minimum required — copy .env.example to .env and fill these in
+      <CodeBlock lang="bash">{`# Minimum required - copy .env.example to .env and fill these in
 GITHUB_REPOSITORY=owner/repo
 GITHUB_PERSONAL_ACCESS_TOKEN=ghp_your_token_here
 ANTHROPIC_API_KEY=sk-ant-your_key_here   # for Claude Code (FORGE agent)
@@ -109,7 +109,7 @@ $ openflows-doctor
 ✓ GITHUB_REPOSITORY: owner/repo`}</CodeBlock>
 
       <Callout type="tip" title="Next Step">
-        Run <code>openflows-setup</code> for the interactive TUI wizard — it guides you through all configuration options and writes your <code>.env</code> and <code>registry.json</code> files.
+        Run <code>openflows-setup</code> for the interactive TUI wizard - it guides you through all configuration options and writes your <code>.env</code> and <code>registry.json</code> files.
       </Callout>
     </DocsLayout>
   )

@@ -31,7 +31,7 @@ Actual:   \`offset = page * per_page\`` },
   {
     title: 'FORGE Writes PLAN.md',
     desc: 'FORGE creates an isolated Git worktree, reads the codebase, and writes a segment-by-segment implementation plan.',
-    code: { lang: 'markdown', content: `# PLAN — T-142: Fix pagination offset
+    code: { lang: 'markdown', content: `# PLAN - T-142: Fix pagination offset
 
 ## Segment 1: Fix calculate_offset in src/api/pagination.rs
 Change: page * per_page → page.saturating_sub(1) * per_page
@@ -42,7 +42,7 @@ Add 3 test cases: page 1, page 2, large page number` },
   {
     title: 'SENTINEL Reviews the Plan',
     desc: 'SENTINEL reads PLAN.md and writes CONTRACT.md before a single line of code is written.',
-    code: { lang: 'markdown', content: `# CONTRACT — T-142
+    code: { lang: 'markdown', content: `# CONTRACT - T-142
 status: AGREED
 
 ## Acceptance Criteria
@@ -83,7 +83,7 @@ mod tests {
   {
     title: 'VESSEL Merges, LORE Documents',
     desc: 'VESSEL polls CI at 10s intervals. When green, it squash-merges the PR. LORE then writes the ADR and updates CHANGELOG.md.',
-    code: { lang: 'bash', content: `INFO  vessel: CI success ✓ — squash-merging PR #143
+    code: { lang: 'bash', content: `INFO  vessel: CI success ✓ - squash-merging PR #143
 INFO  lore: ADR-012 written → docs/adr/2026-06-01-fix-pagination-offset.md
 INFO  lore: CHANGELOG.md updated → committed to main
 INFO  nexus: T-142 merged. Picking next ticket.` },
@@ -111,7 +111,7 @@ export default function Walkthrough() {
         </div>
 
         <Callout type="tip" title="Try it yourself">
-          Ready to run this on your own repo? Follow the <a href="/docs/getting-started">Getting Started guide</a> — you'll be up and running in under 5 minutes.
+          Ready to run this on your own repo? Follow the <a href="/docs/getting-started">Getting Started guide</a> - you'll be up and running in under 5 minutes.
         </Callout>
       </div>
     </Layout>

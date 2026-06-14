@@ -22,7 +22,7 @@ export default function Agents() {
           <h1 className={styles.title}>Five agents. One pipeline.<br/> Zero manual steps.</h1>
           <p className={styles.subtitle}>
             OpenFlows coordinates five specialized AI agents through a deterministic, event-driven
-            pipeline. Each agent has a distinct role, isolated permissions, and its own GitHub identity —
+            pipeline. Each agent has a distinct role, isolated permissions, and its own GitHub identity -
             just like a real development team.
           </p>
         </div>
@@ -34,7 +34,7 @@ export default function Agents() {
           <div className={styles.loopHeader}>
             <h2 className={styles.sectionHeading}>The Orchestration Loop</h2>
             <p className={styles.sectionDesc}>
-              Every agent communicates through the SharedStore — a Redis-backed state machine with typed keys.
+              Every agent communicates through the SharedStore - a Redis-backed state machine with typed keys.
               NEXUS supervises the entire loop and recovers broken states automatically.
             </p>
           </div>
@@ -90,7 +90,7 @@ export default function Agents() {
                 Every agent interaction is persisted in a Redis-backed state machine with typed keys:
                 <code> tickets</code>, <code>worker_slots</code>, <code>pending_prs</code>.
                 A 1000-event ring buffer powers real-time TUI monitoring. In-memory for dev and tests,
-                Redis for production — zero config change required.
+                Redis for production - zero config change required.
               </p>
               <a href="/docs/architecture/system-design" className={styles.archLink}>Read the architecture docs ›</a>
             </div>

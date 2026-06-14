@@ -13,7 +13,7 @@ export default function WorkflowIntegration() {
   return (
     <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Workflow Integration' }]}>
       <h1>Workflow Integration</h1>
-      <p>Connect OpenFlows to your existing development workflows — GitHub Actions, CI/CD pipelines, code review gates, and notification systems.</p>
+      <p>Connect OpenFlows to your existing development workflows - GitHub Actions, CI/CD pipelines, code review gates, and notification systems.</p>
 
       <h2>GitHub Actions Integration</h2>
       <p>Add OpenFlows as a GitHub Action to run autonomously on repository events:</p>
