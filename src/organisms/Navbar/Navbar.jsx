@@ -52,6 +52,19 @@ const NAV_DATA = [
     }
   },
   {
+    label: 'Research',
+    href: '/research',
+    dropdown: {
+      heading: 'Research',
+      items: [
+        { label: 'All Publications', href: '/research' },
+        { label: 'Papers', href: '/research' },
+        { label: 'Preprints', href: '/research' },
+        { label: 'Technical Reports', href: '/research' },
+      ]
+    }
+  },
+  {
     label: 'Company',
     href: '/about',
     dropdown: {

@@ -29,12 +29,18 @@ import BlogIndex from '@/pages/Blog/BlogIndex'
 import BlogPost from '@/pages/Blog/BlogPost'
 import IntroducingDemos from '@/pages/Blog/IntroducingDemos'
 
+// Research
+import ResearchIndex from '@/pages/Research/ResearchIndex'
+import ResearchDetail from '@/pages/Research/ResearchDetail'
+
 // Admin
 import AdminLogin from '@/pages/Admin/AdminLogin'
 import AdminDashboard from '@/pages/Admin/AdminDashboard'
 import BlogEditor from '@/pages/Admin/BlogEditor'
 import StoriesManager from '@/pages/Admin/StoriesManager'
 import StoriesEditor from '@/pages/Admin/StoriesEditor'
+import ResearchManager from '@/pages/Admin/ResearchManager'
+import ResearchEditor from '@/pages/Admin/ResearchEditor'
 
 // Demos
 import DemosIndex from '@/pages/Demos/DemosIndex'
@@ -76,6 +82,10 @@ export default function App() {
           <Route path="/blog" element={<BlogIndex />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/blog/introducing-demos" element={<IntroducingDemos />} />
+
+          {/* Research */}
+          <Route path="/research" element={<ResearchIndex />} />
+          <Route path="/research/:slug" element={<ResearchDetail />} />
 
           {/* Admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -124,6 +134,30 @@ export default function App() {
             element={
               <ProtectedRoute requiredRole="editor">
                 <StoriesEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/research"
+            element={
+              <ProtectedRoute requiredRole="viewer">
+                <ResearchManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/research/new"
+            element={
+              <ProtectedRoute requiredRole="editor">
+                <ResearchEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/research/edit/:id"
+            element={
+              <ProtectedRoute requiredRole="editor">
+                <ResearchEditor />
               </ProtectedRoute>
             }
           />

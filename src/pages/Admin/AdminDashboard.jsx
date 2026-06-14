@@ -179,6 +179,13 @@ export default function AdminDashboard() {
                         >
                             Manage Stories
                         </button>
+                        <button
+                            className={styles.filterBtn}
+                            onClick={() => navigate('/admin/research')}
+                            title="Manage Research"
+                        >
+                            Manage Research
+                        </button>
                     </div>
                     <div className={styles.userInfo}>
                         <div className={styles.userAvatar}>
