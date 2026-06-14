@@ -7,7 +7,7 @@ import ImageUploader from '@/components/ImageUploader'
 import ReactMarkdown from 'react-markdown'
 import styles from './Admin.module.css'
 
-const DEFAULT_AUTHOR = { name: '', role: '', avatar_url: '', linkedin: '', github: '', twitter: '', website: '' }
+const DEFAULT_AUTHOR = { name: '', role: '', avatar_url: '', linkedin: '', github: '', website: '' }
 
 const DEFAULT_FORM = {
     title: '',
@@ -98,7 +98,7 @@ export default function BlogEditor() {
                 if (data.authors && data.authors.length > 0) {
                     setAuthors(data.authors)
                 } else if (data.author_name) {
-                    setAuthors([{ name: data.author_name, role: '', avatar_url: data.author_avatar_url || '', linkedin: '', github: '', twitter: '', website: '' }])
+                    setAuthors([{ name: data.author_name, role: '', avatar_url: data.author_avatar_url || '', linkedin: '', github: '', website: '' }])
                 }
             } catch (err) {
                 console.error('Error fetching blog:', err)
@@ -518,12 +518,6 @@ export default function BlogEditor() {
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.2 11.38.6.1.82-.26.82-.57v-2c-3.33.72-4.03-1.6-4.03-1.6-.55-1.4-1.34-1.77-1.34-1.77-1.08-.74.08-.72.08-.72 1.2.08 1.83 1.23 1.83 1.23 1.06 1.82 2.8 1.3 3.48.99.1-.77.42-1.3.76-1.6-2.66-.3-5.46-1.33-5.46-5.93 0-1.31.47-2.38 1.24-3.22-.13-.3-.54-1.52.11-3.17 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0C18 4.68 19 5 19 5c.65 1.65.24 2.87.12 3.17.77.84 1.23 1.91 1.23 3.22 0 4.61-2.8 5.63-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.21.69.82.57C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z" /></svg>
                                                     </span>
                                                     <input type="url" value={author.github} onChange={e => handleAuthorChange(index, 'github', e.target.value)} placeholder="github.com/username" />
-                                                </div>
-                                                <div className={styles.socialRow}>
-                                                    <span className={styles.socialIcon} title="X / Twitter">
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-                                                    </span>
-                                                    <input type="url" value={author.twitter} onChange={e => handleAuthorChange(index, 'twitter', e.target.value)} placeholder="x.com/username" />
                                                 </div>
                                                 <div className={styles.socialRow}>
                                                     <span className={styles.socialIcon} title="LinkedIn">
