@@ -121,40 +121,6 @@
   filter: grayscale(0);
 }
 
-/* Arch Section */
-.archSection {
-  padding-block: var(--space-128);
-}
-
-.archBox {
-  background: radial-gradient(circle at top right, var(--color-surface-2), var(--color-bg));
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-xl);
-  padding: var(--space-24);
-  text-align: center;
-}
-
-.archTitle {
-  font-size: var(--font-size-4xl);
-  margin-bottom: var(--space-6);
-  font-weight: 500;
-}
-
-.archDesc {
-  font-size: var(--font-size-lg);
-  color: var(--color-text-secondary);
-  max-width: 800px;
-  margin-inline: auto;
-  line-height: 1.8;
-  margin-bottom: var(--space-12);
-}
-
-.archLink {
-  color: var(--color-text-primary);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 2px;
-}
-
 @media (max-width: 900px) {
   .hero {
     padding-top: calc(var(--nav-height) + var(--space-16));
@@ -167,22 +133,6 @@
 
   .gridSection {
     padding-block: var(--space-64);
-  }
-
-  .archSection {
-    padding-block: var(--space-64);
-  }
-
-  .archBox {
-    padding: var(--space-16) var(--space-6);
-  }
-
-  .archTitle {
-    font-size: var(--font-size-2xl);
-  }
-
-  .archDesc {
-    font-size: var(--font-size-base);
   }
 }
 

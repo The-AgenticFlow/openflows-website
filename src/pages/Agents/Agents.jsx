@@ -42,24 +42,6 @@ export default function Agents() {
         </div>
       </section>
 
-      {/* Architecture Callout */}
-      <section className={styles.archSection}>
-        <div className={styles.container}>
-          <div className={styles.archBox}>
-            <div className={styles.archText}>
-              <p className={styles.eyebrow}>State & Governance</p>
-              <h2 className={styles.archTitle}>Powered by SharedStore</h2>
-              <p className={styles.archDesc}>
-                Every agent interaction is persisted in a Redis-backed state machine with typed keys:
-                <code> tickets</code>, <code>worker_slots</code>, <code>pending_prs</code>.
-                A 1000-event ring buffer powers real-time TUI monitoring. In-memory for dev and tests,
-                Redis for production - zero config change required.
-              </p>
-              <a href="/docs/architecture/system-design" className={styles.archLink}>Read the architecture docs ›</a>
-            </div>
-          </div>
-        </div>
-      </section>
     </Layout>
   );
 }
