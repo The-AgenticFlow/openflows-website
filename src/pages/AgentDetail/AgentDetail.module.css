@@ -1,17 +1,53 @@
-.hero {
-  padding-top: calc(var(--nav-height) + var(--space-20));
-  padding-bottom: var(--space-32);
-  background-color: var(--color-bg);
-  text-align: center;
-}
-
-.container {
-  max-width: var(--max-width);
-  margin-inline: auto;
+.detailHero {
+  margin-bottom: 5rem;
+  padding-top: calc(var(--nav-height) + var(--space-16));
   padding-inline: var(--space-6);
 }
 
-.eyebrow {
+.heroCard {
+  position: relative;
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  min-height: 420px;
+  border-radius: 2rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding: 3.5rem;
+}
+
+.heroBg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+
+.heroBg img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.8) brightness(0.5);
+}
+
+.heroOverlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom,
+      rgba(0, 0, 0, 0.3) 0%,
+      rgba(0, 0, 0, 0.7) 100%);
+}
+
+.heroContent {
+  position: relative;
+  z-index: 2;
+  max-width: 900px;
+}
+
+.heroEyebrow {
   font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   text-transform: uppercase;
@@ -20,50 +56,68 @@
   margin-bottom: var(--space-4);
 }
 
-.name {
-  font-size: clamp(1.75rem, 5vw, 3rem);
-  font-weight: 500;
-  letter-spacing: -0.04em;
-  color: var(--color-text-primary);
+.heroTitle {
+  font-size: clamp(2.5rem, 6vw, 4rem);
+  font-weight: 700;
   line-height: 1.1;
-  text-shadow: 0 0 30px var(--color-cyan-glow);
+  color: var(--color-text-primary);
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.03em;
 }
 
-.role {
-  font-size: var(--font-size-xl);
+.heroExcerpt {
+  font-size: 1.25rem;
+  line-height: 1.6;
   color: var(--color-text-secondary);
-  margin-top: var(--space-6);
-  font-weight: 400;
+  max-width: 760px;
 }
 
-/* Mission Section */
-.missionSection {
-  padding-block: var(--space-128);
+/* Article Body */
+.article {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding-inline: var(--space-6);
+  padding-bottom: var(--space-32);
+  line-height: 1.8;
+  font-size: 1.125rem;
+  color: var(--color-text-secondary);
 }
 
-.missionGrid {
-  display: grid;
-  grid-template-columns: 1fr 0.8fr;
-  gap: var(--space-16);
-  align-items: center;
-}
-
-.sectionHeading {
-  font-size: var(--font-size-3xl);
-  font-weight: 500;
-  margin-bottom: var(--space-8);
-  color: var(--color-cyan);
-}
-
-.description {
-  font-size: var(--font-size-lg);
+.lead {
+  font-size: 1.25rem;
   line-height: 1.8;
   color: var(--color-text-secondary);
-  margin-bottom: var(--space-12);
-  max-width: 600px;
+  margin-bottom: 3rem;
+  max-width: 900px;
 }
 
+.articleSection {
+  margin-bottom: 3rem;
+}
+
+.articleSection h2,
+.article h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-top: 3.5rem;
+  margin-bottom: 1.5rem;
+  letter-spacing: -0.02em;
+}
+
+.articleSection h3,
+.article h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin-top: 2.5rem;
+  margin-bottom: 1.25rem;
+}
+
+/* Capabilities list */
 .capList {
+  list-style: none;
+  padding: 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: var(--space-4);
@@ -71,176 +125,158 @@
 
 .capItem {
   display: flex;
-  gap: var(--space-3);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-primary);
   align-items: center;
+  gap: var(--space-3);
+  font-size: 1rem;
+  color: var(--color-text-primary);
+  padding: var(--space-3) var(--space-4);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
 }
 
 .check {
   color: var(--color-cyan);
   font-weight: bold;
+  flex-shrink: 0;
 }
 
-.imageWrap {
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  border: 1px solid var(--color-border);
-  width: 80%;
-  margin-inline: auto;
-  box-shadow: var(--shadow-cyan);
+/* Workflow list */
+.flowList {
+  list-style: none;
+  padding: 0;
+  counter-reset: step;
 }
 
-.image {
-  width: 100%;
-  aspect-ratio: 1/1;
-  object-fit: cover;
-}
-
-/* Workflow Section */
-.workflowSection {
-  padding-block: var(--space-128);
-  background-color: var(--color-surface-2);
-}
-
-.workflowHeading {
-  font-size: var(--font-size-3xl);
-  font-weight: 500;
-  margin-bottom: var(--space-16);
-  text-align: center;
-  color: var(--color-cyan);
-}
-
-.flowGrid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: var(--space-6);
-}
-
-.flowCard {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: var(--space-8);
-  border-radius: var(--radius-lg);
-  transition: border-color 0.2s ease;
-}
-
-.flowCard:hover {
-  border-color: var(--color-border-hover);
-}
-
-.flowNumber {
-  font-size: var(--font-size-xs);
-  color: var(--color-cyan);
-  font-weight: 600;
-  margin-bottom: var(--space-4);
-}
-
-.flowTitle {
-  font-size: var(--font-size-base);
-  font-weight: 500;
-  margin-bottom: var(--space-4);
-}
-
-.flowDesc {
-  font-size: var(--font-size-sm);
+.flowItem {
+  position: relative;
+  padding-left: 3rem;
+  margin-bottom: 2.5rem;
   color: var(--color-text-secondary);
-  line-height: 1.6;
 }
 
-/* CTA Section */
-.ctaSection {
-  padding-block: var(--space-128);
-}
-
-.ctaBox {
-  background: linear-gradient(145deg, var(--color-surface-2), var(--color-bg));
+.flowItem::before {
+  counter-increment: step;
+  content: counter(step);
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+  background: var(--color-surface);
   border: 1px solid var(--color-border);
-  padding: var(--space-24);
+  color: var(--color-cyan);
+  font-weight: 700;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flowItem strong {
+  display: block;
+  font-size: 1.125rem;
+  color: var(--color-text-primary);
+  margin-bottom: var(--space-2);
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.flowItem p {
+  max-width: 720px;
+  line-height: 1.7;
+  margin: 0;
+  font-size: 1rem;
+}
+
+.divider {
+  margin: 4rem 0;
+  border: 0;
+  border-top: 1px solid var(--color-border);
+}
+
+/* Article CTA */
+.articleCta {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  padding: var(--space-12);
   border-radius: var(--radius-xl);
   text-align: center;
 }
 
-.ctaBox h2 {
-  font-size: var(--font-size-4xl);
-  margin-bottom: var(--space-4);
+.articleCta h3 {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  color: var(--color-text-primary);
+  margin: 0 0 var(--space-4) 0;
 }
 
-.ctaBox p {
+.articleCta p {
   color: var(--color-text-secondary);
-  margin-bottom: var(--space-12);
+  max-width: 600px;
+  margin: 0 auto var(--space-8);
 }
 
 .actions {
   display: flex;
   gap: var(--space-6);
   justify-content: center;
-}
-
-.primaryBtn {
-  background-color: var(--color-accent);
-  color: var(--color-bg);
-  padding: var(--space-3) var(--space-8);
-  border-radius: var(--radius-full);
-  font-weight: 500;
-}
-
-.secondaryBtn {
-  color: var(--color-text-primary);
-  border-bottom: 1px solid var(--color-border);
-  padding-bottom: 2px;
+  flex-wrap: wrap;
 }
 
 @media (max-width: 1000px) {
-  .flowGrid {
-    grid-template-columns: 1fr 1fr;
-  }
-
-  .missionGrid {
+  .capList {
     grid-template-columns: 1fr;
-  }
-
-  .imageWrap {
-    width: 100%;
   }
 }
 
 @media (max-width: 768px) {
-  .hero {
-    padding-top: calc(var(--nav-height) + var(--space-16));
-    padding-bottom: var(--space-24);
+  .detailHero {
+    padding-top: calc(var(--nav-height) + var(--space-8));
+    margin-bottom: 3rem;
   }
 
-  .container {
+  .heroCard {
+    min-height: 300px;
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+  }
+
+  .heroTitle {
+    font-size: clamp(1.5rem, 5vw, 2.5rem);
+  }
+
+  .heroExcerpt {
+    font-size: 1rem;
+  }
+
+  .article {
     padding-inline: var(--space-4);
+    padding-bottom: var(--space-20);
   }
 
-  .missionSection {
-    padding-block: var(--space-64);
+  .lead {
+    font-size: 1.1rem;
   }
 
-  .workflowSection {
-    padding-block: var(--space-64);
+  .articleSection h2,
+  .article h2 {
+    font-size: 1.6rem;
   }
 
-  .ctaSection {
-    padding-block: var(--space-64);
+  .flowItem {
+    padding-left: 2.5rem;
   }
 
-  .sectionHeading {
-    font-size: var(--font-size-2xl);
+  .flowItem::before {
+    width: 1.75rem;
+    height: 1.75rem;
+    font-size: 0.75rem;
   }
 
-  .description {
-    font-size: var(--font-size-base);
-  }
-
-  .ctaBox {
-    padding: var(--space-12) var(--space-6);
-  }
-
-  .ctaBox h2 {
-    font-size: var(--font-size-2xl);
+  .articleCta {
+    padding: var(--space-8) var(--space-4);
   }
 
   .actions {
@@ -249,29 +285,10 @@
   }
 }
 
-@media (max-width: 600px) {
-  .hero {
-    padding-top: calc(var(--nav-height) + var(--space-8));
-    padding-bottom: var(--space-16);
-  }
-
-  .flowGrid {
-    grid-template-columns: 1fr;
-  }
-
-  .flowCard {
-    padding: var(--space-5);
-  }
-
-  .capList {
-    grid-template-columns: 1fr;
-  }
-
-  .name {
-    font-size: clamp(1.5rem, 8vw, 2.5rem);
-  }
-
-  .role {
-    font-size: var(--font-size-base);
+@media (max-width: 480px) {
+  .heroCard {
+    padding: 1.5rem;
+    border-radius: var(--radius-md);
+    min-height: 280px;
   }
 }

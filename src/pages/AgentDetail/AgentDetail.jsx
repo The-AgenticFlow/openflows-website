@@ -1,3 +1,4 @@
+
 import { useParams, Navigate } from 'react-router-dom';
 import Layout from '@/organisms/Layout/Layout';
 import Button from '@/atoms/Button/Button';
@@ -14,78 +15,76 @@ export default function AgentDetail() {
 
   return (
     <Layout>
-      {/* Hero Section */}
-      <section className={styles.hero}>
-        <div className={styles.container}>
-          <p className={styles.eyebrow}>The OpenFlows Team</p>
-          <h1 className={styles.name}>{agent.name}</h1>
-          <p className={styles.role}>{agent.role}</p>
-        </div>
-      </section>
-
-      {/* Mission & Visual */}
-      <section className={styles.missionSection}>
-        <div className={styles.container}>
-          <div className={styles.missionGrid}>
-            <div className={styles.missionText}>
-              <h2 className={styles.sectionHeading}>Technical Mission</h2>
-              <p className={styles.description}>{agent.mission}</p>
-              
-              <div className={styles.capList}>
-                {agent.capabilities.map((cap, i) => (
-                  <div key={i} className={styles.capItem}>
-                    <span className={styles.check}>✓</span>
-                    {cap}
-                  </div>
-                ))}
-              </div>
+      {/* Article Header */}
+      <header className={styles.detailHero}>
+        <div className={styles.heroCard}>
+          {agent.image && (
+            <div className={styles.heroBg}>
+              <img src={agent.image} alt="" />
+              <div className={styles.heroOverlay} />
             </div>
-            <div className={styles.imageWrap}>
-              <img src={agent.image} alt={agent.name} className={styles.image} />
-            </div>
+          )}
+          <div className={styles.heroContent}>
+            <p className={styles.heroEyebrow}>The OpenFlows Team</p>
+            <h1 className={styles.heroTitle}>{agent.name}</h1>
+            <p className={styles.heroExcerpt}>{agent.role}</p>
           </div>
         </div>
-      </section>
+      </header>
 
-      {/* Workflow Section */}
-      <section className={styles.workflowSection}>
-        <div className={styles.container}>
-          <h2 className={styles.workflowHeading}>How it works</h2>
-          <div className={styles.flowGrid}>
+      {/* Article Body */}
+      <article className={styles.article}>
+        {/* Mission / Introduction */}
+        <p className={styles.lead}>{agent.mission}</p>
+
+        {/* Capabilities */}
+        <section className={styles.articleSection}>
+          <h2>Capabilities</h2>
+          <ul className={styles.capList}>
+            {agent.capabilities.map((cap, i) => (
+              <li key={i} className={styles.capItem}>
+                <span className={styles.check}>✓</span>
+                {cap}
+              </li>
+            ))}
+          </ul>
+        </section>
+
+        {/* Workflow */}
+        <section className={styles.articleSection}>
+          <h2>How it works</h2>
+          <ol className={styles.flowList}>
             {agent.flow.map((step, i) => {
               const [title, desc] = step.split(': ');
               return (
-                <div key={i} className={styles.flowCard}>
-                  <div className={styles.flowNumber}>{i + 1}</div>
-                  <h3 className={styles.flowTitle}>{title}</h3>
-                  <p className={styles.flowDesc}>{desc}</p>
-                </div>
+                <li key={i} className={styles.flowItem}>
+                  <strong>{title}</strong>
+                  <p>{desc}</p>
+                </li>
               );
             })}
-          </div>
-        </div>
-      </section>
+          </ol>
+        </section>
 
-      {/* CTA Section */}
-      <section className={styles.ctaSection}>
-        <div className={styles.container}>
-          <div className={styles.ctaBox}>
-            <h2>Deploy {agent.name} on your repo</h2>
-            <p>
-              Install OpenFlows, point it at a GitHub repository with open issues,
-              and {agent.name} will be running in minutes.
-            </p>
-            <div className={styles.actions}>
-              <Button variant="outline" size="md" href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">
-                View on GitHub
-              </Button>
-              <Button variant="cyan" size="md" href="/docs/getting-started/installation">
-                Installation Guide →
-              </Button>
-            </div>
+        <hr className={styles.divider} />
+
+        {/* CTA */}
+        <section className={styles.articleCta}>
+          <h3>Deploy {agent.name} on your repo</h3>
+          <p>
+            Install OpenFlows, point it at a GitHub repository with open issues,
+            and {agent.name} will be running in minutes.
+          </p>
+          <div className={styles.actions}>
+            <Button variant="outline" size="md" href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">
+              View on GitHub
+            </Button>
+            <Button variant="cyan" size="md" href="/docs/getting-started/installation">
+              Installation Guide →
+            </Button>
           </div>
-        </div>
-      </section>
+        </section>
+      </article>
     </Layout>
   );
 }
