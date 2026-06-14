@@ -1,51 +1,7 @@
 .detailHero {
-  margin-bottom: 5rem;
-  padding-top: calc(var(--nav-height) + var(--space-16));
+  padding-top: calc(var(--nav-height) + var(--space-24));
+  padding-bottom: var(--space-16);
   padding-inline: var(--space-6);
-}
-
-.heroCard {
-  position: relative;
-  width: 100%;
-  max-width: 1440px;
-  margin-inline: auto;
-  min-height: 420px;
-  border-radius: 2rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-  justify-content: flex-end;
-  padding: 3.5rem;
-}
-
-.heroBg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.heroBg img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  filter: saturate(0.8) brightness(0.5);
-}
-
-.heroOverlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to bottom,
-      rgba(0, 0, 0, 0.3) 0%,
-      rgba(0, 0, 0, 0.7) 100%);
-}
-
-.heroContent {
-  position: relative;
-  z-index: 2;
-  max-width: 900px;
-  margin-inline: auto;
   text-align: center;
 }
 
@@ -55,169 +11,131 @@
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 600;
-  margin-bottom: var(--space-4);
+  margin-bottom: var(--space-5);
 }
 
 .heroTitle {
-  font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 700;
-  line-height: 1.1;
-  color: var(--color-text-primary);
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.03em;
+  font-size: clamp(2.5rem, 7vw, 5rem);
+  font-weight: 500;
+  line-height: 1.05;
+  letter-spacing: -0.04em;
+  margin-bottom: var(--space-5);
 }
 
-.heroExcerpt {
-  font-size: 1.25rem;
-  line-height: 1.6;
+.heroRole {
+  font-size: var(--font-size-xl);
   color: var(--color-text-secondary);
-  max-width: 760px;
 }
 
-/* Article Body */
 .article {
-  max-width: 1000px;
+  max-width: 680px;
   margin: 0 auto;
   padding-inline: var(--space-6);
   padding-bottom: var(--space-32);
-  line-height: 1.8;
-  font-size: 1.125rem;
   color: var(--color-text-secondary);
+  line-height: 1.75;
 }
 
 .lead {
-  font-size: 1.25rem;
-  line-height: 1.8;
+  font-size: 1.3rem;
+  line-height: 1.65;
   color: var(--color-text-secondary);
-  margin-bottom: 3rem;
-  max-width: 900px;
+  margin-bottom: var(--space-20);
+  max-width: 640px;
+  margin-inline: auto;
+  text-align: center;
 }
 
-.articleSection {
-  margin-bottom: 3rem;
+.sectionTitle {
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-10);
 }
 
-.articleSection h2,
-.article h2 {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin-top: 3.5rem;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.02em;
-}
-
-.articleSection h3,
-.article h3 {
-  font-size: 1.5rem;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  margin-top: 2.5rem;
-  margin-bottom: 1.25rem;
-}
-
-/* Capabilities list */
 .capList {
   list-style: none;
   padding: 0;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: var(--space-4);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  margin-bottom: var(--space-20);
 }
 
 .capItem {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   gap: var(--space-3);
-  font-size: 1rem;
+  font-size: var(--font-size-base);
   color: var(--color-text-primary);
-  padding: var(--space-3) var(--space-4);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-lg);
 }
 
-.check {
-  color: var(--color-cyan);
-  font-weight: bold;
+.bullet {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  background: var(--color-cyan);
+  border-radius: 50%;
   flex-shrink: 0;
+  margin-top: 0.55em;
 }
 
-/* Workflow list */
 .flowList {
   list-style: none;
   padding: 0;
-  counter-reset: step;
+  margin: 0 0 var(--space-20) 0;
 }
 
 .flowItem {
-  position: relative;
-  padding-left: 3rem;
-  margin-bottom: 2.5rem;
-  color: var(--color-text-secondary);
+  margin-bottom: var(--space-10);
+  padding-bottom: var(--space-8);
+  border-bottom: 1px solid var(--color-border);
 }
 
-.flowItem::before {
-  counter-increment: step;
-  content: counter(step);
-  position: absolute;
-  left: 0;
-  top: 0;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 50%;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  color: var(--color-cyan);
-  font-weight: 700;
-  font-size: 0.875rem;
+.flowHeading {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  align-items: baseline;
+  gap: var(--space-4);
+  margin-bottom: var(--space-3);
 }
 
-.flowItem strong {
-  display: block;
-  font-size: 1.125rem;
-  color: var(--color-text-primary);
-  margin-bottom: var(--space-2);
+.flowNumber {
+  font-size: var(--font-size-lg);
+  color: var(--color-text-muted);
+  font-weight: 500;
+  line-height: 1;
+}
+
+.flowTitle {
+  font-size: var(--font-size-base);
   font-weight: 600;
-  letter-spacing: -0.01em;
+  color: var(--color-text-primary);
 }
 
 .flowItem p {
-  max-width: 720px;
-  line-height: 1.7;
   margin: 0;
-  font-size: 1rem;
+  padding-left: 2.25rem;
+  max-width: none;
 }
 
-.divider {
-  margin: 4rem 0;
-  border: 0;
-  border-top: 1px solid var(--color-border);
-}
-
-/* Article CTA */
-.articleCta {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  padding: var(--space-12);
-  border-radius: var(--radius-xl);
+.cta {
+  padding-top: var(--space-16);
   text-align: center;
 }
 
-.articleCta h3 {
-  font-size: var(--font-size-2xl);
-  font-weight: 700;
+.cta h3 {
+  font-size: 1.25rem;
+  font-weight: 600;
   color: var(--color-text-primary);
-  margin: 0 0 var(--space-4) 0;
+  margin-bottom: var(--space-4);
 }
 
-.articleCta p {
+.cta p {
+  font-size: var(--font-size-base);
   color: var(--color-text-secondary);
-  max-width: 600px;
-  margin: 0 auto var(--space-8);
+  margin-bottom: var(--space-8);
 }
 
 .actions {
@@ -227,70 +145,40 @@
   flex-wrap: wrap;
 }
 
-@media (max-width: 1000px) {
-  .capList {
-    grid-template-columns: 1fr;
-  }
-}
-
 @media (max-width: 768px) {
   .detailHero {
-    padding-top: calc(var(--nav-height) + var(--space-8));
-    margin-bottom: 3rem;
-  }
-
-  .heroCard {
-    min-height: 300px;
-    padding: 2rem;
-    border-radius: var(--radius-lg);
+    padding-top: calc(var(--nav-height) + var(--space-12));
+    padding-bottom: var(--space-10);
   }
 
   .heroTitle {
-    font-size: clamp(1.5rem, 5vw, 2.5rem);
-  }
-
-  .heroExcerpt {
-    font-size: 1rem;
-  }
-
-  .article {
-    padding-inline: var(--space-4);
-    padding-bottom: var(--space-20);
+    font-size: clamp(2rem, 8vw, 3rem);
   }
 
   .lead {
-    font-size: 1.1rem;
+    font-size: 1rem;
+    text-align: left;
+    margin-bottom: var(--space-12);
   }
 
-  .articleSection h2,
-  .article h2 {
-    font-size: 1.6rem;
+  .article {
+    padding-bottom: var(--space-20);
   }
 
-  .flowItem {
-    padding-left: 2.5rem;
+  .ctItem {
+    font-size: 0.95rem;
   }
 
-  .flowItem::before {
-    width: 1.75rem;
-    height: 1.75rem;
-    font-size: 0.75rem;
+  .flowItem p {
+    padding-left: 0;
   }
 
-  .articleCta {
-    padding: var(--space-8) var(--space-4);
+  .flowHeading {
+    margin-bottom: var(--space-2);
   }
 
   .actions {
     flex-direction: column;
     align-items: center;
-  }
-}
-
-@media (max-width: 480px) {
-  .heroCard {
-    padding: 1.5rem;
-    border-radius: var(--radius-md);
-    min-height: 280px;
   }
 }
