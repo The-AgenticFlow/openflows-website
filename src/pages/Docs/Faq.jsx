@@ -40,7 +40,7 @@ export default function Faq() {
   return (
     <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'FAQ' }]}>
       <h1>Frequently Asked Questions</h1>
-      <p>Common questions about OpenFlows answered. Can't find what you're looking for? <a href="https://github.com/The-AgenticFlow/AgentFlow/discussions" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions ↗</a></p>
+      <p>Common questions about OpenFlows answered. Can't find what you're looking for? <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions ↗</a></p>
       <Accordion items={FAQ_ITEMS} />
     </DocsLayout>
   )

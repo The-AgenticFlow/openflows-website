@@ -1,6 +1,6 @@
 # FORGE Agent Instructions
 
-This file contains instructions for the forge agent in the AgentFlow orchestration system.
+This file contains instructions for the forge agent in the OpenFlows orchestration system.
 
 ---
 

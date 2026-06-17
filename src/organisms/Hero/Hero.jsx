@@ -20,7 +20,7 @@ const QUICK_LINKS = [
   { label: 'How it works', href: '#how-it-works' },
   { label: 'Meet the agents', href: '/agents' },
   { label: 'Documentation', href: '/docs' },
-  { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
+  { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
 ]
 
 function useTypewriter(lines, speed = 38) {

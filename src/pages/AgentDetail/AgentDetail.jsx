@@ -61,7 +61,7 @@ export default function AgentDetail() {
             and {agent.name} will be running in minutes.
           </p>
           <div className={styles.actions}>
-            <Button variant="outline" size="md" href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">
+            <Button variant="outline" size="md" href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer">
               View on GitHub
             </Button>
             <Button variant="cyan" size="md" href="/docs/getting-started/installation">

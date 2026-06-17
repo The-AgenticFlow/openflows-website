@@ -92,8 +92,8 @@ export default function GettingStarted() {
             <td><strong>Code agent CLI</strong></td>
             <td>Claude Code or Codex CLI - the hands FORGE uses to edit files</td>
             <td>
-              <code>npm install -g @anthropic-ai/claude-code</code><br/>
-              <em>or</em><br/>
+              <code>npm install -g @anthropic-ai/claude-code</code><br />
+              <em>or</em><br />
               <code>npm install -g @anthropic-ai/codex-cli</code>
             </td>
           </tr>
@@ -141,7 +141,7 @@ openflows --version`}</CodeBlock>
           content: (
             <>
               <p>Downloads the correct pre-built binary for your OS and architecture, installs to <code>~/.local/bin</code>.</p>
-              <CodeBlock lang="bash">{`curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/AgentFlow/main/scripts/install.sh | bash`}</CodeBlock>
+              <CodeBlock lang="bash">{`curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/OpenFlows/main/scripts/install.sh | bash`}</CodeBlock>
             </>
           ),
         },
@@ -161,7 +161,7 @@ openflows --version`}</CodeBlock>
             <>
               <p>Run in a container. Mounts your config directory for persistence.</p>
               <CodeBlock lang="bash">{`docker run -it --rm \\
-  -v "$HOME/.agentflow:/home/openflows/.agentflow" \\
+  -v "$HOME/.openflows:/home/openflows/.openflows" \\
   -e ANTHROPIC_API_KEY=your_key \\
   -e GITHUB_REPOSITORY=owner/repo \\
   ghcr.io/the-agenticflow/openflows:latest`}</CodeBlock>
@@ -267,7 +267,7 @@ INFO  LORE: ADR-001 written and committed`}</CodeBlock>
       <Callout type="info" title="Need help?">
         If the doctor reports a missing dependency or NEXUS fails to assign tickets, start with the
         <a href="/docs/faq">FAQ</a> or open a discussion on
-        <a href="https://github.com/The-AgenticFlow/AgentFlow/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>.
+        <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>.
       </Callout>
     </DocsLayout>
   )
