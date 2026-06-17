@@ -39,6 +39,9 @@ export default function BlogEditor() {
     const [error, setError] = useState(null)
     const [success, setSuccess] = useState(null)
     const [isPreview, setIsPreview] = useState(false)
+    const [showCategoryForm, setShowCategoryForm] = useState(false)
+    const [newCategory, setNewCategory] = useState({ name: '', slug: '', description: '' })
+    const [addingCategory, setAddingCategory] = useState(false)
 
     // Check permissions
     useEffect(() => {
@@ -48,20 +51,64 @@ export default function BlogEditor() {
     }, [canEditBlogs, navigate])
 
     // Fetch categories
-    useEffect(() => {
-        const fetchCategories = async () => {
-            if (!isSupabaseConfigured() || !supabase) return
+    const fetchCategories = useCallback(async () => {
+        if (!isSupabaseConfigured() || !supabase) return
 
-            const { data } = await supabase
-                .from('blog_categories')
-                .select('*')
-                .order('name')
+        const { data } = await supabase
+            .from('blog_categories')
+            .select('*')
+            .order('name')
 
-            setCategories(data || [])
-        }
-
-        fetchCategories()
+        setCategories(data || [])
     }, [])
+
+    useEffect(() => {
+        fetchCategories()
+    }, [fetchCategories])
+
+    // Handle quick category add
+    const handleQuickAddCategory = async () => {
+        if (!newCategory.name.trim()) return
+
+        setAddingCategory(true)
+        try {
+            const slug = newCategory.slug || newCategory.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
+            console.log('[BlogEditor] Adding category:', { name: newCategory.name.trim(), slug })
+
+            const { data, error: insertError } = await supabase
+                .from('blog_categories')
+                .insert({
+                    name: newCategory.name.trim(),
+                    slug,
+                    description: null,
+                })
+                .select()
+                .single()
+
+            if (insertError) {
+                console.error('[BlogEditor] Insert error:', insertError)
+                throw insertError
+            }
+
+            console.log('[BlogEditor] Category added:', data)
+
+            // Refresh categories from database to ensure consistency
+            await fetchCategories()
+
+            // Select the newly added category
+            setForm(prev => ({ ...prev, category_id: data.id }))
+            setNewCategory({ name: '', slug: '', description: '' })
+            setShowCategoryForm(false)
+            setSuccess('Category added successfully!')
+            setTimeout(() => setSuccess(null), 3000)
+        } catch (err) {
+            console.error('[BlogEditor] Error adding category:', err)
+            setError(err.message || 'Failed to add category')
+        } finally {
+            setAddingCategory(false)
+        }
+    }
 
     // Fetch blog if editing
     useEffect(() => {
@@ -541,7 +588,17 @@ export default function BlogEditor() {
 
                             {/* Category */}
                             <div className={styles.sidebarCard}>
-                                <h3>Category</h3>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                    <h3 style={{ margin: 0 }}>Category</h3>
+                                    <button
+                                        type="button"
+                                        className={styles.addCategoryBtn}
+                                        onClick={() => setShowCategoryForm(!showCategoryForm)}
+                                        title="Add new category"
+                                    >
+                                        {showCategoryForm ? '✕' : '+'}
+                                    </button>
+                                </div>
                                 <select
                                     name="category_id"
                                     value={form.category_id}
@@ -555,6 +612,32 @@ export default function BlogEditor() {
                                         </option>
                                     ))}
                                 </select>
+                                {showCategoryForm && (
+                                    <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--color-border)' }}>
+                                        <div className={styles.field} style={{ marginBottom: '0.5rem' }}>
+                                            <input
+                                                type="text"
+                                                value={newCategory.name}
+                                                onChange={(e) => setNewCategory(prev => ({ ...prev, name: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }))}
+                                                placeholder="Category name"
+                                                style={{ fontSize: '0.8rem', padding: '0.4rem 0.6rem' }}
+                                                required
+                                            />
+                                        </div>
+                                        <div className={styles.field} style={{ marginBottom: '0.5rem' }}>
+                                            <input
+                                                type="text"
+                                                value={newCategory.slug}
+                                                onChange={(e) => setNewCategory(prev => ({ ...prev, slug: e.target.value }))}
+                                                placeholder="Slug (auto-generated)"
+                                                style={{ fontSize: '0.8rem', padding: '0.4rem 0.6rem' }}
+                                            />
+                                        </div>
+                                        <button type="button" onClick={handleQuickAddCategory} className={styles.submitBtn} disabled={addingCategory} style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8rem' }}>
+                                            {addingCategory ? 'Adding...' : 'Add Category'}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             {/* SEO */}

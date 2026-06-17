@@ -25,7 +25,8 @@
     ('Research', 'research', 'Technical research and deep dives'),
     ('Product', 'product', 'Product announcements and features'),
     ('Open Source', 'open-source', 'Open source community news'),
-    ('Tutorial', 'tutorial', 'How-to guides and tutorials')
+    ('Tutorial', 'tutorial', 'How-to guides and tutorials'),
+    ('Developer', 'developer', 'Developer articles, API guides, and integrations')
     on conflict (slug) do nothing;
 
     -- =====================================================

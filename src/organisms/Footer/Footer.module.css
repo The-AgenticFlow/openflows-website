@@ -14,14 +14,17 @@
 /* ── Link columns ── */
 .columns {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: var(--space-10);
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-16);
   padding-bottom: var(--space-16);
+  max-width: 900px;
+  margin: 0 auto;
 }
 
 .column {
   min-width: 0;
   /* allow grid to shrink columns below content size */
+  text-align: center;
 }
 
 .columnHeading {
@@ -38,6 +41,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
+  align-items: center;
 }
 
 .link {
@@ -111,7 +115,8 @@
 @media (max-width: 1200px) {
   .columns {
     grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-8);
+    gap: var(--space-10);
+    max-width: 700px;
   }
 }
 
@@ -122,13 +127,15 @@
   }
 
   .columns {
-    grid-template-columns: repeat(2, 1fr);
-    gap: var(--space-5);
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-6);
     padding-bottom: var(--space-10);
+    max-width: 100%;
   }
 
   .columnHeading {
     margin-bottom: var(--space-2);
+    font-size: var(--font-size-xs);
   }
 
   .linkList {
@@ -137,12 +144,13 @@
 
   .link {
     line-height: 1.4;
+    font-size: var(--font-size-xs);
   }
 }
 
 @media (max-width: 640px) {
   .columns {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--space-4);
     padding-bottom: var(--space-8);
   }
@@ -183,7 +191,7 @@
   }
 
   .columns {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: var(--space-3);
     padding-bottom: var(--space-6);
   }

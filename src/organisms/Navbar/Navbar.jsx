@@ -34,6 +34,19 @@ const NAV_DATA = [
     }
   },
   {
+    label: 'Developer',
+    href: '/developer',
+    dropdown: {
+      heading: 'Developer Resources',
+      items: [
+        { label: 'All Articles', href: '/developer' },
+        { label: 'API Guides', href: '/developer' },
+        { label: 'Integrations', href: '/developer' },
+        { label: 'SDK & Tools', href: '/developer' },
+      ]
+    }
+  },
+  {
     label: 'Research',
     href: '/research',
     dropdown: {
