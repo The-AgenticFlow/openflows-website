@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Navigate, Link } from 'react-router-dom'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
-import ReactMarkdown from 'react-markdown'
+import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer'
 import TextToSpeechPlayer from '../../components/TextToSpeechPlayer/TextToSpeechPlayer'
 import styles from './Blog.module.css'
 
@@ -212,7 +212,7 @@ export default function BlogPost() {
 
                 {/* Content */}
                 <div className={styles.articleBody}>
-                    <ReactMarkdown>{post.content}</ReactMarkdown>
+                    <MarkdownRenderer>{post.content}</MarkdownRenderer>
                 </div>
 
 

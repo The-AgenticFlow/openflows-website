@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import Layout from '@/organisms/Layout/Layout'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
-import ReactMarkdown from 'react-markdown'
+import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer'
 import styles from './Research.module.css'
 
 export default function ResearchDetail() {
@@ -123,7 +123,7 @@ export default function ResearchDetail() {
           )}
 
           <div className={styles.articleBody}>
-            <ReactMarkdown>{item.content || ''}</ReactMarkdown>
+            <MarkdownRenderer>{item.content || ''}</MarkdownRenderer>
           </div>
         </div>
       </article>
