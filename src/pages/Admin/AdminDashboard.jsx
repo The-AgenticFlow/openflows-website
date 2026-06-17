@@ -13,7 +13,7 @@ const STATUS_FILTERS = [
 ]
 
 export default function AdminDashboard() {
-    const { user, adminUser, signOut, canEditBlogs, canDeleteBlogs } = useAuth()
+    const { user, adminUser, isAdmin, signOut, canEditBlogs, canDeleteBlogs } = useAuth()
     const navigate = useNavigate()
 
     // State
@@ -186,6 +186,15 @@ export default function AdminDashboard() {
                         >
                             Manage Research
                         </button>
+                        {isAdmin && (
+                            <button
+                                className={styles.filterBtn}
+                                onClick={() => navigate('/admin/categories')}
+                                title="Manage Categories"
+                            >
+                                Manage Categories
+                            </button>
+                        )}
                     </div>
                     <div className={styles.userInfo}>
                         <div className={styles.userAvatar}>

@@ -34,6 +34,19 @@ const NAV_DATA = [
     }
   },
   {
+    label: 'Developer',
+    href: '/developer',
+    dropdown: {
+      heading: 'Developer Resources',
+      items: [
+        { label: 'All Articles', href: '/developer' },
+        { label: 'API Guides', href: '/developer' },
+        { label: 'Integrations', href: '/developer' },
+        { label: 'SDK & Tools', href: '/developer' },
+      ]
+    }
+  },
+  {
     label: 'Research',
     href: '/research',
     dropdown: {
@@ -56,11 +69,11 @@ const NAV_DATA = [
         { label: 'Blog', href: '/blog' },
         { label: 'Use Cases', href: '/use-cases' },
         { label: 'Demos', href: '/demos' },
-        { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
+        { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
       ]
     }
   },
-  { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
+  { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
 ]
 
 export default function Navbar() {
@@ -230,7 +243,7 @@ export default function Navbar() {
                     </svg>
                   )}
                 </button>
-                <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer">
                   GitHub
                 </Button>
                 <Button variant="cyan" size="sm" href="/docs/getting-started">

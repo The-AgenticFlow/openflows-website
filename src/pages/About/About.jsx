@@ -81,7 +81,7 @@ export default function About() {
               <div className={styles.linkRow}>
                 <a href="/docs/architecture" className={styles.textLink}>Architecture Overview ›</a>
                 <a
-                  href="https://github.com/The-AgenticFlow/AgentFlow"
+                  href="https://github.com/The-AgenticFlow/OpenFlows"
                   className={styles.textLink}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -163,7 +163,7 @@ export default function About() {
               </p>
               <div className={styles.linkRow}>
                 <a
-                  href="https://github.com/The-AgenticFlow/AgentFlow"
+                  href="https://github.com/The-AgenticFlow/OpenFlows"
                   className={styles.textLink}
                   target="_blank"
                   rel="noopener noreferrer"

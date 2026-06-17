@@ -26,7 +26,7 @@ openflows-doctor`}</CodeBlock>
       <>
         <h3>One-line installer</h3>
         <p>Downloads the correct pre-built binary for your OS and architecture, installs to <code>~/.local/bin</code>.</p>
-        <CodeBlock lang="bash">curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/AgentFlow/main/scripts/install.sh | bash</CodeBlock>
+        <CodeBlock lang="bash">curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/OpenFlows/main/scripts/install.sh | bash</CodeBlock>
         <p>After install, run <code>openflows-setup</code> to configure your environment.</p>
       </>
     ),
@@ -50,7 +50,7 @@ openflows`}</CodeBlock>
         <h3>Docker</h3>
         <p>Run OpenFlows in a container. Mounts your config directory for persistence.</p>
         <CodeBlock lang="bash">{`docker run -it --rm \\
-  -v "$HOME/.agentflow:/home/openflows/.agentflow" \\
+  -v "$HOME/.openflows:/home/openflows/.openflows" \\
   -e ANTHROPIC_API_KEY=your_key \\
   -e OPENAI_API_KEY=your_key \\
   -e GITHUB_REPOSITORY=owner/repo \\
@@ -61,8 +61,8 @@ openflows`}</CodeBlock>
   -e GITHUB_MCP_CMD="npx -y @anthropic-ai/github-mcp-server" \\
   ghcr.io/the-agenticflow/openflows:latest`}</CodeBlock>
         <p>Or use Docker Compose with the LiteLLM proxy and Redis:</p>
-        <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/AgentFlow.git
-.cd AgentFlow
+        <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/OpenFlows.git
+.cd OpenFlows
 .cp .env.example .env  # fill in your keys
 docker compose up`}</CodeBlock>
       </>
@@ -74,8 +74,8 @@ docker compose up`}</CodeBlock>
       <>
         <h3>Build from Source</h3>
         <p>Requires Rust 1.70+ and Node.js 18+.</p>
-        <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/AgentFlow.git
-.cd AgentFlow
+        <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/OpenFlows.git
+.cd OpenFlows
 make release        # builds all binaries
 make install        # installs to ~/.local/bin
 openflows-setup     # interactive setup wizard

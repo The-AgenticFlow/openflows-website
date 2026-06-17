@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run OpenFlows
-        uses: The-AgenticFlow/AgentFlow@main
+        uses: The-AgenticFlow/OpenFlows@main
         with:
           github-token: \${{ secrets.GITHUB_TOKEN }}
           anthropic-api-key: \${{ secrets.ANTHROPIC_API_KEY }}

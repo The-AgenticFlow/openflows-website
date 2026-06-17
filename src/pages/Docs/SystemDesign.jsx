@@ -7,7 +7,7 @@ const COMPONENT_ROWS = [
   ['GitHub Client', 'MCP + REST (reqwest)', 'Issue discovery, PR creation, CI polling, merging'],
   ['LLM Client', 'agent-client (reqwest)', 'Anthropic, OpenAI, Gemini, Fireworks, Groq with fallback'],
   ['Pair Harness', 'pair-harness', 'Git worktree lifecycle, process spawning, file locking'],
-  ['TUI', 'agentflow-tui (ratatui)', 'Setup wizard, live dashboard, doctor diagnostics'],
+  ['TUI', 'openflows-tui (ratatui)', 'Setup wizard, live dashboard, doctor diagnostics'],
 ]
 
 const STORE_ROWS = [

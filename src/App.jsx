@@ -33,6 +33,9 @@ import IntroducingDemos from '@/pages/Blog/IntroducingDemos'
 import ResearchIndex from '@/pages/Research/ResearchIndex'
 import ResearchDetail from '@/pages/Research/ResearchDetail'
 
+// Developer
+import Developer from '@/pages/Developer/Developer'
+
 // Admin
 import AdminLogin from '@/pages/Admin/AdminLogin'
 import AdminDashboard from '@/pages/Admin/AdminDashboard'
@@ -41,6 +44,7 @@ import StoriesManager from '@/pages/Admin/StoriesManager'
 import StoriesEditor from '@/pages/Admin/StoriesEditor'
 import ResearchManager from '@/pages/Admin/ResearchManager'
 import ResearchEditor from '@/pages/Admin/ResearchEditor'
+import CategoryManager from '@/pages/Admin/CategoryManager'
 
 // Demos
 import DemosIndex from '@/pages/Demos/DemosIndex'
@@ -86,6 +90,9 @@ export default function App() {
           {/* Research */}
           <Route path="/research" element={<ResearchIndex />} />
           <Route path="/research/:slug" element={<ResearchDetail />} />
+
+          {/* Developer */}
+          <Route path="/developer" element={<Developer />} />
 
           {/* Admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -158,6 +165,14 @@ export default function App() {
             element={
               <ProtectedRoute requiredRole="editor">
                 <ResearchEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/categories"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <CategoryManager />
               </ProtectedRoute>
             }
           />
