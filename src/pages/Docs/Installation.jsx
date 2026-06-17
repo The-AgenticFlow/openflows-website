@@ -15,7 +15,7 @@ openflows
 openflows-dashboard
 openflows-doctor`}</CodeBlock>
         <Callout type="info" title="Prerequisites">
-          Node.js 18+, Claude Code CLI (<code>npm install -g @anthropic-ai/claude-code</code>), and a GitHub PAT with <code>repo</code> + <code>workflow</code> scopes.
+          Node.js 18+, a code agent CLI (Claude Code or Codex CLI), and per-agent GitHub PATs with <code>repo</code> + <code>workflow</code> scopes.
         </Callout>
       </>
     ),
@@ -26,7 +26,7 @@ openflows-doctor`}</CodeBlock>
       <>
         <h3>One-line installer</h3>
         <p>Downloads the correct pre-built binary for your OS and architecture, installs to <code>~/.local/bin</code>.</p>
-        <CodeBlock lang="bash">curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/AgentFlow/main/scripts/install.sh | bash</CodeBlock>
+        <CodeBlock lang="bash">curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/OpenFlows/main/scripts/install.sh | bash</CodeBlock>
         <p>After install, run <code>openflows-setup</code> to configure your environment.</p>
       </>
     ),
@@ -50,15 +50,20 @@ openflows`}</CodeBlock>
         <h3>Docker</h3>
         <p>Run OpenFlows in a container. Mounts your config directory for persistence.</p>
         <CodeBlock lang="bash">{`docker run -it --rm \\
-  -v "$HOME/.agentflow:/home/openflows/.agentflow" \\
+  -v "$HOME/.openflows:/home/openflows/.openflows" \\
   -e ANTHROPIC_API_KEY=your_key \\
-  -e GITHUB_PERSONAL_ACCESS_TOKEN=your_token \\
+  -e OPENAI_API_KEY=your_key \\
   -e GITHUB_REPOSITORY=owner/repo \\
+  -e AGENT_NEXUS_GITHUB_TOKEN=your_token \\
+  -e AGENT_FORGE_GITHUB_TOKEN=your_token \\
+  -e AGENT_SENTINEL_GITHUB_TOKEN=your_token \\
+  -e AGENT_VESSEL_GITHUB_TOKEN=your_token \\
+  -e GITHUB_MCP_CMD="npx -y @anthropic-ai/github-mcp-server" \\
   ghcr.io/the-agenticflow/openflows:latest`}</CodeBlock>
         <p>Or use Docker Compose with the LiteLLM proxy and Redis:</p>
-        <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/AgentFlow.git
-cd AgentFlow
-cp .env.example .env  # fill in your keys
+        <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/OpenFlows.git
+.cd OpenFlows
+.cp .env.example .env  # fill in your keys
 docker compose up`}</CodeBlock>
       </>
     ),
@@ -69,8 +74,8 @@ docker compose up`}</CodeBlock>
       <>
         <h3>Build from Source</h3>
         <p>Requires Rust 1.70+ and Node.js 18+.</p>
-        <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/AgentFlow.git
-cd AgentFlow
+        <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/OpenFlows.git
+.cd OpenFlows
 make release        # builds all binaries
 make install        # installs to ~/.local/bin
 openflows-setup     # interactive setup wizard
@@ -89,27 +94,50 @@ export default function Installation() {
       <TabSwitcher tabs={TABS} />
 
       <h2>Required Environment Variables</h2>
-      <CodeBlock lang="bash">{`# Minimum required — copy .env.example to .env and fill these in
-GITHUB_REPOSITORY=owner/repo
-GITHUB_PERSONAL_ACCESS_TOKEN=ghp_your_token_here
-ANTHROPIC_API_KEY=sk-ant-your_key_here   # for Claude Code (FORGE agent)
-DEFAULT_CLI=codex                         # or "claude"`}</CodeBlock>
+      <p>
+        Whether you use the interactive TUI or manual setup, these are the variables OpenFlows needs
+        to authenticate agents, route code to the correct repository, and invoke the GitHub MCP server.
+      </p>
+
+      <CodeBlock lang="bash">{`# ── Core ────────────────────────────────────────
+GITHUB_REPOSITORY=your-org/your-repo
+DEFAULT_CLI=codex                              # or "claude"
+GITHUB_MCP_CMD=npx -y @anthropic-ai/github-mcp-server
+
+# ── Per-Agent GitHub Tokens ─────────────────────
+# Each agent gets its own PAT so actions are auditable per identity.
+# Tokens need: repo, workflow, read:org, delete_repo (VESSEL)
+AGENT_NEXUS_GITHUB_TOKEN=ghp_nexus_token_here
+AGENT_FORGE_GITHUB_TOKEN=ghp_forge_token_here
+AGENT_SENTINEL_GITHUB_TOKEN=ghp_sentinel_token_here
+AGENT_VESSEL_GITHUB_TOKEN=ghp_vessel_token_here
+
+# ── LLM API Keys ────────────────────────────────
+# Provide at least one key matching the models declared in registry.json.
+ANTHROPIC_API_KEY=sk-ant-api-key-here
+OPENAI_API_KEY=sk-openai-api-key-here
+
+# ── Debug / Logging ─────────────────────────────
+RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
 
       <h2>Verify Installation</h2>
       <CodeBlock lang="bash">{`$ openflows --version
 openflows 1.0.0
 
 $ openflows-doctor
-✓ Rust toolchain: 1.88.0
-✓ Node.js: v20.11.0
-✓ Claude Code CLI: installed
-✓ Git: 2.44.0
-✓ GitHub token: configured
-✓ ANTHROPIC_API_KEY: set
-✓ GITHUB_REPOSITORY: owner/repo`}</CodeBlock>
+  Rust toolchain:   1.88.0
+  Node.js:          v20.11.0
+  Code agent CLI:   codex (found in PATH)
+  Git:              2.44.0
+  GitHub tokens:    4/4 present
+  LLM API keys:     ANTHROPIC_API_KEY set
+  GITHUB_REPOSITORY: owner/repo
+  registry.json:    valid`}</CodeBlock>
 
       <Callout type="tip" title="Next Step">
-        Run <code>openflows-setup</code> for the interactive TUI wizard — it guides you through all configuration options and writes your <code>.env</code> and <code>registry.json</code> files.
+        Run <code>openflows-setup</code> for the interactive TUI wizard - it guides you through all
+        configuration options and writes your <code>.env</code> and <code>registry.json</code> files automatically.
+        Or follow the <a href="/docs/getting-started">Getting Started</a> manual setup path.
       </Callout>
     </DocsLayout>
   )

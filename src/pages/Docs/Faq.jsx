@@ -4,15 +4,15 @@ import { Accordion } from '@/molecules/DocComponents/DocComponents'
 const FAQ_ITEMS = [
   {
     title: 'What LLM providers does OpenFlows support?',
-    content: <p>OpenFlows supports Anthropic (Claude), OpenAI, Google Gemini, Fireworks, and Groq out of the box via the <code>agent-client</code> crate. Each agent can use a different provider and model, configured in <code>orchestration/agent/registry.json</code>. A LiteLLM proxy is supported for advanced per-agent routing. The recommended setup is Codex CLI + Fireworks (Mode A) — no proxy needed.</p>,
+    content: <p>OpenFlows supports Anthropic (Claude), OpenAI, Google Gemini, Fireworks, and Groq out of the box via the <code>agent-client</code> crate. Each agent can use a different provider and model, configured in <code>orchestration/agent/registry.json</code>. A LiteLLM proxy is supported for advanced per-agent routing. The recommended setup is Codex CLI + Fireworks (Mode A) - no proxy needed.</p>,
   },
   {
     title: 'Can I run OpenFlows on a private repository?',
-    content: <p>Yes. Your GitHub PAT needs <code>repo</code> + <code>workflow</code> scopes. Set <code>GITHUB_REPOSITORY=owner/repo</code> in your <code>.env</code>. OpenFlows treats private repos identically — it clones, creates worktrees, writes code, and opens PRs the same way. Each agent can have its own token via <code>AGENT_FORGE_GITHUB_TOKEN</code> etc. for rate limit isolation.</p>,
+    content: <p>Yes. Your GitHub PAT needs <code>repo</code> + <code>workflow</code> scopes. Set <code>GITHUB_REPOSITORY=owner/repo</code> in your <code>.env</code>. OpenFlows treats private repos identically - it clones, creates worktrees, writes code, and opens PRs the same way. Each agent can have its own token via <code>AGENT_FORGE_GITHUB_TOKEN</code> etc. for rate limit isolation.</p>,
   },
   {
     title: 'How does SENTINEL decide whether to approve or reject code?',
-    content: <p>SENTINEL evaluates against 5 criteria on every segment: correctness, security vulnerabilities, test coverage, standards compliance, and no regressions. It writes <code>segment-N-eval.md</code> after each FORGE commit and <code>final-review.md</code> at the end. SENTINEL is ephemeral — spawned fresh per evaluation — so it has no accumulated bias. It is read-only and cannot modify code.</p>,
+    content: <p>SENTINEL evaluates against 5 criteria on every segment: correctness, security vulnerabilities, test coverage, standards compliance, and no regressions. It writes <code>segment-N-eval.md</code> after each FORGE commit and <code>final-review.md</code> at the end. SENTINEL is ephemeral - spawned fresh per evaluation - so it has no accumulated bias. It is read-only and cannot modify code.</p>,
   },
   {
     title: 'What happens if FORGE gets blocked or times out?',
@@ -28,11 +28,11 @@ const FAQ_ITEMS = [
   },
   {
     title: 'Is my code sent to third parties?',
-    content: <p>Code context is sent only to the LLM provider you configure in <code>registry.json</code>. If you use Anthropic or Fireworks, their API data policies apply. OpenFlows itself does not send code to any third-party service. For maximum privacy, use a self-hosted LiteLLM proxy pointing to a local model — no data leaves your infrastructure.</p>,
+    content: <p>Code context is sent only to the LLM provider you configure in <code>registry.json</code>. If you use Anthropic or Fireworks, their API data policies apply. OpenFlows itself does not send code to any third-party service. For maximum privacy, use a self-hosted LiteLLM proxy pointing to a local model - no data leaves your infrastructure.</p>,
   },
   {
     title: 'What happens when there are merge conflicts?',
-    content: <p>VESSEL detects conflicts early via GitHub's <code>mergeable</code> field before CI even completes. It attempts automated resolution via GitHub's update-branch API or a local rebase. If it can't resolve automatically, it writes <code>CONFLICT_RESOLUTION.md</code> with context and re-routes the ticket back to the same FORGE worker — no new branch, no context loss. FORGE reworks the implementation and re-opens the PR.</p>,
+    content: <p>VESSEL detects conflicts early via GitHub's <code>mergeable</code> field before CI even completes. It attempts automated resolution via GitHub's update-branch API or a local rebase. If it can't resolve automatically, it writes <code>CONFLICT_RESOLUTION.md</code> with context and re-routes the ticket back to the same FORGE worker - no new branch, no context loss. FORGE reworks the implementation and re-opens the PR.</p>,
   },
 ]
 
@@ -40,7 +40,7 @@ export default function Faq() {
   return (
     <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'FAQ' }]}>
       <h1>Frequently Asked Questions</h1>
-      <p>Common questions about OpenFlows answered. Can't find what you're looking for? <a href="https://github.com/The-AgenticFlow/AgentFlow/discussions" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions ↗</a></p>
+      <p>Common questions about OpenFlows answered. Can't find what you're looking for? <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions ↗</a></p>
       <Accordion items={FAQ_ITEMS} />
     </DocsLayout>
   )

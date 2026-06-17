@@ -18,10 +18,7 @@ import GettingStarted from '@/pages/Docs/GettingStarted'
 import Installation from '@/pages/Docs/Installation'
 import GuidesHome from '@/pages/Docs/GuidesHome'
 import AgentSetup from '@/pages/Docs/AgentSetup'
-import WorkflowIntegration from '@/pages/Docs/WorkflowIntegration'
-import ApiHome from '@/pages/Docs/ApiHome'
-import ApiEndpoints from '@/pages/Docs/ApiEndpoints'
-import ApiAuthentication from '@/pages/Docs/ApiAuthentication'
+
 import ArchitectureHome from '@/pages/Docs/ArchitectureHome'
 import SystemDesign from '@/pages/Docs/SystemDesign'
 import AgentRoles from '@/pages/Docs/AgentRoles'
@@ -32,20 +29,27 @@ import BlogIndex from '@/pages/Blog/BlogIndex'
 import BlogPost from '@/pages/Blog/BlogPost'
 import IntroducingDemos from '@/pages/Blog/IntroducingDemos'
 
+// Research
+import ResearchIndex from '@/pages/Research/ResearchIndex'
+import ResearchDetail from '@/pages/Research/ResearchDetail'
+
+// Developer
+import Developer from '@/pages/Developer/Developer'
+
 // Admin
 import AdminLogin from '@/pages/Admin/AdminLogin'
 import AdminDashboard from '@/pages/Admin/AdminDashboard'
 import BlogEditor from '@/pages/Admin/BlogEditor'
+import StoriesManager from '@/pages/Admin/StoriesManager'
+import StoriesEditor from '@/pages/Admin/StoriesEditor'
+import ResearchManager from '@/pages/Admin/ResearchManager'
+import ResearchEditor from '@/pages/Admin/ResearchEditor'
+import CategoryManager from '@/pages/Admin/CategoryManager'
 
 // Demos
 import DemosIndex from '@/pages/Demos/DemosIndex'
 import Terminal from '@/pages/Demos/Terminal'
 import Walkthrough from '@/pages/Demos/Walkthrough'
-
-// Developers
-import DevelopersIndex from '@/pages/Developers/DevelopersIndex'
-import ApiExplorer from '@/pages/Developers/ApiExplorer'
-import Integrations from '@/pages/Developers/Integrations'
 
 // Use Cases
 import UseCasesIndex from '@/pages/UseCases/UseCasesIndex'
@@ -72,10 +76,7 @@ export default function App() {
           <Route path="/docs/getting-started/installation" element={<Installation />} />
           <Route path="/docs/guides" element={<GuidesHome />} />
           <Route path="/docs/guides/agent-setup" element={<AgentSetup />} />
-          <Route path="/docs/guides/workflow-integration" element={<WorkflowIntegration />} />
-          <Route path="/docs/api" element={<ApiHome />} />
-          <Route path="/docs/api/endpoints" element={<ApiEndpoints />} />
-          <Route path="/docs/api/authentication" element={<ApiAuthentication />} />
+
           <Route path="/docs/architecture" element={<ArchitectureHome />} />
           <Route path="/docs/architecture/system-design" element={<SystemDesign />} />
           <Route path="/docs/architecture/agent-roles" element={<AgentRoles />} />
@@ -85,6 +86,13 @@ export default function App() {
           <Route path="/blog" element={<BlogIndex />} />
           <Route path="/blog/:slug" element={<BlogPost />} />
           <Route path="/blog/introducing-demos" element={<IntroducingDemos />} />
+
+          {/* Research */}
+          <Route path="/research" element={<ResearchIndex />} />
+          <Route path="/research/:slug" element={<ResearchDetail />} />
+
+          {/* Developer */}
+          <Route path="/developer" element={<Developer />} />
 
           {/* Admin */}
           <Route path="/admin/login" element={<AdminLogin />} />
@@ -112,16 +120,67 @@ export default function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/admin/stories"
+            element={
+              <ProtectedRoute requiredRole="viewer">
+                <StoriesManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/stories/new"
+            element={
+              <ProtectedRoute requiredRole="editor">
+                <StoriesEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/stories/edit/:id"
+            element={
+              <ProtectedRoute requiredRole="editor">
+                <StoriesEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/research"
+            element={
+              <ProtectedRoute requiredRole="viewer">
+                <ResearchManager />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/research/new"
+            element={
+              <ProtectedRoute requiredRole="editor">
+                <ResearchEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/research/edit/:id"
+            element={
+              <ProtectedRoute requiredRole="editor">
+                <ResearchEditor />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/admin/categories"
+            element={
+              <ProtectedRoute requiredRole="admin">
+                <CategoryManager />
+              </ProtectedRoute>
+            }
+          />
 
           {/* Demos */}
           <Route path="/demos" element={<DemosIndex />} />
           <Route path="/demos/terminal" element={<Terminal />} />
           <Route path="/demos/walkthrough" element={<Walkthrough />} />
-
-          {/* Developers */}
-          <Route path="/developers" element={<DevelopersIndex />} />
-          <Route path="/developers/api-explorer" element={<ApiExplorer />} />
-          <Route path="/developers/integrations" element={<Integrations />} />
 
           {/* Use Cases */}
           <Route path="/use-cases" element={<UseCasesIndex />} />

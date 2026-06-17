@@ -16,7 +16,7 @@ export default function GetStartedBanner() {
             <Button
               variant="outline"
               size="md"
-              href="https://github.com/The-AgenticFlow/AgentFlow"
+              href="https://github.com/The-AgenticFlow/OpenFlows"
               target="_blank"
               rel="noopener noreferrer"
             >

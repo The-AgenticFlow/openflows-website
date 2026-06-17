@@ -13,7 +13,7 @@ const STATUS_FILTERS = [
 ]
 
 export default function AdminDashboard() {
-    const { user, adminUser, signOut, canEditBlogs, canDeleteBlogs } = useAuth()
+    const { user, adminUser, isAdmin, signOut, canEditBlogs, canDeleteBlogs } = useAuth()
     const navigate = useNavigate()
 
     // State
@@ -151,7 +151,7 @@ export default function AdminDashboard() {
 
     // Format date
     const formatDate = (dateString) => {
-        if (!dateString) return '—'
+        if (!dateString) return '-'
         return new Date(dateString).toLocaleDateString('en-US', {
             year: 'numeric',
             month: 'short',
@@ -170,7 +170,32 @@ export default function AdminDashboard() {
             <div className={styles.dashboard}>
                 {/* Header */}
                 <header className={styles.dashboardHeader}>
-                    <h1 className={styles.dashboardTitle}>Blog Management</h1>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1.5rem' }}>
+                        <h1 className={styles.dashboardTitle}>Blog Management</h1>
+                        <button
+                            className={styles.filterBtn}
+                            onClick={() => navigate('/admin/stories')}
+                            title="Manage Stories"
+                        >
+                            Manage Stories
+                        </button>
+                        <button
+                            className={styles.filterBtn}
+                            onClick={() => navigate('/admin/research')}
+                            title="Manage Research"
+                        >
+                            Manage Research
+                        </button>
+                        {isAdmin && (
+                            <button
+                                className={styles.filterBtn}
+                                onClick={() => navigate('/admin/categories')}
+                                title="Manage Categories"
+                            >
+                                Manage Categories
+                            </button>
+                        )}
+                    </div>
                     <div className={styles.userInfo}>
                         <div className={styles.userAvatar}>
                             {getInitials(adminUser?.display_name || user?.email)}

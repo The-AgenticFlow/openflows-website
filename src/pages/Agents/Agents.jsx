@@ -2,14 +2,6 @@ import Layout from '@/organisms/Layout/Layout';
 import { AGENT_DATA } from '@/data/agents';
 import styles from './Agents.module.css';
 
-const ORCHESTRATION_STEPS = [
-  { agent: 'NEXUS', action: 'Orchestrate', desc: 'Discovers open GitHub issues, assigns tickets to idle FORGE workers, and supervises the entire pipeline.' },
-  { agent: 'FORGE', action: 'Build', desc: 'Creates an isolated Git worktree, writes PLAN.md, implements code segment by segment, runs tests.' },
-  { agent: 'SENTINEL', action: 'Review', desc: 'Evaluates every segment against 5 criteria. Writes CONTRACT.md, segment-N-eval.md, and final-review.md.' },
-  { agent: 'VESSEL', action: 'Merge', desc: 'Polls CI, detects conflicts early, attempts automated resolution, squash-merges green PRs.' },
-  { agent: 'LORE', action: 'Document', desc: 'Generates ADRs and updates CHANGELOG.md after every successful merge. No human effort required.' },
-];
-
 export default function Agents() {
   const agents = Object.entries(AGENT_DATA);
 
@@ -22,38 +14,9 @@ export default function Agents() {
           <h1 className={styles.title}>Five agents. One pipeline.<br/> Zero manual steps.</h1>
           <p className={styles.subtitle}>
             OpenFlows coordinates five specialized AI agents through a deterministic, event-driven
-            pipeline. Each agent has a distinct role, isolated permissions, and its own GitHub identity —
-            just like a real engineering team.
+            pipeline. Each agent has a distinct role, isolated permissions, and its own GitHub identity -
+            just like a real development team.
           </p>
-        </div>
-      </section>
-
-      {/* Orchestration Loop Visual */}
-      <section className={styles.loopSection}>
-        <div className={styles.container}>
-          <div className={styles.loopHeader}>
-            <h2 className={styles.sectionHeading}>The Orchestration Loop</h2>
-            <p className={styles.sectionDesc}>
-              Every agent communicates through the SharedStore — a Redis-backed state machine with typed keys.
-              NEXUS supervises the entire loop and recovers broken states automatically.
-            </p>
-          </div>
-          
-          <div className={styles.loopVisual}>
-            {ORCHESTRATION_STEPS.map((step, i) => (
-              <div key={step.agent} className={styles.loopStep}>
-                <div className={styles.stepHeader}>
-                  <div className={styles.stepDot} />
-                  <span className={styles.stepAgent}>{step.agent}</span>
-                </div>
-                <div className={styles.stepContent}>
-                  <h3 className={styles.stepAction}>{step.action}</h3>
-                  <p className={styles.stepDesc}>{step.desc}</p>
-                </div>
-                {i < ORCHESTRATION_STEPS.length - 1 && <div className={styles.stepConnector} />}
-              </div>
-            ))}
-          </div>
         </div>
       </section>
 
@@ -79,24 +42,6 @@ export default function Agents() {
         </div>
       </section>
 
-      {/* Architecture Callout */}
-      <section className={styles.archSection}>
-        <div className={styles.container}>
-          <div className={styles.archBox}>
-            <div className={styles.archText}>
-              <p className={styles.eyebrow}>State & Governance</p>
-              <h2 className={styles.archTitle}>Powered by SharedStore</h2>
-              <p className={styles.archDesc}>
-                Every agent interaction is persisted in a Redis-backed state machine with typed keys:
-                <code> tickets</code>, <code>worker_slots</code>, <code>pending_prs</code>.
-                A 1000-event ring buffer powers real-time TUI monitoring. In-memory for dev and tests,
-                Redis for production — zero config change required.
-              </p>
-              <a href="/docs/architecture/system-design" className={styles.archLink}>Read the architecture docs ›</a>
-            </div>
-          </div>
-        </div>
-      </section>
     </Layout>
   );
 }

@@ -2,7 +2,7 @@ import DocsLayout from '@/organisms/DocsLayout/DocsLayout'
 import { DocCards } from '@/molecules/DocComponents/DocComponents'
 
 const CARDS = [
-  { icon: '🔌', title: 'Endpoints', desc: 'REST API endpoints for agents, tasks, and workflows — with curl examples and response schemas.', href: '/docs/api/endpoints' },
+  { icon: '🔌', title: 'Endpoints', desc: 'REST API endpoints for agents, tasks, and workflows - with curl examples and response schemas.', href: '/docs/api/endpoints' },
   { icon: '🔑', title: 'Authentication', desc: 'API key generation, scopes, and security best practices.', href: '/docs/api/authentication' },
 ]
 

@@ -70,7 +70,7 @@
   border-left: 2px solid var(--color-cyan);
 }
 
-/* Main content outer wrapper — fills the right column */
+/* Main content outer wrapper - fills the right column */
 .contentOuter {
   display: flex;
   justify-content: center;

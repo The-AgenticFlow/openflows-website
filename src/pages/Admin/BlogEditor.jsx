@@ -4,10 +4,10 @@ import { useAuth } from '@/contexts/AuthContext'
 import { supabase, isSupabaseConfigured, BLOG_IMAGES_BUCKET } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
 import ImageUploader from '@/components/ImageUploader'
-import ReactMarkdown from 'react-markdown'
+import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer'
 import styles from './Admin.module.css'
 
-const DEFAULT_AUTHOR = { name: '', role: '', avatar_url: '', linkedin: '', github: '', twitter: '', website: '' }
+const DEFAULT_AUTHOR = { name: '', role: '', avatar_url: '', linkedin: '', github: '', website: '' }
 
 const DEFAULT_FORM = {
     title: '',
@@ -39,6 +39,9 @@ export default function BlogEditor() {
     const [error, setError] = useState(null)
     const [success, setSuccess] = useState(null)
     const [isPreview, setIsPreview] = useState(false)
+    const [showCategoryForm, setShowCategoryForm] = useState(false)
+    const [newCategory, setNewCategory] = useState({ name: '', slug: '', description: '' })
+    const [addingCategory, setAddingCategory] = useState(false)
 
     // Check permissions
     useEffect(() => {
@@ -48,20 +51,64 @@ export default function BlogEditor() {
     }, [canEditBlogs, navigate])
 
     // Fetch categories
-    useEffect(() => {
-        const fetchCategories = async () => {
-            if (!isSupabaseConfigured() || !supabase) return
+    const fetchCategories = useCallback(async () => {
+        if (!isSupabaseConfigured() || !supabase) return
 
-            const { data } = await supabase
-                .from('blog_categories')
-                .select('*')
-                .order('name')
+        const { data } = await supabase
+            .from('blog_categories')
+            .select('*')
+            .order('name')
 
-            setCategories(data || [])
-        }
-
-        fetchCategories()
+        setCategories(data || [])
     }, [])
+
+    useEffect(() => {
+        fetchCategories()
+    }, [fetchCategories])
+
+    // Handle quick category add
+    const handleQuickAddCategory = async () => {
+        if (!newCategory.name.trim()) return
+
+        setAddingCategory(true)
+        try {
+            const slug = newCategory.slug || newCategory.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '')
+
+            console.log('[BlogEditor] Adding category:', { name: newCategory.name.trim(), slug })
+
+            const { data, error: insertError } = await supabase
+                .from('blog_categories')
+                .insert({
+                    name: newCategory.name.trim(),
+                    slug,
+                    description: null,
+                })
+                .select()
+                .single()
+
+            if (insertError) {
+                console.error('[BlogEditor] Insert error:', insertError)
+                throw insertError
+            }
+
+            console.log('[BlogEditor] Category added:', data)
+
+            // Refresh categories from database to ensure consistency
+            await fetchCategories()
+
+            // Select the newly added category
+            setForm(prev => ({ ...prev, category_id: data.id }))
+            setNewCategory({ name: '', slug: '', description: '' })
+            setShowCategoryForm(false)
+            setSuccess('Category added successfully!')
+            setTimeout(() => setSuccess(null), 3000)
+        } catch (err) {
+            console.error('[BlogEditor] Error adding category:', err)
+            setError(err.message || 'Failed to add category')
+        } finally {
+            setAddingCategory(false)
+        }
+    }
 
     // Fetch blog if editing
     useEffect(() => {
@@ -98,7 +145,7 @@ export default function BlogEditor() {
                 if (data.authors && data.authors.length > 0) {
                     setAuthors(data.authors)
                 } else if (data.author_name) {
-                    setAuthors([{ name: data.author_name, role: '', avatar_url: data.author_avatar_url || '', linkedin: '', github: '', twitter: '', website: '' }])
+                    setAuthors([{ name: data.author_name, role: '', avatar_url: data.author_avatar_url || '', linkedin: '', github: '', website: '' }])
                 }
             } catch (err) {
                 console.error('Error fetching blog:', err)
@@ -383,7 +430,7 @@ export default function BlogEditor() {
                                 <label htmlFor="content">Content *</label>
                                 {isPreview ? (
                                     <div className={styles.previewArea}>
-                                        <ReactMarkdown>{form.content || '*No content to preview*'}</ReactMarkdown>
+                                        <MarkdownRenderer>{form.content || '*No content to preview*'}</MarkdownRenderer>
                                     </div>
                                 ) : (
                                     <textarea
@@ -456,7 +503,7 @@ export default function BlogEditor() {
                                 <p className={styles.hint}>Featured posts appear prominently on the homepage</p>
                             </div>
 
-                            {/* Authors — Multi-author support */}
+                            {/* Authors - Multi-author support */}
                             <div className={styles.sidebarCard}>
                                 <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1rem' }}>
                                     <h3 style={{ margin: 0 }}>Authors</h3>
@@ -520,12 +567,6 @@ export default function BlogEditor() {
                                                     <input type="url" value={author.github} onChange={e => handleAuthorChange(index, 'github', e.target.value)} placeholder="github.com/username" />
                                                 </div>
                                                 <div className={styles.socialRow}>
-                                                    <span className={styles.socialIcon} title="X / Twitter">
-                                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" /></svg>
-                                                    </span>
-                                                    <input type="url" value={author.twitter} onChange={e => handleAuthorChange(index, 'twitter', e.target.value)} placeholder="x.com/username" />
-                                                </div>
-                                                <div className={styles.socialRow}>
                                                     <span className={styles.socialIcon} title="LinkedIn">
                                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M20.447 20.452h-3.554v-5.569c0-1.328-.027-3.037-1.852-3.037-1.853 0-2.136 1.445-2.136 2.939v5.667H9.351V9h3.414v1.561h.046c.477-.9 1.637-1.85 3.37-1.85 3.601 0 4.267 2.37 4.267 5.455v6.286zM5.337 7.433c-1.144 0-2.063-.926-2.063-2.065 0-1.138.92-2.063 2.063-2.063 1.14 0 2.064.925 2.064 2.063 0 1.139-.925 2.065-2.064 2.065zm1.782 13.019H3.555V9h3.564v11.452zM22.225 0H1.771C.792 0 0 .774 0 1.729v20.542C0 23.227.792 24 1.771 24h20.451C23.2 24 24 23.227 24 22.271V1.729C24 .774 23.2 0 22.222 0h.003z" /></svg>
                                                     </span>
@@ -547,7 +588,17 @@ export default function BlogEditor() {
 
                             {/* Category */}
                             <div className={styles.sidebarCard}>
-                                <h3>Category</h3>
+                                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem' }}>
+                                    <h3 style={{ margin: 0 }}>Category</h3>
+                                    <button
+                                        type="button"
+                                        className={styles.addCategoryBtn}
+                                        onClick={() => setShowCategoryForm(!showCategoryForm)}
+                                        title="Add new category"
+                                    >
+                                        {showCategoryForm ? '✕' : '+'}
+                                    </button>
+                                </div>
                                 <select
                                     name="category_id"
                                     value={form.category_id}
@@ -561,6 +612,32 @@ export default function BlogEditor() {
                                         </option>
                                     ))}
                                 </select>
+                                {showCategoryForm && (
+                                    <div style={{ marginTop: '0.75rem', paddingTop: '0.75rem', borderTop: '1px solid var(--color-border)' }}>
+                                        <div className={styles.field} style={{ marginBottom: '0.5rem' }}>
+                                            <input
+                                                type="text"
+                                                value={newCategory.name}
+                                                onChange={(e) => setNewCategory(prev => ({ ...prev, name: e.target.value, slug: e.target.value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') }))}
+                                                placeholder="Category name"
+                                                style={{ fontSize: '0.8rem', padding: '0.4rem 0.6rem' }}
+                                                required
+                                            />
+                                        </div>
+                                        <div className={styles.field} style={{ marginBottom: '0.5rem' }}>
+                                            <input
+                                                type="text"
+                                                value={newCategory.slug}
+                                                onChange={(e) => setNewCategory(prev => ({ ...prev, slug: e.target.value }))}
+                                                placeholder="Slug (auto-generated)"
+                                                style={{ fontSize: '0.8rem', padding: '0.4rem 0.6rem' }}
+                                            />
+                                        </div>
+                                        <button type="button" onClick={handleQuickAddCategory} className={styles.submitBtn} disabled={addingCategory} style={{ width: '100%', padding: '0.4rem 0.6rem', fontSize: '0.8rem' }}>
+                                            {addingCategory ? 'Adding...' : 'Add Category'}
+                                        </button>
+                                    </div>
+                                )}
                             </div>
 
                             {/* SEO */}

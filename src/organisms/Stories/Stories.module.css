@@ -121,6 +121,12 @@
   }
 }
 
+.empty {
+  padding: var(--space-8) 0;
+  text-align: center;
+  color: var(--color-text-muted);
+}
+
 @media (max-width: 768px) {
   .section {
     padding: var(--space-10) 0;

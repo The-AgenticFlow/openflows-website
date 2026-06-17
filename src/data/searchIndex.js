@@ -53,8 +53,7 @@ export const getSearchIndex = () => {
     { title: 'Architecture Overview', href: '/docs/architecture', type: 'Docs', description: 'Deep dive into the SharedStore and agent hierarchy.' },
     { title: 'System Design', href: '/docs/architecture/system-design', type: 'Architecture', description: 'How the state machine orchestrates work.' },
     { title: 'FAQ', href: '/docs/faq', type: 'Docs', description: 'Common questions and troubleshooting.' },
-    { title: 'API Explorer', href: '/developers/api-explorer', type: 'Developers', description: 'Test endpoints live in the browser.' },
-    { title: 'Integrations', href: '/developers/integrations', type: 'Developers', description: 'Connect GitHub, GitLab, and Slack.' },
+    { title: 'Research', href: '/research', type: 'Research', description: 'Papers, preprints, and technical reports.' },
   ];
 
   docs.forEach((doc, idx) => {

@@ -3,7 +3,7 @@ import { DocCards } from '@/molecules/DocComponents/DocComponents'
 import styles from './UseCases.module.css'
 
 const CARDS = [
-  { icon: '🌐', title: 'Web Development', desc: 'A 2-person startup ships 40 features in a month. FORGE implements, SENTINEL reviews every segment, VESSEL merges — no PR review queue, no context switching.', href: '/use-cases/web-development' },
+  { icon: '🌐', title: 'Web Development', desc: 'A 2-person startup ships 40 features in a month. FORGE implements, SENTINEL reviews every segment, VESSEL merges - no PR review queue, no context switching.', href: '/use-cases/web-development' },
   { icon: '🔧', title: 'DevOps Automation', desc: 'VESSEL fully automates CI/CD on GitHub Actions. Conflict rework loops eliminate manual rebase churn. Green CI → squash merge, automatically.', href: '/use-cases/devops' },
 ]
 

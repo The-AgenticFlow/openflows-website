@@ -1,58 +1,57 @@
 import DocsLayout from '@/organisms/DocsLayout/DocsLayout'
-import { CodeBlock, Callout, Accordion } from '@/molecules/DocComponents/DocComponents'
+import { CodeBlock, Callout, TabSwitcher } from '@/molecules/DocComponents/DocComponents'
 
-const ACCORDION_ITEMS = [
+const ENV_TABS = [
   {
-    title: '1. Prerequisites',
-    content: (
-      <ul>
-        <li><strong>Node.js 18+</strong> — Required for the GitHub MCP server and npm install</li>
-        <li><strong>Claude Code CLI</strong> — <code>npm install -g @anthropic-ai/claude-code</code></li>
-        <li><strong>GitHub PAT</strong> — With <code>repo</code> + <code>workflow</code> scopes</li>
-        <li><strong>LLM API key</strong> — Anthropic, Fireworks, or OpenAI</li>
-        <li><strong>Rust 1.70+</strong> — Only needed if building from source</li>
-      </ul>
-    ),
-  },
-  {
-    title: '2. Install OpenFlows',
+    label: 'Interactive (Recommended)',
     content: (
       <>
-        <p>The fastest way — install via npm:</p>
-        <CodeBlock lang="bash">npm install -g @the-agenticflow/openflows</CodeBlock>
-        <p>Or use the one-line installer (downloads pre-built binary):</p>
-        <CodeBlock lang="bash">curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/AgentFlow/main/scripts/install.sh | bash</CodeBlock>
-        <p>See <a href="/docs/getting-started/installation">Installation</a> for all methods (cargo, Docker, Homebrew, source).</p>
-      </>
-    ),
-  },
-  {
-    title: '3. Configure Your Environment',
-    content: (
-      <>
-        <p>Run the interactive TUI setup wizard — it writes your <code>.env</code> and <code>registry.json</code> for you:</p>
+        <p>The TUI wizard asks for your repository, tokens, and preferred CLI, then writes <code>.env</code> and <code>registry.json</code> automatically.</p>
         <CodeBlock lang="bash">openflows-setup</CodeBlock>
-        <p>Or configure manually. Minimum required in <code>.env</code>:</p>
-        <CodeBlock lang="bash">{`DEFAULT_CLI=codex
-GITHUB_REPOSITORY=your-org/your-repo
-GITHUB_PERSONAL_ACCESS_TOKEN=ghp_your_token
-ANTHROPIC_API_KEY=sk-ant-your_key
-FIREWORKS_API_KEY=your_fireworks_key`}</CodeBlock>
+        <p>It will walk you through:</p>
+        <ol>
+          <li>Target GitHub repository</li>
+          <li>Per-agent GitHub tokens</li>
+          <li>LLM provider and API keys</li>
+          <li>Preferred code agent (Claude Code or Codex CLI)</li>
+          <li>Model registry for each agent</li>
+        </ol>
       </>
     ),
   },
   {
-    title: '4. Run the Autonomous Team',
+    label: 'Manual',
     content: (
       <>
-        <CodeBlock lang="bash">{`# Start the orchestration
-openflows
+        <p>Copy the template below into a <code>.env</code> file in your working directory. Every variable is documented inline.</p>
+        <CodeBlock lang="bash">{`# ── Core ────────────────────────────────────────
+# The repository the team will work on
+GITHUB_REPOSITORY=your-org/your-repo
 
-# In a separate terminal — monitor workers in real-time
-openflows-dashboard`}</CodeBlock>
-        <Callout type="tip" title="What happens next">
-          NEXUS discovers your open GitHub issues, assigns them to FORGE workers, SENTINEL reviews every code segment, VESSEL merges approved PRs, and LORE writes the ADRs. You only get notified when human input is genuinely needed.
-        </Callout>
+# Code agent: "claude" for Claude Code, "codex" for Codex CLI
+DEFAULT_CLI=codex
+
+# The command OpenFlows uses to invoke the GitHub MCP server.
+# Example for the official MCP: npx -y @anthropic-ai/github-mcp-server
+GITHUB_MCP_CMD=npx -y @anthropic-ai/github-mcp-server
+
+# ── Per-Agent GitHub Tokens ─────────────────────
+# Each agent gets its own PAT so actions are auditable per identity.
+# Create tokens at https://github.com/settings/tokens with scopes:
+#   repo, workflow, read:org (for NEXUS), delete_repo (for VESSEL cleanup)
+AGENT_NEXUS_GITHUB_TOKEN=ghp_nexus_token_here
+AGENT_FORGE_GITHUB_TOKEN=ghp_forge_token_here
+AGENT_SENTINEL_GITHUB_TOKEN=ghp_sentinel_token_here
+AGENT_VESSEL_GITHUB_TOKEN=ghp_vessel_token_here
+
+# ── LLM API Keys ────────────────────────────────
+# Provide at least one key matching the models declared in registry.json.
+ANTHROPIC_API_KEY=sk-ant-api-key-here
+OPENAI_API_KEY=sk-openai-api-key-here
+# FIREWORKS_API_KEY=your_fireworks_key_here   # optional
+
+# ── Debug / Logging ─────────────────────────────
+RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
       </>
     ),
   },
@@ -62,27 +61,213 @@ export default function GettingStarted() {
   return (
     <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started' }]}>
       <h1>Getting Started</h1>
-      <p>Get OpenFlows running in minutes. This guide walks you through installation, configuration, and your first autonomous workflow — from open GitHub issue to merged pull request.</p>
+      <p>
+        OpenFlows is an autonomous AI development team that runs 24/7 on your GitHub repository.
+        Five agents - NEXUS, FORGE, SENTINEL, VESSEL, and LORE - collaborate to take issues
+        all the way to merged, documented pull requests without human intervention.
+      </p>
 
-      <Accordion items={ACCORDION_ITEMS} />
+      <Callout type="tip" title="What you will accomplish">
+        By the end of this guide you will have OpenFlows installed, configured, and running
+        against a real GitHub repository, turning open issues into reviewed, merged PRs.
+      </Callout>
 
-      <h2>What the Logs Look Like</h2>
-      <p>From open issue to merged PR in ~16 minutes. No human intervention.</p>
+      {/* ── Prerequisites ── */}
+      <h2>1. Prerequisites</h2>
+      <table className="docsTable">
+        <thead>
+          <tr>
+            <th>Requirement</th>
+            <th>Details</th>
+            <th>Install</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Node.js 18+</strong></td>
+            <td>Required for the GitHub MCP server and npm install</td>
+            <td><code>https://nodejs.org</code></td>
+          </tr>
+          <tr>
+            <td><strong>Code agent CLI</strong></td>
+            <td>Claude Code or Codex CLI - the hands FORGE uses to edit files</td>
+            <td>
+              <code>npm install -g @anthropic-ai/claude-code</code><br />
+              <em>or</em><br />
+              <code>npm install -g @anthropic-ai/codex-cli</code>
+            </td>
+          </tr>
+          <tr>
+            <td><strong>GitHub PATs</strong></td>
+            <td>One per agent with repo + workflow scopes</td>
+            <td><code>https://github.com/settings/tokens</code></td>
+          </tr>
+          <tr>
+            <td><strong>LLM API key</strong></td>
+            <td>Anthropic, OpenAI, or Fireworks</td>
+            <td>Provider dashboard</td>
+          </tr>
+          <tr>
+            <td><strong>Rust 1.70+</strong></td>
+            <td>Only needed if building from source</td>
+            <td><code>https://rustup.rs</code></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <Callout type="info" title="Claude Code vs Codex CLI">
+        Both are Anthropic-powered code agents. Claude Code is the original CLI; Codex CLI is a
+        newer lightweight interface. Set <code>DEFAULT_CLI=codex</code> or <code>DEFAULT_CLI=claude</code> in your
+        environment to choose. FORGE will invoke whichever you select.
+      </Callout>
+
+      {/* ── Install ── */}
+      <h2>2. Install OpenFlows</h2>
+      <p>Choose the method that fits your setup. All methods install the same binaries: <code>openflows</code>, <code>openflows-setup</code>, <code>openflows-dashboard</code>, and <code>openflows-doctor</code>.</p>
+
+      <TabSwitcher tabs={[
+        {
+          label: 'npm (Recommended)',
+          content: (
+            <>
+              <p>Fastest on any platform with Node.js already installed.</p>
+              <CodeBlock lang="bash">{`npm install -g @the-agenticflow/openflows
+openflows --version`}</CodeBlock>
+            </>
+          ),
+        },
+        {
+          label: 'One-liner',
+          content: (
+            <>
+              <p>Downloads the correct pre-built binary for your OS and architecture, installs to <code>~/.local/bin</code>.</p>
+              <CodeBlock lang="bash">{`curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/OpenFlows/main/scripts/install.sh | bash`}</CodeBlock>
+            </>
+          ),
+        },
+        {
+          label: 'Cargo',
+          content: (
+            <>
+              <p>For Rust developers who prefer cargo.</p>
+              <CodeBlock lang="bash">{`cargo install openflows
+openflows --version`}</CodeBlock>
+            </>
+          ),
+        },
+        {
+          label: 'Docker',
+          content: (
+            <>
+              <p>Run in a container. Mounts your config directory for persistence.</p>
+              <CodeBlock lang="bash">{`docker run -it --rm \\
+  -v "$HOME/.openflows:/home/openflows/.openflows" \\
+  -e ANTHROPIC_API_KEY=your_key \\
+  -e GITHUB_REPOSITORY=owner/repo \\
+  ghcr.io/the-agenticflow/openflows:latest`}</CodeBlock>
+            </>
+          ),
+        },
+      ]} />
+
+      <p>See the <a href="/docs/getting-started/installation">Installation Guide</a> for Homebrew, source builds, and Compose setups with Redis and LiteLLM.</p>
+
+      {/* ── Configure ── */}
+      <h2>3. Configure Your Environment</h2>
+      <p>OpenFlows needs two files: a <code>.env</code> with tokens and keys, and a <code>registry.json</code> that maps each agent to its LLM model. You can generate both with the interactive wizard, or write them manually.</p>
+
+      <TabSwitcher tabs={ENV_TABS} />
+
+      <Callout type="warning" title="Token scopes">
+        Each agent token needs <code>repo</code> and <code>workflow</code> scopes. NEXUS benefits from <code>read:org</code> for team assignment logic, and VESSEL may need <code>delete_repo</code> if you enable branch cleanup. Never reuse the same token across agents - per-agent tokens are what make actions auditable.
+      </Callout>
+
+      {/* ── Model Registry ── */}
+      <h3>3.1 Model Registry (registry.json)</h3>
+      <p>
+        The registry tells each agent which LLM to use. You can mix providers - FORGE on Claude Sonnet,
+        SENTINEL on Gemini, NEXUS on GPT-4o. This multi-model setup creates natural adversarial review.
+      </p>
+      <CodeBlock lang="json">{`{
+  "agents": {
+    "nexus":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514" },
+    "forge":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514" },
+    "sentinel": { "provider": "openai",    "model": "gpt-4.1" },
+    "vessel":   { "provider": "openai",    "model": "gpt-4o" },
+    "lore":     { "provider": "anthropic", "model": "claude-haiku-4-20250514" }
+  }
+}`}</CodeBlock>
+
+      <p>The TUI wizard generates this for you. For manual setup, place <code>registry.json</code> next to your <code>.env</code> file. Hot-reloaded on every NEXUS poll - no restart required.</p>
+
+      {/* ── Verify ── */}
+      <h2>4. Verify Installation</h2>
+      <p>Run the built-in doctor to check every dependency before starting the team.</p>
+      <CodeBlock lang="bash">openflows-doctor</CodeBlock>
+      <p>Expected output:</p>
+      <CodeBlock lang="bash">{`$ openflows-doctor
+  Rust toolchain:   1.88.0
+  Node.js:          v20.11.0
+  Code agent CLI:   codex (found in PATH)
+  Git:              2.44.0
+  GitHub tokens:    4/4 present
+  LLM API keys:     ANTHROPIC_API_KEY set
+  GITHUB_REPOSITORY: owner/repo
+  registry.json:    valid`}</CodeBlock>
+
+      <Callout type="tip" title="Missing something?">
+        The doctor prints exactly which token or binary is missing and a link to where to get it. Fix it, re-run, and proceed.
+      </Callout>
+
+      {/* ── Run ── */}
+      <h2>5. Run the Autonomous Team</h2>
+      <p>Two terminals: one runs the orchestration engine, the other shows real-time worker status.</p>
+
+      <CodeBlock lang="bash">{`# Terminal 1 - start the engine
+openflows
+
+# Terminal 2 - real-time dashboard
+openflows-dashboard`}</CodeBlock>
+
+      <p>What happens when you start <code>openflows</code>:</p>
+      <ol>
+        <li><strong>NEXUS</strong> polls GitHub for open issues and worker state</li>
+        <li>Idle issues are assigned to <strong>FORGE</strong> workers with unique ticket IDs</li>
+        <li>Each FORGE creates a Git worktree, writes PLAN.md, and implements segment by segment</li>
+        <li><strong>SENTINEL</strong> reviews every segment against 5 criteria before approving</li>
+        <li><strong>VESSEL</strong> handles CI status, conflicts, and squash-merges approved PRs</li>
+        <li><strong>LORE</strong> writes ADRs and updates CHANGELOG.md after each merge</li>
+      </ol>
+
+      {/* ── Logs ── */}
+      <h2>6. What the Logs Look Like</h2>
+      <p>From open issue to merged PR in approximately 16 minutes. No human intervention.</p>
       <CodeBlock lang="bash">{`INFO  Starting REAL End-to-End Orchestration
 INFO  Loaded 6 worker slots: [nexus, forge-1, forge-2, sentinel, vessel, lore]
 INFO  Found 3 open issues
-INFO  Assigning issue #1 to forge-1  →  T-001
+INFO  Assigning issue #1 to forge-1  ->  T-001
 INFO  Worktree created: forge-1/T-001
-INFO  Spawning Claude Code for forge-1
-INFO  PLAN.md written — spawning SENTINEL for review
-INFO  Contract AGREED — implementation starting
-INFO  Worker forge-1 completed — PR opened: #1
+INFO  Spawning code agent for forge-1
+INFO  PLAN.md written - spawning SENTINEL for review
+INFO  Contract AGREED - implementation starting
+INFO  Worker forge-1 completed - PR opened: #1
 INFO  CI status: success for PR #1
 INFO  PR #1 merged successfully
 INFO  LORE: ADR-001 written and committed`}</CodeBlock>
 
-      <Callout type="info" title="Next Steps">
-        Configure individual agents and model routing in <a href="/docs/guides/agent-setup">Agent Setup</a>, or read the <a href="/docs/architecture/agent-roles">Agent Roles</a> reference to understand what each agent does.
+      {/* ── Next Steps ── */}
+      <h2>Next Steps</h2>
+      <p>Now that the team is running:</p>
+      <ul>
+        <li>Read the <a href="/docs/guides/agent-setup">Agent Setup</a> guide to tune model routing, worker slots, and per-agent prompts</li>
+        <li>Study <a href="/docs/architecture/agent-roles">Agent Roles</a> to understand each agent's contract and recovery behavior</li>
+        <li>Check <a href="/docs/faq">FAQ</a> for common troubleshooting (rate limits, token scopes, CI timeouts)</li>
+      </ul>
+
+      <Callout type="info" title="Need help?">
+        If the doctor reports a missing dependency or NEXUS fails to assign tickets, start with the
+        <a href="/docs/faq">FAQ</a> or open a discussion on
+        <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>.
       </Callout>
     </DocsLayout>
   )

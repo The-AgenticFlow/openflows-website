@@ -23,6 +23,8 @@ export const TABLES = {
     BLOG_TAGS: 'blog_tags',
     BLOG_CATEGORIES: 'blog_categories',
     ADMIN_USERS: 'admin_users',
+    STORIES: 'stories',
+    RESEARCH: 'research',
 }
 
 // Blog status enum

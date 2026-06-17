@@ -14,7 +14,7 @@ const LINES = [
   { type: 'output',  text: '' },
   { type: 'output',  text: '[forge-1] Worktree created: forge-1/T-001' },
   { type: 'output',  text: '[forge-1] Spawning Claude Code...' },
-  { type: 'output',  text: '[forge-1] PLAN.md written — spawning SENTINEL for review' },
+  { type: 'output',  text: '[forge-1] PLAN.md written - spawning SENTINEL for review' },
   { type: 'output',  text: '[sentinel] CONTRACT.md → AGREED' },
   { type: 'output',  text: '[forge-1] Implementing segment 1/3...' },
   { type: 'output',  text: '[sentinel] segment-1-eval.md → APPROVED' },
@@ -25,7 +25,7 @@ const LINES = [
   { type: 'success', text: '[forge-1] PR #7 opened: "Fix pagination offset in API endpoint"' },
   { type: 'output',  text: '' },
   { type: 'output',  text: '[vessel] Polling CI for PR #7 (10s interval)...' },
-  { type: 'success', text: '[vessel] CI: success ✓ — squash-merging PR #7' },
+  { type: 'success', text: '[vessel] CI: success ✓ - squash-merging PR #7' },
   { type: 'output',  text: '[lore] ADR-003 written and committed' },
   { type: 'output',  text: '' },
   { type: 'output',  text: '[nexus] T-001 merged. Picking next ticket...' },
@@ -74,7 +74,7 @@ export default function Terminal() {
         <p className={styles.eyebrow}>Demos</p>
         <h1 className={styles.title}>Terminal Simulation</h1>
         <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
-          Watch OpenFlows autonomously discover a GitHub issue, plan the implementation, write code, review it, and merge the pull request — all without human intervention.
+          Watch OpenFlows autonomously discover a GitHub issue, plan the implementation, write code, review it, and merge the pull request - all without human intervention.
         </p>
 
         <div className="terminalDemo">
@@ -82,7 +82,7 @@ export default function Terminal() {
             <span className="tDot red" />
             <span className="tDot yellow" />
             <span className="tDot green" />
-            <span className="terminalTitle">openflows — my-org/my-project</span>
+            <span className="terminalTitle">openflows - my-org/my-project</span>
           </div>
           <TerminalAnimation running={running} />
         </div>
@@ -101,7 +101,7 @@ export default function Terminal() {
           <li><strong>FORGE</strong> creates an isolated worktree, writes PLAN.md, spawns Claude Code</li>
           <li><strong>SENTINEL</strong> reviews the plan (CONTRACT.md: AGREED) before any code is written</li>
           <li><strong>FORGE</strong> implements segment by segment; SENTINEL evaluates each one</li>
-          <li><strong>SENTINEL</strong> final review approved — FORGE opens PR #7 via GitHub MCP</li>
+          <li><strong>SENTINEL</strong> final review approved - FORGE opens PR #7 via GitHub MCP</li>
           <li><strong>VESSEL</strong> polls CI at 10s intervals, squash-merges when green</li>
           <li><strong>LORE</strong> writes ADR-003 and commits it to the repo</li>
         </ol>

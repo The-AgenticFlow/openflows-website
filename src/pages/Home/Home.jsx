@@ -21,10 +21,10 @@ export default function Home() {
           <div className={styles.aboutGrid}>
             <div className={styles.aboutText}>
               <h2 className={styles.aboutHeading}>
-                OpenFlows is an autonomous AI development team that runs itself — 24/7, on your GitHub repo.
+                OpenFlows is an autonomous AI development team that runs itself - 24/7, on your GitHub repo.
               </h2>
               <p className={styles.aboutDesc}>
-                Five specialized agents — NEXUS, FORGE, SENTINEL, VESSEL, and LORE — collaborate through a
+                Five specialized agents - NEXUS, FORGE, SENTINEL, VESSEL, and LORE - collaborate through a
                 Redis-backed state machine to take GitHub issues all the way to merged, documented pull requests.
                 You stay as the product owner. The team handles the rest.
               </p>

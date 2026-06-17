@@ -13,7 +13,7 @@ export default function WorkflowIntegration() {
   return (
     <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Workflow Integration' }]}>
       <h1>Workflow Integration</h1>
-      <p>Connect OpenFlows to your existing development workflows — GitHub Actions, CI/CD pipelines, code review gates, and notification systems.</p>
+      <p>Connect OpenFlows to your existing development workflows - GitHub Actions, CI/CD pipelines, code review gates, and notification systems.</p>
 
       <h2>GitHub Actions Integration</h2>
       <p>Add OpenFlows as a GitHub Action to run autonomously on repository events:</p>
@@ -30,7 +30,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Run OpenFlows
-        uses: The-AgenticFlow/AgentFlow@main
+        uses: The-AgenticFlow/OpenFlows@main
         with:
           github-token: \${{ secrets.GITHUB_TOKEN }}
           anthropic-api-key: \${{ secrets.ANTHROPIC_API_KEY }}

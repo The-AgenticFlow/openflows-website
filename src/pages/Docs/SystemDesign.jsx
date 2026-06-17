@@ -3,11 +3,11 @@ import { DocsTable } from '@/molecules/DocComponents/DocComponents'
 
 const COMPONENT_ROWS = [
   ['Flow Engine', 'pocketflow-core (Tokio)', 'Routes work between agent nodes via typed Actions'],
-  ['SharedStore', 'In-memory / Redis (fred)', 'Central state machine — tickets, worker_slots, pending_prs'],
+  ['SharedStore', 'In-memory / Redis (fred)', 'Central state machine - tickets, worker_slots, pending_prs'],
   ['GitHub Client', 'MCP + REST (reqwest)', 'Issue discovery, PR creation, CI polling, merging'],
   ['LLM Client', 'agent-client (reqwest)', 'Anthropic, OpenAI, Gemini, Fireworks, Groq with fallback'],
   ['Pair Harness', 'pair-harness', 'Git worktree lifecycle, process spawning, file locking'],
-  ['TUI', 'agentflow-tui (ratatui)', 'Setup wizard, live dashboard, doctor diagnostics'],
+  ['TUI', 'openflows-tui (ratatui)', 'Setup wizard, live dashboard, doctor diagnostics'],
 ]
 
 const STORE_ROWS = [
@@ -15,14 +15,14 @@ const STORE_ROWS = [
   ['<code>worker_slots</code>', 'Map&lt;WorkerId, WorkerStatus&gt;', 'All workers: idle, assigned, working, suspended, done'],
   ['<code>pending_prs</code>', 'Vec&lt;PrEntry&gt;', 'PRs waiting for VESSEL to merge'],
   ['<code>flow_recovery</code>', 'RecoveryState', 'Detected inconsistencies for NEXUS to resolve'],
-  ['<code>event_ring</code>', 'RingBuffer (1000)', 'Last 1000 events — powers TUI real-time monitoring'],
+  ['<code>event_ring</code>', 'RingBuffer (1000)', 'Last 1000 events - powers TUI real-time monitoring'],
 ]
 
 export default function SystemDesign() {
   return (
     <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'System Design' }]}>
       <h1>System Design</h1>
-      <p>OpenFlows is built as an async, event-driven system in Rust using the <strong>PocketFlow</strong> engine — a directed graph where agents are nodes that communicate through a typed SharedStore.</p>
+      <p>OpenFlows is built as an async, event-driven system in Rust using the <strong>PocketFlow</strong> engine - a directed graph where agents are nodes that communicate through a typed SharedStore.</p>
 
       <h2>Core Components</h2>
       <DocsTable headers={['Component', 'Technology', 'Purpose']} rows={COMPONENT_ROWS} />
@@ -30,17 +30,17 @@ export default function SystemDesign() {
       <h2>Data Flow</h2>
       <p>A typical issue-to-merge cycle follows this sequence:</p>
       <ol>
-        <li><strong>NEXUS polls GitHub</strong> — discovers open issues, syncs them as tickets into SharedStore</li>
-        <li><strong>NEXUS assigns</strong> — matches ticket to an idle FORGE worker, updates worker_slots</li>
-        <li><strong>FORGE creates worktree</strong> — isolated Git branch (<code>forge-1/T-001</code>), writes PLAN.md</li>
-        <li><strong>SENTINEL reviews plan</strong> — writes CONTRACT.md (AGREED / CHANGES_REQUESTED)</li>
-        <li><strong>FORGE implements</strong> — segment by segment; after each commit SENTINEL writes segment-N-eval.md</li>
-        <li><strong>SENTINEL final review</strong> — writes final-review.md; APPROVED unblocks PR creation</li>
-        <li><strong>FORGE opens PR</strong> — via GitHub MCP; STATUS.json written with PR_OPENED</li>
-        <li><strong>VESSEL polls CI</strong> — 10s interval; detects conflicts early via mergeable field</li>
-        <li><strong>VESSEL merges</strong> — squash merge with ticket reference; emits ticket_merged</li>
-        <li><strong>LORE documents</strong> — writes ADR, updates CHANGELOG.md, commits via GitHub MCP</li>
-        <li><strong>NEXUS loops</strong> — picks next ticket or halts gracefully if no work remains</li>
+        <li><strong>NEXUS polls GitHub</strong> - discovers open issues, syncs them as tickets into SharedStore</li>
+        <li><strong>NEXUS assigns</strong> - matches ticket to an idle FORGE worker, updates worker_slots</li>
+        <li><strong>FORGE creates worktree</strong> - isolated Git branch (<code>forge-1/T-001</code>), writes PLAN.md</li>
+        <li><strong>SENTINEL reviews plan</strong> - writes CONTRACT.md (AGREED / CHANGES_REQUESTED)</li>
+        <li><strong>FORGE implements</strong> - segment by segment; after each commit SENTINEL writes segment-N-eval.md</li>
+        <li><strong>SENTINEL final review</strong> - writes final-review.md; APPROVED unblocks PR creation</li>
+        <li><strong>FORGE opens PR</strong> - via GitHub MCP; STATUS.json written with PR_OPENED</li>
+        <li><strong>VESSEL polls CI</strong> - 10s interval; detects conflicts early via mergeable field</li>
+        <li><strong>VESSEL merges</strong> - squash merge with ticket reference; emits ticket_merged</li>
+        <li><strong>LORE documents</strong> - writes ADR, updates CHANGELOG.md, commits via GitHub MCP</li>
+        <li><strong>NEXUS loops</strong> - picks next ticket or halts gracefully if no work remains</li>
       </ol>
 
       <h2>SharedStore Keys</h2>
@@ -48,11 +48,11 @@ export default function SystemDesign() {
 
       <h2>Design Principles</h2>
       <ul>
-        <li><strong>Isolated worktrees</strong> — each FORGE worker gets its own Git branch; no shared mutable state in the filesystem</li>
-        <li><strong>Ephemeral reviewers</strong> — SENTINEL is spawned fresh per evaluation; no accumulated bias</li>
-        <li><strong>Flow recovery</strong> — NEXUS detects and resumes broken pipeline phases on every cycle</li>
-        <li><strong>Human-in-the-loop only when needed</strong> — CommandGate for dangerous commands; notifications only for spec ambiguity, security concerns, or resource limits</li>
-        <li><strong>Dual-backend state</strong> — in-memory for dev/tests, Redis for production; zero config change required</li>
+        <li><strong>Isolated worktrees</strong> - each FORGE worker gets its own Git branch; no shared mutable state in the filesystem</li>
+        <li><strong>Ephemeral reviewers</strong> - SENTINEL is spawned fresh per evaluation; no accumulated bias</li>
+        <li><strong>Flow recovery</strong> - NEXUS detects and resumes broken pipeline phases on every cycle</li>
+        <li><strong>Human-in-the-loop only when needed</strong> - CommandGate for dangerous commands; notifications only for spec ambiguity, security concerns, or resource limits</li>
+        <li><strong>Dual-backend state</strong> - in-memory for dev/tests, Redis for production; zero config change required</li>
       </ul>
     </DocsLayout>
   )

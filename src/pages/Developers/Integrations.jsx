@@ -72,7 +72,7 @@ openflows-dashboard    # Live worker monitoring dashboard
 openflows-doctor       # Diagnose environment issues`}</CodeBlock>
 
         <Callout type="info" title="More Integrations Coming">
-          We're working on integrations for Jira, Linear, GitLab, and Bitbucket. <a href="https://github.com/The-AgenticFlow/AgentFlow/issues" target="_blank" rel="noopener noreferrer">Request an integration ↗</a> on GitHub.
+          We're working on integrations for Jira, Linear, GitLab, and Bitbucket. <a href="https://github.com/The-AgenticFlow/OpenFlows/issues" target="_blank" rel="noopener noreferrer">Request an integration ↗</a> on GitHub.
         </Callout>
       </div>
     </Layout>

@@ -6,24 +6,6 @@ import styles from './Navbar.module.css'
 
 const NAV_DATA = [
   {
-    label: 'Platform',
-    href: '/platform',
-    dropdown: {
-      heading: 'Explore Platform',
-      items: [
-        { label: 'How It Works', href: '/#how-it-works' },
-        { label: 'SharedStore', href: '/docs/architecture/system-design' },
-        { label: 'FORGE-SENTINEL Pair Harness', href: '/docs/architecture/agent-roles' },
-        { label: 'Flow Recovery', href: '/docs/architecture/system-design' },
-        { label: 'Security & Safety', href: '/docs/guides/agent-setup' },
-      ],
-      advancements: [
-        { label: 'OpenFlows v1.0 Stable', href: '/blog/openflows-v1' },
-        { label: 'VESSEL Conflict Rework Loop', href: '/blog/vessel-conflict-rework' },
-      ]
-    }
-  },
-  {
     label: 'Agents',
     href: '/agents',
     dropdown: {
@@ -52,15 +34,28 @@ const NAV_DATA = [
     }
   },
   {
-    label: 'Developers',
-    href: '/developers',
+    label: 'Developer',
+    href: '/developer',
     dropdown: {
       heading: 'Developer Resources',
       items: [
-        { label: 'API Reference', href: '/developers/api-explorer' },
-        { label: 'Integrations', href: '/developers/integrations' },
-        { label: 'OpenFlows CLI', href: '/docs/getting-started/installation' },
-        { label: 'GitHub Repository', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
+        { label: 'All Articles', href: '/developer' },
+        { label: 'API Guides', href: '/developer' },
+        { label: 'Integrations', href: '/developer' },
+        { label: 'SDK & Tools', href: '/developer' },
+      ]
+    }
+  },
+  {
+    label: 'Research',
+    href: '/research',
+    dropdown: {
+      heading: 'Research',
+      items: [
+        { label: 'All Publications', href: '/research' },
+        { label: 'Papers', href: '/research' },
+        { label: 'Preprints', href: '/research' },
+        { label: 'Technical Reports', href: '/research' },
       ]
     }
   },
@@ -74,11 +69,11 @@ const NAV_DATA = [
         { label: 'Blog', href: '/blog' },
         { label: 'Use Cases', href: '/use-cases' },
         { label: 'Demos', href: '/demos' },
-        { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
+        { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
       ]
     }
   },
-  { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/AgentFlow', external: true },
+  { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
 ]
 
 export default function Navbar() {
@@ -248,7 +243,7 @@ export default function Navbar() {
                     </svg>
                   )}
                 </button>
-                <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/AgentFlow" target="_blank" rel="noopener noreferrer">
+                <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer">
                   GitHub
                 </Button>
                 <Button variant="cyan" size="sm" href="/docs/getting-started">

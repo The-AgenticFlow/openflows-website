@@ -14,15 +14,6 @@ const SIDEBAR = [
     title: 'Guides',
     links: [
       { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
-      { label: 'Workflow Integration', href: '/docs/guides/workflow-integration' },
-    ],
-  },
-  {
-    title: 'API Reference',
-    links: [
-      { label: 'Overview', href: '/docs/api' },
-      { label: 'Endpoints', href: '/docs/api/endpoints' },
-      { label: 'Authentication', href: '/docs/api/authentication' },
     ],
   },
   {

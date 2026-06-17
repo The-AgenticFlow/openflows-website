@@ -11,19 +11,23 @@ const STATS = [
 const VALUES = [
   {
     title: 'Autonomous by default',
-    desc: 'The team runs without human input. NEXUS only reaches out when it genuinely needs you — spec ambiguity, security concerns, or resource limits.',
+    desc: 'The team runs without human input. NEXUS only reaches out when it genuinely needs you - spec ambiguity, security concerns, or resource limits.',
   },
   {
     title: 'Each agent has an identity',
-    desc: 'Every agent gets its own GitHub account. They create branches, open PRs, and review code — just like human developers on your team.',
+    desc: 'Every agent gets its own GitHub account. They create branches, open PRs, and review code - just like human developers on your team.',
   },
   {
     title: 'Built for resilience',
     desc: 'Flow recovery detects orphaned tickets, stale workers, and unmerged PRs on every cycle. The pipeline resumes at the correct phase automatically.',
   },
   {
+    title: 'Model-agnostic, adversarial by design',
+    desc: 'You choose the model behind each agent. NEXUS can run Claude, FORGE can run Kimi, SENTINEL can run Gemini. Different models create natural adversarial behavior - the reviewer catches what the builder misses.',
+  },
+  {
     title: 'Open source, MIT licensed',
-    desc: 'The entire orchestration engine — from PocketFlow core to the TUI setup wizard — is on GitHub. Install via npm, cargo, Docker, or a one-line curl installer.',
+    desc: 'The entire orchestration engine - from PocketFlow core to the TUI setup wizard - is on GitHub. Install via npm, cargo, Docker, or a one-line curl installer.',
   },
 ]
 
@@ -39,7 +43,7 @@ export default function About() {
             An autonomous AI development<br className={styles.br} /> team that runs itself.
           </h1>
           <p className={styles.heroSub}>
-            Five specialized AI agents — written in Rust — that discover your GitHub issues,
+            Five specialized AI agents - written in Rust - that discover your GitHub issues,
             write code, review it, open pull requests, and merge them. All without human
             intervention. You stay as the product owner.
           </p>
@@ -60,7 +64,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* ── Vision — text left, image right ── */}
+      {/* ── Vision - text left, image right ── */}
       <section className={styles.split}>
         <div className={styles.container}>
           <div className={styles.splitGrid}>
@@ -69,7 +73,7 @@ export default function About() {
               <h2 className={styles.splitHeading}>You stay the product owner</h2>
               <p className={styles.splitDesc}>
                 Each AI agent gets their own GitHub account and identity. They create branches,
-                open PRs, review code, run CI/CD, and deploy — just like human developers.
+                open PRs, review code, run CI/CD, and deploy - just like human developers.
                 NEXUS (the orchestrator) notifies you only when necessary: spec ambiguity,
                 security concerns, or resource limits. Otherwise, the team runs autonomously.
                 You wake up to completed features, reviewed PRs, and updated documentation.
@@ -77,7 +81,7 @@ export default function About() {
               <div className={styles.linkRow}>
                 <a href="/docs/architecture" className={styles.textLink}>Architecture Overview ›</a>
                 <a
-                  href="https://github.com/The-AgenticFlow/AgentFlow"
+                  href="https://github.com/The-AgenticFlow/OpenFlows"
                   className={styles.textLink}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -101,8 +105,8 @@ export default function About() {
       <section className={styles.quoteSection}>
         <div className={styles.container}>
           <blockquote className={styles.quote}>
-            "Imagine having a complete engineering team — Scrum Master, Senior Developer,
-            Security Auditor, DevOps Engineer, and Technical Writer — that works 24/7 to turn
+            "Imagine having a complete engineering team - Scrum Master, Senior Developer,
+            Security Auditor, DevOps Engineer, and Technical Writer - that works 24/7 to turn
             your GitHub issues into production-ready code and pull requests."
           </blockquote>
         </div>
@@ -137,7 +141,7 @@ export default function About() {
         </div>
       </section>
 
-      {/* ── Open source — image left, text right ── */}
+      {/* ── Open source - image left, text right ── */}
       <section className={styles.split}>
         <div className={styles.container}>
           <div className={`${styles.splitGrid} ${styles.splitReverse}`}>
@@ -155,11 +159,11 @@ export default function About() {
                 OpenFlows is fully open source. The project is maintained by The AgenticFlow
                 team and welcomes contributions from the community. Install via npm, cargo,
                 Homebrew, Docker, or a one-line curl installer. The entire orchestration
-                engine — from PocketFlow core to the TUI setup wizard — is available on GitHub.
+                engine - from PocketFlow core to the TUI setup wizard - is available on GitHub.
               </p>
               <div className={styles.linkRow}>
                 <a
-                  href="https://github.com/The-AgenticFlow/AgentFlow"
+                  href="https://github.com/The-AgenticFlow/OpenFlows"
                   className={styles.textLink}
                   target="_blank"
                   rel="noopener noreferrer"
