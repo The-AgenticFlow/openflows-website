@@ -1,11 +1,108 @@
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
+import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
+import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
+import { useTheme } from '@/contexts/ThemeContext'
 import styles from './MarkdownRenderer.module.css'
 
+// Language labels for display
+const languageLabels = {
+  js: 'JavaScript',
+  javascript: 'JavaScript',
+  ts: 'TypeScript',
+  typescript: 'TypeScript',
+  jsx: 'JSX',
+  tsx: 'TSX',
+  rs: 'Rust',
+  rust: 'Rust',
+  py: 'Python',
+  python: 'Python',
+  java: 'Java',
+  json: 'JSON',
+  yaml: 'YAML',
+  yml: 'YAML',
+  md: 'Markdown',
+  markdown: 'Markdown',
+  html: 'HTML',
+  css: 'CSS',
+  scss: 'SCSS',
+  sql: 'SQL',
+  bash: 'Bash',
+  sh: 'Shell',
+  shell: 'Shell',
+  toml: 'TOML',
+  xml: 'XML',
+  graphql: 'GraphQL',
+  go: 'Go',
+  c: 'C',
+  cpp: 'C++',
+  cs: 'C#',
+  php: 'PHP',
+  rb: 'Ruby',
+  ruby: 'Ruby',
+  swift: 'Swift',
+  kt: 'Kotlin',
+  kotlin: 'Kotlin',
+  dockerfile: 'Dockerfile',
+  docker: 'Dockerfile',
+  env: 'Environment',
+  text: 'Text',
+  plaintext: 'Text',
+}
+
+function getLanguageLabel(lang) {
+  if (!lang) return 'Code'
+  const normalized = lang.toLowerCase().trim()
+  return languageLabels[normalized] || lang.charAt(0).toUpperCase() + lang.slice(1)
+}
+
 export default function MarkdownRenderer({ children, className = '' }) {
+  const { theme } = useTheme()
+
   return (
     <div className={`${styles.markdown} ${className}`}>
-      <ReactMarkdown remarkPlugins={[remarkGfm]}>
+      <ReactMarkdown
+        remarkPlugins={[remarkGfm]}
+        components={{
+          code({ node, inline, className, children, ...props }) {
+            const match = /language-(\w+)/.exec(className || '')
+            const language = match ? match[1] : ''
+
+            if (!inline && language) {
+              return (
+                <div className={styles.codeBlockWrapper}>
+                  <div className={styles.codeBlockHeader}>
+                    <span className={styles.codeBlockLanguage}>
+                      {getLanguageLabel(language)}
+                    </span>
+                  </div>
+                  <SyntaxHighlighter
+                    style={vscDarkPlus}
+                    language={language}
+                    PreTag="div"
+                    className={styles.syntaxHighlighter}
+                    customStyle={{
+                      margin: 0,
+                      borderRadius: '0 0 0.5rem 0.5rem',
+                      fontSize: '0.9rem',
+                      lineHeight: '1.65',
+                    }}
+                    {...props}
+                  >
+                    {String(children).replace(/\n$/, '')}
+                  </SyntaxHighlighter>
+                </div>
+              )
+            }
+
+            return (
+              <code className={className} {...props}>
+                {children}
+              </code>
+            )
+          },
+        }}
+      >
         {children}
       </ReactMarkdown>
     </div>

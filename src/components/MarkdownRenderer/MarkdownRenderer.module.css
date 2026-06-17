@@ -24,12 +24,32 @@
   letter-spacing: -0.01em;
 }
 
-.markdown :global(h1) { font-size: 2rem; }
-.markdown :global(h2) { font-size: 1.6rem; border-bottom: 1px solid var(--color-border); padding-bottom: 0.4rem; }
-.markdown :global(h3) { font-size: 1.3rem; }
-.markdown :global(h4) { font-size: 1.1rem; }
-.markdown :global(h5) { font-size: 1rem; }
-.markdown :global(h6) { font-size: 0.95rem; color: var(--color-text-muted); }
+.markdown :global(h1) {
+  font-size: 2rem;
+}
+
+.markdown :global(h2) {
+  font-size: 1.6rem;
+  border-bottom: 1px solid var(--color-border);
+  padding-bottom: 0.4rem;
+}
+
+.markdown :global(h3) {
+  font-size: 1.3rem;
+}
+
+.markdown :global(h4) {
+  font-size: 1.1rem;
+}
+
+.markdown :global(h5) {
+  font-size: 1rem;
+}
+
+.markdown :global(h6) {
+  font-size: 0.95rem;
+  color: var(--color-text-muted);
+}
 
 /* Paragraphs */
 .markdown :global(p) {
@@ -43,8 +63,13 @@
   margin-bottom: 1.25rem;
 }
 
-.markdown :global(ul) { list-style: disc; }
-.markdown :global(ol) { list-style: decimal; }
+.markdown :global(ul) {
+  list-style: disc;
+}
+
+.markdown :global(ol) {
+  list-style: decimal;
+}
 
 .markdown :global(li) {
   margin-bottom: 0.35rem;
@@ -123,6 +148,40 @@
   font-family: var(--font-mono, 'Menlo', 'Consolas', monospace);
   font-size: 0.9rem;
   color: var(--color-text-primary);
+}
+
+/* Syntax highlighted code blocks */
+.codeBlockWrapper {
+  margin: 1.5rem 0;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.codeBlockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.codeBlockLanguage {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.syntaxHighlighter {
+  border-radius: 0 !important;
+}
+
+/* Override syntax highlighter default styles to match theme */
+.syntaxHighlighter :global(code) {
+  font-family: var(--font-mono, 'Menlo', 'Consolas', monospace) !important;
 }
 
 /* Tables */
