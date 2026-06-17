@@ -4,7 +4,7 @@ import { useAuth } from '@/contexts/AuthContext'
 import { supabase, isSupabaseConfigured, BLOG_IMAGES_BUCKET } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
 import ImageUploader from '@/components/ImageUploader'
-import ReactMarkdown from 'react-markdown'
+import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer'
 import styles from './Admin.module.css'
 
 const DEFAULT_AUTHOR = { name: '', role: '', avatar_url: '', linkedin: '', github: '', website: '' }
@@ -430,7 +430,7 @@ export default function BlogEditor() {
                                 <label htmlFor="content">Content *</label>
                                 {isPreview ? (
                                     <div className={styles.previewArea}>
-                                        <ReactMarkdown>{form.content || '*No content to preview*'}</ReactMarkdown>
+                                        <MarkdownRenderer>{form.content || '*No content to preview*'}</MarkdownRenderer>
                                     </div>
                                 ) : (
                                     <textarea
