@@ -217,8 +217,12 @@ export default function MarkdownRenderer({ children, className = '' }) {
               return <VideoEmbed url={src} title={alt} />
             }
 
-            // Regular image
-            return <img src={src} alt={alt} {...props} />
+            // Regular image - wrap in full-width container
+            return (
+              <div className={styles.imageWrapper}>
+                <img src={src} alt={alt} {...props} />
+              </div>
+            )
           },
           // Handle links - check for video embeds
           a({ node, href, children, ...props }) {

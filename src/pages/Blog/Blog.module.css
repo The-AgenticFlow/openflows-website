@@ -714,6 +714,35 @@
   margin: 0 auto;
 }
 
+/* Text content wrapper for readability - same width as author section */
+.articleBody :global(p),
+.articleBody :global(ul),
+.articleBody :global(ol),
+.articleBody :global(h1),
+.articleBody :global(h2),
+.articleBody :global(h3),
+.articleBody :global(h4),
+.articleBody :global(h5),
+.articleBody :global(h6),
+.articleBody :global(blockquote),
+.articleBody :global(hr),
+.articleBody :global(table) {
+  max-width: 1000px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* Full-width media - same width as video */
+.articleBody :global(.imageWrapper),
+.articleBody :global(.videoWrapper),
+.articleBody :global(pre) {
+  width: 100%;
+  max-width: 100%;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
+}
+
 /* ===================================================
    AUTHORS SECTION (Post Detail Page)
    =================================================== */
