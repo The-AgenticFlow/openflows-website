@@ -258,6 +258,7 @@
 .videoWrapper {
   position: relative;
   width: 100%;
+  height: 500px;
   margin: 1.5rem 0;
   border-radius: 0.5rem;
   overflow: hidden;
@@ -272,19 +273,13 @@
   width: 100%;
   height: 100%;
   border: none;
-}
-
-.videoWrapper::before {
-  content: '';
-  display: block;
-  padding-top: 56.25%;
-  /* 16:9 aspect ratio */
+  object-fit: cover;
 }
 
 .nativeVideo {
   width: 100%;
-  height: auto;
-  max-height: 400px;
+  height: 500px;
+  object-fit: cover;
   display: block;
   background: #000;
 }
