@@ -1,9 +1,10 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
-import { supabase, isSupabaseConfigured, BLOG_IMAGES_BUCKET } from '@/lib/supabase'
+import { supabase, isSupabaseConfigured, BLOG_IMAGES_BUCKET, BLOG_VIDEOS_BUCKET } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
 import ImageUploader from '@/components/ImageUploader'
+import MediaUploader from '@/components/MediaUploader'
 import MarkdownRenderer from '@/components/MarkdownRenderer/MarkdownRenderer'
 import styles from './Admin.module.css'
 
@@ -42,6 +43,14 @@ export default function BlogEditor() {
     const [showCategoryForm, setShowCategoryForm] = useState(false)
     const [newCategory, setNewCategory] = useState({ name: '', slug: '', description: '' })
     const [addingCategory, setAddingCategory] = useState(false)
+
+    // Media modal state
+    const [showMediaModal, setShowMediaModal] = useState(false)
+    const [mediaModalTab, setMediaModalTab] = useState('upload') // 'upload' | 'url'
+    const [mediaType, setMediaType] = useState('image') // 'image' | 'video'
+    const [mediaUrl, setMediaUrl] = useState('')
+    const [uploadingMedia, setUploadingMedia] = useState(false)
+    const contentTextareaRef = useRef(null)
 
     // Check permissions
     useEffect(() => {
@@ -194,6 +203,52 @@ export default function BlogEditor() {
 
     const handleAvatarUpload = (url) => {
         setForm(prev => ({ ...prev, author_avatar_url: url }))
+    }
+
+    // --- Media insertion helpers ---
+    const insertMediaIntoContent = (markdown) => {
+        const textarea = contentTextareaRef.current
+        if (textarea) {
+            const start = textarea.selectionStart
+            const end = textarea.selectionEnd
+            const text = form.content
+            const before = text.substring(0, start)
+            const after = text.substring(end)
+            const newContent = before + markdown + after
+            setForm(prev => ({ ...prev, content: newContent }))
+            // Set cursor position after inserted content
+            setTimeout(() => {
+                textarea.focus()
+                textarea.setSelectionRange(start + markdown.length, start + markdown.length)
+            }, 0)
+        } else {
+            setForm(prev => ({ ...prev, content: prev.content + '\n' + markdown }))
+        }
+        setShowMediaModal(false)
+        setMediaUrl('')
+    }
+
+    const handleMediaUpload = (url, type) => {
+        if (type === 'video') {
+            insertMediaIntoContent(`\n![video](${url})\n`)
+        } else {
+            insertMediaIntoContent(`\n![image](${url})\n`)
+        }
+    }
+
+    const handleMediaUrlInsert = () => {
+        if (!mediaUrl.trim()) return
+
+        // Detect if it's a video URL
+        const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov']
+        const youtubeMatch = mediaUrl.match(/(?:youtube\.com\/(?:watch\?v=|embed\/)|youtu\.be\/)([a-zA-Z0-9_-]{11})/)
+        const vimeoMatch = mediaUrl.match(/(?:vimeo\.com\/(?:.*#|.*\/videos\/)?|player\.vimeo\.com\/video\/)(\d+)/)
+
+        if (youtubeMatch || vimeoMatch || videoExtensions.some(ext => mediaUrl.toLowerCase().includes(ext))) {
+            insertMediaIntoContent(`\n![video](${mediaUrl})\n`)
+        } else {
+            insertMediaIntoContent(`\n![image](${mediaUrl})\n`)
+        }
     }
 
     // --- Multi-author helpers ---
@@ -433,16 +488,73 @@ export default function BlogEditor() {
                                         <MarkdownRenderer>{form.content || '*No content to preview*'}</MarkdownRenderer>
                                     </div>
                                 ) : (
-                                    <textarea
-                                        id="content"
-                                        name="content"
-                                        value={form.content}
-                                        onChange={handleChange}
-                                        placeholder="Write your post content here... (Markdown supported)"
-                                        rows={20}
-                                        className={styles.contentEditor}
-                                        required
-                                    />
+                                    <>
+                                        {/* Media Toolbar */}
+                                        <div className={styles.mediaToolbar}>
+                                            <button
+                                                type="button"
+                                                className={styles.toolbarBtn}
+                                                onClick={() => { setMediaType('image'); setShowMediaModal(true); setMediaModalTab('upload'); }}
+                                                title="Insert Image"
+                                            >
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                                    <circle cx="8.5" cy="8.5" r="1.5" />
+                                                    <polyline points="21 15 16 10 5 21" />
+                                                </svg>
+                                                Image
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={styles.toolbarBtn}
+                                                onClick={() => { setMediaType('video'); setShowMediaModal(true); setMediaModalTab('upload'); }}
+                                                title="Insert Video"
+                                            >
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <polygon points="23 7 16 12 23 17 23 7" />
+                                                    <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                                                </svg>
+                                                Video
+                                            </button>
+                                            <div className={styles.toolbarDivider} />
+                                            <button
+                                                type="button"
+                                                className={styles.toolbarBtn}
+                                                onClick={() => { setMediaType('image'); setShowMediaModal(true); setMediaModalTab('url'); }}
+                                                title="Insert Image from URL"
+                                            >
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
+                                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71" />
+                                                </svg>
+                                                Image URL
+                                            </button>
+                                            <button
+                                                type="button"
+                                                className={styles.toolbarBtn}
+                                                onClick={() => { setMediaType('video'); setShowMediaModal(true); setMediaModalTab('url'); }}
+                                                title="Insert Video from URL"
+                                            >
+                                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                                    <circle cx="12" cy="12" r="10" />
+                                                    <line x1="2" y1="12" x2="22" y2="12" />
+                                                    <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                                                </svg>
+                                                Video URL
+                                            </button>
+                                        </div>
+                                        <textarea
+                                            id="content"
+                                            name="content"
+                                            ref={contentTextareaRef}
+                                            value={form.content}
+                                            onChange={handleChange}
+                                            placeholder="Write your post content here... (Markdown supported)"
+                                            rows={20}
+                                            className={styles.contentEditor}
+                                            required
+                                        />
+                                    </>
                                 )}
                                 <span className={styles.hint}>
                                     Estimated read time: {calculateReadTime(form.content)} min
@@ -687,6 +799,86 @@ export default function BlogEditor() {
                         </div>
                     </div>
                 </form>
+
+                {/* Media Insert Modal */}
+                {showMediaModal && (
+                    <div className={styles.mediaModal} onClick={() => setShowMediaModal(false)}>
+                        <div className={styles.mediaModalContent} onClick={e => e.stopPropagation()}>
+                            <div className={styles.mediaModalHeader}>
+                                <h2>Insert {mediaType === 'image' ? 'Image' : 'Video'}</h2>
+                                <button
+                                    type="button"
+                                    className={styles.closeModalBtn}
+                                    onClick={() => setShowMediaModal(false)}
+                                >
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                                        <line x1="18" y1="6" x2="6" y2="18" />
+                                        <line x1="6" y1="6" x2="18" y2="18" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <div className={styles.mediaModalBody}>
+                                <div className={styles.mediaTabs}>
+                                    <button
+                                        type="button"
+                                        className={`${styles.mediaTab} ${mediaModalTab === 'upload' ? styles.active : ''}`}
+                                        onClick={() => setMediaModalTab('upload')}
+                                    >
+                                        Upload File
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className={`${styles.mediaTab} ${mediaModalTab === 'url' ? styles.active : ''}`}
+                                        onClick={() => setMediaModalTab('url')}
+                                    >
+                                        From URL
+                                    </button>
+                                </div>
+
+                                {mediaModalTab === 'upload' ? (
+                                    <MediaUploader
+                                        type={mediaType}
+                                        onUpload={handleMediaUpload}
+                                    />
+                                ) : (
+                                    <div className={styles.urlInput}>
+                                        <input
+                                            type="url"
+                                            value={mediaUrl}
+                                            onChange={e => setMediaUrl(e.target.value)}
+                                            placeholder={mediaType === 'image'
+                                                ? 'https://example.com/image.jpg'
+                                                : 'https://youtube.com/watch?v=... or https://vimeo.com/...'}
+                                        />
+                                        <button
+                                            type="button"
+                                            className={styles.insertBtn}
+                                            onClick={handleMediaUrlInsert}
+                                            disabled={!mediaUrl.trim()}
+                                        >
+                                            Insert
+                                        </button>
+                                    </div>
+                                )}
+
+                                <div className={styles.mediaHint}>
+                                    {mediaType === 'image' ? (
+                                        <p>Supported formats: JPEG, PNG, GIF, WebP, SVG (max 10MB)</p>
+                                    ) : (
+                                        <>
+                                            <p>Supported formats:</p>
+                                            <ul style={{ margin: '0.25rem 0', paddingLeft: '1.25rem' }}>
+                                                <li>YouTube: <code>https://youtube.com/watch?v=...</code></li>
+                                                <li>Vimeo: <code>https://vimeo.com/...</code></li>
+                                                <li>Native video: MP4, WebM, OGG (max 100MB)</li>
+                                            </ul>
+                                        </>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                )}
             </div>
         </Layout>
     )

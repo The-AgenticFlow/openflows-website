@@ -250,6 +250,35 @@
     using (bucket_id = 'blog-images');
 
     -- =====================================================
+    -- STORAGE BUCKET FOR BLOG VIDEOS
+    -- =====================================================
+
+    -- Ensure bucket is created (idempotent)
+    insert into storage.buckets (id, name, public)
+    values ('blog-videos', 'blog-videos', true)
+    on conflict (id) do nothing;
+
+    -- Storage policies for blog-videos bucket
+    create policy "Public can view blog videos"
+    on storage.objects for select
+    using (bucket_id = 'blog-videos');
+
+    create policy "Admins can upload blog videos"
+    on storage.objects for insert
+    to authenticated
+    with check (bucket_id = 'blog-videos');
+
+    create policy "Admins can update blog videos"
+    on storage.objects for update
+    to authenticated
+    using (bucket_id = 'blog-videos');
+
+    create policy "Admins can delete blog videos"
+    on storage.objects for delete
+    to authenticated
+    using (bucket_id = 'blog-videos');
+
+    -- =====================================================
     -- INITIAL ADMIN USER (Set via Supabase Dashboard)
     -- =====================================================
     -- After setting up authentication, add your email as admin:

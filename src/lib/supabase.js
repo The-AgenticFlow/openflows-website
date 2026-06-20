@@ -14,8 +14,9 @@ export const supabase = supabaseUrl && supabaseAnonKey
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null
 
-// Storage bucket name for blog images
+// Storage bucket names
 export const BLOG_IMAGES_BUCKET = 'blog-images'
+export const BLOG_VIDEOS_BUCKET = 'blog-videos'
 
 // Table names
 export const TABLES = {
