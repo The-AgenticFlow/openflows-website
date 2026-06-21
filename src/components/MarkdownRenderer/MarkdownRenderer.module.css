@@ -187,10 +187,11 @@
 /* Tables */
 .markdown :global(table) {
   width: 100%;
+  max-width: 100%;
   border-collapse: collapse;
   margin: 1.5rem 0;
   font-size: 0.95rem;
-  display: block;
+  display: table;
   overflow-x: auto;
 }
 
@@ -199,19 +200,21 @@
 }
 
 .markdown :global(th) {
-  padding: 0.6rem 1rem;
+  padding: 0.75rem 1rem;
   text-align: left;
-  font-weight: 700;
+  font-weight: 600;
   color: var(--color-text-primary);
   border: 1px solid var(--color-border);
   white-space: nowrap;
+  font-size: 0.9rem;
 }
 
 .markdown :global(td) {
-  padding: 0.6rem 1rem;
+  padding: 0.75rem 1rem;
   border: 1px solid var(--color-border);
   color: var(--color-text-secondary);
   vertical-align: top;
+  font-size: 0.9rem;
 }
 
 .markdown :global(tbody tr:nth-child(even)) {
@@ -229,13 +232,33 @@
   opacity: 0.7;
 }
 
-/* Images */
+/* Image wrapper for full-width images */
+.imageWrapper {
+  width: 100%;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-border);
+  overflow: hidden;
+}
+
+.imageWrapper img {
+  width: 100%;
+  max-height: 500px;
+  height: auto;
+  object-fit: cover;
+  object-position: center;
+  border-radius: 0.5rem;
+  display: block;
+}
+
+/* Images (fallback) */
 .markdown :global(img) {
   max-width: 100%;
   height: auto;
   border-radius: 0.5rem;
   border: 1px solid var(--color-border);
-  margin: 1rem 0;
+  margin: 1.5rem 0;
+  display: block;
 }
 
 /* Strong / Em / Del */
@@ -251,4 +274,34 @@
 .markdown :global(del) {
   text-decoration: line-through;
   color: var(--color-text-muted);
+}
+
+/* Video Embeds */
+.videoWrapper {
+  position: relative;
+  width: 100%;
+  height: 400px;
+  margin: 1.5rem 0;
+  border-radius: 0.5rem;
+  overflow: hidden;
+  background: #000;
+  border: 1px solid var(--color-border);
+}
+
+.videoIframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: cover;
+}
+
+.nativeVideo {
+  width: 100%;
+  height: 400px;
+  object-fit: cover;
+  display: block;
+  background: #000;
 }
