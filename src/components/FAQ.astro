@@ -1,0 +1,214 @@
+---
+// FAQ.astro - FAQ section with accordion
+const FAQ_ITEMS = [
+    {
+        question: 'What is OpenFlows?',
+        answer: 'OpenFlows is an autonomous AI development team that runs itself 24/7 on your GitHub repo. Five specialized agents — NEXUS, FORGE, SENTINEL, VESSEL, and LORE — collaborate through a Redis-backed state machine to take GitHub issues all the way to merged, documented pull requests.',
+    },
+    {
+        question: 'Do I need to write any code?',
+        answer: 'No. You stay as the product owner — creating issues, setting priorities, and reviewing final results. The agents handle implementation, review, testing, merging, and documentation autonomously.',
+    },
+    {
+        question: 'How does SENTINEL ensure code quality?',
+        answer: "SENTINEL is ephemeral — spawned fresh for each evaluation with no accumulated bias. It reviews FORGE's plan before any code is written, evaluates every segment after commit against 5 criteria, and performs a holistic final review before any PR is opened.",
+    },
+    {
+        question: 'What happens when merge conflicts arise?',
+        answer: "VESSEL detects conflicts early via GitHub's mergeable field before CI completes. It attempts automated rebase and resolution, and if needed, routes the conflict back to FORGE through a rework loop — no new branches required.",
+    },
+    {
+        question: 'Is OpenFlows open source?',
+        answer: 'Yes. OpenFlows is fully open source under a permissive license. You can inspect the code, contribute, and self-host. The entire agent orchestration system is transparent and auditable.',
+    },
+    {
+        question: 'How does the agent loop work?',
+        answer: 'NEXUS discovers GitHub issues and assigns them to FORGE. FORGE writes a plan, which SENTINEL reviews. After approval, FORGE implements code segment by segment with SENTINEL evaluating each one. VESSEL handles CI and merging, then LORE documents everything. NEXUS picks the next ticket and the cycle repeats.',
+    },
+]
+---
+
+<style>
+  .section {
+    padding-block: var(--space-20);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .container {
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: var(--space-12);
+    max-width: 640px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .eyebrow {
+    font-size: var(--font-size-xs);
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    margin-bottom: var(--space-3);
+  }
+
+  .title {
+    font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.15;
+  }
+
+  .faq-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-4);
+  }
+
+  .faq-item {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    transition: border-color var(--transition-fast);
+  }
+
+  .faq-item:hover {
+    border-color: var(--color-border-hover);
+  }
+
+  .faq-item-open {
+    border-color: var(--color-accent);
+  }
+
+  .faq-question {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    padding: var(--space-5) var(--space-6);
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-primary);
+    text-align: left;
+    line-height: 1.5;
+    gap: var(--space-3);
+    font-family: inherit;
+  }
+
+  .faq-toggle {
+    font-size: 1.25rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background: var(--color-surface-2);
+  }
+
+  .faq-answer {
+    padding: 0 var(--space-6) var(--space-5);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0;
+    display: none;
+  }
+
+  .faq-answer-visible {
+    display: block;
+    animation: fadeIn 0.2s ease;
+  }
+
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(-4px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  @media (max-width: 900px) {
+    .faq-grid {
+      grid-template-columns: 1fr;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .faq-question {
+      padding: var(--space-4) var(--space-4);
+    }
+
+    .faq-answer {
+      padding: 0 var(--space-4) var(--space-4);
+    }
+  }
+</style>
+
+<section class="section" aria-labelledby="faq-title">
+  <div class="container">
+    <div class="header">
+      <p class="eyebrow">FAQ</p>
+      <h2 id="faq-title" class="title">Frequently asked questions</h2>
+    </div>
+    <div class="faq-grid">
+      {FAQ_ITEMS.map((item, i) => (
+        <div class="faq-item" data-faq-index={i}>
+          <button class="faq-question" aria-expanded="false">
+            <span>{item.question}</span>
+            <span class="faq-toggle">+</span>
+          </button>
+          <p class="faq-answer">{item.answer}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>
+
+<script>
+  document.querySelectorAll('.faq-question').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const item = btn.closest('.faq-item');
+      const answer = item?.querySelector('.faq-answer');
+      const toggle = btn.querySelector('.faq-toggle');
+      const isOpen = item?.classList.contains('faq-item-open');
+
+      // Close all other items
+      document.querySelectorAll('.faq-item').forEach((otherItem) => {
+        if (otherItem !== item) {
+          otherItem.classList.remove('faq-item-open');
+          otherItem.querySelector('.faq-answer')?.classList.remove('faq-answer-visible');
+          otherItem.querySelector('.faq-toggle')!.textContent = '+';
+          otherItem.querySelector('.faq-question')?.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Toggle current item
+      if (isOpen) {
+        item?.classList.remove('faq-item-open');
+        answer?.classList.remove('faq-answer-visible');
+        if (toggle) toggle.textContent = '+';
+        btn.setAttribute('aria-expanded', 'false');
+      } else {
+        item?.classList.add('faq-item-open');
+        answer?.classList.add('faq-answer-visible');
+        if (toggle) toggle.textContent = '−';
+        btn.setAttribute('aria-expanded', 'true');
+      }
+    });
+  });
+</script>

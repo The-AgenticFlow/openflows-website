@@ -1,0 +1,431 @@
+---
+interface Props {
+  title: string;
+  description?: string;
+  image?: string;
+  canonicalURL?: string;
+}
+
+const {
+  title,
+  description = "OpenFlows — Autonomous AI Development Team. Five specialized AI agents written in Rust that discover GitHub issues, write code, review it, open pull requests, and merge them — all without human intervention.",
+  image = "https://openflows.dev/og-image.png",
+  canonicalURL = "https://openflows.dev" + Astro.url.pathname,
+} = Astro.props;
+
+const siteTitle = "OpenFlows";
+const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="icon" type="image/png" href="/openlogo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
+    
+    <!-- Primary Meta Tags -->
+    <title>{fullTitle}</title>
+    <meta name="title" content={fullTitle} />
+    <meta name="description" content={description} />
+    
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalURL} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={image} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image" />
+    <meta property="twitter:url" content={canonicalURL} />
+    <meta property="twitter:title" content={fullTitle} />
+    <meta property="twitter:description" content={description} />
+    <meta property="twitter:image" content={image} />
+    
+    <!-- Canonical URL -->
+    <link rel="canonical" href={canonicalURL} />
+    
+    <!-- Global Styles -->
+    <style is:global>
+      /* ===================================================
+         GLOBAL STYLES - OpenFlows (Mesa-Inspired Design)
+         =================================================== */
+
+      /* --- Design Tokens --- */
+      :root {
+        /* Colors - Warm editorial palette (light mode) */
+        --color-bg: #F8F2EB;
+        --color-surface: #FDFCF8;
+        --color-surface-2: #F0EBE3;
+        --color-border: #D4CEC4;
+        --color-border-hover: #C9C2B8;
+
+        --color-text-primary: #1A1A1A;
+        --color-text-secondary: #444444;
+        --color-text-muted: #777777;
+
+        --color-accent: #1A1A1A;
+        --color-accent-hover: #333333;
+
+        /* Neutral accent system - headings & emphasis use dark, not green */
+        --color-cyan: #1A1A1A;
+        --color-cyan-glow: rgba(26, 26, 26, 0.12);
+        --color-cyan-muted: rgba(26, 26, 26, 0.08);
+        --color-cyan-surface: rgba(26, 26, 26, 0.04);
+
+        --color-agent-forge: #a78bfa;
+        --color-agent-nexus: #1A1A1A;
+        --color-agent-sentinel: #f59e0b;
+        --color-agent-vessel: #f87171;
+        --color-agent-lore: #60a5fa;
+
+        /* Typography */
+        --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+
+        --font-size-xs: 0.75rem;
+        --font-size-sm: 0.875rem;
+        --font-size-base: 1.125rem;
+        --font-size-lg: 1.25rem;
+        --font-size-xl: 1.5rem;
+        --font-size-2xl: 1.875rem;
+        --font-size-3xl: 2.25rem;
+        --font-size-4xl: 3rem;
+        --font-size-5xl: 3.75rem;
+        --font-size-6xl: 4.5rem;
+
+        /* Spacing */
+        --space-1: 0.25rem;
+        --space-2: 0.5rem;
+        --space-3: 0.75rem;
+        --space-4: 1rem;
+        --space-5: 1.25rem;
+        --space-6: 1.5rem;
+        --space-8: 2rem;
+        --space-10: 2.5rem;
+        --space-12: 3rem;
+        --space-16: 4rem;
+        --space-20: 5rem;
+        --space-24: 6rem;
+
+        /* Layout */
+        --max-width: 1400px;
+        --nav-height: 60px;
+
+        /* Radius */
+        --radius-sm: 6px;
+        --radius-md: 10px;
+        --radius-lg: 16px;
+        --radius-xl: 24px;
+        --radius-full: 9999px;
+
+        /* Glow Effects */
+        --glow-cyan: 0 0 20px var(--color-cyan-glow);
+        --glow-cyan-intense: 0 0 40px rgba(26, 26, 26, 0.15);
+        --shadow-cyan: 0 4px 24px -1px var(--color-cyan-glow);
+
+        /* Glassmorphism System */
+        --glass-bg: rgba(26, 26, 26, 0.02);
+        --glass-cyan-bg: rgba(26, 26, 26, 0.04);
+        --glass-border: #D4CEC4;
+        --glass-cyan-border: rgba(26, 26, 26, 0.15);
+        --glass-blur: blur(12px);
+        --glass-highlight: rgba(26, 26, 26, 0.04);
+
+        /* Transitions */
+        --transition-fast: 150ms ease;
+        --transition-base: 250ms ease;
+        --transition-slow: 400ms ease;
+      }
+
+      /* --- Dark Theme Overrides --- */
+      [data-theme="dark"] {
+        --color-bg: #000000;
+        --color-surface: #111111;
+        --color-surface-2: #1a1a1a;
+        --color-border: rgba(255, 255, 255, 0.1);
+        --color-border-hover: rgba(255, 255, 255, 0.25);
+
+        --color-text-primary: #ffffff;
+        --color-text-secondary: #e5e5e5;
+        --color-text-muted: #999999;
+
+        --color-accent: #00f5ff;
+        --color-accent-hover: #00d4e0;
+
+        --color-cyan: #00f5ff;
+        --color-cyan-glow: rgba(0, 245, 255, 0.3);
+        --color-cyan-muted: rgba(0, 245, 255, 0.1);
+        --color-cyan-surface: rgba(0, 245, 255, 0.05);
+
+        --color-agent-nexus: #00f5ff;
+
+        --glow-cyan: 0 0 20px var(--color-cyan-glow);
+        --glow-cyan-intense: 0 0 40px rgba(0, 245, 255, 0.4);
+        --shadow-cyan: 0 4px 24px -1px var(--color-cyan-glow);
+
+        --glass-bg: rgba(0, 245, 255, 0.03);
+        --glass-cyan-bg: rgba(0, 245, 255, 0.05);
+        --glass-border: rgba(255, 255, 255, 0.08);
+        --glass-cyan-border: rgba(0, 245, 255, 0.2);
+        --glass-highlight: rgba(0, 245, 255, 0.05);
+      }
+
+      /* Smooth theme transition */
+      html[data-theme] {
+        transition: background-color 0.3s ease, color 0.3s ease;
+      }
+
+      /* --- Reset --- */
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
+      }
+
+      html {
+        scroll-behavior: smooth;
+        -webkit-text-size-adjust: 100%;
+      }
+
+      body {
+        font-family: var(--font-family);
+        background-color: var(--color-bg);
+        color: var(--color-text-primary);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+        overflow-x: hidden;
+        font-weight: 400;
+      }
+
+      h1,
+      h2,
+      h3,
+      h4,
+      h5,
+      h6 {
+        font-weight: 700;
+        letter-spacing: -0.03em;
+        color: var(--color-cyan);
+      }
+
+      h1 {
+        text-shadow: 0 0 40px rgba(26, 26, 26, 0.08);
+      }
+
+      [data-theme="dark"] h1 {
+        text-shadow: 0 0 40px rgba(0, 245, 255, 0.15);
+      }
+
+      img,
+      video {
+        max-width: 100%;
+        height: auto;
+        display: block;
+      }
+
+      a {
+        color: inherit;
+        text-decoration: none;
+      }
+
+      button {
+        cursor: pointer;
+        border: none;
+        background: none;
+        font-family: inherit;
+      }
+
+      ul,
+      ol {
+        list-style: none;
+      }
+
+      /* --- Utilities --- */
+      .container {
+        width: 100%;
+        max-width: var(--max-width);
+        margin-inline: auto;
+        padding-inline: var(--space-6);
+      }
+
+      .visually-hidden {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0, 0, 0, 0);
+        white-space: nowrap;
+        border-width: 0;
+      }
+
+      /* --- Animations --- */
+      @keyframes fadeUp {
+        from {
+          opacity: 0;
+          transform: translateY(24px);
+        }
+
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+
+        to {
+          opacity: 1;
+        }
+      }
+
+      @keyframes blink {
+
+        0%,
+        100% {
+          opacity: 1;
+        }
+
+        50% {
+          opacity: 0;
+        }
+      }
+
+      @keyframes shimmer {
+        0% {
+          background-position: -200% center;
+        }
+
+        100% {
+          background-position: 200% center;
+        }
+      }
+
+      .fade-up {
+        animation: fadeUp var(--transition-slow) both;
+      }
+
+      .fade-in {
+        animation: fadeIn var(--transition-slow) both;
+      }
+
+      /* Staggered animation delays */
+      .delay-1 {
+        animation-delay: 100ms;
+      }
+
+      .delay-2 {
+        animation-delay: 200ms;
+      }
+
+      .delay-3 {
+        animation-delay: 300ms;
+      }
+
+      .delay-4 {
+        animation-delay: 400ms;
+      }
+
+      .delay-5 {
+        animation-delay: 500ms;
+      }
+
+      /* --- Responsive Utilities --- */
+      @media (max-width: 1200px) {
+        :root {
+          --font-size-6xl: 3.5rem;
+          --font-size-5xl: 3rem;
+          --font-size-4xl: 2.25rem;
+        }
+      }
+
+      @media (max-width: 900px) {
+        :root {
+          --font-size-6xl: 2.75rem;
+          --font-size-5xl: 2.25rem;
+          --font-size-4xl: 2rem;
+          --space-24: 4rem;
+          --space-20: 4rem;
+          --space-16: 3rem;
+        }
+      }
+
+      @media (max-width: 600px) {
+        :root {
+          --font-size-6xl: 2.25rem;
+          --font-size-5xl: 1.875rem;
+          --font-size-4xl: 1.5rem;
+          --font-size-3xl: 1.5rem;
+          --space-24: 3rem;
+          --space-20: 3rem;
+          --space-16: 2.5rem;
+          --space-12: 2rem;
+          --space-10: 1.5rem;
+        }
+
+        .container {
+          padding-inline: var(--space-4);
+        }
+      }
+
+      /* Prevent horizontal overflow on all pages */
+      html,
+      body {
+        overflow-x: hidden;
+      }
+
+      /* Ensure images never overflow */
+      img,
+      video,
+      svg {
+        max-width: 100%;
+        height: auto;
+      }
+
+      /* Better touch targets on mobile */
+      @media (max-width: 600px) {
+
+        a,
+        button {
+          min-height: 44px;
+        }
+      }
+
+      /* Scrollbar styling for mobile overflow containers */
+      @media (max-width: 600px) {
+        .container {
+          padding-inline: var(--space-4);
+        }
+      }
+    </style>
+    
+    <!-- Theme initialization script -->
+    <script is:inline>
+      // Prevent flash of wrong theme on load
+      (function () {
+        var theme = localStorage.getItem('openflows-theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        } else {
+          document.documentElement.setAttribute('data-theme', 'light');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,58 @@
+---
+// DocsTable.astro - Simple data table
+interface Props {
+  headers: string[];
+  rows: string[][];
+}
+
+const { headers, rows } = Astro.props as Props;
+---
+
+<table class="docsTable">
+  <thead>
+    <tr>
+      {headers.map((h) => <th set:html={h} />)}
+    </tr>
+  </thead>
+  <tbody>
+    {rows.map((row) => (
+      <tr>
+        {row.map((cell) => <td set:html={cell} />)}
+      </tr>
+    ))}
+  </tbody>
+</table>
+
+<style>
+  .docsTable {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.95rem;
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .docsTable th {
+    text-align: left;
+    padding: 0.75rem 1rem;
+    background-color: var(--color-surface);
+    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .docsTable td {
+    padding: 0.875rem 1rem;
+    color: var(--color-text-secondary);
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .docsTable tr:last-child td {
+    border-bottom: none;
+  }
+</style>

@@ -1,0 +1,182 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import DocsLayout from '../../components/DocsLayout.astro'
+import CodeBlock from '../../components/CodeBlock.astro'
+import Callout from '../../components/Callout.astro'
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Demos', href: '/demos' },
+  { label: 'Step-by-Step Walkthrough' },
+]
+
+const STEPS = [
+  {
+    title: 'Create GitHub Issue',
+    desc: 'A team member creates a GitHub issue describing a bug or feature request.',
+    code: { lang: 'markdown', content: `## Bug: Pagination returns wrong results for page 2+
+
+**Labels:** bug, priority:high
+
+The API endpoint \`GET /api/v1/items\` returns duplicate
+items when requesting page 2 or higher. The offset
+calculation appears to be off by one.
+
+Expected: \`offset = (page - 1) * per_page\`
+Actual:   \`offset = page * per_page\`` },
+  },
+  {
+    title: 'NEXUS Assigns the Ticket',
+    desc: 'NEXUS discovers the issue on the next poll cycle, creates a typed ticket, and assigns it to an idle FORGE worker.',
+    code: { lang: 'json', content: `{
+  "ticket_id": "T-142",
+  "issue_number": 142,
+  "status": "assigned",
+  "worker": "forge-1",
+  "branch": "forge-1/T-142"
+}` },
+  },
+  {
+    title: 'FORGE Writes PLAN.md',
+    desc: 'FORGE creates an isolated Git worktree, reads the codebase, and writes a segment-by-segment implementation plan.',
+    code: { lang: 'markdown', content: `# PLAN - T-142: Fix pagination offset
+
+## Segment 1: Fix calculate_offset in src/api/pagination.rs
+Change: page * per_page → page.saturating_sub(1) * per_page
+
+## Segment 2: Add unit tests
+Add 3 test cases: page 1, page 2, large page number` },
+  },
+  {
+    title: 'SENTINEL Reviews the Plan',
+    desc: 'SENTINEL reads PLAN.md and writes CONTRACT.md before a single line of code is written.',
+    code: { lang: 'markdown', content: `# CONTRACT - T-142
+status: AGREED
+
+## Acceptance Criteria
+1. ✅ Fix offset calculation to (page - 1) * per_page
+2. ✅ Add unit tests for boundary cases (page 1, page 2, large page)
+3. ✅ No regression on existing pagination behaviour` },
+  },
+  {
+    title: 'FORGE Implements & SENTINEL Evaluates',
+    desc: 'FORGE implements each segment and commits. After each commit, SENTINEL writes a segment eval.',
+    code: { lang: 'rust', content: `// Fixed code in src/api/pagination.rs
+fn calculate_offset(page: u32, per_page: u32) -> u32 {
+    page.saturating_sub(1) * per_page
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    #[test] fn test_first_page()  { assert_eq!(calculate_offset(1, 20), 0);    }
+    #[test] fn test_second_page() { assert_eq!(calculate_offset(2, 20), 20);   }
+    #[test] fn test_large_page()  { assert_eq!(calculate_offset(100, 50), 4950); }
+}` },
+  },
+  {
+    title: 'SENTINEL Final Review → PR Opened',
+    desc: 'SENTINEL writes final-review.md. APPROVED unblocks FORGE to open the pull request via GitHub MCP.',
+    code: { lang: 'json', content: `{
+  "verdict": "APPROVED",
+  "checks": {
+    "correctness":  { "pass": true, "notes": "Off-by-one fix is accurate" },
+    "security":     { "pass": true, "notes": "No concerns" },
+    "test_coverage":{ "pass": true, "notes": "3 test cases cover edge cases" },
+    "standards":    { "pass": true, "notes": "saturating_sub is idiomatic Rust" },
+    "regressions":  { "pass": true, "notes": "Page 1 behaviour unchanged" }
+  }
+}` },
+  },
+  {
+    title: 'VESSEL Merges, LORE Documents',
+    desc: 'VESSEL polls CI at 10s intervals. When green, it squash-merges the PR. LORE then writes the ADR and updates CHANGELOG.md.',
+    code: { lang: 'bash', content: `INFO  vessel: CI success ✓ - squash-merging PR #143
+INFO  lore: ADR-012 written → docs/adr/2026-06-01-fix-pagination-offset.md
+INFO  lore: CHANGELOG.md updated → committed to main
+INFO  nexus: T-142 merged. Picking next ticket.` },
+  },
+]
+---
+
+<BaseLayout title="Step-by-Step Walkthrough — See OpenFlows in action | OpenFlows" description="Follow a complete OpenFlows pipeline from GitHub issue to merged, documented PR. Each step shows what happens, which agent acts, and what files are created.">
+  <DocsLayout breadcrumbs={breadcrumbs}>
+    <div class="walkthroughPage">
+      <p class="eyebrow">Demos</p>
+      <h1 class="title">Step-by-Step Walkthrough</h1>
+      <p class="subtitle">
+        Follow a complete OpenFlows pipeline from GitHub issue to merged, documented PR. Each step shows what happens, which agent acts, and what files are created.
+      </p>
+
+      <div class="walkthroughSteps">
+        {STEPS.map((step, index) => (
+          <div class="walkthroughStep">
+            <p class="walkthroughTitle">{step.title}</p>
+            <p class="walkthroughDesc">{step.desc}</p>
+            <CodeBlock lang={step.code.lang}>{step.code.content}</CodeBlock>
+          </div>
+        ))}
+      </div>
+
+      <Callout type="tip" title="Try it yourself">
+        Ready to run this on your own repo? Follow the <a href="/docs/getting-started">Getting Started guide</a> - you'll be up and running in under 5 minutes.
+      </Callout>
+    </div>
+  </DocsLayout>
+</BaseLayout>
+
+<style>
+  .walkthroughPage {
+    max-width: 860px;
+    margin-inline: auto;
+    padding: calc(var(--nav-height) + 3rem) var(--space-6) 6rem;
+  }
+
+  .subtitle {
+    color: var(--color-text-secondary);
+    margin-bottom: 2rem;
+    line-height: 1.7;
+  }
+
+  .walkthroughSteps {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  .walkthroughStep {
+    padding: 1.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+  }
+
+  .walkthroughTitle {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 0.5rem;
+  }
+
+  .walkthroughDesc {
+    color: var(--color-text-secondary);
+    line-height: 1.6;
+    margin-bottom: 1rem;
+  }
+
+  @media (max-width: 768px) {
+    .walkthroughPage {
+      padding: calc(var(--nav-height) + 2rem) var(--space-6) 4rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .walkthroughPage {
+      padding: calc(var(--nav-height) + 1.5rem) var(--space-4) 4rem;
+    }
+
+    .walkthroughStep {
+      padding: 1rem;
+    }
+  }
+</style>

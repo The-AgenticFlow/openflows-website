@@ -1,0 +1,63 @@
+---
+import DocsLayout from '../../../components/DocsLayout.astro'
+import Callout from '../../../components/Callout.astro'
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agent Roles' }]}>
+  <h1>Agent Roles</h1>
+  <p>OpenFlows uses five specialized agents, each with a distinct role, isolated permissions, and its own GitHub identity. They communicate through the SharedStore - a Redis-backed state machine - and are coordinated by NEXUS on every cycle.</p>
+
+  <h2 style="color: var(--color-agent-nexus);">NEXUS - Orchestrator</h2>
+  <p>The brain of the pipeline. NEXUS supervises every phase of the flow and recovers broken states automatically. It runs on every cycle and halts gracefully when there is no more work.</p>
+  <ul>
+    <li>Polls GitHub for open issues and syncs them as typed tickets (T-001, T-002…)</li>
+    <li>Assigns tickets to idle FORGE workers, respecting CI readiness and flow recovery state</li>
+    <li>Detects orphaned tickets, unmerged PRs, and stale workers - resumes at the correct phase</li>
+    <li>Manages the CommandGate: approves or rejects dangerous bash commands from FORGE</li>
+    <li>Enforces CI-first rule: ensures CI setup tickets are completed before feature work begins</li>
+  </ul>
+
+  <h2 style="color: var(--color-agent-forge);">FORGE - Builder</h2>
+  <p>The senior engineer. FORGE operates inside an isolated Git worktree on its own branch, spawns Claude Code or Codex CLI, and implements code segment by segment. It never pushes directly - all PRs go through GitHub MCP.</p>
+  <ul>
+    <li>Creates an isolated Git worktree per ticket (branch: <code>forge-1/T-001</code>)</li>
+    <li>Writes <code>PLAN.md</code> with a segment breakdown - SENTINEL reviews it before any code is written</li>
+    <li>Implements each segment, commits, updates <code>WORKLOG.md</code>, and waits for SENTINEL eval</li>
+    <li>Scans and redacts secrets before every push</li>
+    <li>Opens pull requests via GitHub MCP after SENTINEL's final-review.md is APPROVED</li>
+  </ul>
+
+  <h2 style="color: var(--color-agent-sentinel);">SENTINEL - Reviewer</h2>
+  <p>The security auditor. SENTINEL is ephemeral - spawned fresh for each evaluation, which eliminates accumulated bias. It is read-only and cannot modify code. It evaluates against 5 criteria: correctness, security, test coverage, standards compliance, and no regressions.</p>
+  <ul>
+    <li>Reviews <code>PLAN.md</code> → writes <code>CONTRACT.md</code> (AGREED or CHANGES_REQUESTED)</li>
+    <li>Evaluates each committed segment → writes <code>segment-N-eval.md</code></li>
+    <li>Performs final holistic review → writes <code>final-review.md</code></li>
+    <li>Only after APPROVED does FORGE proceed to open the pull request</li>
+    <li>Read-only permissions - cannot write or commit to the worktree</li>
+  </ul>
+
+  <h2 style="color: var(--color-agent-vessel);">VESSEL - DevOps Engineer</h2>
+  <p>The merge gatekeeper. VESSEL is the only agent authorized to push to the main branch. It polls CI, detects conflicts early, attempts automated resolution, and squash-merges green PRs.</p>
+  <ul>
+    <li>Polls GitHub check runs at 10-second intervals (configurable timeout, default 30 min)</li>
+    <li>Detects merge conflicts via GitHub's <code>mergeable</code> field before CI completes</li>
+    <li>Attempts automated resolution via GitHub update-branch or local rebase</li>
+    <li>Writes <code>CONFLICT_RESOLUTION.md</code> and re-routes to the same FORGE worker</li>
+    <li>Squash-merges approved PRs with ticket references; emits <code>ticket_merged</code> for LORE</li>
+  </ul>
+
+  <h2 style="color: var(--color-agent-lore);">LORE - Documenter</h2>
+  <p>The technical writer. LORE activates after every successful merge and never interrupts active development. It generates Architecture Decision Records, updates CHANGELOG.md, and commits documentation changes.</p>
+  <ul>
+    <li>Triggered by VESSEL's <code>ticket_merged</code> event - never blocks the development pipeline</li>
+    <li>Generates structured ADRs from the merged work's technical decisions</li>
+    <li>Appends deployment summaries to <code>CHANGELOG.md</code> with PR references and ticket IDs</li>
+    <li>Commits and pushes documentation changes via GitHub MCP</li>
+    <li>Read-only access to application code - cannot modify source files</li>
+  </ul>
+
+  <Callout type="info" title="Per-Agent Configuration">
+    Each agent's CLI tool, model backend, GitHub token, and worker count are configured in <code>orchestration/agent/registry.json</code>. See the <a href="/docs/guides/agent-setup">Agent Setup Guide</a> for details.
+  </Callout>
+</DocsLayout>

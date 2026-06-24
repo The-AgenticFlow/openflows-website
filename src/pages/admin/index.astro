@@ -1,0 +1,16 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import AdminApp from '../../components/Admin/AdminApp.jsx';
+
+const title = 'Admin Panel | OpenFlows';
+const description = 'Manage your OpenFlows content';
+---
+
+<BaseLayout {title} {description}>
+  <AdminApp client:only="react" />
+</BaseLayout>
+
+<style is:global>
+  /* Import admin styles */
+  @import url('../../components/Admin/Admin.module.css');
+</style>

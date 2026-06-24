@@ -1,0 +1,51 @@
+---
+// Callout.astro - Info/warning/tip callout box
+interface Props {
+  type?: 'info' | 'warning' | 'tip';
+  title?: string;
+}
+
+const { type = 'info', title } = Astro.props as Props;
+---
+
+<div class:list={['callout', type]}>
+  {title && <p class="calloutTitle">{title}</p>}
+  <p><slot /></p>
+</div>
+
+<style>
+  .callout {
+    padding: 1rem 1.25rem;
+    border-radius: var(--radius-md);
+    border: 1px solid var(--color-border);
+    border-left-width: 3px;
+    margin: 1.5rem 0;
+    background-color: var(--color-surface);
+  }
+
+  .callout.info {
+    border-left-color: var(--color-accent);
+  }
+
+  .callout.warning {
+    border-left-color: var(--color-agent-sentinel);
+  }
+
+  .callout.tip {
+    border-left-color: #34d399;
+  }
+
+  .calloutTitle {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.4rem;
+    color: var(--color-text-primary);
+  }
+
+  .callout p {
+    margin: 0;
+    font-size: 1rem;
+  }
+</style>

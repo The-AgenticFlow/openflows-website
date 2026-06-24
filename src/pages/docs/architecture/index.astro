@@ -1,0 +1,15 @@
+---
+import DocsLayout from '../../../components/DocsLayout.astro'
+import DocCards from '../../../components/DocCards.astro'
+
+const CARDS = [
+  { icon: '🏗️', title: 'System Design', desc: 'PocketFlow engine, SharedStore state machine, data flow from issue to merged PR.', href: '/docs/architecture/system-design' },
+  { icon: '👥', title: 'Agent Roles', desc: 'Deep dive into each agent - permissions, workflows, and how they interact.', href: '/docs/architecture/agent-roles' },
+]
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture' }]}>
+  <h1>Architecture</h1>
+  <p>Understand how OpenFlows works under the hood - from the PocketFlow engine to the five specialized AI agents and their communication patterns.</p>
+  <DocCards cards={CARDS} />
+</DocsLayout>

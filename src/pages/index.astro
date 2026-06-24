@@ -1,0 +1,150 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Hero from '../components/Hero.astro';
+import FlowDiagram from '../components/FlowDiagram.astro';
+import RecentNews from '../components/RecentNews.astro';
+import Stories from '../components/Stories.astro';
+import FAQ from '../components/FAQ.astro';
+import GetStartedBanner from '../components/GetStartedBanner.astro';
+import Footer from '../components/Footer.astro';
+---
+
+<BaseLayout title="OpenFlows — Autonomous AI Development Team">
+  <Navbar />
+  <main>
+    <Hero />
+    <FlowDiagram />
+    <RecentNews />
+
+    {/* About Section */}
+    <section class="about-section">
+      <div class="about-container">
+        <p class="about-eyebrow">About</p>
+        <div class="about-grid">
+          <div class="about-text">
+            <h2 class="about-heading">
+              OpenFlows is an autonomous AI development team that runs itself — 24/7, on your GitHub repo.
+            </h2>
+            <p class="about-desc">
+              Five specialized agents — NEXUS, FORGE, SENTINEL, VESSEL, and LORE — collaborate through a
+              Redis-backed state machine to take GitHub issues all the way to merged, documented pull requests.
+              You stay as the product owner. The team handles the rest.
+            </p>
+            <a href="/about" class="about-link">Read about our mission &rsaquo;</a>
+          </div>
+          <div class="about-image-wrap">
+            <img
+              src="https://www.nutshell.com/wp-content/uploads/2025/11/best_crm_for_contractors.webp"
+              alt="About OpenFlows"
+              class="about-image"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <Stories />
+    <FAQ />
+    <GetStartedBanner />
+  </main>
+  <Footer />
+</BaseLayout>
+
+<style>
+  .about-section {
+    padding-block: 8rem;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .about-container {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .about-eyebrow {
+    font-size: 0.75rem;
+    color: var(--color-accent);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 1rem;
+  }
+
+  .about-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+  }
+
+  .about-text {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .about-heading {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 500;
+    margin-bottom: 2.5rem;
+    line-height: 1.2;
+    color: var(--color-accent);
+  }
+
+  .about-desc {
+    color: var(--color-text-muted);
+    line-height: 1.7;
+    margin-bottom: 2rem;
+  }
+
+  .about-link {
+    color: var(--color-text-primary);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-border);
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .about-link:hover {
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+  }
+
+  .about-image-wrap {
+    width: 100%;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .about-image {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: 4px;
+  }
+
+  @media (max-width: 900px) {
+    .about-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .about-section {
+      padding-block: 5rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .about-section {
+      padding-block: 3rem;
+    }
+
+    .about-container {
+      padding-inline: var(--space-4);
+    }
+
+    .about-heading {
+      margin-bottom: 1.5rem;
+    }
+  }
+</style>

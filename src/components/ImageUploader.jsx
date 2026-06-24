@@ -1,31 +1,30 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { supabase, isSupabaseConfigured, BLOG_IMAGES_BUCKET } from '@/lib/supabase'
 import styles from './ImageUploader.module.css'
 
-export default function ImageUploader({ currentUrl, onUpload, size = 'default', alt = 'Image preview' }) {
+export default function ImageUploader({ currentUrl, onUpload, size = 'default', alt = 'Image' }) {
     const [uploading, setUploading] = useState(false)
     const [error, setError] = useState(null)
     const [dragOver, setDragOver] = useState(false)
-    const [imgError, setImgError] = useState(false)
     const fileInputRef = useRef(null)
 
-    const handleFileSelect = async (file) => {
-        if (!isSupabaseConfigured() || !supabase) {
-            setError('Supabase is not configured')
-            return
-        }
+    const handleFile = useCallback(async (file) => {
+        if (!file) return
 
         // Validate file type
-        const allowedTypes = ['image/jpeg', 'image/png', 'image/gif', 'image/webp']
-        if (!allowedTypes.includes(file.type)) {
-            setError('Invalid file type. Please upload a JPEG, PNG, GIF, or WebP image.')
+        if (!file.type.startsWith('image/')) {
+            setError('Please upload an image file (JPEG, PNG, GIF, WebP, SVG)')
             return
         }
 
-        // Validate file size (max 5MB)
-        const maxSize = 5 * 1024 * 1024 // 5MB
-        if (file.size > maxSize) {
-            setError('File is too large. Maximum size is 5MB.')
+        // Validate file size (10MB max)
+        if (file.size > 10 * 1024 * 1024) {
+            setError('File size must be less than 10MB')
+            return
+        }
+
+        if (!isSupabaseConfigured() || !supabase) {
+            setError('Supabase is not configured. Image upload is disabled.')
             return
         }
 
@@ -33,13 +32,11 @@ export default function ImageUploader({ currentUrl, onUpload, size = 'default', 
         setError(null)
 
         try {
-            // Generate unique filename
             const fileExt = file.name.split('.').pop()
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-            const filePath = `blog-images/${fileName}`
+            const filePath = `${fileName}`
 
-            // Upload to Supabase Storage
-            const { data, error: uploadError } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from(BLOG_IMAGES_BUCKET)
                 .upload(filePath, file, {
                     cacheControl: '3600',
@@ -53,91 +50,83 @@ export default function ImageUploader({ currentUrl, onUpload, size = 'default', 
                 .from(BLOG_IMAGES_BUCKET)
                 .getPublicUrl(filePath)
 
-            onUpload(urlData.publicUrl)
-            setImgError(false)
+            if (urlData?.publicUrl) {
+                onUpload(urlData.publicUrl)
+            }
         } catch (err) {
             console.error('Error uploading image:', err)
             setError(err.message || 'Failed to upload image')
         } finally {
             setUploading(false)
         }
-    }
+    }, [onUpload])
 
-    const handleInputChange = (e) => {
+    const handleFileInput = (e) => {
         const file = e.target.files?.[0]
         if (file) {
-            handleFileSelect(file)
+            handleFile(file)
         }
     }
 
-    const handleDrop = (e) => {
+    const handleDrop = useCallback((e) => {
         e.preventDefault()
+        e.stopPropagation()
         setDragOver(false)
 
-        const file = e.dataTransfer.files?.[0]
+        const file = e.dataTransfer?.files?.[0]
         if (file) {
-            handleFileSelect(file)
+            handleFile(file)
         }
-    }
+    }, [handleFile])
 
-    const handleDragOver = (e) => {
+    const handleDragOver = useCallback((e) => {
         e.preventDefault()
+        e.stopPropagation()
         setDragOver(true)
-    }
+    }, [])
 
-    const handleDragLeave = (e) => {
+    const handleDragLeave = useCallback((e) => {
         e.preventDefault()
+        e.stopPropagation()
         setDragOver(false)
-    }
+    }, [])
 
     const handleRemove = () => {
         onUpload('')
-        setImgError(false)
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''
+        }
     }
 
+    const isCompact = size === 'compact'
+    const hasImage = currentUrl && currentUrl.trim() !== ''
+
     return (
-        <div className={`${styles.uploader} ${size === 'compact' ? styles.compact : ''}`}>
-            {currentUrl ? (
-                <div
-                    className={styles.preview}
-                    onClick={() => size === 'compact' && fileInputRef.current?.click()}
-                >
-                    {imgError ? (
-                        <div className={styles.fallbackIcon}>
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
-                        </div>
-                    ) : (
-                        <img
-                            src={currentUrl}
-                            alt={alt}
-                            onError={() => setImgError(true)}
-                        />
-                    )}
+        <div className={`${styles.uploader} ${isCompact ? styles.compact : ''}`}>
+            {hasImage ? (
+                <div className={styles.preview}>
+                    <img src={currentUrl} alt={alt} />
                     <div className={styles.previewActions}>
                         <button
                             type="button"
                             className={styles.replaceBtn}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                fileInputRef.current?.click()
-                            }}
+                            onClick={() => fileInputRef.current?.click()}
                         >
                             Replace
                         </button>
                         <button
                             type="button"
                             className={styles.removeBtn}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                handleRemove()
-                            }}
+                            onClick={handleRemove}
                         >
                             Remove
                         </button>
                     </div>
+                </div>
+            ) : uploading ? (
+                <div className={styles.uploading}>
+                    <div className={styles.spinner} />
+                    <span>Uploading...</span>
                 </div>
             ) : (
                 <div
@@ -147,24 +136,15 @@ export default function ImageUploader({ currentUrl, onUpload, size = 'default', 
                     onDragLeave={handleDragLeave}
                     onClick={() => fileInputRef.current?.click()}
                 >
-                    {uploading ? (
-                        <div className={styles.uploading}>
-                            <div className={styles.spinner} />
-                            <p>Uploading...</p>
-                        </div>
-                    ) : (
-                        <>
-                            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                <polyline points="17 8 12 3 7 8" />
-                                <line x1="12" y1="3" x2="12" y2="15" />
-                            </svg>
-                            <p className={styles.dropText}>
-                                <span>Click to upload</span> or drag and drop
-                            </p>
-                            <p className={styles.hint}>PNG, JPG, GIF, or WebP (max 5MB)</p>
-                        </>
-                    )}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
+                        <polyline points="17 8 12 3 7 8" />
+                        <line x1="12" y1="3" x2="12" y2="15" />
+                    </svg>
+                    <p className={styles.dropText}>
+                        <span>Click to upload</span> or drag and drop
+                    </p>
+                    <p className={styles.hint}>PNG, JPG, GIF, WebP, SVG (max 10MB)</p>
                 </div>
             )}
 
@@ -180,8 +160,8 @@ export default function ImageUploader({ currentUrl, onUpload, size = 'default', 
             <input
                 ref={fileInputRef}
                 type="file"
-                accept="image/jpeg,image/png,image/gif,image/webp"
-                onChange={handleInputChange}
+                accept="image/*"
+                onChange={handleFileInput}
                 className={styles.hiddenInput}
             />
         </div>
