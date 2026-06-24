@@ -1,4 +1,5 @@
 ---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
 import DocsLayout from '../../../components/DocsLayout.astro'
 import CodeBlock from '../../../components/CodeBlock.astro'
 import Callout from '../../../components/Callout.astro'
@@ -82,7 +83,8 @@ openflows --version</CodeBlock>`,
 ]
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started' }]}>
+<BaseLayout title="Getting Started — OpenFlows Documentation" description="Install OpenFlows and configure your autonomous AI development team. Five agents, one pipeline, zero manual steps.">
+  <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started' }]}>
   <h1>Getting Started</h1>
   <p>
     OpenFlows is an autonomous AI development team that runs 24/7 on your GitHub repository.
@@ -249,7 +251,8 @@ INFO  LORE: ADR-001 written and committed`}</CodeBlock>
     <a href="/docs/faq">FAQ</a> or open a discussion on
     <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a>.
   </Callout>
-</DocsLayout>
+  </DocsLayout>
+</BaseLayout>
 
 <style>
   .docsTable {

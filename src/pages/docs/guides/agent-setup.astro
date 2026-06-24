@@ -1,4 +1,5 @@
 ---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
 import DocsLayout from '../../../components/DocsLayout.astro'
 import CodeBlock from '../../../components/CodeBlock.astro'
 import Callout from '../../../components/Callout.astro'
@@ -23,7 +24,8 @@ const MODEL_ROWS = [
 ]
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Agent Setup' }]}>
+<BaseLayout title="Agent Setup — OpenFlows Documentation" description="Configure OpenFlows agents agents - registry.json fields, model routing, worker scaling, and per-agent GitHub tokens.">
+  <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Agent Setup' }]}>
   <h1>Agent Setup</h1>
   <p>OpenFlows agents are configured through two files: <code>.env</code> for API keys and runtime settings, and <code>orchestration/agent/registry.json</code> for team membership, worker scaling, and per-agent model routing. Run <code>openflows-setup</code> to generate both interactively.</p>
 
@@ -102,4 +104,5 @@ export AGENT_LORE_GITHUB_TOKEN=ghp_lore_token`}</CodeBlock>
   <Callout type="info" title="Hot Reload">
     <code>registry.json</code> is re-read on every NEXUS poll cycle - no restart required when you change instances, models, or active flags.
   </Callout>
-</DocsLayout>
+  </DocsLayout>
+</BaseLayout>

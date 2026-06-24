@@ -1,9 +1,11 @@
 ---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
 import DocsLayout from '../../../components/DocsLayout.astro'
 import Callout from '../../../components/Callout.astro'
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agent Roles' }]}>
+<BaseLayout title="Agent Roles — OpenFlows Documentation" description="Deep dive into OpenFlows agent roles - NEXUS orchestrator, FORGE builder, SENTINEL reviewer, VESSEL devops, and LORE documenter.">
+  <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agent Roles' }]}>
   <h1>Agent Roles</h1>
   <p>OpenFlows uses five specialized agents, each with a distinct role, isolated permissions, and its own GitHub identity. They communicate through the SharedStore - a Redis-backed state machine - and are coordinated by NEXUS on every cycle.</p>
 
@@ -60,4 +62,5 @@ import Callout from '../../../components/Callout.astro'
   <Callout type="info" title="Per-Agent Configuration">
     Each agent's CLI tool, model backend, GitHub token, and worker count are configured in <code>orchestration/agent/registry.json</code>. See the <a href="/docs/guides/agent-setup">Agent Setup Guide</a> for details.
   </Callout>
-</DocsLayout>
+  </DocsLayout>
+</BaseLayout>

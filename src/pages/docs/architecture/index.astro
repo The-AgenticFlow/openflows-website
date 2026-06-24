@@ -1,4 +1,5 @@
 ---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
 import DocsLayout from '../../../components/DocsLayout.astro'
 import DocCards from '../../../components/DocCards.astro'
 
@@ -8,8 +9,10 @@ const CARDS = [
 ]
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture' }]}>
+<BaseLayout title="Architecture — OpenFlows Documentation" description="Understand how OpenFlows works under the hood - from the PocketFlow engine to the five specialized AI agents and their communication patterns.">
+  <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture' }]}>
   <h1>Architecture</h1>
   <p>Understand how OpenFlows works under the hood - from the PocketFlow engine to the five specialized AI agents and their communication patterns.</p>
   <DocCards cards={CARDS} />
-</DocsLayout>
+  </DocsLayout>
+</BaseLayout>

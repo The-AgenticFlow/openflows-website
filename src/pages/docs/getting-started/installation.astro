@@ -1,4 +1,5 @@
 ---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
 import DocsLayout from '../../../components/DocsLayout.astro'
 import CodeBlock from '../../../components/CodeBlock.astro'
 import Callout from '../../../components/Callout.astro'
@@ -69,7 +70,8 @@ openflows           # start the autonomous team</CodeBlock>`,
 ]
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Installation' }]}>
+<BaseLayout title="Installation — OpenFlows Documentation" description="Install OpenFlows via npm, Docker, Cargo, or one-liner. Pre-built binaries for Linux and macOS.">
+  <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Installation' }]}>
   <h1>Installation</h1>
   <p>OpenFlows ships pre-built binaries for Linux and macOS. Choose the method that fits your workflow.</p>
 
@@ -121,4 +123,5 @@ $ openflows-doctor
     configuration options and writes your <code>.env</code> and <code>registry.json</code> files automatically.
     Or follow the <a href="/docs/getting-started">Getting Started</a> manual setup path.
   </Callout>
-</DocsLayout>
+  </DocsLayout>
+</BaseLayout>

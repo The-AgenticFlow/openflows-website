@@ -84,19 +84,24 @@ const NAV_DATA = [
     height: var(--nav-height);
     transition: background-color var(--transition-base), border-color var(--transition-base);
     border-bottom: 1px solid transparent;
+    background-color: var(--color-bg);
   }
 
   .scrolled {
-    background-color: rgba(248, 242, 235, 0.9);
+    background-color: rgba(248, 242, 235, 0.95);
     backdrop-filter: blur(20px);
-    border-bottom: 1px solid var(--color-cyan-muted);
-    box-shadow: 0 4px 30px var(--color-cyan-muted);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  [data-theme="dark"] .navbar {
+    background-color: #0a0a0a;
   }
 
   [data-theme="dark"] .scrolled {
-    background-color: rgba(0, 0, 0, 0.9);
-    border-bottom: 1px solid var(--color-cyan-muted);
-    box-shadow: 0 4px 30px rgba(0, 245, 255, 0.05);
+    background-color: rgba(10, 10, 10, 0.95);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
   .theme-toggle {
@@ -131,7 +136,7 @@ const NAV_DATA = [
     max-width: var(--max-width);
     margin-inline: auto;
     padding-inline: var(--space-6);
-    gap: var(--space-6);
+    gap: var(--space-8);
   }
 
   .desktop-nav {
@@ -140,7 +145,6 @@ const NAV_DATA = [
     gap: var(--space-1);
     flex: 1;
     justify-content: flex-start;
-    margin-left: var(--space-4);
   }
 
   .nav-link-wrapper {
@@ -155,22 +159,34 @@ const NAV_DATA = [
     align-items: center;
     gap: 0.25rem;
     font-size: var(--font-size-sm);
-    font-weight: 400;
+    font-weight: 500;
     color: var(--color-text-secondary);
-    padding: var(--space-2) var(--space-4);
+    padding: var(--space-2) var(--space-3);
     border-radius: var(--radius-sm);
     transition: color var(--transition-fast), background-color var(--transition-fast);
     text-decoration: none;
+    position: relative;
   }
 
   .nav-link:hover {
-    opacity: 1;
-    color: var(--color-cyan);
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-2);
   }
 
   .nav-link.active {
     color: var(--color-cyan);
-    text-shadow: 0 0 10px var(--color-cyan-glow);
+  }
+
+  .nav-link.active::after {
+    content: '';
+    position: absolute;
+    bottom: -2px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 2px;
+    background-color: var(--color-cyan);
+    border-radius: 1px;
   }
 
   .search-button {
@@ -724,58 +740,64 @@ const NAV_DATA = [
   }
 </style>
 
-<!-- Logo -->
-<a href="/" class="logo" aria-label="Openflows home">
-  <img src="/openlogo-transparent.png" alt="Openflows Logo" class="logo-icon" />
-  <span class="logo-name">Openflows</span>
-</a>
-
-<style>
-  .logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 0.5rem;
-    text-decoration: none;
-    flex-shrink: 0;
-  }
-
-  .logo-icon {
-    width: 64px;
-    height: 64px;
-    display: block;
-    flex-shrink: 0;
-    object-fit: contain;
-    filter: drop-shadow(0 0 14px var(--color-cyan-glow));
-  }
-
-  .logo-name {
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: -0.02em;
-    line-height: 1;
-    background: linear-gradient(135deg, var(--color-cyan) 0%, #1A1A1A 70%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    text-shadow: none;
-    filter: drop-shadow(0 0 6px var(--color-cyan-glow));
-  }
-
-  @media (max-width: 480px) {
-    .logo-icon {
-      width: 48px;
-      height: 48px;
-    }
-
-    .logo-name {
-      font-size: 1.5rem;
-    }
-  }
-</style>
-
 <header class="navbar" id="navbar">
   <div class="inner">
-    <!-- Logo is above the header -->
+    <!-- Logo -->
+    <a href="/" class="logo" aria-label="Openflows home">
+      <img src="/openlogo-transparent.png" alt="Openflows Logo" class="logo-icon" />
+      <span class="logo-name">Openflows</span>
+    </a>
+
+    <style>
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        flex-shrink: 0;
+      }
+
+      .logo-icon {
+        width: 36px;
+        height: 36px;
+        display: block;
+        flex-shrink: 0;
+        object-fit: contain;
+        filter: drop-shadow(0 0 8px var(--color-cyan-glow));
+      }
+
+      .logo-name {
+        font-size: 1.25rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-text-secondary) 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: none;
+      }
+
+      [data-theme="dark"] .logo-name {
+        background: linear-gradient(135deg, var(--color-cyan) 0%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      @media (max-width: 768px) {
+        .logo-name {
+          display: none;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .logo-icon {
+          width: 28px;
+          height: 28px;
+        }
+      }
+    </style>
 
     <nav class="desktop-nav" aria-label="Main navigation">
       {NAV_DATA.map((item, index) => (

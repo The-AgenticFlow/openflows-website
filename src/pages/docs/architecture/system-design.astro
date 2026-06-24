@@ -1,4 +1,5 @@
 ---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
 import DocsLayout from '../../../components/DocsLayout.astro'
 import DocsTable from '../../../components/DocsTable.astro'
 
@@ -20,7 +21,8 @@ const STORE_ROWS = [
 ]
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'System Design' }]}>
+<BaseLayout title="System Design — OpenFlows Documentation" description="OpenFlows architecture: PocketFlow engine, SharedStore state machine, data flow from issue to merged PR, and core components.">
+  <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'System Design' }]}>
   <h1>System Design</h1>
   <p>OpenFlows is built as an async, event-driven system in Rust using the <strong>PocketFlow</strong> engine - a directed graph where agents are nodes that communicate through a typed SharedStore.</p>
 
@@ -54,4 +56,5 @@ const STORE_ROWS = [
     <li><strong>Human-in-the-loop only when needed</strong> - CommandGate for dangerous commands; notifications only for spec ambiguity, security concerns, or resource limits</li>
     <li><strong>Dual-backend state</strong> - in-memory for dev/tests, Redis for production; zero config change required</li>
   </ul>
-</DocsLayout>
+  </DocsLayout>
+</BaseLayout>

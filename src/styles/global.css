@@ -32,6 +32,8 @@
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Fira Code', 'Fira Mono', monospace;
 
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;

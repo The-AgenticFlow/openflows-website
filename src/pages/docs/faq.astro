@@ -1,4 +1,5 @@
 ---
+import BaseLayout from '../../layouts/BaseLayout.astro'
 import DocsLayout from '../../components/DocsLayout.astro'
 import Accordion from '../../components/Accordion.astro'
 
@@ -38,8 +39,10 @@ const FAQ_ITEMS = [
 ]
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'FAQ' }]}>
+<BaseLayout title="FAQ — OpenFlows Documentation" description="Frequently asked questions about OpenFlows - LLM providers, private repos, agent approval, merge conflicts, and more.">
+  <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'FAQ' }]}>
   <h1>Frequently Asked Questions</h1>
   <p>Common questions about OpenFlows answered. Can't find what you're looking for? <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions ↗</a></p>
   <Accordion items={FAQ_ITEMS} />
-</DocsLayout>
+  </DocsLayout>
+</BaseLayout>

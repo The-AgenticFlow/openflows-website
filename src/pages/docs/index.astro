@@ -1,4 +1,5 @@
 ---
+import BaseLayout from '../../layouts/BaseLayout.astro'
 import DocsLayout from '../../components/DocsLayout.astro'
 import DocCards from '../../components/DocCards.astro'
 
@@ -12,8 +13,10 @@ const CARDS = [
 ]
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Documentation' }]}>
-  <h1>Documentation</h1>
-  <p>Everything you need to install, configure, and operate your autonomous AI development team. Five agents, one pipeline, zero manual steps.</p>
-  <DocCards cards={CARDS} />
-</DocsLayout>
+<BaseLayout title="Documentation — OpenFlows" description="Everything you need to install, configure, and operate your autonomous AI development team. Five agents, one pipeline, zero manual steps.">
+  <DocsLayout breadcrumbs={[{ label: 'Documentation' }]}>
+    <h1>Documentation</h1>
+    <p>Everything you need to install, configure, and operate your autonomous AI development team. Five agents, one pipeline, zero manual steps.</p>
+    <DocCards cards={CARDS} />
+  </DocsLayout>
+</BaseLayout>
