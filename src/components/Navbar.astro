@@ -422,13 +422,19 @@ const NAV_DATA = [
     top: var(--nav-height);
     left: 0;
     right: 0;
-    background-color: var(--color-bg);
+    background-color: var(--color-surface);
     border-bottom: 1px solid var(--color-border);
     overflow: hidden;
     max-height: 0;
     transition: max-height 0.3s ease-out, opacity 0.2s ease;
     opacity: 0;
     pointer-events: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  [data-theme="dark"] .mega-panel {
+    background-color: #0a0a0a;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
   }
 
   .mega-panel.panel-visible {
@@ -440,42 +446,53 @@ const NAV_DATA = [
   .panel-content {
     max-width: var(--max-width);
     margin-inline: auto;
-    padding: var(--space-12) var(--space-6) var(--space-16);
+    padding: var(--space-8) var(--space-6) var(--space-10);
   }
 
   .dropdown-grid {
     display: grid;
-    grid-template-columns: 2fr 1fr;
-    gap: var(--space-12);
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+  }
+
+  .dropdown-main {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
   }
 
   .dropdown-heading {
-    font-size: var(--font-size-xs);
-    color: var(--color-text-muted);
+    font-size: 0.7rem;
+    font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
-    margin-bottom: var(--space-3);
-    font-weight: 600;
+    letter-spacing: 0.1em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-1);
   }
 
   .dropdown-links {
     display: flex;
     flex-direction: column;
-    gap: var(--space-2);
+    gap: var(--space-1);
   }
 
   .mega-link {
-    font-size: var(--font-size-base);
+    font-size: 0.95rem;
     font-weight: 500;
     color: var(--color-text-primary);
     text-decoration: none;
-    transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    transition: all var(--transition-fast);
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
   }
 
   .mega-link:hover {
     color: var(--color-cyan);
-    transform: translateX(6px);
-    opacity: 1;
+    background-color: var(--color-surface-2);
+    transform: translateX(4px);
   }
 
   .adv-link {
@@ -1238,16 +1255,6 @@ const NAV_DATA = [
             `).join('')}
           </div>
         </div>
-        ${item.dropdown.advancements ? `
-          <div class="dropdown-side">
-            <p class="dropdown-heading">Latest Advancements</p>
-            <div class="dropdown-links">
-              ${item.dropdown.advancements.map(adv => `
-                <a href="${adv.href}" class="adv-link">${adv.label}</a>
-              `).join('')}
-            </div>
-          </div>
-        ` : ''}
       </div>
     `;
   }
