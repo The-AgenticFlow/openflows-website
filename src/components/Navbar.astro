@@ -450,14 +450,14 @@ const NAV_DATA = [
   }
 
   .dropdown-grid {
-    display: block;
+    display: block !important;
+    width: 100%;
+    max-width: 400px;
   }
 
   .dropdown-main {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
-    max-width: 280px;
+    display: block !important;
+    width: 100%;
   }
 
   .dropdown-heading {
@@ -466,26 +466,42 @@ const NAV_DATA = [
     text-transform: uppercase;
     letter-spacing: 0.12em;
     color: var(--color-text-muted);
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
+    display: block;
   }
 
   .dropdown-links {
-    display: flex;
-    flex-direction: column;
-    gap: 0;
+    display: block !important;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
   }
 
-  .mega-link {
+  .dropdown-links li {
+    display: block !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dropdown-links li a.mega-link {
     font-size: 0.9rem;
     font-weight: 500;
     color: var(--color-text-primary);
     text-decoration: none;
-    padding: 0.5rem 0.5rem;
+    padding: 0.625rem 0.75rem;
     border-radius: var(--radius-sm);
     transition: color var(--transition-fast), background-color var(--transition-fast);
-    display: flex;
-    align-items: center;
-    gap: var(--space-2);
+    display: block !important;
+    width: 100%;
+    white-space: nowrap;
+    margin-bottom: 0.25rem;
+  }
+
+  .dropdown-links li a.mega-link:hover {
+    color: var(--color-cyan) !important;
+    background-color: var(--color-surface-2) !important;
   }
 
   .mega-link:hover {
@@ -1246,20 +1262,35 @@ const NAV_DATA = [
     if (!panelContent) return;
     
     panelContent.innerHTML = `
-      <div class="dropdown-grid">
-        <div class="dropdown-main">
+      <div class="dropdown-grid" style="display: block; width: 100%; max-width: 400px;">
+        <div class="dropdown-main" style="display: block; width: 100%;">
           <p class="dropdown-heading">${item.dropdown.heading}</p>
-          <div class="dropdown-links">
+          <ul class="dropdown-links" style="display: block; width: 100%; list-style: none; padding: 0; margin: 0;">
             ${item.dropdown.items.map(subItem => `
-              <a href="${subItem.href}" class="mega-link" target="${subItem.external ? '_blank' : ''}" rel="${subItem.external ? 'noopener noreferrer' : ''}">
-                ${subItem.label}
-                ${subItem.external ? '<span class="external-arrow">↗</span>' : ''}
-              </a>
+              <li style="display: block; width: 100%; margin: 0; padding: 0;">
+                <a href="${subItem.href}" class="mega-link" style="display: block !important; width: 100%; white-space: nowrap; font-size: 0.9rem; font-weight: 500; color: var(--color-text-primary); text-decoration: none; padding: 0.625rem 0.75rem; border-radius: var(--radius-sm); margin-bottom: 0.25rem; transition: color 150ms ease, background-color 150ms ease;" target="${subItem.external ? '_blank' : ''}" rel="${subItem.external ? 'noopener noreferrer' : ''}">
+                  ${subItem.label}
+                  ${subItem.external ? '<span class="external-arrow">↗</span>' : ''}
+                </a>
+              </li>
             `).join('')}
-          </div>
+          </ul>
         </div>
       </div>
     `;
+
+    // Add hover effects via JavaScript
+    const links = panelContent.querySelectorAll('.mega-link');
+    links.forEach(link => {
+      link.addEventListener('mouseenter', () => {
+        link.style.color = 'var(--color-cyan)';
+        link.style.backgroundColor = 'var(--color-surface-2)';
+      });
+      link.addEventListener('mouseleave', () => {
+        link.style.color = 'var(--color-text-primary)';
+        link.style.backgroundColor = 'transparent';
+      });
+    });
   }
 
   // Add event listeners to nav links
