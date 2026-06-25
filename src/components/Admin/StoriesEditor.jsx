@@ -102,7 +102,7 @@ export default function StoriesEditor() {
             if (result.error) throw result.error
 
             setSuccess(isEditing ? 'Story updated successfully!' : 'Story created successfully!')
-            setTimeout(() => navigate('/admin/stories'), 1500)
+            setTimeout(() => navigate('/stories'), 1500)
         } catch (err) {
             console.error('Error saving story:', err)
             setError(err.message)
@@ -132,7 +132,7 @@ export default function StoriesEditor() {
                         <button
                             type="button"
                             className={styles.actionBtn}
-                            onClick={() => navigate('/admin/stories')}
+                            onClick={() => navigate('/stories')}
                             title="Back"
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -146,7 +146,7 @@ export default function StoriesEditor() {
                     <button
                         type="button"
                         className={styles.cancelBtn}
-                        onClick={() => navigate('/admin/stories')}
+                        onClick={() => navigate('/stories')}
                     >
                         Cancel
                     </button>

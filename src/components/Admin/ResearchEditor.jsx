@@ -152,7 +152,7 @@ export default function ResearchEditor() {
             if (result.error) throw result.error
 
             setSuccess(isEditing ? 'Publication updated successfully!' : 'Publication created successfully!')
-            setTimeout(() => navigate('/admin/research'), 1500)
+            setTimeout(() => navigate('/research'), 1500)
         } catch (err) {
             console.error('Error saving research:', err)
             setError(err.message)
@@ -179,7 +179,7 @@ export default function ResearchEditor() {
             <div className={styles.dashboard}>
                 <header className={styles.dashboardHeader}>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                        <button className={styles.actionBtn} onClick={() => navigate('/admin/research')} title="Back">
+                        <button className={styles.actionBtn} onClick={() => navigate('/research')} title="Back">
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="m15 18-6-6 6-6" />
                             </svg>
@@ -188,7 +188,7 @@ export default function ResearchEditor() {
                             {isEditing ? 'Edit Publication' : 'New Publication'}
                         </h1>
                     </div>
-                    <button className={styles.cancelBtn} onClick={() => navigate('/admin/research')}>
+                    <button className={styles.cancelBtn} onClick={() => navigate('/research')}>
                         Cancel
                     </button>
                 </header>

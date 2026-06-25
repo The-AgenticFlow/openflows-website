@@ -174,27 +174,25 @@ export default function AdminDashboard() {
                         <h1 className={styles.dashboardTitle}>Blog Management</h1>
                         <button
                             className={styles.filterBtn}
-                            onClick={() => navigate('/admin/stories')}
+                            onClick={() => navigate('/stories')}
                             title="Manage Stories"
                         >
                             Manage Stories
                         </button>
                         <button
                             className={styles.filterBtn}
-                            onClick={() => navigate('/admin/research')}
+                            onClick={() => navigate('/research')}
                             title="Manage Research"
                         >
                             Manage Research
                         </button>
-                        {isAdmin && (
-                            <button
-                                className={styles.filterBtn}
-                                onClick={() => navigate('/admin/categories')}
-                                title="Manage Categories"
-                            >
-                                Manage Categories
-                            </button>
-                        )}
+                        <button
+                            className={styles.filterBtn}
+                            onClick={() => navigate('/categories')}
+                            title="Manage Categories"
+                        >
+                            Manage Categories
+                        </button>
                     </div>
                     <div className={styles.userInfo}>
                         <div className={styles.userAvatar}>
@@ -263,7 +261,7 @@ export default function AdminDashboard() {
                     {canEditBlogs() && (
                         <button
                             className={styles.newPostBtn}
-                            onClick={() => navigate('/admin/blog/new')}
+                            onClick={() => navigate('/blog/new')}
                         >
                             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <path d="M12 5v14M5 12h14" />
@@ -295,7 +293,7 @@ export default function AdminDashboard() {
                             {canEditBlogs() && (
                                 <button
                                     className={styles.newPostBtn}
-                                    onClick={() => navigate('/admin/blog/new')}
+                                    onClick={() => navigate('/blog/new')}
                                 >
                                     Create Post
                                 </button>
