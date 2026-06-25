@@ -773,24 +773,25 @@ const NAV_DATA = [
       }
 
       .logo-icon {
-        width: 42px;
-        height: 42px;
+        width: 64px;
+        height: 64px;
         display: block;
         flex-shrink: 0;
         object-fit: contain;
-        filter: drop-shadow(0 0 8px var(--color-cyan-glow));
+        filter: drop-shadow(0 0 14px var(--color-cyan-glow));
       }
 
       .logo-name {
-        font-size: 1.4rem;
+        font-size: 2rem;
         font-weight: 700;
-        letter-spacing: -0.03em;
+        letter-spacing: -0.02em;
         line-height: 1;
-        background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-text-secondary) 100%);
+        background: linear-gradient(135deg, var(--color-cyan) 0%, #1A1A1A 70%);
         -webkit-background-clip: text;
         -webkit-text-fill-color: transparent;
         background-clip: text;
         text-shadow: none;
+        filter: drop-shadow(0 0 6px var(--color-cyan-glow));
       }
 
       [data-theme="dark"] .logo-name {
@@ -808,8 +809,12 @@ const NAV_DATA = [
 
       @media (max-width: 480px) {
         .logo-icon {
-          width: 32px;
-          height: 32px;
+          width: 48px;
+          height: 48px;
+        }
+
+        .logo-name {
+          font-size: 1.5rem;
         }
       }
     </style>
