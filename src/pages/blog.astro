@@ -185,23 +185,16 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
                     <p class="featured-excerpt">{featuredPost.excerpt}</p>
                     {(() => {
                       const authors = getResolvedAuthors(featuredPost);
-                      if (!authors.length) return null;
+                      const firstAuthor = authors.length > 0 ? authors[0] : null;
+                      if (!firstAuthor) return null;
                       return (
                         <div class="featured-authors">
-                          <div class="stacked-avatars">
-                            {authors.slice(0, 3).map((author, i) => (
-                              <div class="stacked-avatar" style={`z-index: ${10 - i}`}>
-                                {author.avatar_url ? (
-                                  <img src={author.avatar_url} alt={author.name} />
-                                ) : (
-                                  <span>{author.name?.charAt(0).toUpperCase()}</span>
-                                )}
-                              </div>
-                            ))}
-                          </div>
-                          <span class="featured-author-names">
-                            {authors.map(a => a.name).join(', ')}
-                          </span>
+                          {firstAuthor.avatar_url ? (
+                            <img src={firstAuthor.avatar_url} alt={firstAuthor.name} class="featured-author-avatar" />
+                          ) : (
+                            <span class="featured-author-avatar-placeholder">{firstAuthor.name?.charAt(0).toUpperCase()}</span>
+                          )}
+                          <span class="featured-author-name">{firstAuthor.name}</span>
                         </div>
                       );
                     })()}
@@ -229,7 +222,7 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
                         <div class="post-content">
                           <div class="post-meta">
                             {post.category && (
-                              <span class="post-category">{post.category.name}</span>
+                              <span class="post-category">{post.category.slug}</span>
                             )}
                             <span class="post-date">
                               {formatDate(post.published_at || post.created_at)}
@@ -270,18 +263,25 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
                         data-category={post.category?.slug || 'all'}
                       >
                         <div class="row-date">
-                        {formatDate(post.published_at || post.created_at)}
-                      </div>
+                          {formatDate(post.published_at || post.created_at)}
+                        </div>
                         <div class="row-content">
                           <h2 class="row-title">{post.title}</h2>
                           <p class="row-excerpt">{post.excerpt}</p>
                           <div class="row-meta">
                             {post.category && (
-                              <span class="pill-tag">{post.category.name}</span>
+                              <span class="pill-tag">{post.category.slug}</span>
                             )}
-                            <span class="row-author">
-                              {post.author_name || 'OpenFlows Team'}
-                            </span>
+                            {firstAuthor && (
+                              <span class="row-author">
+                                {firstAuthor.avatar_url ? (
+                                  <img src={firstAuthor.avatar_url} alt={firstAuthor.name} class="row-author-avatar" />
+                                ) : (
+                                  <span class="row-author-avatar-placeholder">{firstAuthor.name?.charAt(0).toUpperCase()}</span>
+                                )}
+                                {firstAuthor.name}
+                              </span>
+                            )}
                           </div>
                         </div>
                       </a>
@@ -719,11 +719,16 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
   }
 
   .featured-category {
-    font-size: var(--font-size-xs);
-    color: var(--color-cyan);
+    font-size: 0.7rem;
     font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.05em;
+    letter-spacing: 0.08em;
+    color: var(--color-text-primary);
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    backdrop-filter: blur(4px);
   }
 
   .featured-title {
@@ -745,46 +750,37 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
   .featured-authors {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
+    gap: var(--space-2);
+    position: absolute;
+    bottom: var(--space-6);
+    right: var(--space-6);
   }
 
-  .stacked-avatars {
-    display: flex;
-  }
-
-  .stacked-avatar {
-    width: 32px;
-    height: 32px;
+  .featured-author-avatar {
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
-    border: 2px solid var(--color-surface);
-    overflow: hidden;
-    margin-left: -8px;
-    background: var(--color-surface-2);
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+  }
+
+  .featured-author-avatar-placeholder {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.2);
     display: flex;
     align-items: center;
     justify-content: center;
-  }
-
-  .stacked-avatar:first-child {
-    margin-left: 0;
-  }
-
-  .stacked-avatar img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-  }
-
-  .stacked-avatar span {
-
-    font-size: 0.75rem;
+    font-size: 0.7rem;
     font-weight: 600;
     color: var(--color-text-primary);
   }
 
-  .featured-author-names {
+  .featured-author-name {
     font-size: var(--font-size-sm);
-color: var(--color-text-secondary);
+    color: var(--color-text-secondary);
   }
 
   /* Empty State */
@@ -855,11 +851,15 @@ color: var(--color-text-secondary);
   }
 
   .post-category {
-    font-size: var(--font-size-xs);
-    color: var(--color-cyan);
+    font-size: 0.7rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    padding: 2px 10px;
+    border-radius: var(--radius-full);
+    background: transparent;
   }
 
   .post-date {
@@ -929,29 +929,34 @@ color: var(--color-text-secondary);
   .posts-list {
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
   }
 
   .post-row {
     display: flex;
-    gap: var(--space-6);
-    padding: var(--space-6);
-    border-radius: var(--radius-lg);
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    gap: var(--space-8);
+    padding: var(--space-8) 0;
+    border-bottom: 1px solid var(--color-border);
     text-decoration: none;
-    transition: border-color var(--transition-fast), transform var(--transition-fast);
+    transition: opacity var(--transition-fast);
+  }
+
+  .post-row:first-child {
+    padding-top: 0;
+  }
+
+  .post-row:last-child {
+    border-bottom: none;
   }
 
   .post-row:hover {
-    border-color: var(--color-border-hover);
-    transform: translateY(-2px);
+    opacity: 0.8;
   }
 
   .row-date {
     min-width: 100px;
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
+    padding-top: 4px;
   }
 
   .row-content {
@@ -959,18 +964,19 @@ color: var(--color-text-secondary);
   }
 
   .row-title {
-    font-size: var(--font-size-lg);
-    font-weight: 600;
+    font-size: var(--font-size-xl);
+    font-weight: 700;
     color: var(--color-text-primary);
     margin-bottom: var(--space-2);
     line-height: 1.3;
+    letter-spacing: -0.01em;
   }
 
   .row-excerpt {
     font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
     line-height: 1.5;
-    margin-bottom: var(--space-3);
+    margin-bottom: var(--space-4);
   }
 
   .row-meta {
@@ -980,19 +986,43 @@ color: var(--color-text-secondary);
   }
 
   .pill-tag {
-    font-size: var(--font-size-xs);
-    color: var(--color-cyan);
+    font-size: 0.7rem;
     font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.05em;
-    background: var(--color-cyan-surface);
-    padding: 2px 8px;
+    text-transform: lowercase;
+    letter-spacing: 0.02em;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    padding: 2px 10px;
     border-radius: var(--radius-full);
+    background: transparent;
   }
 
   .row-author {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
     font-size: var(--font-size-xs);
     color: var(--color-text-muted);
+  }
+
+  .row-author-avatar {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    object-fit: cover;
+  }
+
+  .row-author-avatar-placeholder {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background: var(--color-surface-2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.55rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
   }
 
   @media (max-width: 768px) {
