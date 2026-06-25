@@ -8,6 +8,7 @@ import ResearchManager from './ResearchManager';
 import ResearchEditor from './ResearchEditor';
 import StoriesManager from './StoriesManager';
 import StoriesEditor from './StoriesEditor';
+import styles from './Admin.module.css';
 
 // Protected Route component
 function ProtectedRoute({ children, requiredRole }) {
@@ -25,11 +26,18 @@ function ProtectedRoute({ children, requiredRole }) {
     }
 
     if (!isAuthenticated) {
-        return <Navigate to="/admin/login" state={{ from: location }} replace />;
+        // Use window.location for full page redirect to Astro route
+        window.location.href = `/admin/login?from=${encodeURIComponent(location.pathname)}`;
+        return (
+            <div className="loadingContainer">
+                <div className="spinner" />
+                <p>Redirecting to login...</p>
+            </div>
+        );
     }
 
     if (requiredRole && !hasRole(requiredRole)) {
-        return <Navigate to="/admin" replace />;
+        return <Navigate to="/" replace />;
     }
 
     return children;
@@ -120,18 +128,58 @@ function AdminRoutes() {
                     </ProtectedRoute>
                 }
             />
-            <Route path="*" element={<Navigate to="/admin" replace />} />
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+    );
+}
+
+// Unconfigured state component
+function UnconfiguredState() {
+    return (
+        <div className={styles.loginPage}>
+            <div className={styles.unavailableCard}>
+                <div className={styles.unavailableIcon}>
+                    <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                        <circle cx="12" cy="12" r="10" />
+                        <line x1="12" y1="8" x2="12" y2="12" />
+                        <line x1="12" y1="16" x2="12.01" y2="16" />
+                    </svg>
+                </div>
+                <h1>Feature Unavailable</h1>
+                <p>The admin panel is not available at this time. Please try again later or contact support if the issue persists.</p>
+                <a href="/" className={styles.homeLink}>Return to Home</a>
+            </div>
+        </div>
     );
 }
 
 // Main Admin App component
 export default function AdminApp() {
     return (
-        <BrowserRouter>
+        <BrowserRouter basename="/admin">
             <AuthProvider>
-                <AdminRoutes />
+                <AdminAppContent />
             </AuthProvider>
         </BrowserRouter>
     );
+}
+
+// Inner component that can access AuthContext
+function AdminAppContent() {
+    const { isConfigured, loading } = useAuth();
+
+    if (loading) {
+        return (
+            <div className="loadingContainer">
+                <div className="spinner" />
+                <p>Loading...</p>
+            </div>
+        );
+    }
+
+    if (!isConfigured) {
+        return <UnconfiguredState />;
+    }
+
+    return <AdminRoutes />;
 }

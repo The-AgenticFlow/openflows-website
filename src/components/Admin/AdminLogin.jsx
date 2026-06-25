@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import Layout from '@/organisms/Layout/Layout'
 import styles from './Admin.module.css'
@@ -11,18 +10,18 @@ export default function AdminLogin() {
     const [error, setError] = useState('')
 
     const { signIn, isAuthenticated, isConfigured } = useAuth()
-    const navigate = useNavigate()
-    const location = useLocation()
 
     // Redirect if already authenticated
     useEffect(() => {
         console.log('[AdminLogin] isAuthenticated check:', isAuthenticated);
         if (isAuthenticated) {
-            const from = location.state?.from?.pathname || '/admin'
+            // Use window.location for Astro page redirect
+            const urlParams = new URLSearchParams(window.location.search)
+            const from = urlParams.get('from') || '/admin'
             console.log('[AdminLogin] Already authenticated, redirecting to:', from);
-            navigate(from, { replace: true })
+            window.location.href = from
         }
-    }, [isAuthenticated, navigate, location])
+    }, [isAuthenticated])
 
     const handleSubmit = async (e) => {
         e.preventDefault()
@@ -33,8 +32,10 @@ export default function AdminLogin() {
             const result = await signIn(email, password)
 
             if (result.success) {
-                const from = location.state?.from?.pathname || '/admin'
-                navigate(from, { replace: true })
+                // Use window.location for Astro page redirect
+                const urlParams = new URLSearchParams(window.location.search)
+                const from = urlParams.get('from') || '/admin'
+                window.location.href = from
             } else {
                 setError(result.error || 'Failed to sign in')
             }

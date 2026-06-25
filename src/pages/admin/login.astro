@@ -5,6 +5,9 @@ import Footer from '../../components/Footer.astro';
 
 const title = 'Admin Login | OpenFlows';
 const description = 'Sign in to manage your OpenFlows admin content';
+
+const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL || '';
+const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
 ---
 
 <BaseLayout {title} {description}>
@@ -82,10 +85,10 @@ const description = 'Sign in to manage your OpenFlows admin content';
   <Footer />
 </BaseLayout>
 
-<script is:inline>
+<script is:inline define:vars={{ supabaseUrl, supabaseAnonKey }}>
   (function() {
-    const SUPABASE_URL = import.meta.env.PUBLIC_SUPABASE_URL || '';
-    const SUPABASE_ANON_KEY = import.meta.env.PUBLIC_SUPABASE_ANON_KEY || '';
+    const SUPABASE_URL = supabaseUrl;
+    const SUPABASE_ANON_KEY = supabaseAnonKey;
     
     document.addEventListener('DOMContentLoaded', function() {
       const form = document.getElementById('loginForm');
