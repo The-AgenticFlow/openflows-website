@@ -4,8 +4,9 @@ import Navbar from '../components/Navbar.astro';
 import Footer from '../components/Footer.astro';
 import { supabase, isSupabaseConfigured, TABLES } from '../lib/supabase.js';
 
+// Fetch ALL posts without filtering - filtering happens client-side
 let posts = [];
-let categories = ['all'];
+let categories = [{ name: 'Latest', slug: 'all' }];
 
 if (isSupabaseConfigured() && supabase) {
   try {
@@ -35,8 +36,18 @@ if (isSupabaseConfigured() && supabase) {
       posts = [];
     } else {
       posts = data || [];
-      const uniqueCategories = [...new Set(posts.map(p => p.category?.name).filter(Boolean))];
-      categories = ['all', ...uniqueCategories];
+      // Build unique categories with slugs for consistent filtering
+      const categoryMap = new Map();
+      posts.forEach(p => {
+        if (p.category?.slug) {
+          const slugLower = p.category.slug.toLowerCase();
+          if (!categoryMap.has(slugLower)) {
+            categoryMap.set(slugLower, { name: p.category.name, slug: slugLower });
+          }
+        }
+      });
+      const uniqueCategories = [...categoryMap.values()];
+      categories = [{ name: 'Latest', slug: 'all' }, ...uniqueCategories];
     }
   } catch (err) {
     console.warn('Error fetching blog posts, using empty posts:', err.message);
@@ -83,10 +94,10 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
             <nav class="rail-nav" id="categoryNav">
               {categories.map((cat) => (
                 <button
-                  class={`rail-link ${cat === 'all' ? 'rail-link-active' : ''}`}
-                  data-category={cat}
+                  class={`rail-link ${cat.slug === 'all' ? 'rail-link-active' : ''}`}
+                  data-category={cat.slug}
                 >
-                  {cat === 'all' ? 'Latest' : cat}
+                  {cat.name}
                 </button>
               ))}
             </nav>
@@ -103,8 +114,8 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
           <!-- Header with Hero and View Toggle -->
           <header class="blog-header">
             <div class="header-content">
-              <p class="eyebrow">Blog</p>
-              <h1 class="title">What we're building, fixing, and learning.</h1>
+              <p class="eyebrow" id="categoryEyebrow">Blog</p>
+              <h1 class="title" id="categoryTitle">What we're building, fixing, and learning.</h1>
               <p class="sub">
                 Stories from the OpenFlows team - releases, research, and open source news.
               </p>
@@ -152,7 +163,7 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
             <>
               <!-- Featured / Most Recent Post - Hero Card -->
               {featuredPost && (
-                <a href={`/blog/${featuredPost.slug}`} class="featured-card">
+                <a href={`/blog/${featuredPost.slug}`} class="featured-card" data-category={featuredPost.category?.slug || 'all'}>
                   {featuredPost.cover_image_url && (
                     <div class="featured-bg">
                       <img src={featuredPost.cover_image_url} alt="" />
@@ -208,7 +219,7 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
                       <a
                         href={`/blog/${post.slug}`}
                         class="post-card"
-                        data-category={post.category?.name || 'all'}
+                        data-category={post.category?.slug || 'all'}
                       >
                         {post.cover_image_url && (
                           <div class="post-image">
@@ -256,7 +267,7 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
                       <a
                         href={`/blog/${post.slug}`}
                         class="post-row"
-                        data-category={post.category?.name || 'all'}
+                        data-category={post.category?.slug || 'all'}
                       >
                         <div class="row-date">
                         {formatDate(post.published_at || post.created_at)}
@@ -310,9 +321,113 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
     const blogWrapper = document.querySelector('.blog-wrapper');
     const categoryNav = document.getElementById('categoryNav');
     const categoryButtons = categoryNav?.querySelectorAll('.rail-link');
+    const categoryEyebrow = document.getElementById('categoryEyebrow');
+    const categoryTitle = document.getElementById('categoryTitle');
+    const featuredCard = document.querySelector('.featured-card');
 
     let currentView = 'grid';
-    let currentCategory = 'all';
+    
+    // Category aliases: map short names/variants to canonical slugs
+    const CATEGORY_ALIASES: Record<string, string> = {
+      'dev': 'developer',
+      'developer': 'developer',
+      'res': 'research',
+      'research': 'research',
+    };
+
+    // Helper to get display name from slug
+    function getCategoryDisplayName(slug: string): string {
+      if (slug === 'all') return 'Latest';
+      if (slug === 'open-source') return 'Open Source';
+      return slug.charAt(0).toUpperCase() + slug.slice(1);
+    }
+
+    // Read initial category from URL query parameter
+    const urlParams = new URLSearchParams(window.location.search);
+    const rawCategory = urlParams.get('category')?.toLowerCase() || 'all';
+    let currentCategory = CATEGORY_ALIASES[rawCategory] || rawCategory;
+
+    // Apply initial category state
+    function applyInitialCategory() {
+      // Update active button state (handle aliases)
+      categoryButtons?.forEach(btn => {
+        btn.classList.remove('rail-link-active');
+        const btnCategory = btn.dataset.category || 'all';
+        if (matchesCategory(btnCategory, currentCategory) && currentCategory !== 'all') {
+          btn.classList.add('rail-link-active');
+        } else if (btnCategory === 'all' && currentCategory === 'all') {
+          btn.classList.add('rail-link-active');
+        }
+      });
+
+      // Update header text
+      if (categoryEyebrow && categoryTitle) {
+        if (currentCategory !== 'all') {
+          const displayName = getCategoryDisplayName(currentCategory);
+          categoryEyebrow.textContent = displayName;
+          categoryTitle.textContent = `${displayName} Articles`;
+        } else {
+          categoryEyebrow.textContent = 'Blog';
+          categoryTitle.textContent = "What we're building, fixing, and learning.";
+        }
+      }
+
+      // Filter posts
+      filterPosts();
+    }
+
+    // Reverse alias map: canonical slug -> all possible slugs that match it
+    const CATEGORY_REVERSE_ALIASES: Record<string, string[]> = {
+      'developer': ['developer', 'dev'],
+      'research': ['research', 'res'],
+    };
+
+    function matchesCategory(elementCategory: string, filterCategory: string): boolean {
+      if (filterCategory === 'all') return true;
+      if (elementCategory === filterCategory) return true;
+      
+      // Check if elementCategory is an alias of filterCategory
+      const aliases = CATEGORY_REVERSE_ALIASES[filterCategory];
+      if (aliases && aliases.includes(elementCategory)) return true;
+      
+      return false;
+    }
+
+    function filterPosts() {
+      // Filter featured card
+      if (featuredCard) {
+        const cardCategory = featuredCard.dataset.category || 'all';
+        if (matchesCategory(cardCategory, currentCategory)) {
+          featuredCard.style.display = '';
+        } else {
+          featuredCard.style.display = 'none';
+        }
+      }
+
+      // Filter grid posts
+      const allPostCards = postsContainer?.querySelectorAll('.post-card');
+      allPostCards?.forEach(card => {
+        const cardCategory = card.dataset.category || 'all';
+        if (matchesCategory(cardCategory, currentCategory)) {
+          card.style.display = '';
+        } else {
+          card.style.display = 'none';
+        }
+      });
+
+      // Filter list posts
+      const allPostRows = postsListContainer?.querySelectorAll('.post-row');
+      allPostRows?.forEach(row => {
+        const rowCategory = row.dataset.category || 'all';
+        if (matchesCategory(rowCategory, currentCategory)) {
+          row.style.display = '';
+        } else {
+          row.style.display = 'none';
+        }
+      });
+    }
+
+    applyInitialCategory();
 
     // View mode toggle
     gridToggle?.addEventListener('click', () => {
@@ -338,29 +453,13 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
       btn.addEventListener('click', () => {
         currentCategory = btn.dataset.category;
         
-        // Update active state
-        categoryButtons.forEach(b => b.classList.remove('rail-link-active'));
-        btn.classList.add('rail-link-active');
-
-        // Filter posts in both views
-        const allPostCards = postsContainer?.querySelectorAll('.post-card');
-        const allPostRows = postsListContainer?.querySelectorAll('.post-row');
-
-        allPostCards?.forEach(card => {
-          if (currentCategory === 'all' || card.dataset.category === currentCategory) {
-            card.style.display = '';
-          } else {
-            card.style.display = 'none';
-          }
-        });
-
-        allPostRows?.forEach(row => {
-          if (currentCategory === 'all' || row.dataset.category === currentCategory) {
-            row.style.display = '';
-          } else {
-            row.style.display = 'none';
-          }
-        });
+        // Update URL without reload
+        const newUrl = currentCategory === 'all' 
+          ? '/blog' 
+          : `/blog?category=${currentCategory}`;
+        window.history.pushState({ category: currentCategory }, '', newUrl);
+        
+        applyInitialCategory();
       });
     });
   });
@@ -430,6 +529,9 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
     text-align: left;
     transition: all var(--transition-fast);
     cursor: pointer;
+    background: none;
+    border: none;
+    padding: 0;
   }
 
   .rail-link:hover {
@@ -598,74 +700,61 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
   .featured-content {
     position: relative;
     z-index: 2;
-    padding: 3rem;
-    width: 100%;
+    padding: var(--space-12);
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    height: 100%;
-    min-height: 420px;
+    min-height: 100%;
   }
 
   .featured-top {
     display: flex;
-    align-items: center;
-    gap: 1rem;
-    margin-bottom: 1.25rem;
+    gap: var(--space-4);
+    margin-bottom: var(--space-4);
   }
 
   .featured-date {
-    font-size: 0.8rem;
+    font-size: var(--font-size-xs);
     color: var(--color-text-muted);
-    font-weight: 500;
   }
 
   .featured-category {
-    font-size: 0.7rem;
-    font-weight: 700;
+    font-size: var(--font-size-xs);
+    color: var(--color-cyan);
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
-    color: var(--color-text-primary);
-    border: 1px solid var(--color-border-hover);
-    padding: 0.2rem 0.6rem;
-    border-radius: var(--radius-full);
-    background: var(--color-border);
+    letter-spacing: 0.05em;
   }
 
   .featured-title {
-    font-size: clamp(1.75rem, 4vw, 2.75rem);
+    font-size: clamp(1.5rem, 3vw, 2.25rem);
     font-weight: 700;
-    line-height: 1.15;
     color: var(--color-text-primary);
-    letter-spacing: -0.025em;
-    margin-bottom: 1rem;
+    margin-bottom: var(--space-4);
+    line-height: 1.2;
   }
 
   .featured-excerpt {
-    font-size: 1.05rem;
+    font-size: var(--font-size-base);
     color: var(--color-text-secondary);
-    line-height: 1.7;
-    margin-bottom: 2rem;
-    max-width: 680px;
+    line-height: 1.6;
+    margin-bottom: var(--space-6);
+    max-width: 600px;
   }
 
   .featured-authors {
-    position: absolute;
-    right: 3rem;
-    bottom: 3rem;
     display: flex;
     align-items: center;
-    gap: 0.75rem;
+    gap: var(--space-3);
   }
 
   .stacked-avatars {
     display: flex;
-    align-items: center;
   }
 
   .stacked-avatar {
-    width: 28px;
-    height: 28px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     border: 2px solid var(--color-surface);
     overflow: hidden;
@@ -674,9 +763,6 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
   }
 
   .stacked-avatar:first-child {
@@ -689,34 +775,56 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
     object-fit: cover;
   }
 
+  .stacked-avatar span {
+
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
   .featured-author-names {
-    font-size: 0.875rem;
-    color: var(--color-text-muted);
-    font-weight: 500;
+    font-size: var(--font-size-sm);
+color: var(--color-text-secondary);
+  }
+
+  /* Empty State */
+  .empty-state {
+    text-align: center;
+    padding: var(--space-24) var(--space-6);
+  }
+
+  .empty-title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .empty-text {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
   }
 
   /* Posts Grid */
   .posts-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
-    gap: 2rem;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-8);
   }
 
   .post-card {
-    display: flex;
-    flex-direction: column;
+    display: block;
+    border-radius: var(--radius-lg);
     background: var(--color-surface);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: all var(--transition-fast);
     text-decoration: none;
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
   }
 
   .post-card:hover {
     border-color: var(--color-border-hover);
-    transform: translateY(-4px);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.1);
+    transform: translateY(-3px);
   }
 
   .post-image {
@@ -733,73 +841,63 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
   }
 
   .post-card:hover .post-image img {
-    transform: scale(1.08);
+    transform: scale(1.05);
   }
 
   .post-content {
-    padding: 1.5rem;
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
-    flex: 1;
+    padding: var(--space-6);
   }
 
   .post-meta {
     display: flex;
-    align-items: center;
-    gap: 0.75rem;
-    font-size: 0.75rem;
+    gap: var(--space-4);
+    margin-bottom: var(--space-3);
   }
 
   .post-category {
-    padding: 0.2rem 0.5rem;
-    background: var(--color-surface-2);
-    border: 1px solid var(--color-border);
-    border-radius: 4px;
-    color: var(--color-text-secondary);
+    font-size: var(--font-size-xs);
+    color: var(--color-cyan);
     font-weight: 600;
     text-transform: uppercase;
+    letter-spacing: 0.05em;
   }
 
   .post-date {
+    font-size: var(--font-size-xs);
     color: var(--color-text-muted);
   }
 
   .post-title {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
     color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
     line-height: 1.3;
   }
 
   .post-excerpt {
-    font-size: 0.95rem;
+    font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
-    line-height: 1.6;
-    display: -webkit-box;
-    -webkit-line-clamp: 3;
-    line-clamp: 3;
-    -webkit-box-orient: vertical;
-    overflow: hidden;
+    line-height: 1.5;
+    margin-bottom: var(--space-4);
   }
 
   .post-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: auto;
   }
 
   .read-more {
-    font-size: 0.875rem;
-    color: var(--color-text-primary);
-    font-weight: 600;
+    font-size: var(--font-size-sm);
+    color: var(--color-cyan);
+    font-weight: 500;
   }
 
   .post-author {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    gap: var(--space-2);
   }
 
   .post-author-avatar {
@@ -817,232 +915,98 @@ const remainingPosts = posts.length > 1 ? posts.slice(1) : [];
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 600;
     color: var(--color-text-primary);
   }
 
   .post-author-name {
-    font-size: 0.75rem;
-    color: var(--color-text-muted);
-    font-weight: 500;
+    font-size: var(--font-size-xs);
+    color: var(--color-text-secondary);
   }
 
-  /* Post List */
+  /* Posts List */
   .posts-list {
     display: flex;
     flex-direction: column;
+    gap: var(--space-6);
   }
 
   .post-row {
-    display: grid;
-    grid-template-columns: 140px 1fr;
-    gap: var(--space-8);
-    padding-block: 2.5rem;
-    border-top: 1px solid var(--color-border);
-    transition: all var(--transition-fast);
+    display: flex;
+    gap: var(--space-6);
+    padding: var(--space-6);
+    border-radius: var(--radius-lg);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
     text-decoration: none;
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .post-row:hover {
+    border-color: var(--color-border-hover);
+    transform: translateY(-2px);
   }
 
   .row-date {
-    font-size: 0.875rem;
+    min-width: 100px;
+    font-size: var(--font-size-xs);
     color: var(--color-text-muted);
-    font-family: inherit;
-    font-weight: 500;
+  }
+
+  .row-content {
+    flex: 1;
   }
 
   .row-title {
-    font-size: 1.75rem;
-    font-weight: 700;
-    margin-bottom: 0.75rem;
+    font-size: var(--font-size-lg);
+    font-weight: 600;
     color: var(--color-text-primary);
-    transition: opacity var(--transition-fast);
-    letter-spacing: -0.02em;
-  }
-
-  .post-row:hover .row-title {
-    opacity: 0.8;
+    margin-bottom: var(--space-2);
+    line-height: 1.3;
   }
 
   .row-excerpt {
+    font-size: var(--font-size-sm);
     color: var(--color-text-secondary);
-    font-size: 1.05rem;
-    margin-bottom: 1.5rem;
-    line-height: 1.6;
-    max-width: 700px;
+    line-height: 1.5;
+    margin-bottom: var(--space-3);
   }
 
   .row-meta {
     display: flex;
+    gap: var(--space-4);
     align-items: center;
-    gap: 1.25rem;
-    font-size: 0.85rem;
   }
 
   .pill-tag {
-    padding: 0.25rem 0.75rem;
-    border-radius: var(--radius-full);
-    border: 1px solid var(--color-border);
-    color: var(--color-text-secondary);
-    font-size: 0.75rem;
+    font-size: var(--font-size-xs);
+    color: var(--color-cyan);
     font-weight: 600;
-    transition: all var(--transition-fast);
-  }
-
-  .post-row:hover .pill-tag {
-    border-color: var(--color-border-hover);
-    color: var(--color-text-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    background: var(--color-cyan-surface);
+    padding: 2px 8px;
+    border-radius: var(--radius-full);
   }
 
   .row-author {
+    font-size: var(--font-size-xs);
     color: var(--color-text-muted);
-    font-weight: 500;
   }
 
-  /* Empty state */
-  .empty-state {
-    text-align: center;
-    padding: var(--space-20) 0;
-  }
-
-  .empty-title {
-    font-size: var(--font-size-xl);
-    font-weight: 600;
-    color: var(--color-text-primary);
-    margin-bottom: var(--space-3);
-  }
-
-  .empty-text {
-    color: var(--color-text-secondary);
-    margin-bottom: var(--space-6);
-  }
-
-  /* Responsive */
-  @media (max-width: 1200px) {
-    .is-list-view .blog-layout {
-      grid-template-columns: 200px 1fr;
-    }
-
-    .is-list-view .right-rail {
-      display: none;
-    }
-  }
-
-  @media (max-width: 900px) {
-    .blog-header {
-      flex-direction: column;
-      align-items: flex-start;
-      gap: 1.5rem;
-    }
-
-    .featured-card {
-      min-height: 320px;
-    }
-
-    .featured-content {
-      padding: 2rem;
-      min-height: 320px;
-    }
-
-    .featured-authors {
-      position: static;
-      margin-top: 1rem;
-    }
-
+  @media (max-width: 768px) {
     .posts-grid {
-      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    }
-  }
-
-  @media (max-width: 800px) {
-    .is-list-view .blog-layout {
       grid-template-columns: 1fr;
-      padding: var(--space-8) var(--space-4);
-    }
-
-    .is-list-view .left-rail {
-      display: none;
     }
 
     .post-row {
-      grid-template-columns: 1fr;
-      gap: 0.5rem;
-      padding-block: 2rem;
+      flex-direction: column;
+      gap: var(--space-3);
     }
 
-    .blog-layout {
-      padding: var(--space-8) var(--space-4);
-    }
-
-    .featured-card {
-      min-height: 280px;
-    }
-
-    .featured-content {
-      padding: 1.5rem;
-      min-height: 280px;
-    }
-
-    .featured-title {
-      font-size: clamp(1.3rem, 4vw, 2rem);
-    }
-
-    .featured-excerpt {
-      font-size: 0.95rem;
-      margin-bottom: 1rem;
-    }
-  }
-
-  @media (max-width: 600px) {
-    .blog-layout {
-      padding: var(--space-6) var(--space-4);
-    }
-
-    .blog-header {
-      margin-bottom: 2.5rem;
-    }
-
-    .posts-grid {
-      grid-template-columns: 1fr;
-    }
-
-    .featured-card {
-      min-height: 240px;
-    }
-
-    .featured-content {
-      padding: 1.25rem;
-      min-height: 240px;
-    }
-
-    .post-content {
-      padding: 1rem;
-    }
-
-    .post-title {
-      font-size: 1.1rem;
-    }
-
-    .post-excerpt {
-      font-size: 0.875rem;
-    }
-
-    .row-title {
-      font-size: 1.25rem;
-    }
-
-    .row-excerpt {
-      font-size: 0.95rem;
-    }
-  }
-
-  @media (max-width: 480px) {
-    .view-controls {
-      display: none;
-    }
-
-    .featured-top {
-      flex-wrap: wrap;
+    .row-date {
+      min-width: auto;
     }
   }
 </style>
