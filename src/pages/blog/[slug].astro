@@ -179,8 +179,12 @@ const canonicalURL = `https://openflows.dev/blog/${post.slug}`;
         </section>
       )}
 
-      <!-- Share Button -->
+      <!-- Share Button + TTS Player Row -->
       <div class="share-bar">
+        <!-- Text To Speech Player -->
+        <div class="tts-player">
+          <TextToSpeechPlayer client:load title={post.title} text={post.content || ''} />
+        </div>
         <button class="share-link-btn" id="shareBtn">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71" />
@@ -193,11 +197,6 @@ const canonicalURL = `https://openflows.dev/blog/${post.slug}`;
       <!-- Content -->
       <div class="article-body">
         <MarkdownRenderer client:load content={post.content || ''} />
-      </div>
-
-      <!-- Text To Speech Player -->
-      <div class="tts-player">
-        <TextToSpeechPlayer client:load title={post.title} text={post.content || ''} />
       </div>
 
       <!-- Footer - Share -->
@@ -546,10 +545,21 @@ const canonicalURL = `https://openflows.dev/blog/${post.slug}`;
   /* Share Bar */
   .share-bar {
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
+    align-items: center;
     padding: 1rem 0;
     margin-bottom: 1.5rem;
     border-bottom: 1px solid var(--color-border);
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .tts-player {
+    flex: 1;
+  }
+
+  .tts-player :global(.ttsContainer) {
+    margin-bottom: 0;
   }
 
   .share-link-btn {

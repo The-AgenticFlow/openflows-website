@@ -85,23 +85,23 @@ const NAV_DATA = [
     transition: background-color var(--transition-base), border-color var(--transition-base);
     border-bottom: 1px solid transparent;
     background-color: var(--color-bg);
+    /* CSS vars for scrolled state - overridden per theme */
+    --navbar-scrolled-bg: rgba(248, 242, 235, 0.95);
+    --navbar-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
   }
 
   .scrolled {
-    background-color: rgba(248, 242, 235, 0.95);
+    background-color: var(--navbar-scrolled-bg);
     backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
     border-bottom: 1px solid var(--color-border);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    box-shadow: var(--navbar-scrolled-shadow);
   }
 
   [data-theme="dark"] .navbar {
     background-color: #0a0a0a;
-  }
-
-  [data-theme="dark"] .scrolled {
-    background-color: rgba(10, 10, 10, 0.95);
-    border-bottom: 1px solid var(--color-border);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    --navbar-scrolled-bg: rgba(10, 10, 10, 0.95);
+    --navbar-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
   .theme-toggle {
@@ -446,45 +446,44 @@ const NAV_DATA = [
   .panel-content {
     max-width: var(--max-width);
     margin-inline: auto;
-    padding: var(--space-8) var(--space-6) var(--space-10);
+    padding: var(--space-6) var(--space-6) var(--space-8);
   }
 
   .dropdown-grid {
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: var(--space-6);
+    display: block;
   }
 
   .dropdown-main {
     display: flex;
     flex-direction: column;
-    gap: var(--space-3);
+    gap: 0;
+    max-width: 280px;
   }
 
   .dropdown-heading {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.1em;
+    letter-spacing: 0.12em;
     color: var(--color-text-muted);
-    margin-bottom: var(--space-1);
+    margin-bottom: var(--space-3);
   }
 
   .dropdown-links {
     display: flex;
     flex-direction: column;
-    gap: var(--space-1);
+    gap: 0;
   }
 
   .mega-link {
-    font-size: 0.95rem;
+    font-size: 0.9rem;
     font-weight: 500;
     color: var(--color-text-primary);
     text-decoration: none;
-    padding: var(--space-2) var(--space-3);
+    padding: 0.5rem 0.5rem;
     border-radius: var(--radius-sm);
-    transition: all var(--transition-fast);
-    display: inline-flex;
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+    display: flex;
     align-items: center;
     gap: var(--space-2);
   }
@@ -492,7 +491,6 @@ const NAV_DATA = [
   .mega-link:hover {
     color: var(--color-cyan);
     background-color: var(--color-surface-2);
-    transform: translateX(4px);
   }
 
   .adv-link {
@@ -775,8 +773,8 @@ const NAV_DATA = [
       }
 
       .logo-icon {
-        width: 36px;
-        height: 36px;
+        width: 42px;
+        height: 42px;
         display: block;
         flex-shrink: 0;
         object-fit: contain;
@@ -784,9 +782,9 @@ const NAV_DATA = [
       }
 
       .logo-name {
-        font-size: 1.25rem;
+        font-size: 1.4rem;
         font-weight: 700;
-        letter-spacing: -0.02em;
+        letter-spacing: -0.03em;
         line-height: 1;
         background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-text-secondary) 100%);
         -webkit-background-clip: text;
@@ -810,8 +808,8 @@ const NAV_DATA = [
 
       @media (max-width: 480px) {
         .logo-icon {
-          width: 28px;
-          height: 28px;
+          width: 32px;
+          height: 32px;
         }
       }
     </style>
