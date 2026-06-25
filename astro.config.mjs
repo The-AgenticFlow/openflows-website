@@ -35,6 +35,30 @@ export default defineConfig({
                 context: 'client',
                 access: 'public',
             },
+            PUBLIC_GISCUS_REPO: {
+                type: 'string',
+                default: '',
+                context: 'client',
+                access: 'public',
+            },
+            PUBLIC_GISCUS_REPO_ID: {
+                type: 'string',
+                default: '',
+                context: 'client',
+                access: 'public',
+            },
+            PUBLIC_GISCUS_CATEGORY: {
+                type: 'string',
+                default: 'General',
+                context: 'client',
+                access: 'public',
+            },
+            PUBLIC_GISCUS_CATEGORY_ID: {
+                type: 'string',
+                default: '',
+                context: 'client',
+                access: 'public',
+            },
         },
     },
 });

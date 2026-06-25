@@ -2,9 +2,20 @@
 import BaseLayout from '../../layouts/BaseLayout.astro';
 import Navbar from '../../components/Navbar.astro';
 import Footer from '../../components/Footer.astro';
+import GiscusComments from '../../components/GiscusComments.astro';
 import { supabase, isSupabaseConfigured, TABLES } from '../../lib/supabase.js';
 import MarkdownRenderer from '../../components/MarkdownRenderer/MarkdownRenderer.jsx';
 import TextToSpeechPlayer from '../../components/TextToSpeechPlayer/TextToSpeechPlayer.jsx';
+
+// Giscus configuration from environment variables
+const giscusConfig = {
+  repo: import.meta.env.PUBLIC_GISCUS_REPO || '',
+  repoId: import.meta.env.PUBLIC_GISCUS_REPO_ID || '',
+  category: import.meta.env.PUBLIC_GISCUS_CATEGORY || 'General',
+  categoryId: import.meta.env.PUBLIC_GISCUS_CATEGORY_ID || '',
+};
+
+const showComments = giscusConfig.repo && giscusConfig.repoId && giscusConfig.categoryId;
 
 export async function getStaticPaths() {
   if (!isSupabaseConfigured() || !supabase) {
@@ -218,6 +229,16 @@ const canonicalURL = `https://openflows.dev/blog/${post.slug}`;
           </div>
         </div>
       </footer>
+
+      <!-- Giscus Comments -->
+      {showComments && (
+        <GiscusComments
+          repo={giscusConfig.repo}
+          repoId={giscusConfig.repoId}
+          category={giscusConfig.category}
+          categoryId={giscusConfig.categoryId}
+        />
+      )}
     </article>
   </main>
   <Footer />
