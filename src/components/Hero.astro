@@ -329,6 +329,9 @@ const QUICK_LINKS = [
   }
 
   // Start typewriter when component is ready
+  // astro:page-load fires on client-side navigation, but NOT on initial page load
+  // So we also call typeLine() immediately for the first load
+  typeLine();
   document.addEventListener('astro:page-load', () => {
     typeLine();
   });
