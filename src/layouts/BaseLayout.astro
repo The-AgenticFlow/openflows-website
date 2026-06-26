@@ -507,17 +507,17 @@ const fullTitle = title === siteTitle ? title : `${title} | ${siteTitle}`;
         transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
       }
 
-      /* Hover: cyan color + tinted bg row */
+      /* Hover: cyan color only — no background tint */
       .dropdown-links li a.mega-link:hover {
         color: var(--color-cyan) !important;
-        background-color: rgba(0, 229, 255, 0.08) !important;
+        background-color: transparent !important;
         transform: translateX(4px) !important;
       }
 
       /* Light mode hover uses a darker teal so it's visible on cream bg */
       [data-theme="light"] .dropdown-links li a.mega-link:hover {
         color: #006b7a !important;
-        background-color: rgba(0, 107, 122, 0.07) !important;
+        background-color: transparent !important;
       }
 
       /* Dropdown section heading */

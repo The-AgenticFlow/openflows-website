@@ -20,6 +20,9 @@ export default defineConfig({
                 '@': fileURLToPath(new URL('./src', import.meta.url)),
             },
         },
+        server: {
+            allowedHosts: ['keisha-unterrifying-winona.ngrok-free.dev'],
+        },
     },
     env: {
         schema: {
