@@ -138,7 +138,7 @@
   border: 1px solid var(--color-border);
   border-radius: 0.5rem;
   overflow-x: auto;
-  line-height: 1.65;
+  line-height: 1.75;
 }
 
 .markdownBody :global(pre code) {
@@ -150,6 +150,12 @@
   color: var(--color-text-primary);
 }
 
+/* Cyan accent for › prompt and → arrows inside code blocks */
+.markdownBody :global(pre code [data-prompt]),
+.markdownBody :global(pre .cyan-token) {
+  color: var(--color-cyan);
+  opacity: 0.85;
+}
 /* Syntax highlighted code blocks */
 .codeBlockWrapper {
   margin: 1.5rem 0;

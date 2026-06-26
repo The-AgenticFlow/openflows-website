@@ -22,6 +22,9 @@ export default defineConfig({
         },
         server: {
             allowedHosts: ['keisha-unterrifying-winona.ngrok-free.dev'],
+            headers: {
+                'ngrok-skip-browser-warning': 'true',
+            },
         },
     },
     env: {

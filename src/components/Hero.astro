@@ -132,6 +132,17 @@ const QUICK_LINKS = [
     vertical-align: middle;
   }
 
+  /* Cyan highlights inside terminal lines */
+  :global(.hl-agent) {
+    color: var(--color-cyan);
+    font-weight: 600;
+  }
+
+  :global(.hl-arrow) {
+    color: var(--color-cyan);
+    opacity: 0.8;
+  }
+
   /* Quick-link pills */
   .pills {
     display: flex;
@@ -311,18 +322,27 @@ const QUICK_LINKS = [
     }
   }
 
+  function highlightLine(text) {
+    // Wrap agent names, arrows and the › prompt in cyan spans
+    return text
+      .replace(/(→|->)/g, '<span class="hl-arrow">$1</span>')
+      .replace(/\b(nexus|forge|sentinel|vessel|lore)(-\d+)?/gi, (m, name, suffix) =>
+        `<span class="hl-agent">${name}${suffix || ''}</span>`
+      );
+  }
+
   function renderTerminal() {
     const terminalBody = document.getElementById('terminal-body');
     if (!terminalBody) return;
 
     let html = '';
-    displayed.forEach((line, i) => {
-      html += `<div class="line"><span class="prompt">❯</span><span>${line}</span></div>`;
+    displayed.forEach((line) => {
+      html += `<div class="line"><span class="prompt">❯</span><span>${highlightLine(line)}</span></div>`;
     });
 
     if (lineIndex < TYPEWRITER_LINES.length) {
       const currentPartial = TYPEWRITER_LINES[lineIndex].slice(0, charIndex);
-      html += `<div class="line"><span class="prompt">❯</span><span>${currentPartial}</span><span class="cursor" aria-hidden="true"></span></div>`;
+      html += `<div class="line"><span class="prompt">❯</span><span>${highlightLine(currentPartial)}</span><span class="cursor" aria-hidden="true"></span></div>`;
     }
 
     terminalBody.innerHTML = html;
