@@ -520,15 +520,11 @@ const NAV_DATA = [
   }
 
   .dropdown-links li {
+    position: relative;
+    padding-left: 1rem;
+    margin-bottom: 0.5rem;
     display: block !important;
     width: 100%;
-    margin: 0;
-    padding: 0;
-  }
-
-  .dropdown-links li {
-    position: relative;
-    padding-left: 0.75rem;
   }
 
   .dropdown-links li::before {
@@ -545,7 +541,7 @@ const NAV_DATA = [
   }
 
   .dropdown-links li:hover::before {
-    height: 70%;
+    height: 80%;
     top: 50%;
   }
 
@@ -554,20 +550,19 @@ const NAV_DATA = [
     font-weight: 500;
     color: var(--color-text-primary);
     text-decoration: none;
-    padding: 0.625rem 0.75rem;
+    padding: 0.5rem 0.75rem;
     border-radius: var(--radius-sm);
     transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color var(--transition-fast), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     display: block !important;
     width: 100%;
     white-space: nowrap;
-    margin-bottom: 0.25rem;
     position: relative;
   }
 
   .dropdown-links li a.mega-link:hover {
     color: var(--color-cyan) !important;
-    background-color: transparent !important;
-    transform: translateX(4px);
+    background-color: rgba(0, 245, 255, 0.05) !important;
+    transform: translateX(6px);
   }
 
   .mega-link:hover {
