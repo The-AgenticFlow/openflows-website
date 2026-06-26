@@ -104,10 +104,13 @@ const NAV_DATA = [
     --navbar-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 
+  /* Dark mode scroll: always stays dark — never flips to light cream */
   [data-theme="dark"] .navbar.scrolled {
-    background-color: rgba(10, 10, 10, 0.95) !important;
-    border-bottom-color: rgba(255, 255, 255, 0.1);
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    background-color: rgba(10, 10, 10, 0.97) !important;
+    backdrop-filter: blur(20px) !important;
+    -webkit-backdrop-filter: blur(20px) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+    box-shadow: 0 1px 12px rgba(0, 0, 0, 0.5) !important;
   }
 
   .theme-toggle {
@@ -133,6 +136,11 @@ const NAV_DATA = [
   .navbar.dropdown-active {
     background-color: var(--color-bg);
     border-bottom-color: var(--color-border);
+  }
+
+  [data-theme="dark"] .navbar.dropdown-active {
+    background-color: #0a0a0a;
+    border-bottom-color: rgba(255, 255, 255, 0.08);
   }
 
   .inner {
@@ -493,7 +501,7 @@ const NAV_DATA = [
   .dropdown-grid {
     display: block !important;
     width: 100%;
-    max-width: 400px;
+    max-width: 340px;
   }
 
   .dropdown-main {
@@ -505,14 +513,18 @@ const NAV_DATA = [
     font-size: 0.65rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: var(--color-text-muted);
-    margin-bottom: var(--space-4);
+    letter-spacing: 0.14em;
+    color: var(--color-cyan);
+    margin-bottom: var(--space-3);
+    padding-left: 1.25rem;
     display: block;
+    opacity: 0.8;
   }
 
   .dropdown-links {
-    display: block !important;
+    display: flex !important;
+    flex-direction: column;
+    gap: 2px;
     width: 100%;
     list-style: none;
     padding: 0;
@@ -521,53 +533,64 @@ const NAV_DATA = [
 
   .dropdown-links li {
     position: relative;
-    padding-left: 1rem;
-    margin-bottom: 0.5rem;
     display: block !important;
     width: 100%;
+    padding: 0;
   }
 
+  /* Cyan left-border indicator on hover */
   .dropdown-links li::before {
     content: '';
     position: absolute;
     left: 0;
     top: 50%;
-    width: 3px;
+    width: 2px;
     height: 0;
     background: var(--color-cyan);
-    border-radius: 2px;
-    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 0 2px 2px 0;
+    transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1), top 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     transform: translateY(-50%);
+    z-index: 1;
   }
 
   .dropdown-links li:hover::before {
-    height: 80%;
+    height: 65%;
     top: 50%;
   }
 
   .dropdown-links li a.mega-link {
-    font-size: 0.9rem;
+    font-size: 0.925rem;
     font-weight: 500;
     color: var(--color-text-primary);
     text-decoration: none;
-    padding: 0.5rem 0.75rem;
+    padding: 0.55rem 0.875rem 0.55rem 1.25rem;
     border-radius: var(--radius-sm);
-    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color var(--transition-fast), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    display: block !important;
+    transition:
+      color 0.2s ease,
+      background-color 0.2s ease,
+      transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex !important;
+    align-items: center;
     width: 100%;
     white-space: nowrap;
     position: relative;
+    box-sizing: border-box;
   }
 
   .dropdown-links li a.mega-link:hover {
     color: var(--color-cyan) !important;
-    background-color: rgba(0, 245, 255, 0.05) !important;
-    transform: translateX(6px);
+    background-color: rgba(0, 229, 255, 0.08) !important;
+    transform: translateX(4px);
+  }
+
+  /* Ensure dark mode hover bg is visible */
+  [data-theme="dark"] .dropdown-links li a.mega-link:hover {
+    background-color: rgba(0, 229, 255, 0.1) !important;
   }
 
   .mega-link:hover {
     color: var(--color-cyan);
-    background-color: var(--color-surface-2);
+    background-color: rgba(0, 229, 255, 0.08);
   }
 
   .adv-link {
