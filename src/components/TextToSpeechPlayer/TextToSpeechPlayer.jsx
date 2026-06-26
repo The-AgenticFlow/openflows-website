@@ -140,8 +140,8 @@ export default function TextToSpeechPlayer({ title, text }) {
 
             await new Promise((resolve, reject) => {
                 const utterance = new SpeechSynthesisUtterance(chunks[i])
-                utterance.rate = 0.88
-                utterance.pitch = 0.6
+                utterance.rate = 1.0
+                utterance.pitch = 0.9
                 utterance.volume = 1
                 if (maleVoice) utterance.voice = maleVoice
 
