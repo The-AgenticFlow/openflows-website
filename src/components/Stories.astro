@@ -1,0 +1,214 @@
+---
+// Stories.astro - Stories section with vertical cards
+import { supabase, isSupabaseConfigured, TABLES } from '../lib/supabase.js';
+
+let stories = [];
+
+if (isSupabaseConfigured() && supabase) {
+  try {
+    const { data, error } = await supabase
+      .from(TABLES.STORIES)
+      .select('*')
+      .order('created_at', { ascending: false });
+
+    if (error) {
+      console.warn('Stories table not found, using empty stories:', error.message);
+      stories = [];
+    } else {
+      stories = data || [];
+    }
+  } catch (err) {
+    console.warn('Error fetching stories, using empty stories:', err.message);
+    stories = [];
+  }
+} else {
+  console.warn('Supabase not configured, using empty stories');
+  stories = [];
+}
+
+const shouldRender = stories.length > 0;
+---
+
+{shouldRender && (
+  <section class="section" aria-labelledby="stories-title">
+    <div class="container">
+      <div class="header">
+        <h2 id="stories-title" class="title">Stories</h2>
+      </div>
+      <div class="grid">
+        {stories.map((story) => (
+          <a
+            href={story.href}
+            class="card vertical"
+            aria-label={story.title}
+          >
+            <div class="image-wrap">
+              {story.image ? (
+                <img src={story.image} alt={story.title} class="image" loading="lazy" />
+              ) : (
+                <div class="image-placeholder" aria-hidden="true" />
+              )}
+            </div>
+            <div class="body">
+              <div class="meta">
+                <span class="badge">{story.category}</span>
+                <span class="date">{story.date}</span>
+              </div>
+              <h3 class="card-title">{story.title}</h3>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .section {
+    padding: var(--space-16) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .container {
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-8);
+  }
+
+  .title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-cyan);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: var(--space-4);
+  }
+
+  .card {
+    display: flex;
+    flex-direction: column;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    text-decoration: none;
+    transition: border-color var(--transition-base), transform var(--transition-base);
+  }
+
+  .card:hover {
+    border-color: var(--color-border-hover);
+    transform: translateY(-2px);
+  }
+
+  .image-wrap {
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    background-color: var(--color-surface-2);
+    flex-shrink: 0;
+  }
+
+  .image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform var(--transition-slow);
+  }
+
+  .card:hover .image {
+    transform: scale(1.03);
+  }
+
+  .image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
+  }
+
+  .body {
+    padding: var(--space-4) var(--space-5);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    background: transparent;
+  }
+
+  .date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  .card-title {
+    font-size: var(--font-size-base);
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.45;
+    letter-spacing: -0.01em;
+  }
+
+  @media (max-width: 900px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .section {
+      padding: var(--space-10) 0;
+    }
+
+    .header {
+      margin-bottom: var(--space-6);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+
+    .container {
+      padding-inline: var(--space-4);
+    }
+
+    .body {
+      padding: var(--space-3) var(--space-4);
+    }
+
+    .card-title {
+      font-size: var(--font-size-sm);
+    }
+  }
+</style>

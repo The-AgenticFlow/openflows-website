@@ -1,0 +1,94 @@
+---
+// CodeBlock.astro - Syntax-highlighted code block with copy button
+interface Props {
+  lang?: string;
+  children: string;
+}
+
+const { lang = 'bash' } = Astro.props as Props;
+const codeContent = Astro.slots.render('default');
+---
+
+<div class="codeBlock" data-codeblock>
+  <div class="codeHeader">
+    <span class="codeLang">{lang}</span>
+    <button class="copyBtn" aria-label="Copy code">Copy</button>
+  </div>
+  <pre><slot /></pre>
+</div>
+
+<style>
+  .codeBlock {
+    margin: 1.5rem 0;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--color-border);
+  }
+
+  .codeHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem 1.25rem;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--color-cyan);
+  }
+
+  .codeLang {
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  .copyBtn {
+    font-size: 0.75rem;
+    color: var(--color-text-muted);
+    background: none;
+    border: 1px solid var(--color-border);
+    border-radius: 4px;
+    padding: 0.2rem 0.6rem;
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+    font-family: inherit;
+  }
+
+  .copyBtn:hover {
+    color: var(--color-text-primary);
+    border-color: var(--color-border-hover);
+  }
+
+  .codeBlock pre {
+    margin: 0;
+    padding: 1.25rem;
+    background-color: var(--color-surface-2);
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 0.95rem;
+    line-height: 1.7;
+    color: var(--color-text-secondary);
+    overflow-x: auto;
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-codeblock]').forEach((block) => {
+      const copyBtn = block.querySelector('.copyBtn');
+      if (copyBtn) {
+        copyBtn.addEventListener('click', () => {
+          const code = block.querySelector('pre')?.textContent || '';
+          navigator.clipboard.writeText(code.trim());
+          copyBtn.textContent = 'Copied!';
+          setTimeout(() => {
+            copyBtn.textContent = 'Copy';
+          }, 1800);
+        });
+      }
+    });
+  });
+</script>

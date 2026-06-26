@@ -1,0 +1,108 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import DocsLayout from '../../components/DocsLayout.astro'
+import Comparison from '../../components/Comparison.astro'
+import Callout from '../../components/Callout.astro'
+import CodeBlock from '../../components/CodeBlock.astro'
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Use Cases', href: '/use-cases' },
+  { label: 'DevOps Automation' },
+]
+
+const BEFORE = [
+  'Merge conflicts require manual rebase every time',
+  'Security patches take 2–3 days to propagate',
+  'CI failures block PRs with no automated retry',
+  'No consistent review of infrastructure changes',
+  'Dockerfile updates are tedious and error-prone',
+  'No documentation of infrastructure decisions',
+]
+
+const AFTER = [
+  'VESSEL detects conflicts early, attempts automated resolution',
+  'FORGE propagates patches across all repos in parallel',
+  'VESSEL polls CI at 10s intervals, merges when green',
+  'SENTINEL validates every infrastructure change',
+  'Conflict rework loop: same worker, no new branch, no context loss',
+  'LORE writes ADRs for every infrastructure decision',
+]
+---
+
+<BaseLayout title="DevOps Automation — Use Cases | OpenFlows" description="How a platform engineering team uses OpenFlows to automate CI/CD pipelines, security patches, and infrastructure updates - with VESSEL as the merge gatekeeper.">
+  <DocsLayout breadcrumbs={breadcrumbs}>
+    <div class="page">
+      <p class="eyebrow">Use Cases</p>
+      <h1 class="title">DevOps Automation</h1>
+      <p class="subtitle">
+        How a platform engineering team uses OpenFlows to automate CI/CD pipelines, security patches, and infrastructure updates - with VESSEL as the merge gatekeeper.
+      </p>
+
+      <h2 class="sectionTitle">The Scenario</h2>
+      <p class="sectionDesc">
+        A DevOps team manages 15+ microservices on GitHub Actions. Merge conflicts, flaky CI, and manual rebase churn consume most of their sprint capacity. Security patches take days to propagate across all repos.
+      </p>
+
+      <Comparison before={BEFORE} after={AFTER} />
+
+      <h2 class="sectionTitle">VESSEL's Conflict Rework Loop</h2>
+      <p class="sectionDesc" style="margin-bottom: 1rem;">
+        When VESSEL detects a merge conflict, it doesn't create a new branch or lose context. It writes <code>CONFLICT_RESOLUTION.md</code> and re-routes the ticket back to the same FORGE worker. FORGE reworks the implementation with full context, re-commits, and VESSEL re-monitors CI.
+      </p>
+      <CodeBlock lang="bash">{`INFO  vessel: PR #14 - mergeable: false (conflict detected)
+INFO  vessel: Writing CONFLICT_RESOLUTION.md
+INFO  vessel: Re-routing T-009 → forge-1 for rework
+INFO  forge-1: Received conflict context, rebasing implementation
+INFO  forge-1: Re-opened PR #15 on updated branch
+INFO  vessel: CI polling PR #15 (10s interval)
+INFO  vessel: CI success ✓ - squash-merging PR #15
+INFO  lore: ADR-007 written and committed`}</CodeBlock>
+
+      <Callout type="tip" title="Result">
+        The conflict rework loop eliminates manual rebase churn entirely. VESSEL handles the full merge lifecycle - conflict detection, resolution attempt, rework routing, CI polling, and final merge - without any human involvement.
+      </Callout>
+    </div>
+  </DocsLayout>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: 860px;
+    margin-inline: auto;
+    padding: calc(var(--nav-height) + 3rem) var(--space-6) 6rem;
+  }
+
+  .subtitle {
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  .sectionTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
+  }
+
+  .sectionDesc {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+  }
+
+  @media (max-width: 768px) {
+    .page {
+      padding: calc(var(--nav-height) + 2rem) var(--space-6) 4rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .page {
+      padding: calc(var(--nav-height) + 1.5rem) var(--space-4) 4rem;
+    }
+  }
+</style>

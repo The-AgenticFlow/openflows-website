@@ -1,78 +1,52 @@
-import { useState, useRef } from 'react'
+import { useState, useRef, useCallback } from 'react'
 import { supabase, isSupabaseConfigured, BLOG_IMAGES_BUCKET, BLOG_VIDEOS_BUCKET } from '@/lib/supabase'
 import styles from './MediaUploader.module.css'
 
-export default function MediaUploader({
-    currentUrl,
-    onUpload,
-    type = 'image', // 'image' | 'video' | 'both'
-    size = 'default',
-    alt = 'Media preview'
-}) {
+export default function MediaUploader({ type = 'image', onUpload }) {
     const [uploading, setUploading] = useState(false)
     const [error, setError] = useState(null)
     const [dragOver, setDragOver] = useState(false)
-    const [mediaError, setMediaError] = useState(false)
-    const [mediaType, setMediaType] = useState(null) // 'image' | 'video'
+    const [previewUrl, setPreviewUrl] = useState('')
     const fileInputRef = useRef(null)
 
-    const IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/gif', 'image/webp', 'image/svg+xml']
-    const VIDEO_TYPES = ['video/mp4', 'video/webm', 'video/ogg', 'video/quicktime']
-    const MAX_IMAGE_SIZE = 10 * 1024 * 1024 // 10MB
-    const MAX_VIDEO_SIZE = 100 * 1024 * 1024 // 100MB
+    const bucket = type === 'video' ? BLOG_VIDEOS_BUCKET : BLOG_IMAGES_BUCKET
+    const maxSize = type === 'video' ? 100 * 1024 * 1024 : 10 * 1024 * 1024 // 100MB for video, 10MB for image
+    const acceptType = type === 'video' ? 'video/*' : 'image/*'
+    const hint = type === 'video'
+        ? 'MP4, WebM, OGG (max 100MB)'
+        : 'PNG, JPG, GIF, WebP, SVG (max 10MB)'
 
-    const getAllowedTypes = () => {
-        if (type === 'image') return IMAGE_TYPES
-        if (type === 'video') return VIDEO_TYPES
-        return [...IMAGE_TYPES, ...VIDEO_TYPES]
-    }
+    const handleFile = useCallback(async (file) => {
+        if (!file) return
 
-    const getMediaTypeFromFile = (file) => {
-        if (IMAGE_TYPES.includes(file.type)) return 'image'
-        if (VIDEO_TYPES.includes(file.type)) return 'video'
-        return null
-    }
-
-    const getBucketForType = (mediaType) => {
-        return mediaType === 'video' ? BLOG_VIDEOS_BUCKET : BLOG_IMAGES_BUCKET
-    }
-
-    const handleFileSelect = async (file) => {
-        if (!isSupabaseConfigured() || !supabase) {
-            setError('Supabase is not configured')
+        // Validate file type
+        const expectedPrefix = type === 'video' ? 'video/' : 'image/'
+        if (!file.type.startsWith(expectedPrefix)) {
+            setError(`Please upload a ${type} file`)
             return
         }
 
-        const allowedTypes = getAllowedTypes()
-        if (!allowedTypes.includes(file.type)) {
-            const typeLabel = type === 'image' ? 'images' : type === 'video' ? 'videos' : 'images or videos'
-            setError(`Invalid file type. Please upload ${typeLabel} (JPEG, PNG, GIF, WebP${type !== 'image' ? ', MP4, WebM' : ''}).`)
-            return
-        }
-
-        const detectedType = getMediaTypeFromFile(file)
-        const maxSize = detectedType === 'video' ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE
-
+        // Validate file size
         if (file.size > maxSize) {
-            const maxSizeMB = maxSize / (1024 * 1024)
-            setError(`File is too large. Maximum size is ${maxSizeMB}MB.`)
+            const sizeMB = maxSize / (1024 * 1024)
+            setError(`File size must be less than ${sizeMB}MB`)
+            return
+        }
+
+        if (!isSupabaseConfigured() || !supabase) {
+            setError('Supabase is not configured. Media upload is disabled.')
             return
         }
 
         setUploading(true)
         setError(null)
-        setMediaError(false)
 
         try {
             const fileExt = file.name.split('.').pop()
             const fileName = `${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`
-            const folder = detectedType === 'video' ? 'blog-videos' : 'blog-images'
-            const filePath = `${folder}/${fileName}`
+            const filePath = `${fileName}`
 
-            const bucket = getBucketForType(detectedType)
-
-            // Upload to Supabase Storage
-            const { data, error: uploadError } = await supabase.storage
+            const { error: uploadError } = await supabase.storage
                 .from(bucket)
                 .upload(filePath, file, {
                     cacheControl: '3600',
@@ -86,143 +60,92 @@ export default function MediaUploader({
                 .from(bucket)
                 .getPublicUrl(filePath)
 
-            setMediaType(detectedType)
-            onUpload(urlData.publicUrl, detectedType)
+            if (urlData?.publicUrl) {
+                // Create local preview
+                const localPreview = URL.createObjectURL(file)
+                setPreviewUrl(localPreview)
+                onUpload(urlData.publicUrl, type)
+            }
         } catch (err) {
-            console.error('Error uploading media:', err)
-            setError(err.message || 'Failed to upload media')
+            console.error(`Error uploading ${type}:`, err)
+            setError(err.message || `Failed to upload ${type}`)
         } finally {
             setUploading(false)
         }
-    }
+    }, [type, bucket, maxSize, onUpload])
 
-    const handleInputChange = (e) => {
+    const handleFileInput = (e) => {
         const file = e.target.files?.[0]
         if (file) {
-            handleFileSelect(file)
+            handleFile(file)
         }
     }
 
-    const handleDrop = (e) => {
+    const handleDrop = useCallback((e) => {
         e.preventDefault()
+        e.stopPropagation()
         setDragOver(false)
 
-        const file = e.dataTransfer.files?.[0]
+        const file = e.dataTransfer?.files?.[0]
         if (file) {
-            handleFileSelect(file)
+            handleFile(file)
         }
-    }
+    }, [handleFile])
 
-    const handleDragOver = (e) => {
+    const handleDragOver = useCallback((e) => {
         e.preventDefault()
+        e.stopPropagation()
         setDragOver(true)
-    }
+    }, [])
 
-    const handleDragLeave = (e) => {
+    const handleDragLeave = useCallback((e) => {
         e.preventDefault()
+        e.stopPropagation()
         setDragOver(false)
-    }
+    }, [])
 
     const handleRemove = () => {
-        onUpload('', null)
-        setMediaError(false)
-        setMediaType(null)
-    }
-
-    const detectMediaTypeFromUrl = (url) => {
-        if (!url) return null
-        const videoExtensions = ['.mp4', '.webm', '.ogg', '.mov']
-        const imageExtensions = ['.jpg', '.jpeg', '.png', '.gif', '.webp', '.svg']
-
-        const lowerUrl = url.toLowerCase()
-        if (videoExtensions.some(ext => lowerUrl.includes(ext))) return 'video'
-        if (imageExtensions.some(ext => lowerUrl.includes(ext))) return 'image'
-        return null
-    }
-
-    const currentMediaType = mediaType || detectMediaTypeFromUrl(currentUrl)
-
-    const renderPreview = () => {
-        if (!currentUrl) return null
-
-        if (currentMediaType === 'video') {
-            return (
-                <div className={styles.videoPreview}>
-                    <video
-                        src={currentUrl}
-                        controls
-                        className={styles.video}
-                        onError={() => setMediaError(true)}
-                    >
-                        Your browser does not support the video tag.
-                    </video>
-                </div>
-            )
+        onUpload('', type)
+        setPreviewUrl('')
+        if (fileInputRef.current) {
+            fileInputRef.current.value = ''
         }
-
-        return (
-            <img
-                src={currentUrl}
-                alt={alt}
-                onError={() => setMediaError(true)}
-                className={styles.image}
-            />
-        )
     }
 
-    const getAcceptString = () => {
-        if (type === 'image') return 'image/*'
-        if (type === 'video') return 'video/*'
-        return 'image/*,video/*'
-    }
-
-    const getDropzoneText = () => {
-        if (type === 'image') return { primary: 'Drop image here', secondary: 'or click to browse' }
-        if (type === 'video') return { primary: 'Drop video here', secondary: 'or click to browse' }
-        return { primary: 'Drop image or video here', secondary: 'or click to browse' }
-    }
-
-    const dropzoneText = getDropzoneText()
+    const hasPreview = previewUrl && previewUrl.trim() !== ''
 
     return (
-        <div className={`${styles.uploader} ${size === 'compact' ? styles.compact : ''}`}>
-            {currentUrl ? (
-                <div
-                    className={styles.preview}
-                    onClick={() => size === 'compact' && fileInputRef.current?.click()}
-                >
-                    {mediaError ? (
-                        <div className={styles.fallbackIcon}>
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                                <circle cx="12" cy="7" r="4" />
-                            </svg>
+        <div className={styles.uploader}>
+            {hasPreview ? (
+                <div className={styles.preview}>
+                    {type === 'video' ? (
+                        <div className={styles.videoPreview}>
+                            <video className={styles.video} controls src={previewUrl} />
                         </div>
                     ) : (
-                        renderPreview()
+                        <img className={styles.image} src={previewUrl} alt="Media preview" />
                     )}
                     <div className={styles.previewActions}>
                         <button
                             type="button"
                             className={styles.replaceBtn}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                fileInputRef.current?.click()
-                            }}
+                            onClick={() => fileInputRef.current?.click()}
                         >
                             Replace
                         </button>
                         <button
                             type="button"
                             className={styles.removeBtn}
-                            onClick={(e) => {
-                                e.stopPropagation()
-                                handleRemove()
-                            }}
+                            onClick={handleRemove}
                         >
                             Remove
                         </button>
                     </div>
+                </div>
+            ) : uploading ? (
+                <div className={styles.uploading}>
+                    <div className={styles.spinner} />
+                    <span>Uploading...</span>
                 </div>
             ) : (
                 <div
@@ -232,40 +155,26 @@ export default function MediaUploader({
                     onDragLeave={handleDragLeave}
                     onClick={() => fileInputRef.current?.click()}
                 >
-                    {uploading ? (
-                        <div className={styles.uploading}>
-                            <div className={styles.spinner} />
-                            <span>Uploading...</span>
-                        </div>
-                    ) : (
-                        <>
-                            <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5">
-                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-                                <polyline points="17 8 12 3 7 8" />
-                                <line x1="12" y1="3" x2="12" y2="15" />
-                            </svg>
-                            <p className={styles.dropText}>
-                                <span>{dropzoneText.primary}</span>
-                                <br />
-                                {dropzoneText.secondary}
-                            </p>
-                            <p className={styles.hint}>
-                                {type === 'image' && 'JPEG, PNG, GIF, WebP, SVG (max 10MB)'}
-                                {type === 'video' && 'MP4, WebM, OGG (max 100MB)'}
-                                {type === 'both' && 'Images: max 10MB • Videos: max 100MB'}
-                            </p>
-                        </>
-                    )}
+                    <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                        {type === 'video' ? (
+                            <>
+                                <polygon points="23 7 16 12 23 17 23 7" />
+                                <rect x="1" y="5" width="15" height="14" rx="2" ry="2" />
+                            </>
+                        ) : (
+                            <>
+                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" />
+                                <circle cx="8.5" cy="8.5" r="1.5" />
+                                <polyline points="21 15 16 10 5 21" />
+                            </>
+                        )}
+                    </svg>
+                    <p className={styles.dropText}>
+                        <span>Click to upload</span> or drag and drop
+                    </p>
+                    <p className={styles.hint}>{hint}</p>
                 </div>
             )}
-
-            <input
-                ref={fileInputRef}
-                type="file"
-                accept={getAcceptString()}
-                onChange={handleInputChange}
-                className={styles.fileInput}
-            />
 
             {error && (
                 <div className={styles.error}>
@@ -275,6 +184,14 @@ export default function MediaUploader({
                     <span>{error}</span>
                 </div>
             )}
+
+            <input
+                ref={fileInputRef}
+                type="file"
+                accept={acceptType}
+                onChange={handleFileInput}
+                className={styles.fileInput}
+            />
         </div>
     )
 }

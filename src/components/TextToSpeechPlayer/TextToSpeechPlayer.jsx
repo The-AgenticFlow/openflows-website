@@ -1,216 +1,244 @@
-import React, { useState, useEffect, useRef } from 'react';
-import styles from './TextToSpeechPlayer.module.css';
+import { useState, useRef, useEffect, useCallback } from 'react'
+import styles from './TextToSpeechPlayer.module.css'
 
-const PlayIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M8 5v14l11-7z" />
-    </svg>
-);
+/** Strip markdown so TTS reads clean prose */
+function stripMarkdown(md) {
+    if (!md) return ''
+    return md
+        .replace(/```[\s\S]*?```/g, ' ')
+        .replace(/`[^`]+`/g, ' ')
+        .replace(/^#{1,6}\s+/gm, '')
+        .replace(/\*{1,3}([^*\n]+)\*{1,3}/g, '$1')
+        .replace(/_{1,3}([^_\n]+)_{1,3}/g, '$1')
+        .replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+        .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+        .replace(/^>\s*/gm, '')
+        .replace(/^[-*_]{3,}\s*$/gm, '')
+        .replace(/^[\s]*[-*+]\s+/gm, '')
+        .replace(/^[\s]*\d+\.\s+/gm, '')
+        .replace(/<[^>]+>/g, '')
+        .replace(/\n{3,}/g, '\n\n')
+        .trim()
+}
 
-const PauseIcon = () => (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M6 19h4V5H6v14zm8-14v14h4V5h-4z" />
-    </svg>
-);
-
-const cleanMarkdown = (mdText) => {
-    if (!mdText) return '';
-    return mdText
-        .replace(/#+\s+/g, '') // Remove headers
-        .replace(/[*_]{1,2}(.*?)[*_]{1,2}/g, '$1') // Remove bold/italic
-        .replace(/\[(.*?)\]\((.*?)\)/g, '$1') // Links -> text only
-        .replace(/`([^`]+)`/g, '$1') // Inline code
-        .replace(/```[\s\S]*?```/g, 'Code block omitted.') // Block code
-        .replace(/>\s+/g, '') // Blockquotes
-        .replace(/-{3,}/g, '') // HRs
-        .replace(/!\[(.*?)\]\((.*?)\)/g, '') // Remove image alt text completely
-        .trim();
-};
-
-export function TextToSpeechPlayer({ title, text }) {
-    const [isPlaying, setIsPlaying] = useState(false);
-    const [isPaused, setIsPaused] = useState(false);
-    const [isSupported, setIsSupported] = useState(false);
-    const [listeningTime, setListeningTime] = useState(0);
-
-    // Core state for chunked playback
-    const chunksRef = useRef([]);
-    const currentChunkIndexRef = useRef(0);
-    const activeUtteranceRef = useRef(null);
-    const stopRequestedRef = useRef(false);
-
-    useEffect(() => {
-        if (text) {
-            const wordCount = text.split(/\s+/).length;
-            const minutes = Math.ceil(wordCount / 150);
-            setListeningTime(minutes);
-        }
-    }, [text]);
-
-    useEffect(() => {
-        if ('speechSynthesis' in window) {
-            setIsSupported(true);
-            window.speechSynthesis.getVoices();
-        }
-        return () => {
-            stopSpeech();
-        };
-    }, []);
-
-    const stopSpeech = () => {
-        stopRequestedRef.current = true;
-        window.speechSynthesis.cancel();
-        activeUtteranceRef.current = null;
-        setIsPlaying(false);
-        setIsPaused(false);
-    };
-
-    const playNextChunk = () => {
-        if (stopRequestedRef.current) return;
-
-        const index = currentChunkIndexRef.current;
-        if (index >= chunksRef.current.length) {
-            // Finished all chunks
-            setIsPlaying(false);
-            setIsPaused(false);
-            return;
-        }
-
-        const chunkText = chunksRef.current[index];
-        if (!chunkText || chunkText.trim().length === 0) {
-            currentChunkIndexRef.current++;
-            playNextChunk();
-            return;
-        }
-
-        const utterance = new SpeechSynthesisUtterance(chunkText);
-        activeUtteranceRef.current = utterance; // Protect from GC
-
-        // Voice selection - prefer male voices
-        const voices = window.speechSynthesis.getVoices();
-        if (voices.length > 0) {
-            // Known male voice identifiers across platforms
-            const maleVoiceNames = [
-                'Daniel', 'Alex', 'Tom', 'Fred', 'Junior', 'Ralph',
-                'Bruce', 'Victor', 'Albert', 'David', 'Mark', 'James',
-                'Google UK English Male', 'Microsoft David', 'Microsoft Mark',
-                'Microsoft Richard', 'Microsoft George',
-            ];
-
-            // Known female voice names to explicitly avoid
-            const femaleVoiceNames = [
-                'Samantha', 'Victoria', 'Karen', 'Moira', 'Tessa', 'Fiona',
-                'Kate', 'Zuzana', 'Ellen', 'Allison', 'Ava', 'Joana', 'Paulina',
-                'Monica', 'Alice', 'Google UK English Female', 'Microsoft Zira',
-                'Microsoft Hazel', 'Microsoft Susan', 'Microsoft Linda',
-                'Microsoft Heather', 'Microsoft Catherine',
-            ];
-
-            const preferredVoice = voices.find(v =>
-                v.lang.startsWith('en') && maleVoiceNames.some(m => v.name.includes(m))
-            ) || voices.find(v =>
-                v.lang.startsWith('en') && v.name.toLowerCase().includes('male')
-            ) || voices.find(v =>
-                v.lang.startsWith('en') && !femaleVoiceNames.some(f => v.name.includes(f))
-            ) || voices.find(v => v.lang.startsWith('en'));
-            if (preferredVoice) utterance.voice = preferredVoice;
-        }
-
-        utterance.rate = 1.0;
-        utterance.pitch = 1.0;
-
-        utterance.onstart = () => {
-            setIsPlaying(true);
-            setIsPaused(false);
-        };
-
-        utterance.onend = () => {
-            if (stopRequestedRef.current) return;
-            currentChunkIndexRef.current++;
-            // Small delay between chunks for a natural feel and to avoid queue issues
-            setTimeout(playNextChunk, 50);
-        };
-
-        utterance.onerror = (e) => {
-            console.error('TTS Chunk Error:', e.error, '| Text:', chunkText);
-            // If interrupted, we usually want to stop or retry. 
-            // In most cases, interrupted means someone called cancel().
-            if (e.error !== 'interrupted') {
-                setIsPlaying(false);
-                setIsPaused(false);
-            }
-        };
-
-        window.speechSynthesis.speak(utterance);
-    };
-
-    const startSpeech = () => {
-        stopRequestedRef.current = false;
-        const cleanedText = cleanMarkdown(text);
-        const titleAnnouncement = title ? `Article title: ${title}. ` : '';
-        const fullText = titleAnnouncement + cleanedText;
-
-        // Split text into small chunks of ~150 chars, but break at sentences
-        // This is the most resilient way to handle Chrome's TTS bugs
-        const regex = /.{1,160}(?:\.|\?|!|\s|$)/g;
-        const chunkMatches = fullText.match(regex) || [fullText];
-
-        chunksRef.current = chunkMatches.map(c => c.trim()).filter(c => c.length > 0);
-        currentChunkIndexRef.current = 0;
-
-        window.speechSynthesis.cancel();
-        // Give the OS a moment to clear its buffers
-        setTimeout(() => {
-            playNextChunk();
-        }, 150);
-    };
-
-    const handleToggle = () => {
-        if (!isSupported) return;
-
-        // Force resume for Chrome bugs
-        window.speechSynthesis.resume();
-
-        if (isPlaying) {
-            window.speechSynthesis.pause();
-            setIsPlaying(false);
-            setIsPaused(true);
-        } else if (isPaused) {
-            window.speechSynthesis.resume();
-            setIsPlaying(true);
-            setIsPaused(false);
+/**
+ * Split text into sentence-sized chunks (~200 chars max).
+ * Chrome Linux speechSynthesis silently fails on long utterances.
+ * Speaking short chunks sequentially is the reliable workaround.
+ */
+function chunkText(text, maxLen = 200) {
+    const sentences = text.match(/[^.!?\n]+[.!?\n]*/g) || [text]
+    const chunks = []
+    let current = ''
+    for (const s of sentences) {
+        if ((current + s).length > maxLen && current.length > 0) {
+            chunks.push(current.trim())
+            current = s
         } else {
-            startSpeech();
+            current += s
         }
-    };
+    }
+    if (current.trim()) chunks.push(current.trim())
+    return chunks
+}
 
-    if (!isSupported) return null;
+/** Wait for voices to be populated, up to `timeout` ms */
+function waitForVoices(timeout = 3000) {
+    return new Promise((resolve) => {
+        const voices = window.speechSynthesis.getVoices()
+        if (voices.length > 0) return resolve(voices)
+        const onChanged = () => {
+            const v = window.speechSynthesis.getVoices()
+            if (v.length > 0) {
+                window.speechSynthesis.removeEventListener('voiceschanged', onChanged)
+                resolve(v)
+            }
+        }
+        window.speechSynthesis.addEventListener('voiceschanged', onChanged)
+        setTimeout(() => {
+            window.speechSynthesis.removeEventListener('voiceschanged', onChanged)
+            resolve(window.speechSynthesis.getVoices()) // may still be empty — that's ok
+        }, timeout)
+    })
+}
+
+export default function TextToSpeechPlayer({ title, text }) {
+    const [status, setStatus] = useState('idle') // idle | playing | paused
+    const stoppedRef = useRef(false)
+    const pausedRef = useRef(false)
+    const currentUtteranceRef = useRef(null)
+
+    const cleanText = stripMarkdown(text)
+
+    useEffect(() => {
+        return () => {
+            stoppedRef.current = true
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+        }
+    }, [])
+
+    const stopAll = useCallback(() => {
+        stoppedRef.current = true
+        if ('speechSynthesis' in window) window.speechSynthesis.cancel()
+        currentUtteranceRef.current = null
+        setStatus('idle')
+    }, [])
+
+    const speak = useCallback(async () => {
+        if (!cleanText || !('speechSynthesis' in window)) return
+
+        stoppedRef.current = false
+        pausedRef.current = false
+
+        // Cancel any previous speech
+        window.speechSynthesis.cancel()
+        await new Promise(r => setTimeout(r, 150)) // let engine reset
+
+        const voices = await waitForVoices()
+
+        // Log all available voices to console so we can see exact names
+        console.log('[TTS] Available voices:', voices.map(v => `"${v.name}" | ${v.lang} | local:${v.localService}`))
+
+        // Prefer a deep male English voice.
+        // eSpeak exposes explicit male variants — higher numbers = deeper pitch.
+        const MALE_PRIORITY = [
+            /google uk english male/i,
+            /english.*male7/i,
+            /english.*male6/i,
+            /english.*male5/i,
+            /english.*male4/i,
+            /english.*male3/i,
+            /english.*male2/i,
+            /english.*male1/i,
+            /english.*male/i,
+            /google us english/i,
+            /\bmale\b/i,
+            /david/i,
+            /mark/i,
+            /james/i,
+            /daniel/i,
+            /fred/i,
+            /ralph/i,
+        ]
+
+        const enVoices = voices.filter(v => v.lang.startsWith('en'))
+        let maleVoice = null
+        for (const pattern of MALE_PRIORITY) {
+            maleVoice = enVoices.find(v => pattern.test(v.name))
+            if (maleVoice) break
+        }
+        maleVoice = maleVoice || enVoices.find(v => v.localService) || enVoices[0] || voices[0] || null
+
+        console.log('[TTS] Selected voice:', maleVoice?.name, maleVoice?.lang)
+
+        const chunks = chunkText(cleanText)
+        setStatus('playing')
+
+        // Speak chunks one at a time
+        for (let i = 0; i < chunks.length; i++) {
+            if (stoppedRef.current) break
+
+            await new Promise((resolve, reject) => {
+                const utterance = new SpeechSynthesisUtterance(chunks[i])
+                utterance.rate = 1.0
+                utterance.pitch = 0.9
+                utterance.volume = 1
+                if (maleVoice) utterance.voice = maleVoice
+
+                currentUtteranceRef.current = utterance
+
+                utterance.onend = () => resolve()
+                utterance.onerror = (e) => {
+                    if (e.error === 'interrupted' || e.error === 'canceled') resolve()
+                    else reject(e)
+                }
+
+                // Safety timeout: if a chunk takes > 30s, skip it
+                const safety = setTimeout(() => resolve(), 30000)
+                utterance.onend = () => { clearTimeout(safety); resolve() }
+
+                window.speechSynthesis.speak(utterance)
+            }).catch(() => {})
+
+            // Wait briefly between chunks to avoid Chrome queue bug
+            if (!stoppedRef.current) {
+                await new Promise(r => setTimeout(r, 50))
+            }
+        }
+
+        if (!stoppedRef.current) {
+            currentUtteranceRef.current = null
+            setStatus('idle')
+        }
+    }, [cleanText])
+
+    const handlePlayPause = () => {
+        if (!('speechSynthesis' in window)) {
+            alert('Text-to-speech is not supported in your browser.')
+            return
+        }
+
+        if (status === 'idle') {
+            speak()
+        } else if (status === 'playing') {
+            window.speechSynthesis.pause()
+            pausedRef.current = true
+            setStatus('paused')
+        } else if (status === 'paused') {
+            window.speechSynthesis.resume()
+            pausedRef.current = false
+            setStatus('playing')
+        }
+    }
+
+    if (!cleanText) return null
+
+    const isActive = status === 'playing' || status === 'paused'
+    const label = status === 'playing' ? 'Playing...' : status === 'paused' ? 'Paused' : 'Listen to this article'
 
     return (
         <div className={styles.ttsContainer}>
             <button
-                onClick={handleToggle}
                 className={styles.playBtn}
-                title={isPlaying ? "Pause" : "Listen"}
+                onClick={handlePlayPause}
+                aria-label={status === 'playing' ? 'Pause' : 'Play'}
             >
-                {isPlaying ? <PauseIcon /> : <PlayIcon />}
+                {status === 'playing' ? (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="6" y="4" width="4" height="16" />
+                        <rect x="14" y="4" width="4" height="16" />
+                    </svg>
+                ) : (
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                )}
             </button>
+
+            {status === 'playing' && (
+                <div className={styles.visualizer}>
+                    {[1, 2, 3, 4, 5].map((i) => (
+                        <div key={i} className={`${styles.bar} ${styles.animating}`} />
+                    ))}
+                </div>
+            )}
+
             <div className={styles.ttsInfo}>
-                <span className={styles.ttsTitle}>Listen to Article</span>
-                <span className={styles.ttsStatus}>
-                    {isPlaying ? 'Speaking...' : isPaused ? 'Paused' : `${listeningTime} min listen • Browser AI`}
-                </span>
+                <span className={styles.ttsTitle}>Listen to this article</span>
+                <span className={styles.ttsStatus}>{label}</span>
             </div>
 
-            <div className={styles.visualizer}>
-                <div className={`${styles.bar} ${isPlaying ? styles.animating : ''}`} style={{ height: isPlaying ? '100%' : '4px' }}></div>
-                <div className={`${styles.bar} ${isPlaying ? styles.animating : ''}`} style={{ height: isPlaying ? '60%' : '4px' }}></div>
-                <div className={`${styles.bar} ${isPlaying ? styles.animating : ''}`} style={{ height: isPlaying ? '80%' : '4px' }}></div>
-                <div className={`${styles.bar} ${isPlaying ? styles.animating : ''}`} style={{ height: isPlaying ? '40%' : '4px' }}></div>
-                <div className={`${styles.bar} ${isPlaying ? styles.animating : ''}`} style={{ height: isPlaying ? '90%' : '4px' }}></div>
-            </div>
+            {isActive && (
+                <button
+                    className={styles.stopBtn}
+                    onClick={stopAll}
+                    aria-label="Stop"
+                >
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+                        <rect x="4" y="4" width="16" height="16" rx="2" />
+                    </svg>
+                </button>
+            )}
         </div>
-    );
+    )
 }
-
-export default TextToSpeechPlayer;

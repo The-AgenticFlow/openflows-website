@@ -1,0 +1,534 @@
+---
+// About page - Astro version
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+
+const STATS = [
+  { value: '5', label: 'Specialized agents' },
+  { value: '24/7', label: 'Autonomous operation' },
+  { value: '~16min', label: 'Issue to merged PR' },
+  { value: 'MIT', label: 'Open source license' },
+];
+
+const VALUES = [
+  {
+    title: 'Autonomous by default',
+    desc: 'The team runs without human input. NEXUS only reaches out when it genuinely needs you - spec ambiguity, security concerns, or resource limits.',
+  },
+  {
+    title: 'Each agent has an identity',
+    desc: 'Every agent gets its own GitHub account. They create branches, open PRs, and review code - just like human developers on your team.',
+  },
+  {
+    title: 'Built for resilience',
+    desc: 'Flow recovery detects orphaned tickets, stale workers, and unmerged PRs on every cycle. The pipeline resumes at the correct phase automatically.',
+  },
+  {
+    title: 'Model-agnostic, adversarial by design',
+    desc: 'You choose the model behind each agent. NEXUS can run Claude, FORGE can run Kimi, SENTINEL can run Gemini. Different models create natural adversarial behavior - the reviewer catches what the builder misses.',
+  },
+  {
+    title: 'Open source, MIT licensed',
+    desc: 'The entire orchestration engine - from PocketFlow core to the TUI setup wizard - is on GitHub. Install via npm, cargo, Docker, or a one-line curl installer.',
+  },
+];
+---
+
+<BaseLayout title="About — OpenFlows" description="Learn about OpenFlows autonomous AI development team and the principles behind it.">
+  <Navbar />
+
+  <main>
+    {/* ── Hero ── */}
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">About OpenFlows</p>
+        <h1 class="hero-title">
+          An autonomous AI development<br class="br" /> team that runs itself.
+        </h1>
+        <p class="hero-sub">
+          Five specialized AI agents - written in Rust - that discover your GitHub issues,
+          write code, review it, open pull requests, and merge them. All without human
+          intervention. You stay as the product owner.
+        </p>
+      </div>
+    </section>
+
+    {/* ── Stats bar ── */}
+    <section class="stats-bar">
+      <div class="container">
+        <div class="stats-grid">
+          {STATS.map(({ value, label }) => (
+            <div class="stat-item">
+              <span class="stat-value">{value}</span>
+              <span class="stat-label">{label}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ── Vision - text left, image right ── */}
+    <section class="split">
+      <div class="container">
+        <div class="split-grid">
+          <div class="split-text">
+            <p class="eyebrow">The big idea</p>
+            <h2 class="split-heading">You stay the product owner</h2>
+            <p class="split-desc">
+              Each AI agent gets their own GitHub account and identity. They create branches,
+              open PRs, review code, run CI/CD, and deploy - just like human developers.
+              NEXUS (the orchestrator) notifies you only when necessary: spec ambiguity,
+              security concerns, or resource limits. Otherwise, the team runs autonomously.
+              You wake up to completed features, reviewed PRs, and updated documentation.
+            </p>
+            <div class="link-row">
+              <a href="/docs/architecture" class="text-link">Architecture Overview ›</a>
+              <a
+                href="https://github.com/The-AgenticFlow/OpenFlows"
+                class="text-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View on GitHub ›
+              </a>
+            </div>
+          </div>
+          <div class="split-image-wrap">
+            <img
+              src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=900"
+              alt="AI neural network visualization"
+              class="split-image"
+              loading="lazy"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    {/* ── Pull quote ── */}
+    <section class="quote-section">
+      <div class="container">
+        <blockquote class="quote">
+          "Imagine having a complete engineering team - Scrum Master, Senior Developer,
+          Security Auditor, DevOps Engineer, and Technical Writer - that works 24/7 to turn
+          your GitHub issues into production-ready code and pull requests."
+        </blockquote>
+      </div>
+    </section>
+
+    {/* ── Full-width team image ── */}
+    <section class="image-section">
+      <div class="container">
+        <div class="full-image-wrap">
+          <img
+            src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1400"
+            alt="Developers collaborating"
+            class="full-image"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </section>
+
+    {/* ── Values grid ── */}
+    <section class="values-section">
+      <div class="container">
+        <p class="eyebrow">What we stand for</p>
+        <h2 class="values-heading">Built on clear principles</h2>
+        <div class="values-grid">
+          {VALUES.map(({ title, desc }) => (
+            <div class="value-card">
+              <h3 class="value-title">{title}</h3>
+              <p class="value-desc">{desc}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {/* ── Open source - image left, text right ── */}
+    <section class="split">
+      <div class="container">
+        <div class="split-grid split-reverse">
+          <div class="split-image-wrap">
+            <img
+              src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=900"
+              alt="Open landscape representing open source"
+              class="split-image"
+              loading="lazy"
+            />
+          </div>
+          <div class="split-text">
+            <p class="eyebrow">Open Source</p>
+            <h2 class="split-heading">MIT licensed, community driven</h2>
+            <p class="split-desc">
+              OpenFlows is fully open source. The project is maintained by The AgenticFlow
+              team and welcomes contributions from the community. Install via npm, cargo,
+              Homebrew, Docker, or a one-line curl installer. The entire orchestration
+              engine - from PocketFlow core to the TUI setup wizard - is available on GitHub.
+            </p>
+            <div class="link-row">
+              <a
+                href="https://github.com/The-AgenticFlow/OpenFlows"
+                class="text-link"
+                target="_blank"
+                rel="noopener noreferrer"
+              >
+                View the repository ›
+              </a>
+              <a href="/docs/getting-started/installation" class="text-link">
+                Installation Guide ›
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <Footer />
+</BaseLayout>
+
+<style>
+  /* ─────────────────────────────────────────
+     Shared container
+  ───────────────────────────────────────── */
+  .container {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  /* ─────────────────────────────────────────
+     Eyebrow label (reused across sections)
+  ───────────────────────────────────────── */
+  .eyebrow {
+    font-size: var(--font-size-xs);
+    color: var(--color-cyan);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+  }
+
+  /* ─────────────────────────────────────────
+     Hero
+  ───────────────────────────────────────── */
+  .hero {
+    padding-top: calc(var(--nav-height) + var(--space-10));
+    padding-bottom: var(--space-10);
+    text-align: center;
+  }
+
+  .hero-title {
+    font-size: clamp(2.4rem, 6vw, 4.5rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    color: var(--color-cyan);
+    margin-bottom: var(--space-6);
+  }
+
+  .br {
+    display: block;
+  }
+
+  .hero-sub {
+    font-size: clamp(var(--font-size-base), 2vw, var(--font-size-lg));
+    color: var(--color-text-secondary);
+    max-width: 640px;
+    margin-inline: auto;
+    line-height: 1.75;
+  }
+
+  /* ─────────────────────────────────────────
+     Stats bar
+  ───────────────────────────────────────── */
+  .stats-bar {
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    padding-block: var(--space-10);
+  }
+
+  .stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: var(--space-6);
+  }
+
+  .stat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-2);
+    text-align: center;
+  }
+
+  .stat-value {
+    font-size: clamp(1.75rem, 3vw, 2.5rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--color-cyan);
+  }
+
+  .stat-label {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-muted);
+  }
+
+  /* ─────────────────────────────────────────
+     Split sections (text + image)
+  ───────────────────────────────────────── */
+  .split {
+    padding-block: var(--space-20);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5rem;
+    align-items: center;
+  }
+
+  /* Reverse: image on left, text on right */
+  .split-reverse {
+    direction: rtl;
+  }
+
+  .split-reverse > * {
+    direction: ltr;
+  }
+
+  .split-text {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .split-heading {
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    line-height: 1.2;
+    color: var(--color-cyan);
+    margin: 0;
+  }
+
+  .split-desc {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: 1.8;
+    margin: 0;
+  }
+
+  .link-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-6);
+    margin-top: var(--space-2);
+  }
+
+  .text-link {
+    font-size: var(--font-size-sm);
+    color: var(--color-cyan);
+    text-decoration: none;
+    border-bottom: 1px solid var(--color-cyan-muted);
+    padding-bottom: 2px;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .text-link:hover {
+    border-color: var(--color-cyan);
+    text-shadow: 0 0 10px var(--color-cyan-glow);
+  }
+
+  .split-image-wrap {
+    width: 100%;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    background-color: var(--color-surface);
+  }
+
+  .split-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16 / 10;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ─────────────────────────────────────────
+     Pull quote
+  ───────────────────────────────────────── */
+  .quote-section {
+    padding-block: var(--space-12);
+    border-top: 1px solid var(--color-border);
+    border-bottom: 1px solid var(--color-border);
+    text-align: center;
+  }
+
+  .quote {
+    font-size: clamp(1.1rem, 2.5vw, 1.5rem);
+    font-weight: 400;
+    font-style: italic;
+    max-width: 820px;
+    margin-inline: auto;
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+    quotes: none;
+  }
+
+  /* ─────────────────────────────────────────
+     Full-width image
+  ───────────────────────────────────────── */
+  .image-section {
+    padding-block: var(--space-8);
+  }
+
+  .full-image-wrap {
+    width: 100%;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+  }
+
+  .full-image {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 21 / 9;
+    object-fit: cover;
+    display: block;
+  }
+
+  /* ─────────────────────────────────────────
+     Values grid
+  ───────────────────────────────────────── */
+  .values-section {
+    padding-block: var(--space-20);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .values-heading {
+    font-size: clamp(1.6rem, 3vw, 2.25rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-cyan);
+    margin-bottom: 3rem;
+    margin-top: var(--space-4);
+  }
+
+  .values-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .value-card {
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    padding: var(--space-8);
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  }
+
+  .value-card:hover {
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 20px var(--color-cyan-glow);
+  }
+
+  .value-title {
+    font-size: var(--font-size-base);
+    font-weight: 600;
+    color: var(--color-cyan);
+    margin: 0;
+  }
+
+  .value-desc {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    margin: 0;
+  }
+
+  /* ─────────────────────────────────────────
+     Responsive
+  ───────────────────────────────────────── */
+  @media (max-width: 900px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-8);
+    }
+
+    .split-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .split-reverse {
+      direction: ltr;
+    }
+
+    .br {
+      display: none;
+    }
+
+    .container {
+      padding-inline: var(--space-4);
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero {
+      padding-top: calc(var(--nav-height) + 3rem);
+      padding-bottom: 3rem;
+    }
+
+    .hero-title {
+      font-size: clamp(1.8rem, 6vw, 2.5rem);
+    }
+
+    .stats-bar {
+      padding-block: var(--space-6);
+    }
+
+    .split {
+      padding-block: 4rem;
+    }
+
+    .split-grid {
+      gap: 2rem;
+    }
+
+    .quote-section {
+      padding-block: 3rem;
+    }
+
+    .values-section {
+      padding-block: 4rem;
+    }
+
+    .value-card {
+      padding: var(--space-5);
+    }
+  }
+
+  @media (max-width: 480px) {
+    .stats-grid {
+      grid-template-columns: repeat(2, 1fr);
+      gap: var(--space-5);
+    }
+
+    .hero {
+      padding-top: calc(var(--nav-height) + 2rem);
+      padding-bottom: 2rem;
+    }
+
+    .stat-value {
+      font-size: clamp(1.25rem, 4vw, 1.75rem);
+    }
+  }
+</style>

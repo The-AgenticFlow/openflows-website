@@ -1,0 +1,119 @@
+---
+// Accordion.astro - Collapsible accordion component
+interface AccordionItem {
+  title: string;
+  content: string;
+}
+
+interface Props {
+  items: AccordionItem[];
+}
+
+const { items } = Astro.props as Props;
+---
+
+<div class="accordion" data-accordion>
+  {items.map(({ title, content }, i) => (
+    <div class="accordionItem">
+      <div
+        class="accordionHeader"
+        data-accordion-header={i}
+        role="button"
+        tabindex="0"
+      >
+        <span class="accordionTitle">{title}</span>
+        <span class="accordionIcon">▼</span>
+      </div>
+      <div class="accordionBody" data-accordion-body={i} style="display: none;">
+        {content}
+      </div>
+    </div>
+  ))}
+</div>
+
+<style>
+  .accordion {
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    margin: 1.5rem 0;
+  }
+
+  .accordionItem {
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .accordionItem:last-child {
+    border-bottom: none;
+  }
+
+  .accordionHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 1.25rem;
+    cursor: pointer;
+    background-color: var(--color-surface);
+    transition: background-color var(--transition-fast);
+    user-select: none;
+  }
+
+  .accordionHeader:hover {
+    background-color: var(--color-surface-2);
+  }
+
+  .accordionTitle {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  .accordionIcon {
+    color: var(--color-text-muted);
+    font-size: 0.75rem;
+    transition: transform 0.25s ease;
+  }
+
+  .accordionIcon.open {
+    transform: rotate(180deg);
+  }
+
+  .accordionBody {
+    padding: 1rem 1.25rem;
+    background-color: var(--color-bg);
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+    font-size: 0.9rem;
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-accordion-header]').forEach((header) => {
+      header.addEventListener('click', () => {
+        const index = header.getAttribute('data-accordion-header');
+        const body = document.querySelector(`[data-accordion-body="${index}"]`);
+        const icon = header.querySelector('.accordionIcon');
+        
+        if (body) {
+          const isOpen = body.style.display === 'block';
+          // Close all other accordions
+          document.querySelectorAll('.accordionBody').forEach(b => b.style.display = 'none');
+          document.querySelectorAll('.accordionIcon').forEach(i => i.classList.remove('open'));
+          
+          if (!isOpen) {
+            body.style.display = 'block';
+            icon?.classList.add('open');
+          }
+        }
+      });
+      
+      header.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          header.click();
+        }
+      });
+    });
+  });
+</script>

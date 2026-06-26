@@ -1,0 +1,172 @@
+---
+// NewsCard.astro - Reusable news/story card
+interface Props {
+  item: {
+    category: string;
+    date: string;
+    title: string;
+    href: string;
+    image?: string;
+  };
+  variant?: 'default' | 'vertical';
+}
+
+const { item, variant = 'default' } = Astro.props;
+const { category, date, title, href, image } = item;
+---
+
+<a
+  href={href}
+  class:list={['card', variant]}
+  aria-label={title}
+>
+  <div class="imageWrap">
+    {image ? (
+      <img src={image} alt={title} class="image" loading="lazy" />
+    ) : (
+      <div class="imagePlaceholder" aria-hidden="true" />
+    )}
+  </div>
+  <div class="body">
+    <div class="meta">
+      <span class="badge">{category}</span>
+      <span class="date">{date}</span>
+    </div>
+    <h3 class="title">{title}</h3>
+  </div>
+</a>
+
+<style>
+  .card {
+    display: flex;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    text-decoration: none;
+    transition: opacity var(--transition-base);
+    cursor: pointer;
+    gap: var(--space-4);
+    align-items: center;
+  }
+
+  .card:hover {
+    opacity: 1;
+    background-color: var(--color-cyan-surface);
+    box-shadow: 0 0 10px var(--color-cyan-muted);
+  }
+
+  .imageWrap {
+    width: 90px;
+    height: 90px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-surface-2);
+    flex-shrink: 0;
+  }
+
+  .image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: 0.25rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    background: transparent;
+  }
+
+  .date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  .title {
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  /* Vertical Variant */
+  .vertical {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-4);
+    background-color: var(--glass-cyan-bg);
+    border: 1px solid var(--glass-cyan-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    padding: 0;
+    border-radius: var(--radius-lg);
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: inset 0 1px 0 var(--glass-highlight);
+  }
+
+  .vertical:hover {
+    transform: translateY(-4px);
+    border-color: var(--color-cyan);
+    box-shadow: var(--glow-cyan-intense), inset 0 1px 0 rgba(26, 26, 26, 0.1);
+  }
+
+  .vertical .imageWrap {
+    width: 100%;
+    height: auto;
+    aspect-ratio: 16/9;
+    border-radius: 0;
+  }
+
+  .vertical .body {
+    padding: var(--space-6);
+  }
+
+  .vertical .title {
+    font-size: var(--font-size-base);
+  }
+
+  @media (max-width: 600px) {
+    .card {
+      flex-direction: column;
+      gap: var(--space-3);
+    }
+
+    .imageWrap {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 16/9;
+    }
+
+    .title {
+      font-size: var(--font-size-base);
+    }
+
+    .vertical .body {
+      padding: var(--space-4);
+    }
+
+    .vertical .title {
+      font-size: var(--font-size-base);
+    }
+  }
+</style>

@@ -1,0 +1,110 @@
+---
+// TabSwitcher.astro - Tabbed content component
+interface Tab {
+  label: string;
+  content: string;
+}
+
+interface Props {
+  tabs: Tab[];
+}
+
+const { tabs } = Astro.props as Props;
+---
+
+<div class="tabSwitcher" data-tabswitcher>
+  <div class="tabTabs">
+    {tabs.map((tab, i) => (
+      <button
+        class:list={['tabTab', { active: i === 0 }]}
+        data-tab={i}
+      >
+        {tab.label}
+      </button>
+    ))}
+  </div>
+  {tabs.map((tab, i) => (
+    <div
+      class:list={['tabPanel', { active: i === 0 }]}
+      data-panel={i}
+      set:html={tab.content}
+    />
+  ))}
+</div>
+
+<style>
+  .tabTabs {
+    display: flex;
+    border-bottom: 1px solid var(--color-border);
+    margin-bottom: 0;
+    gap: 0;
+  }
+
+  .tabTab {
+    padding: 0.6rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-text-muted);
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    margin-bottom: -1px;
+    cursor: pointer;
+    transition: color var(--transition-fast), border-color var(--transition-fast);
+    font-family: inherit;
+  }
+
+  .tabTab:hover {
+    color: var(--color-text-secondary);
+  }
+
+  .tabTab.active {
+    color: var(--color-text-primary);
+    border-bottom-color: var(--color-text-primary);
+  }
+
+  .tabPanel {
+    display: none;
+    padding: 1.25rem;
+    border: 1px solid var(--color-border);
+    border-top: none;
+    border-radius: 0 0 var(--radius-md) var(--radius-md);
+  }
+
+  .tabPanel.active {
+    display: block;
+  }
+
+  @media (max-width: 600px) {
+    .tabTabs {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
+    .tabTab {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      white-space: nowrap;
+    }
+  }
+</style>
+
+<script is:inline>
+  document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('[data-tabswitcher]').forEach((switcher) => {
+      const tabs = switcher.querySelectorAll('.tabTab');
+      const panels = switcher.querySelectorAll('.tabPanel');
+      
+      tabs.forEach((tab, index) => {
+        tab.addEventListener('click', () => {
+          tabs.forEach(t => t.classList.remove('active'));
+          panels.forEach(p => p.classList.remove('active'));
+          tab.classList.add('active');
+          if (panels[index]) {
+            panels[index].classList.add('active');
+          }
+        });
+      });
+    });
+  });
+</script>

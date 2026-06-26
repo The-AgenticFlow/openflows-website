@@ -1,0 +1,73 @@
+---
+// DocCards.astro - Card grid for doc index pages
+interface Card {
+  icon: string;
+  title: string;
+  desc: string;
+  href: string;
+}
+
+interface Props {
+  cards: Card[];
+}
+
+const { cards } = Astro.props as Props;
+---
+
+<div class="docCards">
+  {cards.map(({ icon, title, desc, href }) => (
+    <a href={href} class="docCard">
+      <div class="docCardIcon">{icon}</div>
+      <div class="docCardTitle">{title}</div>
+      <div class="docCardDesc">{desc}</div>
+    </a>
+  ))}
+</div>
+
+<style>
+  .docCards {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 1rem;
+    margin: 1.5rem 0;
+  }
+
+  .docCard {
+    display: block;
+    padding: 1.25rem;
+    background-color: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    text-decoration: none;
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .docCard:hover {
+    border-color: var(--color-border-hover);
+    transform: translateY(-2px);
+  }
+
+  .docCardIcon {
+    font-size: 1.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .docCardTitle {
+    font-size: 1.15rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: 0.35rem;
+  }
+
+  .docCardDesc {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    line-height: 1.55;
+  }
+
+  @media (max-width: 600px) {
+    .docCards {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

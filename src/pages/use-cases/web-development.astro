@@ -1,0 +1,151 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import DocsLayout from '../../components/DocsLayout.astro'
+import Comparison from '../../components/Comparison.astro'
+import Callout from '../../components/Callout.astro'
+import CodeBlock from '../../components/CodeBlock.astro'
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Use Cases', href: '/use-cases' },
+  { label: 'Web Development' },
+]
+
+const BEFORE = [
+  'Issues sit in the backlog for days waiting for assignment',
+  'Simple bug fixes take 2–4 hours end-to-end',
+  'Code review blocks merges for hours',
+  'Merge conflicts require manual rebase',
+  'No documentation after merges',
+  'Founders context-switch constantly',
+]
+
+const AFTER = [
+  'NEXUS assigns tickets within seconds of discovery',
+  'FORGE implements and opens PR in 15–30 minutes',
+  'SENTINEL reviews every segment automatically',
+  'VESSEL handles conflicts and merges when CI is green',
+  'LORE writes ADRs and updates CHANGELOG after every merge',
+  'Founders focus on product decisions, not PR queues',
+]
+---
+
+<BaseLayout title="Web Development — Use Cases | OpenFlows" description="How a web development team uses OpenFlows to ship features and fix bugs faster - with five AI agents handling the entire pipeline from GitHub issue to merged PR.">
+  <DocsLayout breadcrumbs={breadcrumbs}>
+    <div class="page">
+      <p class="eyebrow">Use Cases</p>
+      <h1 class="title">Web Development</h1>
+      <p class="subtitle">
+        How a web development team uses OpenFlows to ship features and fix bugs faster - with five AI agents handling the entire pipeline from GitHub issue to merged PR.
+      </p>
+
+      <h2 class="sectionTitle">The Scenario</h2>
+      <p class="sectionDesc">
+        A 2-person startup maintains a React + Node.js application with a growing backlog of GitHub issues. They're spending more time reviewing PRs and fixing regressions than building new features.
+      </p>
+
+      <Comparison before={BEFORE} after={AFTER} />
+
+      <h2 class="sectionTitle">The Pipeline in Practice</h2>
+      <ol class="stepList">
+        <li><span><strong>Issue filed</strong> - A bug is reported as a GitHub issue with reproduction steps</span></li>
+        <li><span><strong>NEXUS assigns</strong> - Discovers the issue on the next poll cycle, assigns to <code>forge-1</code> as ticket T-007</span></li>
+        <li><span><strong>FORGE creates worktree</strong> - Isolated branch <code>forge-1/T-007</code>, writes PLAN.md</span></li>
+        <li><span><strong>SENTINEL reviews plan</strong> - Writes CONTRACT.md: AGREED - implementation starts</span></li>
+        <li><span><strong>FORGE implements</strong> - Writes the fix segment by segment; SENTINEL evaluates each commit</span></li>
+        <li><span><strong>SENTINEL final review</strong> - final-review.md: APPROVED - FORGE opens PR via GitHub MCP</span></li>
+        <li><span><strong>VESSEL polls CI</strong> - GitHub Actions passes; VESSEL squash-merges with ticket reference</span></li>
+        <li><span><strong>LORE documents</strong> - ADR written, CHANGELOG updated, committed to main</span></li>
+      </ol>
+
+      <Callout type="tip" title="Result">
+        From filed issue to merged, documented PR in under 30 minutes. No human intervention. The team shipped 40 features in a single month using OpenFlows on their backlog.
+      </Callout>
+    </div>
+  </DocsLayout>
+</BaseLayout>
+
+<style>
+  .page {
+    max-width: 860px;
+    margin-inline: auto;
+    padding: calc(var(--nav-height) + 3rem) var(--space-6) 6rem;
+  }
+
+  .subtitle {
+    color: var(--color-text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+  }
+
+  .sectionTitle {
+    font-size: 1.2rem;
+    font-weight: 600;
+    margin-top: 2rem;
+    margin-bottom: 0.75rem;
+    color: var(--color-text-primary);
+    border-bottom: 1px solid var(--color-border);
+    padding-bottom: 0.5rem;
+  }
+
+  .sectionDesc {
+    color: var(--color-text-secondary);
+    line-height: 1.7;
+  }
+
+  .stepList {
+    counter-reset: step;
+    list-style: none;
+    padding: 0;
+    margin: 1.5rem 0;
+  }
+
+  .stepList li {
+    counter-increment: step;
+    display: flex;
+    gap: 1rem;
+    align-items: flex-start;
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    line-height: 1.7;
+  }
+
+  .stepList li::before {
+    content: counter(step);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 24px;
+    height: 24px;
+    background-color: var(--color-accent);
+    color: var(--color-text-primary);
+    border-radius: 50%;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .stepList li:last-child {
+    border-bottom: none;
+  }
+
+  @media (max-width: 768px) {
+    .page {
+      padding: calc(var(--nav-height) + 2rem) var(--space-6) 4rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .page {
+      padding: calc(var(--nav-height) + 1.5rem) var(--space-4) 4rem;
+    }
+
+    .stepList li {
+      font-size: var(--font-size-xs);
+      gap: 0.75rem;
+    }
+  }
+</style>

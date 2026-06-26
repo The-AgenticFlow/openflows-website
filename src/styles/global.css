@@ -32,6 +32,8 @@
 
   /* Typography */
   --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-display: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-mono: 'IBM Plex Mono', 'Fira Code', 'Fira Mono', monospace;
 
   --font-size-xs: 0.75rem;
   --font-size-sm: 0.875rem;
@@ -354,4 +356,116 @@ svg {
   .container {
     padding-inline: var(--space-4);
   }
+}
+
+/* ===================================================
+   NAVBAR — Dark mode & scroll overrides (global, unscoped)
+   These must live here because Astro scopes component
+   <style> blocks and [data-theme="dark"] lives on <html>.
+   =================================================== */
+
+/* Light mode scrolled state */
+.navbar.scrolled {
+  background-color: rgba(248, 242, 235, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+/* Dark mode base navbar */
+[data-theme="dark"] .navbar {
+  background-color: #0a0a0a;
+}
+
+/* Dark mode scrolled — never flip to light cream */
+[data-theme="dark"] .navbar.scrolled {
+  background-color: rgba(10, 10, 10, 0.97) !important;
+  backdrop-filter: blur(20px) !important;
+  -webkit-backdrop-filter: blur(20px) !important;
+  border-bottom-color: rgba(255, 255, 255, 0.08) !important;
+  box-shadow: 0 1px 12px rgba(0, 0, 0, 0.6) !important;
+}
+
+/* Dark mode dropdown panel */
+[data-theme="dark"] .mega-panel {
+  background-color: #0a0a0a;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dark mode dropdown-active state */
+[data-theme="dark"] .navbar.dropdown-active {
+  background-color: #0a0a0a;
+  border-bottom-color: rgba(255, 255, 255, 0.08);
+}
+
+/* Dropdown item hover — cyan highlight row */
+.dropdown-links li a.mega-link:hover,
+.mega-link:hover {
+  color: #00f5ff !important;
+  background-color: rgba(0, 229, 255, 0.08) !important;
+  transform: translateX(4px);
+}
+
+[data-theme="dark"] .dropdown-links li a.mega-link:hover {
+  color: #00f5ff !important;
+  background-color: rgba(0, 229, 255, 0.1) !important;
+}
+
+/* Light mode hover uses dark cyan */
+[data-theme="light"] .dropdown-links li a.mega-link:hover {
+  color: #0097a7 !important;
+  background-color: rgba(0, 151, 167, 0.07) !important;
+}
+
+/* Cyan left-bar indicator on hover */
+.dropdown-links li {
+  position: relative;
+}
+
+.dropdown-links li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 2px;
+  height: 0;
+  background: var(--color-cyan);
+  border-radius: 0 2px 2px 0;
+  transition: height 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  transform: translateY(-50%);
+  z-index: 1;
+}
+
+.dropdown-links li:hover::before {
+  height: 65%;
+}
+
+/* Dropdown heading — cyan accent */
+.dropdown-heading {
+  color: var(--color-cyan) !important;
+  opacity: 0.75;
+}
+
+/* Dropdown links layout — evenly spaced flex column */
+.dropdown-links {
+  display: flex !important;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+}
+
+/* Each item full-width row */
+.dropdown-links li a.mega-link {
+  display: flex !important;
+  align-items: center;
+  width: 100%;
+  padding: 0.55rem 0.875rem 0.55rem 1.25rem !important;
+  border-radius: 6px;
+  font-size: 0.925rem;
+  font-weight: 500;
+  white-space: nowrap;
+  box-sizing: border-box;
+  transition: color 0.2s ease, background-color 0.2s ease, transform 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 }

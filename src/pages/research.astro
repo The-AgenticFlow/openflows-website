@@ -1,0 +1,305 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Navbar from '../components/Navbar.astro';
+import Footer from '../components/Footer.astro';
+import { supabase, isSupabaseConfigured, TABLES } from '../lib/supabase.js';
+
+let items = [];
+let error = null;
+
+if (isSupabaseConfigured() && supabase) {
+  try {
+    const { data, error: fetchError } = await supabase
+      .from(TABLES.RESEARCH)
+      .select('*')
+      .order('publish_date', { ascending: false });
+    
+    if (fetchError) {
+      error = fetchError.message;
+      console.warn('Error fetching research:', fetchError.message);
+    } else {
+      items = data || [];
+    }
+  } catch (err) {
+    error = err.message;
+    console.warn('Error fetching research:', err.message);
+  }
+}
+
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+---
+
+<BaseLayout title="Research | OpenFlows" description="Publications, papers, preprints, and technical reports on autonomous multi-agent software engineering.">
+  <Navbar />
+  <main>
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">Research</p>
+        <h1 class="title">Publications</h1>
+        <p class="sub">Papers, preprints, and technical reports on autonomous multi-agent software engineering and the OpenFlows architecture.</p>
+      </div>
+    </section>
+
+    <section class="section">
+      <div class="container">
+        {error ? (
+          <div class="empty">
+            <p class="emptyTitle">Error loading publications.</p>
+            <p class="emptyText">{error}</p>
+          </div>
+        ) : items.length === 0 ? (
+          <div class="empty">
+            <p class="emptyTitle">No publications yet.</p>
+            <p class="emptyText">Research content will appear here once published.</p>
+          </div>
+        ) : (
+          <>
+            <div class="filterBar" id="filterBar">
+              <button class="filterBtn active" data-filter="all">All</button>
+              {Array.from(new Set(items.map(i => i.category).filter(Boolean))).map(c => (
+                <button class="filterBtn" data-filter={c}>{c}</button>
+              ))}
+            </div>
+
+            <div class="grid" id="researchGrid">
+              {items.map(item => (
+                <article class="card" data-category={item.category}>
+                  <a href={`/research/${item.slug}`} class="cardLink">
+                    <div class="cardMeta">
+                      <span class="cardCategory">{item.category}</span>
+                      <span class="cardDate">{formatDate(item.publish_date)}</span>
+                    </div>
+                    <h2 class="cardTitle">{item.title}</h2>
+                    <p class="cardAbstract">{item.abstract}</p>
+                    <div class="cardFooter">
+                      <span class="cardVenue">{item.venue}</span>
+                      <span class="cardArrow">Read &rsaquo;</span>
+                    </div>
+                  </a>
+                </article>
+              ))}
+            </div>
+          </>
+        )}
+      </div>
+    </section>
+  </main>
+  <Footer />
+</BaseLayout>
+
+<script>
+  // Client-side filtering
+  const filterBar = document.getElementById('filterBar');
+  const researchGrid = document.getElementById('researchGrid');
+  
+  if (filterBar && researchGrid) {
+    const buttons = filterBar.querySelectorAll('.filterBtn');
+    const cards = researchGrid.querySelectorAll('.card');
+    
+    buttons.forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter;
+        
+        // Update active button
+        buttons.forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        
+        // Filter cards
+        cards.forEach(card => {
+          if (filter === 'all' || card.dataset.category === filter) {
+            card.style.display = '';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+      });
+    });
+  }
+</script>
+
+<style>
+  .hero {
+    padding: calc(var(--nav-height) + var(--space-20)) 0 var(--space-12);
+    text-align: center;
+  }
+
+  .container {
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .eyebrow {
+    font-size: var(--font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-cyan);
+    margin-bottom: var(--space-3);
+  }
+
+  .title {
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .sub {
+    font-size: var(--font-size-lg);
+    color: var(--color-text-secondary);
+    max-width: 640px;
+    margin-inline: auto;
+    line-height: 1.7;
+  }
+
+  .section {
+    padding-bottom: var(--space-24);
+  }
+
+  .empty {
+    text-align: center;
+    padding: var(--space-16) 0;
+  }
+
+  .emptyTitle {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+  }
+
+  .emptyText {
+    color: var(--color-text-secondary);
+  }
+
+  /* Filter bar */
+  .filterBar {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-8);
+    flex-wrap: wrap;
+  }
+
+  .filterBtn {
+    padding: var(--space-2) var(--space-4);
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-md);
+    color: var(--color-text-secondary);
+    font-size: var(--font-size-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .filterBtn:hover {
+    background: var(--color-surface-2);
+    color: var(--color-text-primary);
+    border-color: var(--color-border-hover);
+  }
+
+  .filterBtn.active {
+    background: var(--color-cyan-surface);
+    border-color: var(--color-cyan);
+    color: var(--color-cyan);
+    font-weight: 500;
+  }
+
+  /* Grid */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: var(--space-6);
+  }
+
+  .card {
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: var(--radius-lg);
+    transition: border-color var(--transition-fast), transform var(--transition-fast);
+  }
+
+  .card:hover {
+    border-color: var(--color-border-hover);
+    transform: translateY(-2px);
+  }
+
+  .cardLink {
+    display: block;
+    padding: var(--space-6);
+    text-decoration: none;
+    color: inherit;
+  }
+
+  .cardMeta {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-4);
+    font-size: var(--font-size-xs);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  .cardCategory {
+    color: var(--color-cyan);
+    font-weight: 600;
+  }
+
+  .cardDate {
+    color: var(--color-text-muted);
+  }
+
+  .cardTitle {
+    font-size: var(--font-size-lg);
+    font-weight: 600;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-3);
+    line-height: 1.4;
+  }
+
+  .cardAbstract {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    line-height: 1.65;
+    margin-bottom: var(--space-5);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .cardFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: var(--font-size-sm);
+  }
+
+  .cardVenue {
+    color: var(--color-text-muted);
+  }
+
+  .cardArrow {
+    color: var(--color-cyan);
+    font-weight: 500;
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: calc(var(--nav-height) + var(--space-12)) 0 var(--space-8);
+    }
+
+    .grid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

@@ -1,0 +1,106 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import DocsLayout from '../../components/DocsLayout.astro'
+import DocCards from '../../components/DocCards.astro'
+
+const breadcrumbs = [
+  { label: 'Home', href: '/' },
+  { label: 'Demos' },
+]
+
+const CARDS = [
+  { 
+    icon: '💻', 
+    title: 'Terminal Simulation', 
+    desc: 'Live typewriter animation of a real OpenFlows run - NEXUS assigning, FORGE building, SENTINEL reviewing, VESSEL merging, LORE documenting.', 
+    href: '/demos/terminal' 
+  },
+  { 
+    icon: '📋', 
+    title: 'Step-by-Step Walkthrough', 
+    desc: 'Follow the complete pipeline from GitHub issue to merged PR - with the actual files created at each step: PLAN.md, CONTRACT.md, STATUS.json, ADR.', 
+    href: '/demos/walkthrough' 
+  },
+]
+---
+
+<BaseLayout title="Demos — See OpenFlows in action | OpenFlows" description="Watch the full autonomous pipeline - from open GitHub issue to merged, documented pull request - with no human intervention.">
+  <DocsLayout breadcrumbs={breadcrumbs}>
+    <section class="hero">
+      <div class="container">
+        <p class="eyebrow">Demos</p>
+        <h1 class="title">See OpenFlows in action</h1>
+        <p class="sub">Watch the full autonomous pipeline - from open GitHub issue to merged, documented pull request - with no human intervention.</p>
+      </div>
+    </section>
+    <section class="section">
+      <div class="container">
+        <DocCards cards={CARDS} />
+      </div>
+    </section>
+  </DocsLayout>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-top: calc(var(--nav-height) + 4rem);
+    padding-bottom: 3rem;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .container {
+    max-width: 1200px;
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .eyebrow {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    font-weight: 600;
+    margin-bottom: var(--space-4);
+  }
+
+  .title {
+    font-size: clamp(1.8rem, 4vw, 2.75rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-4);
+  }
+
+  .sub {
+    font-size: var(--font-size-base);
+    color: var(--color-text-secondary);
+    max-width: 560px;
+    line-height: 1.7;
+  }
+
+  .section {
+    padding-block: 3rem 6rem;
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding-top: calc(var(--nav-height) + 2rem);
+      padding-bottom: 2rem;
+    }
+
+    .section {
+      padding-block: 2rem 4rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero {
+      padding-top: calc(var(--nav-height) + 1.5rem);
+      padding-bottom: 1.5rem;
+    }
+
+    .container {
+      padding-inline: var(--space-4);
+    }
+  }
+</style>

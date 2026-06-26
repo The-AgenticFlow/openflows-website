@@ -1,0 +1,239 @@
+---
+// RecentNews.astro - Recent blog posts section
+import { supabase, isSupabaseConfigured, TABLES, BLOG_STATUS } from '../lib/supabase.js';
+
+let posts = [];
+
+if (isSupabaseConfigured() && supabase) {
+  try {
+    const { data, error } = await supabase
+      .from(TABLES.BLOGS)
+      .select(`
+        id,
+        title,
+        slug,
+        excerpt,
+        cover_image_url,
+        published_at,
+        created_at,
+        is_featured,
+        category:blog_categories(name, slug)
+      `)
+      .eq('status', BLOG_STATUS.PUBLISHED)
+      .is('deleted_at', null)
+      .order('published_at', { ascending: false })
+      .limit(3);
+
+    if (error) {
+      console.error('Error fetching recent posts:', error);
+    } else {
+      posts = data || [];
+    }
+  } catch (err) {
+    console.error('Error fetching recent posts:', err);
+  }
+}
+
+const items = posts.map((post) => ({
+  id: post.id,
+  category: post.category?.name || 'Blog',
+  date: new Date(post.published_at || post.created_at).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  }),
+  title: post.title,
+  excerpt: post.excerpt,
+  href: `/blog/${post.slug}`,
+  image: post.cover_image_url || '',
+  featured: post.is_featured || false,
+}));
+
+const shouldRender = items.length > 0;
+---
+
+{shouldRender && (
+  <section class="section" aria-labelledby="recent-news-title">
+    <div class="container">
+      <div class="header">
+        <h2 id="recent-news-title" class="title">Recent news</h2>
+        <a href="/blog" class="view-more">View more</a>
+      </div>
+      <div class="grid">
+        {items.map((item) => (
+          <a
+            href={item.href}
+            class="card"
+            aria-label={item.title}
+          >
+            <div class="image-wrap">
+              {item.image ? (
+                <img src={item.image} alt={item.title} class="image" loading="lazy" />
+              ) : (
+                <div class="image-placeholder" aria-hidden="true" />
+              )}
+            </div>
+            <div class="body">
+              <div class="meta">
+                <span class="badge">{item.category}</span>
+                <span class="date">{item.date}</span>
+              </div>
+              <h3 class="card-title">{item.title}</h3>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .section {
+    padding: var(--space-16) 0;
+    border-top: 1px solid var(--color-border);
+  }
+
+  .container {
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: var(--space-8);
+  }
+
+  .title {
+    font-size: var(--font-size-xl);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+    color: var(--color-cyan);
+  }
+
+  .view-more {
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+  }
+
+  .view-more:hover {
+    color: var(--color-text-primary);
+  }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    column-gap: var(--space-6);
+    row-gap: var(--space-8);
+  }
+
+  .card {
+    display: flex;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    text-decoration: none;
+    transition: opacity var(--transition-base);
+    cursor: pointer;
+    gap: var(--space-4);
+  }
+
+  .card:hover {
+    opacity: 1;
+    background-color: var(--color-cyan-surface);
+    box-shadow: 0 0 10px var(--color-cyan-muted);
+  }
+
+  .image-wrap {
+    width: 90px;
+    height: 90px;
+    border-radius: var(--radius-sm);
+    overflow: hidden;
+    background-color: var(--color-surface-2);
+    flex-shrink: 0;
+  }
+
+  .image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .image-placeholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
+  }
+
+  .body {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    flex: 1;
+  }
+
+  .meta {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+    margin-bottom: 0.25rem;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    letter-spacing: 0.02em;
+    padding: 0.2rem 0.55rem;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    background: transparent;
+  }
+
+  .date {
+    font-size: var(--font-size-xs);
+    color: var(--color-text-muted);
+  }
+
+  .card-title {
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    color: var(--color-text-primary);
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+  }
+
+  @media (max-width: 1024px) {
+    .grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .section {
+      padding: var(--space-10) 0;
+    }
+
+    .header {
+      margin-bottom: var(--space-6);
+    }
+  }
+
+  @media (max-width: 640px) {
+    .grid {
+      grid-template-columns: 1fr;
+    }
+
+    .container {
+      padding-inline: var(--space-4);
+    }
+  }
+</style>
