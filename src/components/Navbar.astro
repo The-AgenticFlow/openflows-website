@@ -1,0 +1,1410 @@
+---
+// Navbar.astro - Static navbar with client-side interactivity
+
+const NAV_DATA = [
+  {
+    label: 'Agents',
+    href: '/agents',
+    dropdown: {
+      heading: 'Meet the Agents',
+      items: [
+        { label: 'NEXUS — Orchestrator', href: '/agents/nexus' },
+        { label: 'FORGE — Builder', href: '/agents/forge' },
+        { label: 'SENTINEL — Reviewer', href: '/agents/sentinel' },
+        { label: 'VESSEL — DevOps', href: '/agents/vessel' },
+        { label: 'LORE — Documenter', href: '/agents/lore' },
+      ]
+    }
+  },
+  {
+    label: 'Docs',
+    href: '/docs',
+    dropdown: {
+      heading: 'Documentation',
+      items: [
+        { label: 'Getting Started', href: '/docs/getting-started' },
+        { label: 'Installation Guide', href: '/docs/getting-started/installation' },
+        { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
+        { label: 'Architecture Overview', href: '/docs/architecture' },
+        { label: 'FAQ', href: '/docs/faq' },
+      ]
+    }
+  },
+  {
+    label: 'Developer',
+    href: '/blog?category=developer',
+    dropdown: {
+      heading: 'Developer Resources',
+      items: [
+        { label: 'All Articles', href: '/blog?category=developer' },
+        { label: 'API Guides', href: '/blog?category=developer' },
+        { label: 'Integrations', href: '/blog?category=developer' },
+        { label: 'SDK & Tools', href: '/blog?category=developer' },
+      ]
+    }
+  },
+  {
+    label: 'Research',
+    href: '/blog?category=research',
+    dropdown: {
+      heading: 'Research',
+      items: [
+        { label: 'All Publications', href: '/blog?category=research' },
+        { label: 'Papers', href: '/blog?category=research' },
+        { label: 'Preprints', href: '/blog?category=research' },
+        { label: 'Technical Reports', href: '/blog?category=research' },
+      ]
+    }
+  },
+  {
+    label: 'Company',
+    href: '/about',
+    dropdown: {
+      heading: 'About OpenFlows',
+      items: [
+        { label: 'About', href: '/about' },
+        { label: 'Blog', href: '/blog' },
+        { label: 'Use Cases', href: '/use-cases' },
+        { label: 'Demos', href: '/demos' },
+        { label: 'Open Source →', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+      ]
+    }
+  },
+  { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+];
+---
+
+<style>
+  .navbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 100;
+    height: var(--nav-height);
+    transition: background-color var(--transition-base), border-color var(--transition-base);
+    border-bottom: 1px solid transparent;
+    background-color: var(--color-bg);
+    /* CSS vars for scrolled state - overridden per theme */
+    --navbar-scrolled-bg: rgba(248, 242, 235, 0.95);
+    --navbar-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  }
+
+  .scrolled {
+    background-color: rgba(248, 242, 235, 0.95);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--navbar-scrolled-shadow);
+  }
+
+  [data-theme="dark"] .navbar {
+    background-color: #0a0a0a;
+    --navbar-scrolled-bg: rgba(10, 10, 10, 0.95);
+    --navbar-scrolled-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  [data-theme="dark"] .navbar.scrolled {
+    background-color: rgba(10, 10, 10, 0.95) !important;
+    border-bottom-color: rgba(255, 255, 255, 0.1);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  }
+
+  .theme-toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    border-radius: var(--radius-full);
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+  }
+
+  .theme-toggle:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-accent);
+    background: var(--color-surface-2);
+  }
+
+  .navbar.dropdown-active {
+    background-color: var(--color-bg);
+    border-bottom-color: var(--color-border);
+  }
+
+  .inner {
+    display: flex;
+    align-items: center;
+    height: 100%;
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+    gap: var(--space-8);
+  }
+
+  .desktop-nav {
+    display: flex;
+    align-items: center;
+    gap: var(--space-1);
+    flex: 1;
+    justify-content: flex-start;
+  }
+
+  .nav-link-wrapper {
+    position: relative;
+    height: var(--nav-height);
+    display: flex;
+    align-items: center;
+  }
+
+  .nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    font-size: var(--font-size-sm);
+    font-weight: 500;
+    color: var(--color-text-secondary);
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+    text-decoration: none;
+    position: relative;
+  }
+
+  .nav-link::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    width: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--color-cyan), transparent);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-50%);
+  }
+
+  .nav-link::after {
+    content: '';
+    position: absolute;
+    bottom: -4px;
+    left: 50%;
+    width: 0;
+    height: 8px;
+    background: radial-gradient(ellipse, var(--color-cyan-glow), transparent 70%);
+    transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1), left 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateX(-50%);
+    opacity: 0;
+  }
+
+  .nav-link:hover {
+    color: var(--color-cyan);
+    background-color: transparent;
+  }
+
+  .nav-link:hover::before {
+    width: 80%;
+    left: 50%;
+  }
+
+  .nav-link:hover::after {
+    width: 60%;
+    left: 50%;
+    opacity: 0.6;
+  }
+
+  .nav-link.active {
+    color: var(--color-cyan);
+  }
+
+  .nav-link.active::before {
+    width: 80%;
+    left: 50%;
+  }
+
+  .nav-link.active::after {
+    width: 60%;
+    left: 50%;
+    opacity: 0.6;
+  }
+
+  .search-button {
+    background: none;
+    border: none;
+    color: var(--color-text-secondary);
+    padding: 8px;
+    cursor: pointer;
+    transition: color var(--transition-fast);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-left: auto;
+  }
+
+  .search-button:hover {
+    color: var(--color-text-primary);
+  }
+
+  .navbar.search-active {
+    background-color: var(--color-bg);
+    border-bottom-color: transparent;
+  }
+
+  /* Search Overlay */
+  .search-overlay {
+    position: fixed;
+    inset: 0;
+    background-color: rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(40px) saturate(150%);
+    -webkit-backdrop-filter: blur(40px) saturate(150%);
+    z-index: 1000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 15svh var(--space-6) var(--space-12);
+  }
+
+  .search-overlay::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at top center, var(--color-cyan-surface), transparent 70%);
+    pointer-events: none;
+  }
+
+  .search-overlay-visible {
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .search-content {
+    width: 100%;
+    max-width: 800px;
+    background-color: var(--glass-cyan-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-cyan-border);
+    padding: var(--space-10);
+    border-radius: var(--radius-xl);
+    box-shadow: var(--shadow-cyan), inset 0 1px 0 var(--glass-highlight);
+    transform: translateY(20px);
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .search-overlay-visible .search-content {
+    transform: translateY(0);
+  }
+
+  .search-input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    border-bottom: 2px solid var(--color-border);
+    transition: border-color var(--transition-base);
+    margin-bottom: var(--space-8);
+  }
+
+  .search-input-wrapper:focus-within {
+    border-color: var(--color-cyan);
+    box-shadow: 0 1px 0 var(--color-cyan);
+  }
+
+  .large-search-input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    color: var(--color-cyan);
+    font-size: clamp(1.5rem, 4vw, 2.5rem);
+    font-weight: 500;
+    outline: none;
+    padding: var(--space-4) 0;
+    font-family: var(--font-family);
+    letter-spacing: -0.02em;
+  }
+
+  .large-search-input::placeholder {
+    color: var(--color-text-muted);
+    opacity: 0.4;
+  }
+
+  .clear-btn {
+    background: none;
+    border: none;
+    color: var(--color-text-muted);
+    font-size: 1.5rem;
+    padding: 0 var(--space-4);
+    cursor: pointer;
+    transition: color var(--transition-fast);
+  }
+
+  .clear-btn:hover {
+    color: var(--color-text-primary);
+  }
+
+  .search-filters {
+    display: flex;
+    gap: var(--space-3);
+    margin-bottom: var(--space-10);
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
+  }
+
+  .filter-btn {
+    padding: 0.4rem 1rem;
+    border-radius: var(--radius-full);
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--color-text-muted);
+    border: 1px solid var(--color-border);
+    background-color: var(--color-surface);
+    transition: all var(--transition-fast);
+    white-space: nowrap;
+    cursor: pointer;
+  }
+
+  .filter-btn:hover {
+    border-color: var(--color-border-hover);
+    color: var(--color-text-primary);
+  }
+
+  .filter-active {
+    background-color: var(--color-cyan);
+    color: var(--color-bg);
+    border-color: var(--color-cyan);
+    box-shadow: var(--glow-cyan);
+  }
+
+  .search-results {
+    max-height: 50vh;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    padding-right: var(--space-4);
+  }
+
+  .search-results::-webkit-scrollbar {
+    width: 4px;
+  }
+
+  .search-results::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .search-results::-webkit-scrollbar-thumb {
+    background: var(--color-border);
+    border-radius: var(--radius-full);
+  }
+
+  .result-item {
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-5) var(--space-6);
+    border-radius: var(--radius-lg);
+    text-decoration: none;
+    transition: background-color var(--transition-fast);
+    border: 1px solid transparent;
+  }
+
+  .result-item:hover {
+    background-color: var(--color-surface-2);
+    border-color: var(--color-border);
+  }
+
+  .result-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--space-1);
+  }
+
+  .result-type {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    color: var(--color-cyan);
+    background-color: var(--color-cyan-muted);
+    padding: 0.15rem 0.5rem;
+    border-radius: 4px;
+  }
+
+  .result-title {
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: var(--color-text-primary);
+  }
+
+  .result-snippet {
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    line-height: 1.5;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: var(--space-12);
+    color: var(--color-text-muted);
+  }
+
+  /* Mega Panel */
+  .mega-panel {
+    position: absolute;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    overflow: hidden;
+    max-height: 0;
+    transition: max-height 0.3s ease-out, opacity 0.2s ease;
+    opacity: 0;
+    pointer-events: none;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+  }
+
+  [data-theme="dark"] .mega-panel {
+    background-color: #0a0a0a;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .mega-panel.panel-visible {
+    max-height: 500px;
+    opacity: 1;
+    pointer-events: all;
+  }
+
+  .panel-content {
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding: var(--space-6) var(--space-6) var(--space-8);
+  }
+
+  .dropdown-grid {
+    display: block !important;
+    width: 100%;
+    max-width: 400px;
+  }
+
+  .dropdown-main {
+    display: block !important;
+    width: 100%;
+  }
+
+  .dropdown-heading {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-4);
+    display: block;
+  }
+
+  .dropdown-links {
+    display: block !important;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .dropdown-links li {
+    display: block !important;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+
+  .dropdown-links li {
+    position: relative;
+    padding-left: 0.75rem;
+  }
+
+  .dropdown-links li::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 3px;
+    height: 0;
+    background: var(--color-cyan);
+    border-radius: 2px;
+    transition: height 0.3s cubic-bezier(0.4, 0, 0.2, 1), top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transform: translateY(-50%);
+  }
+
+  .dropdown-links li:hover::before {
+    height: 70%;
+    top: 50%;
+  }
+
+  .dropdown-links li a.mega-link {
+    font-size: 0.9rem;
+    font-weight: 500;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    padding: 0.625rem 0.75rem;
+    border-radius: var(--radius-sm);
+    transition: color 0.3s cubic-bezier(0.4, 0, 0.2, 1), background-color var(--transition-fast), transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    display: block !important;
+    width: 100%;
+    white-space: nowrap;
+    margin-bottom: 0.25rem;
+    position: relative;
+  }
+
+  .dropdown-links li a.mega-link:hover {
+    color: var(--color-cyan) !important;
+    background-color: transparent !important;
+    transform: translateX(4px);
+  }
+
+  .mega-link:hover {
+    color: var(--color-cyan);
+    background-color: var(--color-surface-2);
+  }
+
+  .adv-link {
+    font-size: var(--font-size-xs);
+    font-weight: 500;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    transition: opacity 0.2s ease, transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), color 0.2s ease;
+  }
+
+  .adv-link:hover {
+    color: var(--color-cyan);
+    transform: translateX(4px);
+    opacity: 1;
+  }
+
+  .external-arrow {
+    font-size: 0.8em;
+    margin-left: 0.4rem;
+    opacity: 0.5;
+  }
+
+  /* Actions */
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+    flex-shrink: 0;
+  }
+
+  /* Hamburger */
+  .hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    width: 40px;
+    height: 40px;
+    cursor: pointer;
+    z-index: 200;
+    margin-left: auto;
+    background: none;
+    border: none;
+    padding: 0;
+  }
+
+  .bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    background-color: var(--color-text-primary);
+    border-radius: 2px;
+    transition: transform 0.3s ease, opacity 0.3s ease;
+  }
+
+  .bar-open:nth-child(1) {
+    transform: translateY(7px) rotate(45deg);
+  }
+
+  .bar-open:nth-child(2) {
+    opacity: 0;
+  }
+
+  .bar-open:nth-child(3) {
+    transform: translateY(-7px) rotate(-45deg);
+  }
+
+  /* Mobile Drawer */
+  .mobile-menu {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: var(--color-bg);
+    z-index: 99;
+    overflow-y: auto;
+    padding: var(--space-6);
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .mobile-menu-open {
+    transform: translateX(0);
+  }
+
+  .mobile-nav {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    margin-bottom: var(--space-8);
+  }
+
+  .mobile-nav-link {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-4) var(--space-4);
+    font-size: var(--font-size-lg);
+    font-weight: 500;
+    color: var(--color-text-primary);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: background-color var(--transition-fast), color var(--transition-fast);
+  }
+
+  .mobile-nav-link:hover {
+    background-color: var(--color-cyan-surface);
+    color: var(--color-cyan);
+  }
+
+  .mobile-nav-link-external {
+    font-size: var(--font-size-sm);
+    opacity: 0.5;
+    margin-left: var(--space-2);
+  }
+
+  .mobile-sub-section {
+    padding-left: var(--space-4);
+    margin-bottom: var(--space-4);
+  }
+
+  .mobile-sub-heading {
+    font-size: var(--font-size-xs);
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-text-muted);
+    margin-bottom: var(--space-2);
+    padding: var(--space-2) var(--space-4);
+  }
+
+  .mobile-sub-link {
+    display: block;
+    padding: var(--space-2) var(--space-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    border-radius: var(--radius-sm);
+    transition: color var(--transition-fast), background-color var(--transition-fast);
+  }
+
+  .mobile-sub-link:hover {
+    color: var(--color-cyan);
+    background-color: var(--color-cyan-surface);
+  }
+
+  .mobile-actions {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--color-border);
+  }
+
+  .mobile-theme-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: var(--space-3) var(--space-4);
+    font-size: var(--font-size-sm);
+    color: var(--color-text-secondary);
+  }
+
+  /* Button styles inline */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-family: var(--font-family);
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    border-radius: var(--radius-full);
+    transition: background-color var(--transition-fast),
+      color var(--transition-fast),
+      border-color var(--transition-fast),
+      box-shadow var(--transition-fast),
+      backdrop-filter var(--transition-fast),
+      opacity var(--transition-fast);
+    cursor: pointer;
+    text-decoration: none;
+    outline: none;
+    font-size: var(--font-size-sm);
+  }
+
+  .btn-ghost {
+    background-color: transparent;
+    color: var(--color-text-secondary);
+    border: 1px solid transparent;
+    padding: 0.375rem 0.875rem;
+  }
+
+  .btn-ghost:hover {
+    color: var(--color-text-primary);
+    background-color: var(--color-surface-2);
+    transform: translateY(-1px);
+  }
+
+  .btn-cyan {
+    background-color: transparent;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    padding: 0.5rem 1.125rem;
+  }
+
+  .btn-cyan:hover {
+    background-color: var(--glass-cyan-bg);
+    border-color: var(--color-border-hover);
+    box-shadow: var(--shadow-cyan);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transform: translateY(-2px);
+  }
+
+  @media (max-width: 900px) {
+    .desktop-nav,
+    .actions,
+    .mega-panel {
+      display: none;
+    }
+
+    .hamburger {
+      display: flex;
+    }
+
+    .inner {
+      padding-inline: var(--space-4);
+    }
+
+    .search-overlay {
+      padding: calc(var(--nav-height) + var(--space-4)) var(--space-4) var(--space-8);
+      align-items: flex-start;
+    }
+
+    .search-content {
+      padding: var(--space-6);
+      border-radius: var(--radius-lg);
+    }
+
+    .large-search-input {
+      font-size: 1.25rem;
+    }
+
+    .search-filters {
+      flex-wrap: wrap;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .search-content {
+      padding: var(--space-4);
+    }
+
+    .large-search-input {
+      font-size: 1.1rem;
+    }
+  }
+</style>
+
+<header class="navbar" id="navbar">
+  <div class="inner">
+    <!-- Logo -->
+    <a href="/" class="logo" aria-label="Openflows home">
+      <img src="/openlogo-transparent.png" alt="Openflows Logo" class="logo-icon" />
+      <span class="logo-name">Openflows</span>
+    </a>
+
+    <style>
+      .logo {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        text-decoration: none;
+        flex-shrink: 0;
+      }
+
+      .logo-icon {
+        width: 64px;
+        height: 64px;
+        display: block;
+        flex-shrink: 0;
+        object-fit: contain;
+        filter: drop-shadow(0 0 14px var(--color-cyan-glow));
+      }
+
+      .logo-name {
+        font-size: 2rem;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        line-height: 1;
+        background: linear-gradient(135deg, var(--color-cyan) 0%, #1A1A1A 70%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        text-shadow: none;
+        filter: drop-shadow(0 0 6px var(--color-cyan-glow));
+      }
+
+      [data-theme="dark"] .logo-name {
+        background: linear-gradient(135deg, var(--color-cyan) 0%, #ffffff 100%);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+      }
+
+      @media (max-width: 768px) {
+        .logo-name {
+          display: none;
+        }
+      }
+
+      @media (max-width: 480px) {
+        .logo-icon {
+          width: 48px;
+          height: 48px;
+        }
+
+        .logo-name {
+          font-size: 1.5rem;
+        }
+      }
+    </style>
+
+    <nav class="desktop-nav" aria-label="Main navigation">
+      {NAV_DATA.map((item, index) => (
+        <div
+          class="nav-link-wrapper"
+          data-dropdown={index}
+        >
+          <a
+            href={item.href}
+            class="nav-link"
+            target={item.external ? '_blank' : undefined}
+            rel={item.external ? 'noopener noreferrer' : undefined}
+          >
+            {item.label}
+          </a>
+        </div>
+      ))}
+
+      <!-- Search Toggle -->
+      <button
+        class="search-button"
+        id="search-toggle"
+        aria-label="Search"
+      >
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+          <circle cx="11" cy="11" r="8"></circle>
+          <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+        </svg>
+      </button>
+    </nav>
+
+    <div class="actions">
+      <button
+        class="theme-toggle"
+        id="theme-toggle"
+        aria-label="Switch theme"
+        title="Switch theme"
+      >
+        <!-- Theme icon will be set by JS -->
+      </button>
+      <a
+        href="https://github.com/The-AgenticFlow/OpenFlows"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="btn btn-ghost"
+      >
+        GitHub
+      </a>
+      <a
+        href="/docs/getting-started"
+        class="btn btn-cyan"
+      >
+        Get Started
+      </a>
+    </div>
+
+    <button
+      class="hamburger"
+      id="hamburger"
+      aria-label="Toggle menu"
+    >
+      <span class="bar"></span>
+      <span class="bar"></span>
+      <span class="bar"></span>
+    </button>
+  </div>
+
+  <!-- Mega Dropdown Panel -->
+  <div class="mega-panel" id="mega-panel">
+    <div class="panel-content">
+      <!-- Content injected by JS -->
+    </div>
+  </div>
+</header>
+
+<!-- Search Overlay -->
+<div class="search-overlay" id="search-overlay">
+  <div class="search-content">
+    <div class="search-input-wrapper">
+      <input
+        type="text"
+        class="large-search-input"
+        id="search-input"
+        placeholder="Search OpenFlows docs, agents, guides..."
+      />
+      <button
+        class="clear-btn"
+        id="clear-search"
+        aria-label="Clear search"
+        style="display: none;"
+      >
+        ✕
+      </button>
+    </div>
+
+    <div class="results-container" id="results-container" style="display: none;">
+      <div class="search-filters" id="search-filters">
+        <button class="filter-btn filter-active" data-filter="All">All</button>
+        <button class="filter-btn" data-filter="Agent">Agent</button>
+        <button class="filter-btn" data-filter="Docs">Docs</button>
+        <button class="filter-btn" data-filter="Blog">Blog</button>
+        <button class="filter-btn" data-filter="Use Case">Use Case</button>
+      </div>
+
+      <div class="search-results" id="search-results">
+        <!-- Results injected by JS -->
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Mobile Drawer -->
+<div class="mobile-menu" id="mobile-menu">
+  <nav class="mobile-nav">
+    {NAV_DATA.map((item) => (
+      <div>
+        <a
+          href={item.href}
+          class="mobile-nav-link"
+          target={item.external ? '_blank' : undefined}
+          rel={item.external ? 'noopener noreferrer' : undefined}
+          data-mobile-link
+        >
+          {item.label}
+          {item.external && <span class="mobile-nav-link-external">↗</span>}
+        </a>
+        {item.dropdown && (
+          <div class="mobile-sub-section">
+            <p class="mobile-sub-heading">{item.dropdown.heading}</p>
+            {item.dropdown.items.map((subItem) => (
+              <a
+                href={subItem.href}
+                class="mobile-sub-link"
+                target={subItem.external ? '_blank' : undefined}
+                rel={subItem.external ? 'noopener noreferrer' : undefined}
+                data-mobile-link
+              >
+                {subItem.label}
+              </a>
+            ))}
+          </div>
+        )}
+      </div>
+    ))}
+  </nav>
+  <div class="mobile-actions">
+    <div class="mobile-theme-row">
+      <span>Theme</span>
+      <button class="theme-toggle" id="mobile-theme-toggle" aria-label="Switch theme">
+        <!-- Theme icon will be set by JS -->
+      </button>
+    </div>
+    <a href="/docs/getting-started" class="btn btn-cyan" style="width: 100%; justify-content: center;" data-mobile-link>
+      Get Started
+    </a>
+  </div>
+</div>
+
+<script>
+  // Theme toggle
+  function updateThemeIcon() {
+    const theme = document.documentElement.getAttribute('data-theme');
+    const isDark = theme === 'dark';
+    const iconSvg = isDark
+      ? `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path></svg>`
+      : `<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="5"></circle><line x1="12" y1="1" x2="12" y2="3"></line><line x1="12" y1="21" x2="12" y2="23"></line><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line><line x1="1" y1="12" x2="3" y2="12"></line><line x1="21" y1="12" x2="23" y2="12"></line><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line></svg>`;
+    
+    const themeToggle = document.getElementById('theme-toggle');
+    const mobileThemeToggle = document.getElementById('mobile-theme-toggle');
+    if (themeToggle) themeToggle.innerHTML = iconSvg;
+    if (mobileThemeToggle) mobileThemeToggle.innerHTML = iconSvg;
+  }
+
+  function toggleTheme() {
+    const current = document.documentElement.getAttribute('data-theme');
+    const next = current === 'dark' ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('openflows-theme', next);
+    updateThemeIcon();
+  }
+
+  document.getElementById('theme-toggle')?.addEventListener('click', toggleTheme);
+  document.getElementById('mobile-theme-toggle')?.addEventListener('click', toggleTheme);
+  updateThemeIcon();
+
+  // Scroll detection
+  const navbar = document.getElementById('navbar');
+  let scrolled = false;
+  window.addEventListener('scroll', () => {
+    const isScrolled = window.scrollY > 8;
+    if (isScrolled !== scrolled) {
+      scrolled = isScrolled;
+      navbar?.classList.toggle('scrolled', isScrolled);
+    }
+  }, { passive: true });
+
+  // Mobile menu
+  const hamburger = document.getElementById('hamburger');
+  const mobileMenu = document.getElementById('mobile-menu');
+  let menuOpen = false;
+
+  hamburger?.addEventListener('click', () => {
+    menuOpen = !menuOpen;
+    mobileMenu?.classList.toggle('mobile-menu-open', menuOpen);
+    document.body.style.overflow = menuOpen ? 'hidden' : '';
+    
+    // Update hamburger animation
+    const bars = hamburger.querySelectorAll('.bar');
+    bars.forEach((bar, i) => {
+      bar.classList.toggle('bar-open', menuOpen);
+    });
+  });
+
+  // Close mobile menu on link click
+  document.querySelectorAll('[data-mobile-link]').forEach(link => {
+    link.addEventListener('click', () => {
+      menuOpen = false;
+      mobileMenu?.classList.remove('mobile-menu-open');
+      document.body.style.overflow = '';
+      const bars = hamburger?.querySelectorAll('.bar');
+      bars?.forEach(bar => bar.classList.remove('bar-open'));
+    });
+  });
+
+  // Search overlay
+  const searchToggle = document.getElementById('search-toggle');
+  const searchOverlay = document.getElementById('search-overlay');
+  const searchInput = document.getElementById('search-input');
+  const clearSearch = document.getElementById('clear-search');
+  const resultsContainer = document.getElementById('results-container');
+  const searchResults = document.getElementById('search-results');
+  const searchFilters = document.getElementById('search-filters');
+  let isSearchOpen = false;
+  let activeFilter = 'All';
+  let searchQuery = '';
+
+  searchToggle?.addEventListener('click', () => {
+    isSearchOpen = !isSearchOpen;
+    searchOverlay?.classList.toggle('search-overlay-visible', isSearchOpen);
+    navbar?.classList.toggle('search-active', isSearchOpen);
+    if (isSearchOpen) {
+      searchInput?.focus();
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+      searchQuery = '';
+      if (searchInput) searchInput.value = '';
+      resultsContainer.style.display = 'none';
+    }
+  });
+
+  // Close search on Escape
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && isSearchOpen) {
+      isSearchOpen = false;
+      searchOverlay?.classList.remove('search-overlay-visible');
+      navbar?.classList.remove('search-active');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Search input handler
+  searchInput?.addEventListener('input', (e) => {
+    searchQuery = e.target.value;
+    clearSearch.style.display = searchQuery ? 'block' : 'none';
+    
+    if (searchQuery.length >= 2) {
+      const results = searchSite(searchQuery);
+      renderResults(results);
+      resultsContainer.style.display = 'block';
+    } else {
+      resultsContainer.style.display = 'none';
+    }
+  });
+
+  clearSearch?.addEventListener('click', () => {
+    searchQuery = '';
+    searchInput.value = '';
+    clearSearch.style.display = 'none';
+    resultsContainer.style.display = 'none';
+    searchInput.focus();
+  });
+
+  // Filter buttons
+  searchFilters?.addEventListener('click', (e) => {
+    if (e.target.classList.contains('filter-btn')) {
+      activeFilter = e.target.dataset.filter;
+      searchFilters.querySelectorAll('.filter-btn').forEach(btn => {
+        btn.classList.toggle('filter-active', btn.dataset.filter === activeFilter);
+      });
+      // Re-render with filter
+      if (searchQuery.length >= 2) {
+        const results = searchSite(searchQuery);
+        const filtered = activeFilter === 'All' ? results : results.filter(r => r.type === activeFilter);
+        renderResults(filtered);
+      }
+    }
+  });
+
+  function renderResults(results) {
+    const filtered = activeFilter === 'All' ? results : results.filter(r => r.type === activeFilter);
+    if (filtered.length > 0) {
+      searchResults.innerHTML = filtered.map(result => `
+        <a href="${result.href}" class="result-item" data-close-search>
+          <div class="result-header">
+            <span class="result-title">${result.title}</span>
+            <span class="result-type">${result.type}</span>
+          </div>
+          ${result.description ? `<p class="result-snippet">${result.description}</p>` : ''}
+        </a>
+      `).join('');
+    } else {
+      searchResults.innerHTML = `<div class="empty-state">No results found for "${searchQuery}"</div>`;
+    }
+  }
+
+  // Close search on result click
+  document.addEventListener('click', (e) => {
+    if (e.target.closest('[data-close-search]')) {
+      isSearchOpen = false;
+      searchOverlay?.classList.remove('search-overlay-visible');
+      navbar?.classList.remove('search-active');
+      document.body.style.overflow = '';
+    }
+  });
+
+  // Mega dropdown
+  const NAV_DATA = [
+    {
+      label: 'Agents',
+      href: '/agents',
+      dropdown: {
+        heading: 'Meet the Agents',
+        items: [
+          { label: 'NEXUS — Orchestrator', href: '/agents/nexus' },
+          { label: 'FORGE — Builder', href: '/agents/forge' },
+          { label: 'SENTINEL — Reviewer', href: '/agents/sentinel' },
+          { label: 'VESSEL — DevOps', href: '/agents/vessel' },
+          { label: 'LORE — Documenter', href: '/agents/lore' },
+        ]
+      }
+    },
+    {
+      label: 'Docs',
+      href: '/docs',
+      dropdown: {
+        heading: 'Documentation',
+        items: [
+          { label: 'Getting Started', href: '/docs/getting-started' },
+          { label: 'Installation Guide', href: '/docs/getting-started/installation' },
+          { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
+          { label: 'Architecture Overview', href: '/docs/architecture' },
+          { label: 'FAQ', href: '/docs/faq' },
+        ]
+      }
+    },
+    {
+      label: 'Developer',
+      href: '/developer',
+      dropdown: {
+        heading: 'Developer Resources',
+        items: [
+          { label: 'All Articles', href: '/developer' },
+          { label: 'API Guides', href: '/developer' },
+          { label: 'Integrations', href: '/developer' },
+          { label: 'SDK & Tools', href: '/developer' },
+        ]
+      }
+    },
+    {
+      label: 'Research',
+      href: '/research',
+      dropdown: {
+        heading: 'Research',
+        items: [
+          { label: 'All Publications', href: '/research' },
+          { label: 'Papers', href: '/research' },
+          { label: 'Preprints', href: '/research' },
+          { label: 'Technical Reports', href: '/research' },
+        ]
+      }
+    },
+    {
+      label: 'Company',
+      href: '/about',
+      dropdown: {
+        heading: 'About OpenFlows',
+        items: [
+          { label: 'About', href: '/about' },
+          { label: 'Blog', href: '/blog' },
+          { label: 'Use Cases', href: '/use-cases' },
+          { label: 'Demos', href: '/demos' },
+          { label: 'Open Source →', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+        ]
+      }
+    },
+    { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+  ];
+  let activeDropdown = null;
+  let dropdownTimer = null;
+  const megaPanel = document.getElementById('mega-panel');
+
+  function handleMouseEnter(index) {
+    if (dropdownTimer) clearTimeout(dropdownTimer);
+    if (NAV_DATA[index].dropdown) {
+      activeDropdown = index;
+      renderDropdown(index);
+      navbar?.classList.add('dropdown-active');
+      megaPanel?.classList.add('panel-visible');
+    }
+  }
+
+  function handleMouseLeave() {
+    dropdownTimer = setTimeout(() => {
+      activeDropdown = null;
+      navbar?.classList.remove('dropdown-active');
+      megaPanel?.classList.remove('panel-visible');
+    }, 150);
+  }
+
+  function renderDropdown(index) {
+    const item = NAV_DATA[index];
+    if (!item.dropdown) return;
+    
+    const panelContent = megaPanel?.querySelector('.panel-content');
+    if (!panelContent) return;
+    
+    panelContent.innerHTML = `
+      <div class="dropdown-grid">
+        <div class="dropdown-main">
+          <p class="dropdown-heading">${item.dropdown.heading}</p>
+          <ul class="dropdown-links">
+            ${item.dropdown.items.map(subItem => `
+              <li>
+                <a href="${subItem.href}" class="mega-link" target="${subItem.external ? '_blank' : ''}" rel="${subItem.external ? 'noopener noreferrer' : ''}">
+                  ${subItem.label}
+                  ${subItem.external ? '<span class="external-arrow">↗</span>' : ''}
+                </a>
+              </li>
+            `).join('')}
+          </ul>
+        </div>
+      </div>
+    `;
+  }
+
+  // Add event listeners to nav links
+  document.querySelectorAll('.nav-link-wrapper').forEach((wrapper, index) => {
+    wrapper.addEventListener('mouseenter', () => handleMouseEnter(index));
+  });
+
+  navbar?.addEventListener('mouseleave', handleMouseLeave);
+  megaPanel?.addEventListener('mouseenter', () => {
+    if (dropdownTimer) clearTimeout(dropdownTimer);
+  });
+
+  // Inline search data - agents
+  const SEARCH_AGENTS = [
+    { id: 'agent-nexus', title: 'NEXUS', description: 'The Orchestrator - brain of the entire pipeline', href: '/agents/nexus', type: 'Agent', tags: ['Orchestrator', 'Pipeline Supervision', 'Flow Recovery', 'CI Readiness'] },
+    { id: 'agent-forge', title: 'FORGE', description: 'The Builder - senior engineer implementing code', href: '/agents/forge', type: 'Agent', tags: ['Builder', 'Implementation', 'Git Worktree', 'Testing'] },
+    { id: 'agent-sentinel', title: 'SENTINEL', description: 'The Reviewer - security auditor and quality gatekeeper', href: '/agents/sentinel', type: 'Agent', tags: ['Reviewer', 'Security Audit', 'Quality Gate', 'Ephemeral Process'] },
+    { id: 'agent-vessel', title: 'VESSEL', description: 'The DevOps Engineer - CI/CD and merge management', href: '/agents/vessel', type: 'Agent', tags: ['DevOps', 'CI/CD', 'Merge Conflicts', 'Main Branch'] },
+    { id: 'agent-lore', title: 'LORE', description: 'The Documenter - autonomous documentation maintenance', href: '/agents/lore', type: 'Agent', tags: ['Documenter', 'ADR', 'Changelog', 'Post-Merge'] }
+  ];
+
+  // Inline search data - blog posts
+  const SEARCH_BLOGS = [
+    { id: 'blog-1', title: 'OpenFlows v1.0 - Autonomous AI Dev Team Goes Stable', description: 'The first stable release ships with the full FORGE-SENTINEL pair harness, Redis-backed SharedStore, LiteLLM proxy routing, and a TUI setup wizard.', href: '/blog/openflows-v1', type: 'Blog', date: 'May 29, 2026', tags: ['Release', 'v1.0', 'Stable'] },
+    { id: 'blog-2', title: 'How multi-agent code review cuts PR defect rate by 3×', description: 'A deep dive into the SENTINEL evaluation framework - the 5 criteria it checks on every code segment before approving a merge.', href: '/blog/multi-agent-review', type: 'Blog', date: 'May 20, 2026', tags: ['Research', 'Code Review', 'SENTINEL'] },
+    { id: 'blog-3', title: 'Per-agent model routing: give each AI the right brain for its job', description: 'Route FORGE to Claude Sonnet, SENTINEL to Gemini Pro, VESSEL to Groq - all from a single registry.json.', href: '/blog/model-routing', type: 'Blog', date: 'May 15, 2026', tags: ['Product', 'Model Routing', 'AI'] },
+    { id: 'blog-4', title: "OpenFlows joins the Open Source Initiative's affiliate program", description: "We're proud to announce our affiliation with the OSI as part of our commitment to open, transparent, and collaborative AI tooling.", href: '/blog/osi-affiliate', type: 'Blog', date: 'May 10, 2026', tags: ['Open Source', 'OSI', 'Affiliate'] },
+    { id: 'blog-6', title: 'VESSEL conflict rework loop eliminates manual rebase churn', description: 'VESSEL now writes CONFLICT_RESOLUTION.md and re-routes the same FORGE worker - no context loss, no new branches.', href: '/blog/vessel-conflict-rework', type: 'Blog', date: 'Apr 28, 2026', tags: ['Product', 'VESSEL', 'Conflict Resolution'] }
+  ];
+
+  // Inline search data - docs
+  const SEARCH_DOCS = [
+    { id: 'doc-0', title: 'Getting Started', description: 'Install OpenFlows and run your first autonomous workflow.', href: '/docs/getting-started', type: 'Docs', tags: ['Getting Started', 'Installation'] },
+    { id: 'doc-1', title: 'Installation Guide', description: 'Shell, Docker, and Cargo installation methods.', href: '/docs/getting-started/installation', type: 'Docs', tags: ['Installation', 'Setup'] },
+    { id: 'doc-2', title: 'Agent Setup', description: 'Configure NEXUS, FORGE, SENTINEL, VESSEL, and LORE.', href: '/docs/guides/agent-setup', type: 'Docs', tags: ['Agent Setup', 'Configuration'] },
+    { id: 'doc-3', title: 'Architecture Overview', description: 'Deep dive into the SharedStore and agent hierarchy.', href: '/docs/architecture', type: 'Docs', tags: ['Architecture', 'System Design'] },
+    { id: 'doc-4', title: 'System Design', description: 'How the state machine orchestrates work.', href: '/docs/architecture/system-design', type: 'Architecture', tags: ['System Design', 'State Machine'] },
+    { id: 'doc-5', title: 'FAQ', description: 'Common questions and troubleshooting.', href: '/docs/faq', type: 'Docs', tags: ['FAQ', 'Troubleshooting'] },
+    { id: 'doc-6', title: 'Research', description: 'Papers, preprints, and technical reports.', href: '/research', type: 'Research', tags: ['Research', 'Papers'] }
+  ];
+
+  // Combine all search data
+  const SEARCH_INDEX = [...SEARCH_AGENTS, ...SEARCH_BLOGS, ...SEARCH_DOCS];
+
+  // Search function
+  function searchSite(query) {
+    if (!query || query.length < 2) return [];
+
+    const q = query.toLowerCase();
+
+    return SEARCH_INDEX.filter(item => {
+      const inTitle = item.title?.toLowerCase().includes(q);
+      const inDesc = item.description?.toLowerCase().includes(q);
+      const inTags = item.tags?.some(tag => tag.toLowerCase().includes(q));
+      
+      return inTitle || inDesc || inTags;
+    }).sort((a, b) => {
+      // Boost title matches
+      const aTitleMatch = a.title.toLowerCase().includes(q) ? 2 : 0;
+      const bTitleMatch = b.title.toLowerCase().includes(q) ? 2 : 0;
+      return bTitleMatch - aTitleMatch;
+    });
+  }
+</script>
