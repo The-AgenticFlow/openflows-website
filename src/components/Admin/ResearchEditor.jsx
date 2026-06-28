@@ -31,7 +31,7 @@ export default function ResearchEditor() {
 
     useEffect(() => {
         if (!canEditBlogs()) {
-            navigate('/admin')
+            navigate('/')
         }
     }, [canEditBlogs, navigate])
 

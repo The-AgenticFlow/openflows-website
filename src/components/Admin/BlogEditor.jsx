@@ -55,7 +55,7 @@ export default function BlogEditor() {
     // Check permissions
     useEffect(() => {
         if (!canEditBlogs()) {
-            navigate('/admin')
+            navigate('/')
         }
     }, [canEditBlogs, navigate])
 
@@ -347,7 +347,7 @@ export default function BlogEditor() {
 
             // Redirect after short delay
             setTimeout(() => {
-                navigate('/admin')
+                navigate('/')
             }, 1500)
         } catch (err) {
             console.error('Error saving blog:', err)
@@ -385,7 +385,7 @@ export default function BlogEditor() {
                         <button
                             type="button"
                             className={styles.actionBtn}
-                            onClick={() => navigate('/admin')}
+                            onClick={() => navigate('/')}
                             title="Back to Dashboard"
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
@@ -407,7 +407,7 @@ export default function BlogEditor() {
                         <button
                             type="button"
                             className={styles.cancelBtn}
-                            onClick={() => navigate('/admin')}
+                            onClick={() => navigate('/')}
                         >
                             Cancel
                         </button>
@@ -485,7 +485,7 @@ export default function BlogEditor() {
                                 <label htmlFor="content">Content *</label>
                                 {isPreview ? (
                                     <div className={styles.previewArea}>
-                                        <MarkdownRenderer>{form.content || '*No content to preview*'}</MarkdownRenderer>
+                                        <MarkdownRenderer content={form.content || '*No content to preview*'} />
                                     </div>
                                 ) : (
                                     <>

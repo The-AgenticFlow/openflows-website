@@ -21,7 +21,7 @@ export default function CategoryManager() {
     // Check permissions - only admins can manage categories
     useEffect(() => {
         if (!isAdmin) {
-            navigate('/admin')
+            navigate('/')
         }
     }, [isAdmin, navigate])
 
@@ -211,7 +211,7 @@ export default function CategoryManager() {
                         <button
                             type="button"
                             className={styles.actionBtn}
-                            onClick={() => navigate('/admin')}
+                            onClick={() => navigate('/')}
                             title="Back to Dashboard"
                         >
                             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">

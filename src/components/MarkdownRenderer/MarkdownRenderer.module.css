@@ -190,6 +190,46 @@
   font-family: var(--font-mono, 'Menlo', 'Consolas', monospace) !important;
 }
 
+/* Cyan accent for › prompt and → arrows inside code blocks */
+.markdownBody :global(pre code [data-prompt]),
+.markdownBody :global(pre .cyan-token) {
+  color: var(--color-cyan);
+  opacity: 0.85;
+}
+/* Syntax highlighted code blocks */
+.codeBlockWrapper {
+  margin: 1.5rem 0;
+  border: 1px solid var(--color-border);
+  border-radius: 0.5rem;
+  overflow: hidden;
+}
+
+.codeBlockHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.5rem 1rem;
+  background: var(--color-surface-2);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.codeBlockLanguage {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+}
+
+.syntaxHighlighter {
+  border-radius: 0 !important;
+}
+
+/* Override syntax highlighter default styles to match theme */
+.syntaxHighlighter :global(code) {
+  font-family: var(--font-mono, 'Menlo', 'Consolas', monospace) !important;
+}
+
 /* Tables */
 .markdownBody :global(table) {
   width: 100%;
@@ -197,8 +237,9 @@
   border-collapse: collapse;
   margin: 1.5rem 0;
   font-size: 0.95rem;
-  display: table;
+  display: block;
   overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
 }
 
 .markdownBody :global(thead) {
@@ -221,6 +262,23 @@
   color: var(--color-text-secondary);
   vertical-align: top;
   font-size: 0.9rem;
+  word-break: break-word;
+  max-width: 400px;
+}
+
+/* Code inside table cells should wrap, not overflow */
+.markdownBody :global(td code),
+.markdownBody :global(th code) {
+  white-space: nowrap;
+  word-break: normal;
+}
+
+.markdownBody :global(td pre),
+.markdownBody :global(th pre) {
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin: 0;
+  font-size: 0.8rem;
 }
 
 .markdownBody :global(tbody tr:nth-child(even)) {

@@ -25,7 +25,7 @@ export default function StoriesEditor() {
 
     useEffect(() => {
         if (!canEditBlogs()) {
-            navigate('/admin')
+            navigate('/')
         }
     }, [canEditBlogs, navigate])
 
