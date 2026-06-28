@@ -6,7 +6,7 @@ The official website for Openflows — An Autonomous AI Development Team.
 
 ## About Openflows
 
-Openflows is an autonomous software development team that runs itself. A squad of specialized AI agents written in Rust discovers GitHub issues, writes code, reviews it, opens pull requests, and merges them — all without human intervention.
+Openflows is an autonomous software development team that runs itself. A squad of specialized AI agents written in Rust discovers GitHub issues, writes code, reviews it, opens pull requests, and merges them — all without human intervention. 
 
 ## Website Features
 
