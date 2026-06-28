@@ -607,54 +607,6 @@ const canonicalURL = `https://openflows.dev/blog/${post.slug}`;
     flex-shrink: 0;
   }
 
-  /* Article Body */
-  .article-body {
-    max-width: 100%;
-    margin: 0;
-    overflow-x: hidden;
-  }
-
-  .article-body :global(p),
-  .article-body :global(ul),
-  .article-body :global(ol),
-  .article-body :global(h1),
-  .article-body :global(h2),
-  .article-body :global(h3),
-  .article-body :global(h4),
-  .article-body :global(h5),
-  .article-body :global(h6),
-  .article-body :global(blockquote),
-  .article-body :global(hr),
-  .article-body :global(pre) {
-    max-width: 100%;
-    margin-left: 0;
-    margin-right: 0;
-  }
-
-  /* Tables scroll horizontally instead of breaking layout */
-  .article-body :global(table) {
-    display: block;
-    width: 100%;
-    max-width: 100%;
-    overflow-x: auto;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  /* Prevent code blocks inside table cells from overflowing */
-  .article-body :global(td),
-  .article-body :global(th) {
-    max-width: 0;
-    overflow: hidden;
-    word-break: break-word;
-    white-space: normal;
-  }
-
-  .article-body :global(td pre),
-  .article-body :global(th pre) {
-    white-space: pre-wrap;
-    word-break: break-word;
-    overflow-x: auto;
-  }
 
   /* Footer Section */
   .article-footer {
