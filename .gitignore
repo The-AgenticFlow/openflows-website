@@ -8,26 +8,33 @@ dist/
 build/
 .vite/
 
+# Astro
+.astro/
+
 # Environment variables
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+*.env
 
 # Logs
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
+lerna-debug.log*
 
 # Editor / IDE
-.vscode/
+.vscode/*
+!.vscode/extensions.json
 .idea/
 *.swp
 *.swo
 *~
 .DS_Store
+Thumbs.db
 
 # AI / Codex
 .codex/
@@ -35,9 +42,16 @@ pnpm-debug.log*
 .pair-shared/
 .pair-shared/.codex/
 .claude/
+.claude-server/
 
 # Coverage
 coverage/
+.nyc_output/
 
 # Misc
 .cache/
+*.local
+
+# Supabase (local dev config may contain secrets)
+supabase/.branches/
+supabase/config.toml
