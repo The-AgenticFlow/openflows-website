@@ -207,7 +207,7 @@ const canonicalURL = `https://openflows.dev/blog/${post.slug}`;
 
       <!-- Content -->
       <div class="article-body">
-        <MarkdownRenderer client:load content={post.content || ''} />
+        <MarkdownRenderer client:only="react" content={post.content || ''} />
       </div>
 
       <!-- Footer - Share -->

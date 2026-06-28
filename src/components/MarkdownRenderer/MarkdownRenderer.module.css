@@ -5,11 +5,11 @@
    ============================================================ */
 
 .markdownBody {
-  font-size: 1.05rem;
-  line-height: 1.8;
-  color: var(--color-text-secondary);
-  word-break: break-word;
-  overflow-wrap: break-word;
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: var(--color-text-secondary);
+    word-break: break-word;
+    overflow-wrap: break-word;
 }
 
 /* ── Headings ──────────────────────────────────────────────── */
@@ -20,241 +20,251 @@
 .markdownBody :global(h4),
 .markdownBody :global(h5),
 .markdownBody :global(h6) {
-  color: var(--color-text-primary);
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: -0.02em;
-  margin-top: 2.5rem;
-  margin-bottom: 0.75rem;
+    color: var(--color-text-primary);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    margin-top: 2.5rem;
+    margin-bottom: 0.75rem;
 }
 
 /* First heading needs no top margin */
 .markdownBody :global(h1:first-child),
 .markdownBody :global(h2:first-child),
 .markdownBody :global(h3:first-child) {
-  margin-top: 0;
+    margin-top: 0;
 }
 
-.markdownBody :global(h1) { font-size: 2rem; }
-.markdownBody :global(h2) {
-  font-size: 1.55rem;
-  padding-bottom: 0.5rem;
-  border-bottom: 1px solid var(--color-border);
+.markdownBody :global(h1) {
+    font-size: 2rem;
 }
-.markdownBody :global(h3) { font-size: 1.25rem; }
-.markdownBody :global(h4) { font-size: 1.1rem; }
-.markdownBody :global(h5) { font-size: 1rem; }
-.markdownBody :global(h6) { font-size: 0.9rem; color: var(--color-text-muted); }
+
+.markdownBody :global(h2) {
+    font-size: 1.55rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border);
+}
+
+.markdownBody :global(h3) {
+    font-size: 1.25rem;
+}
+
+.markdownBody :global(h4) {
+    font-size: 1.1rem;
+}
+
+.markdownBody :global(h5) {
+    font-size: 1rem;
+}
+
+.markdownBody :global(h6) {
+    font-size: 0.9rem;
+    color: var(--color-text-muted);
+}
 
 /* Numbered headings like "1. Agent Definition (…)" */
 .markdownBody :global(h1 code),
 .markdownBody :global(h2 code),
 .markdownBody :global(h3 code),
 .markdownBody :global(h4 code) {
-  font-size: 0.88em;
-  font-weight: 600;
-  letter-spacing: 0;
+    font-size: 0.88em;
+    font-weight: 600;
+    letter-spacing: 0;
 }
 
 /* ── Paragraphs ────────────────────────────────────────────── */
 
 .markdownBody :global(p) {
-  margin-bottom: 1.35rem;
+    margin-bottom: 1.35rem;
 }
 
 /* ── Lists ─────────────────────────────────────────────────── */
 
 .markdownBody :global(ul),
 .markdownBody :global(ol) {
-  padding-left: 1.75rem;
-  margin-bottom: 1.35rem;
+    padding-left: 1.75rem;
+    margin-bottom: 1.35rem;
 }
 
-.markdownBody :global(ul) { list-style: disc; }
-.markdownBody :global(ol) { list-style: decimal; }
+.markdownBody :global(ul) {
+    list-style: disc;
+}
+
+.markdownBody :global(ol) {
+    list-style: decimal;
+}
 
 .markdownBody :global(li) {
-  margin-bottom: 0.4rem;
-  padding-left: 0.25rem;
+    margin-bottom: 0.4rem;
+    padding-left: 0.25rem;
 }
 
 .markdownBody :global(li > ul),
 .markdownBody :global(li > ol) {
-  margin-top: 0.35rem;
-  margin-bottom: 0.35rem;
+    margin-top: 0.35rem;
+    margin-bottom: 0.35rem;
 }
 
 /* ── Inline code (single backtick) ─────────────────────────── */
-/* Handled via inline style in the JSX for reliable cascade,
-   but also set here as fallback for any code not via the renderer */
 
+.inlineCode {
+    display: inline;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    padding: 0.1em 0.45em;
+    border-radius: 5px;
+    font-family: var(--font-mono, 'Menlo', 'Consolas', monospace);
+    font-size: 0.82em;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    vertical-align: middle;
+    line-height: 1;
+}
+
+/* Also keep the global selector for any inline code not caught by the component */
 .markdownBody :global(:not(pre) > code) {
-  display: inline;
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
-  padding: 0.1em 0.45em;
-  border-radius: 5px;
-  font-family: var(--font-mono, 'Menlo', 'Consolas', monospace);
-  font-size: 0.82em;
-  color: var(--color-text-primary);
-  white-space: nowrap;
-  vertical-align: middle;
+    display: inline;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-border);
+    padding: 0.1em 0.45em;
+    border-radius: 5px;
+    font-family: var(--font-mono, 'Menlo', 'Consolas', monospace);
+    font-size: 0.82em;
+    color: var(--color-text-primary);
+    white-space: nowrap;
+    vertical-align: middle;
 }
 
 /* ── Plain code blocks (bash / shell / no language) ────────── */
 
 .plainBlock {
-  margin: 1.5rem 0;
-  padding: 1.1rem 1.4rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: 0.6rem;
-  overflow-x: auto;
-  line-height: 1.7;
+    margin: 1.5rem 0;
+    padding: 1.1rem 1.4rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 0.6rem;
+    overflow-x: auto;
+    line-height: 1.7;
 }
 
 .plainBlockCode {
-  background: none;
-  border: none;
-  padding: 0;
-  font-family: var(--font-mono, 'Menlo', 'Consolas', monospace);
-  font-size: 0.88rem;
-  color: var(--color-text-primary);
-}
-
-/* ── Syntax-highlighted code blocks ────────────────────────── */
-
-.syntaxBlock {
-  margin: 1.5rem 0;
-  border: 1px solid var(--color-border);
-  border-radius: 0.6rem;
-  overflow: hidden;
-  background: #1e1e2e; /* matches oneDark background */
-}
-
-.syntaxLangTag {
-  display: inline-block;
-  padding: 0.3rem 0.9rem;
-  background: rgba(255, 255, 255, 0.06);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-  font-family: var(--font-mono, 'Menlo', 'Consolas', monospace);
-  font-size: 0.7rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: rgba(255, 255, 255, 0.45);
-  width: 100%;
+    background: none;
+    border: none;
+    padding: 0;
+    font-family: var(--font-mono, 'Menlo', 'Consolas', monospace);
+    font-size: 0.88rem;
+    color: var(--color-text-primary);
 }
 
 /* ── Blockquote ─────────────────────────────────────────────── */
 
 .markdownBody :global(blockquote) {
-  margin: 1.75rem 0;
-  padding: 0.9rem 1.4rem;
-  border-left: 4px solid var(--color-border-hover);
-  background: var(--color-surface);
-  border-radius: 0 0.5rem 0.5rem 0;
-  color: var(--color-text-muted);
-  font-style: italic;
+    margin: 1.75rem 0;
+    padding: 0.9rem 1.4rem;
+    border-left: 4px solid var(--color-border-hover);
+    background: var(--color-surface);
+    border-radius: 0 0.5rem 0.5rem 0;
+    color: var(--color-text-muted);
+    font-style: italic;
 }
 
 .markdownBody :global(blockquote p) {
-  margin: 0;
+    margin: 0;
 }
 
 /* ── Horizontal rule ─────────────────────────────────────────── */
 
 .markdownBody :global(hr) {
-  margin: 2.5rem 0;
-  border: 0;
-  border-top: 1px solid var(--color-border);
+    margin: 2.5rem 0;
+    border: 0;
+    border-top: 1px solid var(--color-border);
 }
 
 /* ── Tables ──────────────────────────────────────────────────── */
 
 .markdownBody :global(table) {
-  display: block;
-  width: 100%;
-  max-width: 100%;
-  border-collapse: collapse;
-  margin: 1.5rem 0;
-  font-size: 0.925rem;
-  overflow-x: auto;
-  -webkit-overflow-scrolling: touch;
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    border-collapse: collapse;
+    margin: 1.5rem 0;
+    font-size: 0.925rem;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
 }
 
 .markdownBody :global(thead) {
-  background: var(--color-surface);
+    background: var(--color-surface);
 }
 
 .markdownBody :global(th) {
-  padding: 0.65rem 1rem;
-  text-align: left;
-  font-weight: 600;
-  font-size: 0.875rem;
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
-  white-space: nowrap;
+    padding: 0.65rem 1rem;
+    text-align: left;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--color-text-primary);
+    border: 1px solid var(--color-border);
+    white-space: nowrap;
 }
 
 .markdownBody :global(td) {
-  padding: 0.65rem 1rem;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  vertical-align: top;
-  font-size: 0.9rem;
-  word-break: break-word;
+    padding: 0.65rem 1rem;
+    border: 1px solid var(--color-border);
+    color: var(--color-text-secondary);
+    vertical-align: top;
+    font-size: 0.9rem;
+    word-break: break-word;
 }
 
 .markdownBody :global(tbody tr:nth-child(even)) {
-  background: var(--color-surface);
+    background: var(--color-surface);
 }
 
 /* Code inside table cells stays compact */
 .markdownBody :global(td code),
 .markdownBody :global(th code) {
-  white-space: nowrap;
-  font-size: 0.8em;
+    white-space: nowrap;
+    font-size: 0.8em;
 }
 
 /* ── Links ───────────────────────────────────────────────────── */
 
 .markdownBody :global(a) {
-  color: var(--color-text-primary);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-  text-decoration-color: var(--color-border-hover);
-  transition: text-decoration-color 0.15s ease, opacity 0.15s ease;
+    color: var(--color-text-primary);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: var(--color-border-hover);
+    transition: text-decoration-color 0.15s ease, opacity 0.15s ease;
 }
 
 .markdownBody :global(a:hover) {
-  opacity: 0.75;
-  text-decoration-color: var(--color-text-primary);
+    opacity: 0.75;
+    text-decoration-color: var(--color-text-primary);
 }
 
 /* ── Images ──────────────────────────────────────────────────── */
 
 .markdownBody :global(img) {
-  max-width: 100%;
-  height: auto;
-  border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
-  margin: 1.5rem 0;
-  display: block;
+    max-width: 100%;
+    height: auto;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-border);
+    margin: 1.5rem 0;
+    display: block;
 }
 
 /* ── Strong / em / del ───────────────────────────────────────── */
 
 .markdownBody :global(strong) {
-  font-weight: 700;
-  color: var(--color-text-primary);
+    font-weight: 700;
+    color: var(--color-text-primary);
 }
 
 .markdownBody :global(em) {
-  font-style: italic;
+    font-style: italic;
 }
 
 .markdownBody :global(del) {
-  text-decoration: line-through;
-  color: var(--color-text-muted);
+    text-decoration: line-through;
+    color: var(--color-text-muted);
 }
