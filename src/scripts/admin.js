@@ -4,7 +4,19 @@ import { createClient } from '@supabase/supabase-js';
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL;
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY;
 
-export const supabase = supabaseUrl && supabaseAnonKey
+const isValidUrl = (url) => {
+    if (!url || typeof url !== 'string') return false;
+    try {
+        const parsed = new URL(url);
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:';
+    } catch {
+        return false;
+    }
+};
+
+const credentialsValid = isValidUrl(supabaseUrl) && supabaseAnonKey && supabaseAnonKey.length > 0;
+
+export const supabase = credentialsValid
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null;
 

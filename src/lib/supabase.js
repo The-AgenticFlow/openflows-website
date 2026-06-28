@@ -3,14 +3,26 @@ import { createClient } from '@supabase/supabase-js'
 const supabaseUrl = import.meta.env.PUBLIC_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.PUBLIC_SUPABASE_ANON_KEY
 
-if (!supabaseUrl || !supabaseAnonKey) {
+const isValidUrl = (url) => {
+    if (!url || typeof url !== 'string') return false
+    try {
+        const parsed = new URL(url)
+        return parsed.protocol === 'http:' || parsed.protocol === 'https:'
+    } catch {
+        return false
+    }
+}
+
+const credentialsValid = isValidUrl(supabaseUrl) && supabaseAnonKey && supabaseAnonKey.length > 0
+
+if (!credentialsValid) {
     console.warn(
-        'Supabase credentials not found. Blog features will be disabled. ' +
+        'Supabase credentials not found or invalid. Blog features will be disabled. ' +
         'Set PUBLIC_SUPABASE_URL and PUBLIC_SUPABASE_ANON_KEY in your .env file.'
     )
 }
 
-export const supabase = supabaseUrl && supabaseAnonKey
+export const supabase = credentialsValid
     ? createClient(supabaseUrl, supabaseAnonKey)
     : null
 
