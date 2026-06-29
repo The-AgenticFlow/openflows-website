@@ -36,16 +36,74 @@ function isOnlyInlineCode(line) {
     return stripped === ''
 }
 
+// Check if a table row is actually a paragraph (only first column has content)
+function isFakeTableRow(line) {
+    const trimmed = line.trim()
+    if (!trimmed.startsWith('|')) return false
+
+    // Split by pipe and check columns
+    const columns = trimmed.split('|').map(c => c.trim()).filter(c => c.length > 0)
+
+    // If only first column has meaningful content and rest are empty/minimal
+    if (columns.length >= 2) {
+        const firstCol = columns[0]
+        const otherCols = columns.slice(1)
+        const otherColsEmpty = otherCols.every(c => c === '' || c === ' ' || c.length < 2)
+
+        // If first column is long (paragraph-like) and others are empty, it's a fake row
+        if (firstCol.length > 50 && otherColsEmpty) {
+            return true
+        }
+    }
+    return false
+}
+
+// Convert a fake table row to a paragraph
+function convertFakeTableRowToParagraph(line) {
+    const trimmed = line.trim()
+    // Remove leading/trailing pipes and extract first column content
+    const match = trimmed.match(/^\|\s*(.+?)\s*\|/)
+    if (match) {
+        return match[1]
+    }
+    return trimmed.replace(/^\|/, '').replace(/\|$/, '').trim()
+}
+
 function preprocessContent(raw) {
     const lines = raw.split('\n')
+
+    // Debug: log lines around "Key takeaway"
+    if (typeof window !== 'undefined') {
+        const keyIdx = lines.findIndex(l => l.includes('Key takeaway') || l.includes('key takeaway') || l.includes('key_takeaway'))
+        if (keyIdx >= 0 && !window._mdKeyTakeawayDebug) {
+            window._mdKeyTakeawayDebug = true
+            console.log('[MD KEY TAKEAWAY DEBUG] Total lines:', lines.length)
+            console.log('[MD KEY TAKEAWAY DEBUG] Key takeaway at line:', keyIdx)
+            const start = Math.max(0, keyIdx - 5)
+            const end = Math.min(lines.length, keyIdx + 10)
+            for (let i = start; i < end; i++) {
+                console.log(`  [${i}] ${JSON.stringify(lines[i])}`)
+            }
+        }
+    }
+
     const result = []
     let inCodeFence = false
     let pendingParagraph = []
+    let inTable = false
+    let tableBuffer = []
 
     function flushParagraph() {
         if (pendingParagraph.length > 0) {
             result.push(pendingParagraph.join(' '))
             pendingParagraph = []
+        }
+    }
+
+    function flushTable() {
+        if (tableBuffer.length > 0) {
+            result.push(...tableBuffer)
+            tableBuffer = []
         }
     }
 
@@ -64,6 +122,7 @@ function preprocessContent(raw) {
         // Track code fence state
         if (trimmed.startsWith('```')) {
             flushParagraph()
+            flushTable()
             inCodeFence = !inCodeFence
             result.push(line)
             continue
@@ -72,6 +131,16 @@ function preprocessContent(raw) {
         // Inside code fence: pass through as-is
         if (inCodeFence) {
             result.push(line)
+            continue
+        }
+
+        // Check for fake table rows (paragraphs incorrectly formatted as table rows)
+        if (isFakeTableRow(trimmed)) {
+            flushTable()
+            inTable = false
+            // Convert to paragraph and add to pending paragraph
+            const paragraph = convertFakeTableRowToParagraph(trimmed)
+            pendingParagraph.push(paragraph)
             continue
         }
 
@@ -92,13 +161,18 @@ function preprocessContent(raw) {
                 continue
             }
 
+            // If next content is a fake table row, skip blank line
+            if (nextNonBlankIdx >= 0 && isFakeTableRow(lines[nextNonBlankIdx])) {
+                continue
+            }
+
             // If next content is a regular text line (not block element), skip blank line
             if (nextNonBlankIdx >= 0) {
                 const nextTrimmed = lines[nextNonBlankIdx].trim()
                 const isNextBlockElement =
                     /^#{1,6}\s/.test(nextTrimmed) ||
                     /^(\s*[-*+]|\s*\d+\.)\s/.test(nextTrimmed) ||
-                    /^\|.*\|/.test(nextTrimmed) ||
+                    (/^\|.*\|/.test(nextTrimmed) && !isFakeTableRow(nextTrimmed)) ||
                     /^>\s/.test(nextTrimmed) ||
                     /^(-{3,}|={3,}|\*{3,})$/.test(nextTrimmed) ||
                     /^```/.test(nextTrimmed)
@@ -108,24 +182,48 @@ function preprocessContent(raw) {
                 }
             }
 
-            // Otherwise flush paragraph and add blank line
+            // Otherwise flush paragraph and table, then add blank line
             flushParagraph()
+            flushTable()
             result.push('')
             continue
         }
 
         // Block elements: headings, lists, tables, blockquotes, hr
+        const isRealTable = /^\|.*\|/.test(trimmed) && !isFakeTableRow(trimmed)
         const isBlockElement =
             /^#{1,6}\s/.test(trimmed) ||           // heading
             /^(\s*[-*+]|\s*\d+\.)\s/.test(trimmed) || // list
-            /^\|.*\|/.test(trimmed) ||              // table
+            isRealTable ||                          // real table
             /^>\s/.test(trimmed) ||                 // blockquote
             /^(-{3,}|={3,}|\*{3,})$/.test(trimmed)  // hr
 
         if (isBlockElement) {
             flushParagraph()
-            result.push(line)
+            if (isRealTable) {
+                inTable = true
+                tableBuffer.push(line)
+            } else {
+                flushTable()
+                inTable = false
+                result.push(line)
+            }
             continue
+        }
+
+        // If we're in a table but this line is not a table row, flush the table first
+        if (inTable) {
+            const isTableRow = /^\|.*\|/.test(trimmed)
+            if (!isTableRow) {
+                flushTable()
+                inTable = false
+                // Add a blank line after the table to properly terminate it in markdown
+                result.push('')
+                // Fall through to handle this line as regular text
+            } else {
+                tableBuffer.push(line)
+                continue
+            }
         }
 
         // This is a text line (possibly containing inline code)
@@ -134,7 +232,26 @@ function preprocessContent(raw) {
     }
 
     flushParagraph()
-    return result.join('\n')
+    flushTable()
+    const processed = result.join('\n')
+
+    // Debug: log the preprocessed output around "Key takeaway"
+    if (typeof window !== 'undefined' && !window._mdPreprocessedDebug) {
+        window._mdPreprocessedDebug = true
+        const processedLines = processed.split('\n')
+        const keyIdx = processedLines.findIndex(l => l.includes('Key takeaway'))
+        if (keyIdx >= 0) {
+            console.log('[MD PREPROCESSED DEBUG] Total processed lines:', processedLines.length)
+            console.log('[MD PREPROCESSED DEBUG] Key takeaway at processed line:', keyIdx)
+            const start = Math.max(0, keyIdx - 5)
+            const end = Math.min(processedLines.length, keyIdx + 5)
+            for (let i = start; i < end; i++) {
+                console.log(`  [${i}] ${JSON.stringify(processedLines[i])}`)
+            }
+        }
+    }
+
+    return processed
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -150,6 +267,13 @@ export default function MarkdownRenderer({ content }) {
             <ReactMarkdown
                 remarkPlugins={[remarkGfm]}
                 components={{
+                    table({ children, ...props }) {
+                        return (
+                            <div className={styles.tableWrapper}>
+                                <table {...props}>{children}</table>
+                            </div>
+                        )
+                    },
                     pre({ children, ...props }) {
                         // Check if the child is code that looks like inline code
                         // If so, render as span instead of pre to avoid <pre> inside <p>
