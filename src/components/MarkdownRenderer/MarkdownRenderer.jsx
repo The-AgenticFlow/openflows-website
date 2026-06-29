@@ -71,22 +71,6 @@ function convertFakeTableRowToParagraph(line) {
 
 function preprocessContent(raw) {
     const lines = raw.split('\n')
-
-    // Debug: log lines around "Key takeaway"
-    if (typeof window !== 'undefined') {
-        const keyIdx = lines.findIndex(l => l.includes('Key takeaway') || l.includes('key takeaway') || l.includes('key_takeaway'))
-        if (keyIdx >= 0 && !window._mdKeyTakeawayDebug) {
-            window._mdKeyTakeawayDebug = true
-            console.log('[MD KEY TAKEAWAY DEBUG] Total lines:', lines.length)
-            console.log('[MD KEY TAKEAWAY DEBUG] Key takeaway at line:', keyIdx)
-            const start = Math.max(0, keyIdx - 5)
-            const end = Math.min(lines.length, keyIdx + 10)
-            for (let i = start; i < end; i++) {
-                console.log(`  [${i}] ${JSON.stringify(lines[i])}`)
-            }
-        }
-    }
-
     const result = []
     let inCodeFence = false
     let pendingParagraph = []
@@ -233,25 +217,7 @@ function preprocessContent(raw) {
 
     flushParagraph()
     flushTable()
-    const processed = result.join('\n')
-
-    // Debug: log the preprocessed output around "Key takeaway"
-    if (typeof window !== 'undefined' && !window._mdPreprocessedDebug) {
-        window._mdPreprocessedDebug = true
-        const processedLines = processed.split('\n')
-        const keyIdx = processedLines.findIndex(l => l.includes('Key takeaway'))
-        if (keyIdx >= 0) {
-            console.log('[MD PREPROCESSED DEBUG] Total processed lines:', processedLines.length)
-            console.log('[MD PREPROCESSED DEBUG] Key takeaway at processed line:', keyIdx)
-            const start = Math.max(0, keyIdx - 5)
-            const end = Math.min(processedLines.length, keyIdx + 5)
-            for (let i = start; i < end; i++) {
-                console.log(`  [${i}] ${JSON.stringify(processedLines[i])}`)
-            }
-        }
-    }
-
-    return processed
+    return result.join('\n')
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
