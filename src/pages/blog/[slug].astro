@@ -17,31 +17,9 @@ const giscusConfig = {
 
 const showComments = giscusConfig.repo && giscusConfig.repoId && giscusConfig.categoryId;
 
-export async function getStaticPaths() {
-  if (!isSupabaseConfigured() || !supabase) {
-    return [];
-  }
-
-  try {
-    const { data, error } = await supabase
-      .from(TABLES.BLOGS)
-      .select('slug')
-      .eq('status', 'published')
-      .is('deleted_at', null);
-
-    if (error) {
-      console.warn('Error fetching blog slugs:', error.message);
-      return [];
-    }
-
-    return (data || []).map((post) => ({
-      params: { slug: post.slug },
-    }));
-  } catch (err) {
-    console.warn('Error in getStaticPaths:', err.message);
-    return [];
-  }
-}
+// This page is server-rendered (SSR) to support dynamic blog post slugs.
+// New posts appear immediately without rebuilding the site.
+export const prerender = false;
 
 const { slug } = Astro.params;
 
