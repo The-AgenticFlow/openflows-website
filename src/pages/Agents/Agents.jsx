@@ -11,8 +11,8 @@ export default function Agents() {
       <section className={styles.hero}>
         <div className={styles.container}>
           <p className={styles.eyebrow}>The Team</p>
-          <h1 className={styles.title}>Five agents. One pipeline.<br/> Zero manual steps.</h1>
-          <p className={styles.subtitle}>
+          <h1 className={styles.heroTitle}>Five agents. One pipeline.<br/> Zero manual steps.</h1>
+          <p className={styles.heroSub}>
             OpenFlows coordinates five specialized AI agents through a deterministic, event-driven
             pipeline. Each agent has a distinct role, isolated permissions, and its own GitHub identity -
             just like a real development team.

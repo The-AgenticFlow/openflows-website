@@ -1,4 +1,4 @@
-/* ===== FAQ Section ===== */
+/* ===== FAQ Section - Coder.com Enterprise Style ===== */
 .section {
     padding-block: var(--space-20);
     border-top: 1px solid var(--color-border);
@@ -22,14 +22,14 @@
     font-size: var(--font-size-xs);
     color: var(--color-accent);
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     font-weight: 600;
     margin-bottom: var(--space-3);
 }
 
 .title {
     font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1.15;
 }
@@ -45,7 +45,7 @@
     border: 1px solid var(--color-border);
     border-radius: var(--radius-lg);
     overflow: hidden;
-    transition: border-color var(--transition-fast);
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .faqItem:hover {
@@ -54,6 +54,7 @@
 
 .faqItemOpen {
     border-color: var(--color-accent);
+    box-shadow: 0 0 0 1px var(--color-accent-border);
 }
 
 .faqQuestion {
@@ -83,8 +84,13 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border-radius: 50%;
+    border-radius: var(--radius-full);
     background: var(--color-surface-2);
+    transition: background-color var(--transition-fast);
+}
+
+.faqItemOpen .faqToggle {
+    background: var(--color-accent-muted);
 }
 
 .faqAnswer {

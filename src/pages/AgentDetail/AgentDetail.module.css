@@ -1,3 +1,8 @@
+/* ─────────────────────────────────────────
+   Agent Detail Page - Coder.com Enterprise Style
+   ───────────────────────────────────────── */
+
+/* ── Hero ── */
 .detailHero {
   padding-top: calc(var(--nav-height) + var(--space-24));
   padding-bottom: var(--space-16);
@@ -7,7 +12,7 @@
 
 .heroEyebrow {
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  color: var(--color-accent);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   font-weight: 600;
@@ -16,7 +21,7 @@
 
 .heroTitle {
   font-size: clamp(2.5rem, 7vw, 5rem);
-  font-weight: 500;
+  font-weight: 700;
   line-height: 1.05;
   letter-spacing: -0.04em;
   margin-bottom: var(--space-5);
@@ -27,6 +32,7 @@
   color: var(--color-text-secondary);
 }
 
+/* ── Article ── */
 .article {
   max-width: 680px;
   margin: 0 auto;
@@ -76,7 +82,7 @@
   display: inline-block;
   width: 6px;
   height: 6px;
-  background: var(--color-cyan);
+  background: var(--color-accent);
   border-radius: 50%;
   flex-shrink: 0;
   margin-top: 0.55em;
@@ -120,6 +126,7 @@
   max-width: none;
 }
 
+/* ── CTA ── */
 .cta {
   padding-top: var(--space-16);
   text-align: center;
@@ -145,6 +152,7 @@
   flex-wrap: wrap;
 }
 
+/* ── Responsive ── */
 @media (max-width: 768px) {
   .detailHero {
     padding-top: calc(var(--nav-height) + var(--space-12));

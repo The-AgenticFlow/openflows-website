@@ -16,8 +16,8 @@
 }
 
 .dropzone:hover {
-    border-color: var(--color-text-primary);
-    background: var(--color-cyan-surface);
+    border-color: var(--color-accent-border);
+    background: var(--color-accent-bg);
 }
 
 .dropzone.dragOver {

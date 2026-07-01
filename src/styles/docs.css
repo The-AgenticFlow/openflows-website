@@ -1,8 +1,9 @@
 /* ─────────────────────────────────────────
    Shared docs / content page styles
+   Coder.com-inspired enterprise documentation style
    Used by DocsLayout, all docs pages,
    demos, use-cases, developers, blog
-───────────────────────────────────────── */
+   ───────────────────────────────────────── */
 
 /* Layout */
 .docsLayout {
@@ -31,7 +32,7 @@
 }
 
 .sidebarTitle {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -50,24 +51,24 @@
 .sidebarLink {
   display: block;
   padding: 0.35rem 0.6rem;
-  font-size: 0.95rem;
+  font-size: 0.875rem;
   color: var(--color-text-secondary);
   text-decoration: none;
-  border-radius: 4px;
+  border-radius: var(--radius-md);
   border-left: 2px solid transparent;
   transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
 }
 
 .sidebarLink:hover {
-  background-color: var(--color-cyan-surface);
-  color: var(--color-cyan);
+  background-color: var(--color-surface);
+  color: var(--color-text-primary);
 }
 
 .sidebarLinkActive {
-  color: var(--color-cyan);
-  background-color: var(--color-cyan-surface);
-  font-weight: 600;
-  border-left: 2px solid var(--color-cyan);
+  color: var(--color-accent);
+  background-color: var(--color-accent-muted);
+  font-weight: 500;
+  border-left-color: var(--color-accent);
 }
 
 /* Main content outer wrapper - fills the right column */
@@ -114,35 +115,38 @@
   color: var(--color-text-primary);
 }
 
-/* Typography */
+/* Typography - Coder.com style */
 .content h1 {
-  font-size: clamp(2rem, 4vw, 2.75rem);
-  font-weight: 600;
-  letter-spacing: -0.025em;
-  color: var(--color-cyan);
+  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  color: var(--color-text-primary);
   margin-bottom: 1.25rem;
+  line-height: 1.15;
 }
 
 .content h2 {
   font-size: 1.5rem;
   font-weight: 600;
-  color: var(--color-cyan);
+  color: var(--color-text-primary);
   margin-top: 3.5rem;
   margin-bottom: 1rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--color-border);
+  letter-spacing: -0.02em;
 }
 
 .content h3 {
   font-size: 1.2rem;
   font-weight: 600;
-  color: var(--color-cyan);
+  color: var(--color-text-primary);
   margin-top: 2rem;
   margin-bottom: 0.75rem;
+  letter-spacing: -0.01em;
 }
 
 .content p {
-  font-size: 1.1rem;
+  font-size: 1.05rem;
   color: var(--color-text-secondary);
   line-height: 1.8;
   margin-bottom: 1.25rem;
@@ -160,33 +164,34 @@
 }
 
 .docContent a {
-  color: var(--color-cyan);
+  color: var(--color-text-link);
   text-decoration: underline;
   text-underline-offset: 4px;
   text-decoration-thickness: 1px;
 }
 
 .content a:hover {
-  opacity: 0.75;
+  color: var(--color-accent-hover);
 }
 
 /* Inline code */
 .content code {
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 0.15em 0.4em;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.85em;
-  color: var(--color-accent);
+  color: var(--color-text-primary);
 }
 
 /* Code block */
 .codeBlock {
   margin: 1.5rem 0;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-sm);
 }
 
 .codeHeader {
@@ -196,9 +201,9 @@
   padding: 0.75rem 1.25rem;
   background-color: var(--color-surface);
   border-bottom: 1px solid var(--color-border);
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   font-weight: 500;
-  color: var(--color-cyan);
+  color: var(--color-text-primary);
 }
 
 .codeLang {
@@ -207,7 +212,7 @@
   text-transform: uppercase;
   letter-spacing: 0.08em;
   color: var(--color-text-muted);
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono);
 }
 
 .copyBtn {
@@ -215,24 +220,25 @@
   color: var(--color-text-muted);
   background: none;
   border: 1px solid var(--color-border);
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   padding: 0.2rem 0.6rem;
   cursor: pointer;
-  transition: color var(--transition-fast), border-color var(--transition-fast);
+  transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
   font-family: inherit;
 }
 
 .copyBtn:hover {
   color: var(--color-text-primary);
   border-color: var(--color-border-hover);
+  background-color: var(--color-surface-2);
 }
 
 .codeBlock pre {
   margin: 0;
   padding: 1.25rem;
   background-color: var(--color-surface-2);
-  font-family: 'IBM Plex Mono', monospace;
-  font-size: 0.95rem;
+  font-family: var(--font-mono);
+  font-size: 0.9rem;
   line-height: 1.7;
   color: var(--color-text-secondary);
   overflow-x: auto;
@@ -253,11 +259,11 @@
 }
 
 .callout.warning {
-  border-left-color: var(--color-agent-sentinel);
+  border-left-color: var(--color-warning);
 }
 
 .callout.tip {
-  border-left-color: #34d399;
+  border-left-color: var(--color-success);
 }
 
 .calloutTitle {
@@ -271,7 +277,7 @@
 
 .callout p {
   margin: 0;
-  font-size: 1rem;
+  font-size: 0.95rem;
 }
 
 /* Table */
@@ -279,7 +285,7 @@
   width: 100%;
   border-collapse: collapse;
   margin: 1.5rem 0;
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   overflow: hidden;
@@ -322,12 +328,13 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   text-decoration: none;
-  transition: border-color var(--transition-fast), transform var(--transition-fast);
+  transition: border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
 }
 
 .docCard:hover {
   border-color: var(--color-border-hover);
   transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
 }
 
 .docCardIcon {
@@ -336,14 +343,14 @@
 }
 
 .docCardTitle {
-  font-size: 1.15rem;
+  font-size: 1.1rem;
   font-weight: 600;
   color: var(--color-text-primary);
   margin-bottom: 0.35rem;
 }
 
 .docCardDesc {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   color: var(--color-text-secondary);
   line-height: 1.55;
 }
@@ -461,12 +468,12 @@
 }
 
 .comparisonCol.before {
-  background-color: rgba(248, 113, 113, 0.05);
-  border-color: rgba(248, 113, 113, 0.2);
+  background-color: var(--color-destructive-bg);
+  border-color: rgba(239, 68, 68, 0.2);
 }
 
 .comparisonCol.after {
-  background-color: rgba(52, 211, 153, 0.05);
+  background-color: var(--color-success-bg);
   border-color: rgba(52, 211, 153, 0.2);
 }
 
@@ -479,11 +486,11 @@
 }
 
 .comparisonCol.before .comparisonLabel {
-  color: var(--color-agent-vessel);
+  color: var(--color-destructive);
 }
 
 .comparisonCol.after .comparisonLabel {
-  color: #34d399;
+  color: var(--color-success);
 }
 
 .comparisonList {
@@ -500,18 +507,18 @@
 }
 
 .comparisonCol.before .comparisonList li::before {
-  content: '✕';
+  content: '\2715';
   position: absolute;
   left: 0;
-  color: var(--color-agent-vessel);
+  color: var(--color-destructive);
   font-weight: 600;
 }
 
 .comparisonCol.after .comparisonList li::before {
-  content: '✓';
+  content: '\2713';
   position: absolute;
   left: 0;
-  color: #34d399;
+  color: var(--color-success);
   font-weight: 600;
 }
 
@@ -542,8 +549,8 @@
   top: 0;
   width: 28px;
   height: 28px;
-  background-color: var(--color-accent);
-  color: var(--color-text-primary);
+  background-color: var(--color-text-primary);
+  color: var(--color-bg);
   border-radius: 50%;
   display: flex;
   align-items: center;
@@ -569,7 +576,7 @@
 /* Terminal demo */
 .terminalDemo {
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   margin: 1.5rem 0;
   background-color: var(--color-surface);
@@ -591,15 +598,15 @@
 }
 
 .tDot.red {
-  background-color: #e5534b;
+  background-color: #FF5F57;
 }
 
 .tDot.yellow {
-  background-color: #d79b00;
+  background-color: #FEBC2E;
 }
 
 .tDot.green {
-  background-color: #57ab5a;
+  background-color: #28C840;
 }
 
 .terminalTitle {
@@ -607,12 +614,12 @@
   text-align: center;
   font-size: 0.75rem;
   color: var(--color-text-muted);
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono);
 }
 
 .terminalBody {
   padding: 1rem 1.25rem;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.82rem;
   line-height: 1.8;
   color: var(--color-text-secondary);
@@ -625,10 +632,11 @@
 
 .tPrompt {
   color: var(--color-accent);
+  font-weight: 600;
 }
 
 .tSuccess {
-  color: #34d399;
+  color: var(--color-success);
 }
 
 .tOutput {
@@ -638,7 +646,7 @@
 /* API Explorer */
 .apiExplorer {
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   margin: 1.5rem 0;
 }
@@ -662,8 +670,8 @@
   background-color: var(--color-surface-2);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
-  color: var(--color-accent);
-  font-family: 'IBM Plex Mono', monospace;
+  color: var(--color-text-primary);
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   font-weight: 600;
   cursor: pointer;
@@ -677,14 +685,14 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   color: var(--color-text-primary);
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   outline: none;
   transition: border-color var(--transition-fast);
 }
 
 .apiEndpoint:focus {
-  border-color: var(--color-border-hover);
+  border-color: var(--color-accent);
 }
 
 .apiBodyLabel {
@@ -702,7 +710,7 @@
   border: 1px solid var(--color-border);
   border-radius: var(--radius-sm);
   color: var(--color-text-primary);
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.85rem;
   resize: vertical;
   outline: none;
@@ -710,20 +718,20 @@
 }
 
 .apiBody:focus {
-  border-color: var(--color-border-hover);
+  border-color: var(--color-accent);
 }
 
 .apiSend {
   align-self: flex-start;
   padding: 0.5rem 1.25rem;
   background-color: var(--color-accent);
-  color: var(--color-text-primary);
+  color: #FFFFFF;
   border: none;
   border-radius: var(--radius-sm);
   font-size: 0.875rem;
   font-weight: 600;
   cursor: pointer;
-  transition: opacity var(--transition-fast);
+  transition: opacity var(--transition-fast), background-color var(--transition-fast);
   font-family: inherit;
 }
 
@@ -747,16 +755,16 @@
 
 .apiStatus {
   padding: 0.15rem 0.5rem;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-size: 0.75rem;
   font-weight: 600;
-  background-color: rgba(52, 211, 153, 0.15);
-  color: #34d399;
+  background-color: var(--color-success-bg);
+  color: var(--color-success);
 }
 
 .apiResponse {
   padding: 1rem 1.25rem;
-  font-family: 'IBM Plex Mono', monospace;
+  font-family: var(--font-mono);
   font-size: 0.82rem;
   color: var(--color-text-secondary);
   white-space: pre-wrap;
@@ -830,7 +838,7 @@
     word-break: break-word;
   }
 
-  .codeBlock pre {
+  .codeBlock {
     padding: 1rem;
     font-size: 0.8rem;
   }
@@ -877,31 +885,23 @@
   }
 }
 
-/* HTTP Method Colors */
+/* HTTP Method Colors - Coder.com style */
 .http-get {
-  color: #1A1A1A;
+  color: var(--color-accent);
   font-weight: 600;
 }
 
 .http-post {
-  color: #3a7a33;
+  color: var(--color-success);
   font-weight: 600;
 }
 
 .http-put {
-  color: #f59e0b;
+  color: var(--color-warning);
   font-weight: 600;
 }
 
 .http-delete {
-  color: #f87171;
+  color: var(--color-destructive);
   font-weight: 600;
-}
-
-[data-theme="dark"] .http-get {
-  color: #00f5ff;
-}
-
-[data-theme="dark"] .http-post {
-  color: #34d399;
 }

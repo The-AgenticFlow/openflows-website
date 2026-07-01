@@ -1,22 +1,29 @@
-.hero {
-  padding-top: calc(var(--nav-height) + 4rem);
-  padding-bottom: 3rem;
-  border-bottom: 1px solid var(--color-border);
-}
+/* ─────────────────────────────────────────
+   Demos Page - Coder.com Enterprise Style
+   ───────────────────────────────────────── */
 
+/* ── Shared container ── */
 .container {
   max-width: 1200px;
   margin-inline: auto;
   padding-inline: var(--space-6);
 }
 
+/* ── Eyebrow label ── */
 .eyebrow {
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  color: var(--color-accent);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.1em;
   font-weight: 600;
   margin-bottom: var(--space-4);
+}
+
+/* ── Hero ── */
+.hero {
+  padding-top: calc(var(--nav-height) + var(--space-10));
+  padding-bottom: var(--space-10);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .title {
@@ -34,67 +41,82 @@
   line-height: 1.7;
 }
 
+/* ── Section ── */
 .section {
-  padding-block: 3rem 6rem;
+  padding-block: var(--space-20);
+  border-top: 1px solid var(--color-border);
 }
 
-/* Terminal page */
+/* ── Terminal page ── */
 .terminalPage {
   max-width: 860px;
   margin-inline: auto;
-  padding: calc(var(--nav-height) + 3rem) var(--space-6) 6rem;
+  padding: calc(var(--nav-height) + var(--space-10)) var(--space-6) var(--space-20);
 }
 
 .replayBtn {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  padding: 0.4rem 1rem;
+  padding: var(--space-2) var(--space-4);
   background-color: var(--color-surface);
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
+  border-radius: var(--radius-md);
   color: var(--color-accent);
   font-size: var(--font-size-sm);
   cursor: pointer;
-  transition: border-color var(--transition-fast);
+  transition: border-color var(--transition-fast), background-color var(--transition-fast);
   font-family: 'IBM Plex Mono', monospace;
-  margin-top: 0.75rem;
+  margin-top: var(--space-3);
 }
 
 .replayBtn:hover {
   border-color: var(--color-border-hover);
+  background-color: var(--color-surface-hover);
 }
 
-/* Walkthrough page */
+/* ── Walkthrough page ── */
 .walkthroughPage {
   max-width: 860px;
   margin-inline: auto;
-  padding: calc(var(--nav-height) + 3rem) var(--space-6) 6rem;
+  padding: calc(var(--nav-height) + var(--space-10)) var(--space-6) var(--space-20);
 }
 
+/* ── Responsive ── */
 @media (max-width: 768px) {
   .hero {
-    padding-top: calc(var(--nav-height) + 2rem);
-    padding-bottom: 2rem;
+    padding-top: calc(var(--nav-height) + var(--space-8));
+    padding-bottom: var(--space-8);
   }
 
   .section {
-    padding-block: 2rem 4rem;
+    padding-block: var(--space-12);
   }
 }
 
 @media (max-width: 600px) {
   .hero {
-    padding-top: calc(var(--nav-height) + 1.5rem);
-    padding-bottom: 1.5rem;
+    padding-top: calc(var(--nav-height) + var(--space-6));
+    padding-bottom: var(--space-6);
+  }
+
+  .title {
+    font-size: clamp(1.5rem, 5vw, 2rem);
   }
 
   .terminalPage,
   .walkthroughPage {
-    padding: calc(var(--nav-height) + 1.5rem) var(--space-4) 4rem;
+    padding: calc(var(--nav-height) + var(--space-6)) var(--space-4) var(--space-12);
   }
 
   .container {
     padding-inline: var(--space-4);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + var(--space-4));
+    padding-bottom: var(--space-4);
   }
 }

@@ -1,8 +1,10 @@
+/* Footer - Coder.com Enterprise Style */
 .footer {
   border-top: 1px solid var(--color-border);
   padding-top: var(--space-16);
   padding-bottom: var(--space-8);
   font-size: var(--font-size-sm);
+  background-color: var(--color-surface);
 }
 
 .container {
@@ -14,48 +16,42 @@
 /* ── Link columns ── */
 .columns {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: var(--space-16);
-  padding-bottom: var(--space-16);
-  max-width: 900px;
-  margin: 0 auto;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-12);
+  padding-bottom: var(--space-12);
 }
 
 .column {
   min-width: 0;
-  /* allow grid to shrink columns below content size */
-  text-align: center;
+  text-align: left;
 }
 
 .columnHeading {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   font-weight: 600;
-  color: var(--color-cyan);
+  color: var(--color-text-primary);
   margin-bottom: var(--space-4);
-  letter-spacing: 0.02em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
-  opacity: 0.9;
 }
 
 .linkList {
   display: flex;
   flex-direction: column;
   gap: var(--space-3);
-  align-items: center;
 }
 
 .link {
   color: var(--color-text-secondary);
   text-decoration: none;
   font-size: var(--font-size-sm);
-  transition: color var(--transition-fast), transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  transition: color var(--transition-fast);
   line-height: 1.6;
   display: inline-block;
 }
 
 .link:hover {
-  color: var(--color-cyan);
-  transform: translateX(6px);
+  color: var(--color-text-primary);
 }
 
 /* ── Bottom bar ── */
@@ -63,7 +59,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: var(--space-6);
+  padding-top: var(--space-8);
   border-top: 1px solid var(--color-border);
   flex-wrap: wrap;
   gap: var(--space-4);
@@ -91,12 +87,12 @@
 }
 
 .socialLink:hover {
-  color: var(--color-cyan);
-  transform: scale(1.2);
+  color: var(--color-text-primary);
+  transform: scale(1.1);
 }
 
 .copyright {
-  font-size: var(--font-size-sm);
+  font-size: var(--font-size-xs);
   color: var(--color-text-muted);
   line-height: 1.5;
 }
@@ -114,9 +110,8 @@
 /* ── Responsive ── */
 @media (max-width: 1200px) {
   .columns {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(2, 1fr);
     gap: var(--space-10);
-    max-width: 700px;
   }
 }
 
@@ -127,15 +122,13 @@
   }
 
   .columns {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-6);
-    padding-bottom: var(--space-10);
-    max-width: 100%;
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-8);
+    padding-bottom: var(--space-8);
   }
 
   .columnHeading {
     margin-bottom: var(--space-2);
-    font-size: var(--font-size-xs);
   }
 
   .linkList {
@@ -144,15 +137,14 @@
 
   .link {
     line-height: 1.4;
-    font-size: var(--font-size-xs);
   }
 }
 
 @media (max-width: 640px) {
   .columns {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-4);
-    padding-bottom: var(--space-8);
+    grid-template-columns: 1fr;
+    gap: var(--space-6);
+    padding-bottom: var(--space-6);
   }
 
   .columnHeading {
@@ -188,23 +180,5 @@
   .footer {
     padding-top: var(--space-8);
     padding-bottom: var(--space-4);
-  }
-
-  .columns {
-    grid-template-columns: repeat(3, 1fr);
-    gap: var(--space-3);
-    padding-bottom: var(--space-6);
-  }
-
-  .columnHeading {
-    margin-bottom: 4px;
-  }
-
-  .linkList {
-    gap: 0;
-  }
-
-  .link {
-    line-height: 1.2;
   }
 }

@@ -58,12 +58,12 @@
 }
 
 .error code {
-    background: var(--color-cyan-surface);
+    background: var(--color-accent-bg);
     padding: 0.2rem 0.5rem;
-    border-radius: 4px;
-    font-family: 'SF Mono', 'Fira Code', monospace;
+    border-radius: var(--radius-sm);
+    font-family: 'IBM Plex Mono', monospace;
     font-size: 0.875rem;
-    color: var(--color-text-primary);
+    color: var(--color-accent);
 }
 
 /* Unavailable state - professional message for unconfigured backend */

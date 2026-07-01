@@ -1,4 +1,4 @@
-/* ===== Section Layout ===== */
+/* ===== FlowDiagram Section - Coder.com Enterprise Style ===== */
 .section {
     padding-block: var(--space-20);
 }
@@ -22,14 +22,14 @@
     font-size: var(--font-size-xs);
     color: var(--color-accent);
     text-transform: uppercase;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.1em;
     font-weight: 600;
     margin-bottom: var(--space-3);
 }
 
 .title {
     font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
-    font-weight: 500;
+    font-weight: 600;
     letter-spacing: -0.03em;
     line-height: 1.15;
     margin-bottom: var(--space-4);
@@ -59,11 +59,11 @@
     top: var(--space-3);
     right: var(--space-3);
     z-index: 10;
-    background: var(--color-surface-2);
+    background: var(--color-bg);
     border: 1px solid var(--color-border);
-    border-radius: var(--radius-md, 8px);
+    border-radius: var(--radius-md);
     padding: 4px;
-    backdrop-filter: blur(8px);
+    box-shadow: var(--shadow-sm);
 }
 
 .zoomBtn {
@@ -73,7 +73,7 @@
     width: 32px;
     height: 32px;
     border: none;
-    border-radius: 6px;
+    border-radius: var(--radius-sm);
     background: transparent;
     color: var(--color-text-secondary);
     cursor: pointer;
@@ -84,7 +84,7 @@
 }
 
 .zoomBtn:hover {
-    background: var(--color-accent);
+    background: var(--color-surface-2);
     color: var(--color-text-primary);
 }
 
@@ -116,7 +116,7 @@
 /* ===== Diagram Viewport (pan/zoom container) ===== */
 .diagramViewport {
     overflow: hidden;
-    border-radius: var(--radius-md, 8px);
+    border-radius: var(--radius-md);
     position: relative;
 }
 

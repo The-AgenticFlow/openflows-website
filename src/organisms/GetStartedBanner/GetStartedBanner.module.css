@@ -1,3 +1,4 @@
+/* GetStartedBanner - Coder.com Enterprise Style */
 .section {
   padding: var(--space-16) 0;
 }
@@ -9,8 +10,7 @@
 }
 
 .card {
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--color-surface-invert);
   border-radius: var(--radius-xl);
   padding: var(--space-16) var(--space-8);
   display: flex;
@@ -18,18 +18,35 @@
   align-items: center;
   text-align: center;
   gap: var(--space-8);
+  position: relative;
+  overflow: hidden;
+}
+
+.card::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 40px 40px;
+  pointer-events: none;
 }
 
 .heading {
   font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
-  font-weight: 600;
+  font-weight: 700;
   letter-spacing: -0.03em;
   line-height: 1.2;
+  color: var(--color-text-invert);
 }
 
 .sub {
   font-size: var(--font-size-base);
-  color: var(--color-text-secondary);
+  color: #A1A1AA;
   max-width: 480px;
   line-height: 1.7;
   margin-top: calc(var(--space-8) * -0.5);

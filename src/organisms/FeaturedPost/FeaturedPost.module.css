@@ -1,3 +1,4 @@
+/* FeaturedPost - Coder.com Enterprise Style */
 .section {
   padding: var(--space-20) 0;
   border-top: 1px solid var(--color-border);
@@ -32,12 +33,11 @@
   flex-direction: column;
   gap: var(--space-4);
   max-height: 400px;
-  /* Reduced to show only ~2-3 cards before scrolling */
   overflow-y: auto;
   padding-right: var(--space-2);
 }
 
-/* Visible, minimalist scrollbar for those cards */
+/* Visible, minimalist scrollbar */
 .sidebarScroll::-webkit-scrollbar {
   display: block;
   width: 4px;

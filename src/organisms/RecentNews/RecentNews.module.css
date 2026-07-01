@@ -1,3 +1,4 @@
+/* RecentNews Section - Coder.com Enterprise Style */
 .section {
   padding: var(--space-16) 0;
   border-top: 1px solid var(--color-border);
@@ -17,21 +18,21 @@
 }
 
 .title {
-  font-size: var(--font-size-xl);
+  font-size: var(--font-size-2xl);
   font-weight: 600;
   letter-spacing: -0.02em;
-  color: var(--color-cyan);
 }
 
 .viewMore {
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
+  color: var(--color-text-link);
   text-decoration: none;
+  font-weight: 500;
   transition: color var(--transition-fast);
 }
 
 .viewMore:hover {
-  color: var(--color-text-primary);
+  color: var(--color-accent-hover);
 }
 
 .grid {
@@ -91,7 +92,7 @@
   height: 90px;
   border-radius: var(--radius-sm);
   flex-shrink: 0;
-  background: linear-gradient(90deg, var(--color-surface-2) 25%, var(--color-border) 50%, var(--color-surface-2) 75%);
+  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-2) 50%, var(--color-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -113,7 +114,7 @@
   width: 60px;
   height: 20px;
   border-radius: 999px;
-  background: linear-gradient(90deg, var(--color-surface-2) 25%, var(--color-border) 50%, var(--color-surface-2) 75%);
+  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-2) 50%, var(--color-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -122,7 +123,7 @@
   width: 80px;
   height: 14px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--color-surface-2) 25%, var(--color-border) 50%, var(--color-surface-2) 75%);
+  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-2) 50%, var(--color-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -131,7 +132,7 @@
   width: 100%;
   height: 16px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--color-surface-2) 25%, var(--color-border) 50%, var(--color-surface-2) 75%);
+  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-2) 50%, var(--color-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }
@@ -140,7 +141,7 @@
   width: 65%;
   height: 16px;
   border-radius: 4px;
-  background: linear-gradient(90deg, var(--color-surface-2) 25%, var(--color-border) 50%, var(--color-surface-2) 75%);
+  background: linear-gradient(90deg, var(--color-surface) 25%, var(--color-surface-2) 50%, var(--color-surface) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.5s ease-in-out infinite;
 }

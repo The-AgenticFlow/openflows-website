@@ -1,3 +1,4 @@
+/* Hero Section - Coder.com Enterprise Style */
 .hero {
   position: relative;
   display: flex;
@@ -6,19 +7,32 @@
   min-height: 100svh;
   padding: calc(var(--nav-height) + var(--space-12)) var(--space-6) var(--space-20);
   overflow: hidden;
+  background: linear-gradient(180deg, var(--color-surface-invert) 0%, var(--color-bg) 100%);
 }
 
-.hero::after {
+[data-theme="dark"] .hero {
+  background: linear-gradient(180deg, #0A0A0C 0%, #0A0A0C 100%);
+}
+
+.hero::before {
   content: '';
   position: absolute;
-  top: 40%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  width: 600px;
-  height: 600px;
-  background: radial-gradient(circle, var(--color-cyan-surface) 0%, transparent 70%);
-  z-index: -1;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
+  background-size: 60px 60px;
   pointer-events: none;
+  z-index: 0;
+}
+
+[data-theme="dark"] .hero::before {
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
 }
 
 .content {
@@ -26,9 +40,11 @@
   flex-direction: column;
   align-items: center;
   text-align: center;
-  max-width: 720px;
+  max-width: 800px;
   width: 100%;
   gap: var(--space-6);
+  position: relative;
+  z-index: 1;
 }
 
 .eyebrow {
@@ -37,10 +53,14 @@
 
 .heading {
   font-size: clamp(2.5rem, 6vw, 4rem);
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.1;
-  letter-spacing: -0.03em;
-  background: linear-gradient(135deg, var(--color-cyan) 0%, #1A1A1A 100%);
+  letter-spacing: -0.035em;
+  color: var(--color-text-invert);
+}
+
+[data-theme="light"] .heading {
+  background: linear-gradient(135deg, var(--color-text-primary) 0%, var(--color-text-secondary) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -52,79 +72,100 @@
 
 .sub {
   font-size: clamp(var(--font-size-base), 2vw, var(--font-size-lg));
-  color: var(--color-text-secondary);
-  max-width: 560px;
+  color: var(--color-text-muted);
+  max-width: 600px;
   line-height: 1.7;
 }
 
-/* Terminal */
+[data-theme="dark"] .sub {
+  color: #A1A1AA;
+}
+
+/* Terminal - Coder.com style: clean, minimal, dark */
 .terminal {
   width: 100%;
-  max-width: 600px;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  max-width: 640px;
+  background-color: #18181B;
+  border: 1px solid #27272A;
   border-radius: var(--radius-lg);
   overflow: hidden;
   text-align: left;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .terminal {
+  background-color: #111113;
+  border-color: #27272A;
 }
 
 .terminalHeader {
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: 8px;
   padding: 12px 16px;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid #27272A;
+  background-color: #1C1C1F;
 }
 
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 12px;
+  height: 12px;
   border-radius: 50%;
-  background-color: rgba(26, 26, 26, 0.15);
+}
+
+.dot:nth-child(1) {
+  background-color: #FF5F57;
+}
+
+.dot:nth-child(2) {
+  background-color: #FEBC2E;
+}
+
+.dot:nth-child(3) {
+  background-color: #28C840;
 }
 
 .terminalTitle {
   margin-left: 8px;
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
-  font-family: 'IBM Plex Mono', monospace;
+  color: #71717A;
+  font-family: var(--font-mono);
   letter-spacing: 0.04em;
 }
 
 .terminalBody {
-  padding: 16px;
-  min-height: 160px;
-  font-family: 'IBM Plex Mono', 'Fira Code', monospace;
-  font-size: 0.78rem;
+  padding: 20px;
+  min-height: 180px;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
   line-height: 1.8;
+  color: #D4D4D8;
 }
 
 .line {
   display: flex;
   align-items: baseline;
   gap: 8px;
-  color: var(--color-text-secondary);
-  overflow: hidden;
 }
 
 .prompt {
-  color: var(--color-cyan);
-  text-shadow: 0 0 10px var(--color-cyan-glow);
+  color: var(--color-accent);
   flex-shrink: 0;
+  font-weight: 600;
 }
 
 .cursor {
   display: inline-block;
   width: 1ch;
   height: 1em;
-  background-color: var(--color-text-primary);
+  background-color: var(--color-accent);
   border-radius: 1px;
   margin-left: 1px;
   animation: blink 1s step-end infinite;
   vertical-align: middle;
 }
 
-/* Quick-link pills */
+/* Quick-link pills - Coder.com style: subtle, clean */
 .pills {
   display: flex;
   flex-wrap: wrap;
@@ -136,21 +177,20 @@
   display: inline-flex;
   align-items: center;
   font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
-  padding: 0.35rem 0.875rem;
+  color: var(--color-text-muted);
+  padding: 0.4rem 1rem;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
   background: transparent;
-  transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast), box-shadow var(--transition-fast);
+  transition: color var(--transition-fast), border-color var(--transition-fast), background-color var(--transition-fast);
   text-decoration: none;
   cursor: pointer;
 }
 
 .pill:hover {
-  color: var(--color-cyan);
-  border-color: var(--color-cyan);
-  background-color: var(--color-cyan-surface);
-  box-shadow: 0 0 15px var(--color-cyan-muted);
+  color: var(--color-text-primary);
+  border-color: var(--color-border-hover);
+  background-color: var(--color-surface);
 }
 
 @media (max-width: 768px) {
@@ -206,10 +246,5 @@
 @media (max-width: 400px) {
   .heading {
     font-size: 1.8rem;
-  }
-
-  .hero::after {
-    width: 300px;
-    height: 300px;
   }
 }
