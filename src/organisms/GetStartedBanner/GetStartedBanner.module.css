@@ -1,6 +1,9 @@
-/* GetStartedBanner - Coder.com Enterprise Style */
+/* GetStartedBanner - Coder.com style */
 .section {
-  padding: var(--space-16) 0;
+  padding: 120px 0;
+  background: var(--color-bg-elevated);
+  border-top: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-border);
 }
 
 .container {
@@ -10,85 +13,60 @@
 }
 
 .card {
-  background-color: var(--color-surface-invert);
-  border-radius: var(--radius-xl);
-  padding: var(--space-16) var(--space-8);
+  background-color: var(--color-surface-2);
+  border-radius: 12px;
+  padding: 80px 48px;
   display: flex;
   flex-direction: column;
   align-items: center;
   text-align: center;
-  gap: var(--space-8);
+  gap: 32px;
   position: relative;
   overflow: hidden;
-}
-
-.card::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-image:
-    linear-gradient(rgba(255, 255, 255, 0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.03) 1px, transparent 1px);
-  background-size: 40px 40px;
-  pointer-events: none;
+  border: 1px solid var(--color-border);
 }
 
 .heading {
-  font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
-  font-weight: 700;
-  letter-spacing: -0.03em;
-  line-height: 1.2;
-  color: var(--color-text-invert);
+  font-size: clamp(32px, 4vw, 48px);
+  font-weight: 600;
+  letter-spacing: -2px;
+  line-height: 1.1;
+  color: var(--color-text-primary);
 }
 
 .sub {
-  font-size: var(--font-size-base);
-  color: #A1A1AA;
-  max-width: 480px;
-  line-height: 1.7;
-  margin-top: calc(var(--space-8) * -0.5);
+  font-size: 18px;
+  color: var(--color-text-secondary);
+  max-width: 560px;
+  line-height: 1.6;
+  margin-top: -16px;
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
+  gap: 12px;
   flex-wrap: wrap;
   justify-content: center;
 }
 
 @media (max-width: 768px) {
   .section {
-    padding: var(--space-12) 0;
+    padding: 80px 0;
   }
 
   .card {
-    padding: var(--space-12) var(--space-6);
+    padding: 64px 32px;
   }
 }
 
 @media (max-width: 480px) {
   .card {
-    padding: var(--space-10) var(--space-5);
+    padding: 48px 24px;
   }
 
   .heading {
-    font-size: clamp(var(--font-size-xl), 5vw, var(--font-size-2xl));
-  }
-
-  .sub {
-    font-size: var(--font-size-sm);
-  }
-
-  .actions {
-    flex-direction: column;
-    width: 100%;
-  }
-
-  .actions>* {
-    width: 100%;
+    font-size: 28px;
+    letter-spacing: -1px;
   }
 }

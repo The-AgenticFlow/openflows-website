@@ -1,18 +1,19 @@
-/* Button - Coder.com Enterprise Style */
+/* Button - Coder.com exact style */
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 0.5rem;
   font-family: var(--font-family);
-  font-weight: 500;
+  font-weight: 600;
   line-height: 1;
   white-space: nowrap;
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-full);
   transition: background-color var(--transition-fast),
     color var(--transition-fast),
     border-color var(--transition-fast),
     box-shadow var(--transition-fast),
+    transform var(--transition-fast),
     opacity var(--transition-fast);
   cursor: pointer;
   text-decoration: none;
@@ -26,46 +27,51 @@
 
 /* --- Sizes --- */
 .sm {
-  font-size: var(--font-size-sm);
-  padding: 0.5rem 1rem;
+  font-size: 14px;
+  padding: 8px 12px;
 }
 
 .md {
-  font-size: var(--font-size-sm);
-  padding: 0.625rem 1.25rem;
+  font-size: 16px;
+  padding: 12px 16px;
 }
 
 .lg {
-  font-size: var(--font-size-base);
-  padding: 0.75rem 1.5rem;
+  font-size: 16px;
+  padding: 16px 24px;
 }
 
-/* --- Variants --- */
+/* --- Variants */
 
-/* Primary CTA: solid dark background, white text */
+/* Primary: Electric Violet fill */
 .primary {
-  background-color: var(--color-text-primary);
-  color: var(--color-bg);
-  border: 1px solid var(--color-text-primary);
+  background-color: var(--color-accent);
+  color: #ffffff;
+  border: 1px solid var(--color-accent);
 }
 
 .primary:hover {
-  opacity: 0.85;
+  background-color: var(--color-accent-hover);
+  color: #ffffff;
+  border-color: var(--color-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 20px var(--color-accent-glow);
 }
 
-/* Secondary: transparent with border */
+/* Secondary: outline ghost with accent border */
 .secondary {
   background-color: transparent;
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
+  color: var(--color-accent);
+  border: 1px solid var(--color-accent);
 }
 
 .secondary:hover {
-  border-color: var(--color-border-hover);
-  background-color: var(--color-surface);
+  background-color: var(--color-accent-muted);
+  color: var(--color-accent);
+  border-color: var(--color-accent-hover);
 }
 
-/* Ghost: no border, subtle hover */
+/* Ghost: subtle */
 .ghost {
   background-color: transparent;
   color: var(--color-text-secondary);
@@ -74,10 +80,10 @@
 
 .ghost:hover {
   color: var(--color-text-primary);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
 }
 
-/* Outline: bordered, clean */
+/* Outline: light border */
 .outline {
   background-color: transparent;
   color: var(--color-text-primary);
@@ -87,13 +93,13 @@
 .outline:hover {
   color: var(--color-text-primary);
   border-color: var(--color-border-hover);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
 }
 
-/* Accent/Link: coder.com blue style */
+/* Cyan: accent on dark */
 .cyan {
   background-color: var(--color-accent);
-  color: #FFFFFF;
+  color: var(--color-bg);
   border: 1px solid var(--color-accent);
 }
 
@@ -101,10 +107,9 @@
   background-color: var(--color-accent-hover);
   border-color: var(--color-accent-hover);
   transform: translateY(-1px);
-  box-shadow: var(--shadow-md);
 }
 
-/* Glass variant — subtle, modern */
+/* Glass variant */
 .glassCyan {
   background-color: var(--color-accent-muted);
   color: var(--color-accent);
@@ -113,11 +118,23 @@
 
 .glassCyan:hover {
   background-color: var(--color-accent);
-  color: #FFFFFF;
+  color: var(--color-bg);
   border-color: var(--color-accent);
   transform: translateY(-1px);
 }
 
 .glassCyan:active {
   transform: translateY(0);
+}
+
+/* Dark surface variant */
+.onDark {
+  background-color: rgba(255, 255, 255, 0.1);
+  color: #FFFFFF;
+  border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.onDark:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+  border-color: rgba(255, 255, 255, 0.25);
 }

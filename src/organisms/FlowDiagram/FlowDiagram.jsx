@@ -224,17 +224,17 @@ export default function FlowDiagram() {
                                 <text x="450" y="118" textAnchor="middle" className={styles.nodeRole}>Builder</text>
 
                                 {/* SENTINEL */}
-                                <rect x="630" y="60" width="140" height="80" rx="12" fill="url(#nodeGrad)" stroke="#d4a03c" strokeWidth="2" />
+                                <rect x="630" y="60" width="140" height="80" rx="12" fill="url(#nodeGrad)" stroke="var(--color-agent-sentinel)" strokeWidth="2" />
                                 <text x="700" y="95" textAnchor="middle" className={styles.nodeTitle}>SENTINEL</text>
                                 <text x="700" y="118" textAnchor="middle" className={styles.nodeRole}>Reviewer</text>
 
                                 {/* VESSEL */}
-                                <rect x="170" y="280" width="140" height="80" rx="12" fill="url(#nodeGrad)" stroke="#5b8def" strokeWidth="2" />
+                                <rect x="170" y="280" width="140" height="80" rx="12" fill="url(#nodeGrad)" stroke="var(--color-agent-vessel)" strokeWidth="2" />
                                 <text x="240" y="315" textAnchor="middle" className={styles.nodeTitle}>VESSEL</text>
                                 <text x="240" y="338" textAnchor="middle" className={styles.nodeRole}>DevOps</text>
 
                                 {/* LORE */}
-                                <rect x="530" y="280" width="140" height="80" rx="12" fill="url(#nodeGrad)" stroke="#a78bfa" strokeWidth="2" />
+                                <rect x="530" y="280" width="140" height="80" rx="12" fill="url(#nodeGrad)" stroke="var(--color-agent-lore)" strokeWidth="2" />
                                 <text x="600" y="315" textAnchor="middle" className={styles.nodeTitle}>LORE</text>
                                 <text x="600" y="338" textAnchor="middle" className={styles.nodeRole}>Documenter</text>
                             </svg>

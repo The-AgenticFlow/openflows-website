@@ -2,7 +2,7 @@ import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
 import { vscDarkPlus } from 'react-syntax-highlighter/dist/esm/styles/prism'
-import { useTheme } from '@/contexts/ThemeContext'
+
 import styles from './MarkdownRenderer.module.css'
 
 // Language labels for display
@@ -57,8 +57,6 @@ function getLanguageLabel(lang) {
 }
 
 export default function MarkdownRenderer({ children, className = '' }) {
-  const { theme } = useTheme()
-
   return (
     <div className={`${styles.markdown} ${className}`}>
       <ReactMarkdown

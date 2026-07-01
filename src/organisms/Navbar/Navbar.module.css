@@ -1,4 +1,4 @@
-/* Navbar - Coder.com Enterprise Style */
+/* Navbar - Coder.com exact style */
 .navbar {
   position: fixed;
   top: 0;
@@ -8,37 +8,15 @@
   height: var(--nav-height);
   transition: background-color var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
   border-bottom: 1px solid transparent;
-  background-color: var(--color-bg);
+  background-color: rgba(245, 245, 245, 0.9);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
-.scrolled {
-  background-color: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
-  box-shadow: var(--shadow-sm);
-}
-
-.themeToggle {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 36px;
-  height: 36px;
-  border-radius: var(--radius-md);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface);
-  color: var(--color-text-secondary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.themeToggle:hover {
-  border-color: var(--color-border-hover);
-  color: var(--color-text-primary);
-  background: var(--color-surface-2);
-}
-
-.navbar.dropdownActive {
-  background-color: var(--color-bg);
+.scrolled,
+.dropdownActive,
+.searchActive {
+  background-color: rgba(245, 245, 245, 0.98);
   border-bottom-color: var(--color-border);
 }
 
@@ -52,14 +30,14 @@
   gap: var(--space-6);
 }
 
-/* Desktop Nav - Coder.com style: clean, minimal, with subtle hover */
+/* Desktop Nav */
 .desktopNav {
   display: flex;
   align-items: center;
-  gap: var(--space-1);
+  gap: 8px;
   flex: 1;
   justify-content: flex-start;
-  margin-left: var(--space-4);
+  margin-left: var(--space-6);
 }
 
 .navLinkWrapper {
@@ -73,29 +51,29 @@
   display: inline-flex;
   align-items: center;
   gap: 0.25rem;
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-md);
+  font-size: 16px;
+  font-weight: 400;
+  color: var(--color-text-primary);
+  padding: 8px 12px;
+  border-radius: 0;
   transition: color var(--transition-fast), background-color var(--transition-fast);
   text-decoration: none;
 }
 
 .navLink:hover {
   color: var(--color-text-primary);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
 }
 
 .navLink.active {
   color: var(--color-text-primary);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
 }
 
 .searchButton {
   background: none;
   border: none;
-  color: var(--color-text-secondary);
+  color: var(--color-text-primary);
   padding: 8px;
   cursor: pointer;
   transition: color var(--transition-fast);
@@ -103,24 +81,19 @@
   align-items: center;
   justify-content: center;
   margin-left: auto;
-  border-radius: var(--radius-md);
+  border-radius: 0;
 }
 
 .searchButton:hover {
   color: var(--color-text-primary);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
 }
 
-.navbar.searchActive {
-  background-color: var(--color-bg);
-  border-bottom-color: var(--color-border);
-}
-
-/* Search Overlay - Coder.com style: clean, minimal */
+/* Search Overlay */
 .searchOverlay {
   position: fixed;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.4);
+  background-color: rgba(0, 0, 0, 0.6);
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   z-index: 1000;
@@ -141,7 +114,7 @@
 .searchContent {
   width: 100%;
   max-width: 720px;
-  background-color: var(--color-bg);
+  background-color: var(--color-surface);
   border: 1px solid var(--color-border);
   padding: var(--space-8);
   border-radius: var(--radius-xl);
@@ -214,7 +187,7 @@
   font-weight: 500;
   color: var(--color-text-secondary);
   border: 1px solid var(--color-border);
-  background-color: var(--color-bg);
+  background-color: var(--color-surface);
   transition: all var(--transition-fast);
   white-space: nowrap;
 }
@@ -222,7 +195,7 @@
 .filterBtn:hover {
   border-color: var(--color-border-hover);
   color: var(--color-text-primary);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
 }
 
 .filterActive {
@@ -300,12 +273,12 @@
 }
 
 .resultItem:hover {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
   border-color: var(--color-border);
 }
 
 .resultItem:focus {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
   outline: none;
 }
 
@@ -315,13 +288,13 @@
   color: var(--color-text-muted);
 }
 
-/* Mega Panel - Coder.com style: clean dropdown */
+/* Mega Panel */
 .megaPanel {
   position: absolute;
   top: var(--nav-height);
   left: 0;
   right: 0;
-  background-color: var(--color-bg);
+  background-color: rgba(17, 17, 19, 0.98);
   border-bottom: 1px solid var(--color-border);
   box-shadow: var(--shadow-lg);
   overflow: hidden;
@@ -329,6 +302,8 @@
   transition: max-height 0.3s ease-out, opacity 0.2s ease;
   opacity: 0;
   pointer-events: none;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
 }
 
 .megaPanel.panelVisible {
@@ -345,8 +320,9 @@
 
 .dropdownGrid {
   display: grid;
-  grid-template-columns: 2fr 1fr;
+  grid-template-columns: 1fr;
   gap: var(--space-12);
+  max-width: 320px;
 }
 
 .dropdownHeading {
@@ -361,7 +337,7 @@
 .dropdownLinks {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: var(--space-1);
 }
 
 .megaLink {
@@ -370,24 +346,10 @@
   color: var(--color-text-primary);
   text-decoration: none;
   transition: color var(--transition-fast), transform var(--transition-base);
-  padding: var(--space-1) 0;
+  padding: var(--space-2) 0;
 }
 
 .megaLink:hover {
-  color: var(--color-accent);
-  transform: translateX(4px);
-}
-
-.advLink {
-  font-size: var(--font-size-sm);
-  font-weight: 500;
-  color: var(--color-text-secondary);
-  text-decoration: none;
-  transition: color var(--transition-fast), transform var(--transition-base);
-  padding: var(--space-1) 0;
-}
-
-.advLink:hover {
   color: var(--color-accent);
   transform: translateX(4px);
 }
@@ -426,7 +388,7 @@
 }
 
 .hamburger:hover {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
 }
 
 .bar {
@@ -491,7 +453,7 @@
 }
 
 .mobileNavLink:hover {
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
   color: var(--color-accent);
 }
 
@@ -528,7 +490,7 @@
 
 .mobileSubLink:hover {
   color: var(--color-accent);
-  background-color: var(--color-surface);
+  background-color: var(--color-surface-2);
 }
 
 .mobileActions {
@@ -537,15 +499,6 @@
   gap: var(--space-3);
   padding-top: var(--space-6);
   border-top: 1px solid var(--color-border);
-}
-
-.mobileThemeRow {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: var(--space-3) var(--space-4);
-  font-size: var(--font-size-sm);
-  color: var(--color-text-secondary);
 }
 
 @media (max-width: 900px) {

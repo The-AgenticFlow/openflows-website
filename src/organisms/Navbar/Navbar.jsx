@@ -1,21 +1,20 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
 import Logo from '@/atoms/Logo/Logo'
 import Button from '@/atoms/Button/Button'
-import { useTheme } from '@/contexts/ThemeContext'
+
 import styles from './Navbar.module.css'
 
 const NAV_DATA = [
   {
-    label: 'Agents',
+    label: 'Product',
     href: '/agents',
     dropdown: {
-      heading: 'Meet the Agents',
+      heading: 'Product',
       items: [
-        { label: 'NEXUS — Orchestrator', href: '/agents/nexus' },
-        { label: 'FORGE — Builder', href: '/agents/forge' },
-        { label: 'SENTINEL — Reviewer', href: '/agents/sentinel' },
-        { label: 'VESSEL — DevOps', href: '/agents/vessel' },
-        { label: 'LORE — Documenter', href: '/agents/lore' },
+        { label: 'Agents', href: '/agents' },
+        { label: 'How it works', href: '/#how-it-works' },
+        { label: 'Use cases', href: '/use-cases' },
+        { label: 'Demos', href: '/demos' },
       ]
     }
   },
@@ -26,58 +25,30 @@ const NAV_DATA = [
       heading: 'Documentation',
       items: [
         { label: 'Getting Started', href: '/docs/getting-started' },
-        { label: 'Installation Guide', href: '/docs/getting-started/installation' },
+        { label: 'Installation', href: '/docs/getting-started/installation' },
         { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
-        { label: 'Architecture Overview', href: '/docs/architecture' },
+        { label: 'Architecture', href: '/docs/architecture' },
         { label: 'FAQ', href: '/docs/faq' },
       ]
     }
   },
   {
-    label: 'Developer',
+    label: 'Resources',
     href: '/developer',
     dropdown: {
-      heading: 'Developer Resources',
+      heading: 'Resources',
       items: [
-        { label: 'All Articles', href: '/developer' },
-        { label: 'API Guides', href: '/developer' },
-        { label: 'Integrations', href: '/developer' },
-        { label: 'SDK & Tools', href: '/developer' },
-      ]
-    }
-  },
-  {
-    label: 'Research',
-    href: '/research',
-    dropdown: {
-      heading: 'Research',
-      items: [
-        { label: 'All Publications', href: '/research' },
-        { label: 'Papers', href: '/research' },
-        { label: 'Preprints', href: '/research' },
-        { label: 'Technical Reports', href: '/research' },
-      ]
-    }
-  },
-  {
-    label: 'Company',
-    href: '/about',
-    dropdown: {
-      heading: 'About OpenFlows',
-      items: [
-        { label: 'About Us', href: '/about' },
+        { label: 'Developer Hub', href: '/developer' },
+        { label: 'Research', href: '/research' },
         { label: 'Blog', href: '/blog' },
-        { label: 'Use Cases', href: '/use-cases' },
-        { label: 'Demos', href: '/demos' },
-        { label: 'Open Source', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+        { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
       ]
     }
   },
-  { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+  { label: 'Company', href: '/about' },
 ]
 
 export default function Navbar() {
-  const { theme, toggleTheme } = useTheme()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
@@ -219,34 +190,10 @@ export default function Navbar() {
           <div className={styles.actions}>
             {!isSearchOpen && (
               <>
-                <button
-                  className={styles.themeToggle}
-                  onClick={toggleTheme}
-                  aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-                  title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-                >
-                  {theme === 'light' ? (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                    </svg>
-                  ) : (
-                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                      <circle cx="12" cy="12" r="5"></circle>
-                      <line x1="12" y1="1" x2="12" y2="3"></line>
-                      <line x1="12" y1="21" x2="12" y2="23"></line>
-                      <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                      <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                      <line x1="1" y1="12" x2="3" y2="12"></line>
-                      <line x1="21" y1="12" x2="23" y2="12"></line>
-                      <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                      <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                    </svg>
-                  )}
-                </button>
                 <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer">
                   GitHub
                 </Button>
-                <Button variant="cyan" size="sm" href="/docs/getting-started">
+                <Button variant="primary" size="sm" href="/docs/getting-started">
                   Get Started
                 </Button>
               </>
@@ -274,33 +221,21 @@ export default function Navbar() {
           }}
         >
           <div className={styles.panelContent}>
-            {activeDropdown !== null && NAV_DATA[activeDropdown].dropdown && (
-              <div className={styles.dropdownGrid}>
-                <div className={styles.dropdownMain}>
-                  <p className={styles.dropdownHeading}>{NAV_DATA[activeDropdown].dropdown.heading}</p>
-                  <div className={styles.dropdownLinks}>
-                    {NAV_DATA[activeDropdown].dropdown.items.map((subItem) => (
-                      <a key={subItem.label} href={subItem.href} className={styles.megaLink}>
-                        {subItem.label}
-                        {subItem.external && <span className={styles.externalArrow}>↗</span>}
-                      </a>
-                    ))}
-                  </div>
-                </div>
-                {NAV_DATA[activeDropdown].dropdown.advancements && (
-                  <div className={styles.dropdownSide}>
-                    <p className={styles.dropdownHeading}>Latest Advancements</p>
-                    <div className={styles.dropdownLinks}>
-                      {NAV_DATA[activeDropdown].dropdown.advancements.map((adv) => (
-                        <a key={adv.label} href={adv.href} className={styles.advLink}>
-                          {adv.label}
-                        </a>
-                      ))}
+                {activeDropdown !== null && NAV_DATA[activeDropdown].dropdown && (
+                  <div className={styles.dropdownGrid}>
+                    <div className={styles.dropdownMain}>
+                      <p className={styles.dropdownHeading}>{NAV_DATA[activeDropdown].dropdown.heading}</p>
+                      <div className={styles.dropdownLinks}>
+                        {NAV_DATA[activeDropdown].dropdown.items.map((subItem) => (
+                          <a key={subItem.label} href={subItem.href} className={styles.megaLink}>
+                            {subItem.label}
+                            {subItem.external && <span className={styles.externalArrow}>↗</span>}
+                          </a>
+                        ))}
+                      </div>
                     </div>
                   </div>
                 )}
-              </div>
-            )}
           </div>
         </div>
       </header>
@@ -402,33 +337,7 @@ export default function Navbar() {
           ))}
         </nav>
         <div className={styles.mobileActions}>
-          <div className={styles.mobileThemeRow}>
-            <span>Theme</span>
-            <button
-              className={styles.themeToggle}
-              onClick={toggleTheme}
-              aria-label={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
-            >
-              {theme === 'light' ? (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"></path>
-                </svg>
-              ) : (
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="12" cy="12" r="5"></circle>
-                  <line x1="12" y1="1" x2="12" y2="3"></line>
-                  <line x1="12" y1="21" x2="12" y2="23"></line>
-                  <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"></line>
-                  <line x1="18.36" y1="18.36" x2="19.78" y2="19.78"></line>
-                  <line x1="1" y1="12" x2="3" y2="12"></line>
-                  <line x1="21" y1="12" x2="23" y2="12"></line>
-                  <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"></line>
-                  <line x1="18.36" y1="5.64" x2="19.78" y2="4.22"></line>
-                </svg>
-              )}
-            </button>
-          </div>
-          <Button variant="cyan" size="md" href="/docs/getting-started" onClick={() => setMenuOpen(false)} style={{ width: '100%', justifyContent: 'center' }}>
+          <Button variant="primary" size="md" href="/docs/getting-started" onClick={() => setMenuOpen(false)} style={{ width: '100%', justifyContent: 'center' }}>
             Get Started
           </Button>
         </div>

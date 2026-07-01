@@ -14,7 +14,7 @@ export default function GetStartedBanner() {
           </p>
           <div className={styles.actions}>
             <Button
-              variant="outline"
+              variant="primary"
               size="md"
               href="https://github.com/The-AgenticFlow/OpenFlows"
               target="_blank"
@@ -23,7 +23,7 @@ export default function GetStartedBanner() {
               View on GitHub
             </Button>
             <Button
-              variant="cyan"
+              variant="secondary"
               size="md"
               href="/docs/getting-started/installation"
             >

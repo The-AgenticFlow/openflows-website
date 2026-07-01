@@ -92,8 +92,8 @@ export default function About() {
             </div>
             <div className={styles.splitImageWrap}>
               <img
-                src="https://images.unsplash.com/photo-1677442136019-21780ecad995?auto=format&fit=crop&q=80&w=900"
-                alt="AI neural network visualization"
+                src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=900"
+                alt="Engineering team collaborating"
                 className={styles.splitImage}
               />
             </div>
@@ -147,8 +147,8 @@ export default function About() {
           <div className={`${styles.splitGrid} ${styles.splitReverse}`}>
             <div className={styles.splitImageWrap}>
               <img
-                src="https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&q=80&w=900"
-                alt="Open landscape representing open source"
+                src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=900"
+                alt="Developers collaborating on open source"
                 className={styles.splitImage}
               />
             </div>

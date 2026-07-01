@@ -3,9 +3,9 @@
   display: inline-flex;
   align-items: center;
   font-size: var(--font-size-xs);
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.04em;
-  padding: 0.2rem 0.6rem;
+  padding: 0.25rem 0.625rem;
   border-radius: var(--radius-full);
   border: 1px solid var(--color-border);
   color: var(--color-text-secondary);
@@ -13,7 +13,7 @@
   text-transform: uppercase;
 }
 
-/* Accent badge - uses the primary link color */
+/* Accent badge */
 .accent {
   border-color: var(--color-accent-border);
   color: var(--color-accent);
@@ -22,7 +22,14 @@
 
 /* Agent badge - subtle purple tint */
 .agent {
-  border-color: rgba(124, 58, 237, 0.2);
+  border-color: rgba(139, 92, 246, 0.25);
   color: var(--color-agent-forge);
-  background: rgba(124, 58, 237, 0.08);
+  background: rgba(139, 92, 246, 0.1);
+}
+
+/* Success badge */
+.success {
+  border-color: rgba(52, 211, 153, 0.25);
+  color: var(--color-success);
+  background: var(--color-success-bg);
 }

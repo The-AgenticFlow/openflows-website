@@ -18,7 +18,7 @@ export const AGENT_DATA = {
       "CI Readiness Enforcement",
       "SharedStore State Supervision"
     ],
-    image: "https://images.unsplash.com/photo-1639322537228-f710d846310a?auto=format&fit=crop&q=80&w=1000"
+    image: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&q=80&w=1000"
   },
   forge: {
     name: "FORGE",
@@ -38,7 +38,7 @@ export const AGENT_DATA = {
       "Secret Scanning & Redaction Before Push",
       "GitHub MCP Pull Request Creation"
     ],
-    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?auto=format&fit=crop&q=80&w=1000"
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158?auto=format&fit=crop&q=80&w=1000"
   },
   sentinel: {
     name: "SENTINEL",
@@ -58,7 +58,7 @@ export const AGENT_DATA = {
       "Structured Machine-Readable Feedback",
       "Read-Only Permissions - Cannot Modify Code"
     ],
-    image: "https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?auto=format&fit=crop&q=80&w=1000"
+    image: "https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&q=80&w=1000"
   },
   vessel: {
     name: "VESSEL",
@@ -98,6 +98,6 @@ export const AGENT_DATA = {
       "GitHub MCP Documentation Commits",
       "Read-Only Access to Application Code"
     ],
-    image: "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&q=80&w=1000"
+    image: "https://images.unsplash.com/photo-1455390582262-044cdead277a?auto=format&fit=crop&q=80&w=1000"
   }
 };

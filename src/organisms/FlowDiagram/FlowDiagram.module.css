@@ -1,12 +1,28 @@
 /* ===== FlowDiagram Section - Coder.com Enterprise Style ===== */
 .section {
-    padding-block: var(--space-20);
+    padding-block: var(--space-24);
+    background: var(--color-bg);
+    position: relative;
+}
+
+.section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image:
+        radial-gradient(circle at 50% 50%, rgba(16, 185, 129, 0.04) 0%, transparent 50%);
+    pointer-events: none;
 }
 
 .container {
     max-width: var(--max-width);
     margin-inline: auto;
     padding-inline: var(--space-6);
+    position: relative;
+    z-index: 1;
 }
 
 /* ===== Header ===== */
@@ -19,24 +35,19 @@
 }
 
 .eyebrow {
-    font-size: var(--font-size-xs);
-    color: var(--color-accent);
-    text-transform: uppercase;
-    letter-spacing: 0.1em;
-    font-weight: 600;
-    margin-bottom: var(--space-3);
+    composes: eyebrow from global;
 }
 
 .title {
-    font-size: clamp(var(--font-size-2xl), 4vw, var(--font-size-4xl));
-    font-weight: 600;
+    font-size: clamp(var(--font-size-3xl), 4vw, var(--font-size-5xl));
+    font-weight: 700;
     letter-spacing: -0.03em;
-    line-height: 1.15;
+    line-height: 1.1;
     margin-bottom: var(--space-4);
 }
 
 .subtitle {
-    font-size: var(--font-size-base);
+    font-size: var(--font-size-lg);
     color: var(--color-text-secondary);
     line-height: 1.7;
 }
@@ -46,8 +57,9 @@
     background: var(--color-surface);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-xl);
-    padding: var(--space-6);
+    padding: var(--space-8);
     position: relative;
+    box-shadow: var(--shadow-lg);
 }
 
 /* ===== Zoom Controls ===== */
@@ -56,14 +68,13 @@
     align-items: center;
     gap: var(--space-2);
     position: absolute;
-    top: var(--space-3);
-    right: var(--space-3);
+    top: var(--space-4);
+    right: var(--space-4);
     z-index: 10;
-    background: var(--color-bg);
+    background: var(--color-surface-2);
     border: 1px solid var(--color-border);
     border-radius: var(--radius-md);
     padding: 4px;
-    box-shadow: var(--shadow-sm);
 }
 
 .zoomBtn {
@@ -84,24 +95,17 @@
 }
 
 .zoomBtn:hover {
-    background: var(--color-surface-2);
+    background: var(--color-surface-3);
     color: var(--color-text-primary);
 }
 
 .zoomBtn:active {
     transform: scale(0.95);
-    background: transparent;
-    color: var(--color-text-secondary);
 }
 
 .zoomBtn:focus-visible {
     outline: 2px solid var(--color-accent);
     outline-offset: 2px;
-}
-
-.zoomBtn:focus:not(:focus-visible) {
-    outline: none;
-    background: transparent;
 }
 
 .zoomLevel {
@@ -113,7 +117,7 @@
     padding-right: 4px;
 }
 
-/* ===== Diagram Viewport (pan/zoom container) ===== */
+/* ===== Diagram Viewport ===== */
 .diagramViewport {
     overflow: hidden;
     border-radius: var(--radius-md);
@@ -136,26 +140,28 @@
 .nodeTitle {
     fill: var(--color-text-primary);
     font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.04em;
+    font-weight: 700;
+    letter-spacing: 0.02em;
 }
 
 .nodeRole {
     fill: var(--color-text-muted);
     font-size: 11px;
-    font-weight: 400;
+    font-weight: 500;
 }
 
 .flowLabelSvg {
     fill: var(--color-accent);
     font-size: 10px;
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
 }
 
 .flowLabelSvgMuted {
     fill: var(--color-text-muted);
     font-size: 10px;
-    font-style: italic;
+    font-weight: 500;
 }
 
 /* ===== Responsive ===== */
@@ -165,13 +171,17 @@
     }
 
     .subtitle {
-        font-size: var(--font-size-sm);
+        font-size: var(--font-size-base);
+    }
+
+    .diagramWrap {
+        padding: var(--space-6);
     }
 }
 
 @media (max-width: 600px) {
     .section {
-        padding-block: var(--space-12);
+        padding-block: var(--space-16);
     }
 
     .container {
@@ -179,8 +189,8 @@
     }
 
     .diagramWrap {
-        padding: var(--space-3);
-        border-radius: var(--radius-md);
+        padding: var(--space-4);
+        border-radius: var(--radius-lg);
     }
 
     .diagramSvg {
@@ -188,7 +198,7 @@
     }
 
     .title {
-        font-size: clamp(var(--font-size-xl), 5vw, var(--font-size-3xl));
+        font-size: clamp(var(--font-size-2xl), 5vw, var(--font-size-3xl));
     }
 
     .zoomControls {
