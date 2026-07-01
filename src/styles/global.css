@@ -1,50 +1,51 @@
 /* ===================================================
    GLOBAL STYLES - OpenFlows
-   Light grayish enterprise aesthetic
+   IZHUB-inspired parchment + aubergine design system
    =================================================== */
 
-/* --- Design Tokens --- */
+/* --- Design Tokens (IZHUB landing page) --- */
 :root {
-  /* Light grayish palette */
-  --color-bg: #f5f5f5;
-  --color-bg-elevated: #ffffff;
-  --color-surface: #ffffff;
-  --color-surface-2: #f0f0f0;
-  --color-surface-3: #e0e0e0;
-  --color-surface-invert: #09090b;
-  --color-border: #d7d7d7;
-  --color-border-hover: #b0b0b0;
+  /* Parchment canvas palette */
+  --color-bg: #f2f0eb;            /* parchment-canvas / background 43 21% 94% */
+  --color-bg-elevated: #ffffff;   /* bone */
+  --color-surface: #ffffff;       /* bone / card 0 0% 100% */
+  --color-surface-2: #e3e3e2;     /* fog / secondary 60 2% 89% */
+  --color-surface-3: #dcd7d3;     /* driftwood */
+  --color-surface-invert: #292827; /* ink */
+  --color-border: #dcd7d3;        /* driftwood / border 27 12% 85% */
+  --color-border-hover: #c8c4bf;
 
-  --color-text-primary: #09090b;
-  --color-text-secondary: #57575e;
-  --color-text-muted: #a9a9a9;
-  --color-text-link: #09090b;
-  --color-text-invert: #ffffff;
+  --color-text-primary: #292827;  /* ink / foreground 30 3% 16% */
+  --color-text-secondary: #666;   /* graphite / muted-foreground 0 0% 40% */
+  --color-text-muted: #999;
+  --color-text-link: #0d4943;     /* aubergine */
+  --color-text-invert: #ffffff;   /* bone */
 
-  /* OpenFlows accent: Emerald Green */
-  --color-accent: #10b981;
-  --color-accent-hover: #34d399;
-  --color-accent-muted: rgba(16, 185, 129, 0.08);
-  --color-accent-border: rgba(16, 185, 129, 0.2);
-  --color-accent-glow: rgba(16, 185, 129, 0.2);
+  /* Primary accent: Aubergine (dark teal) */
+  --color-accent: #0d4943;        /* aubergine / primary 174 70% 17% */
+  --color-accent-hover: #08302d;  /* aubergine-deep / indigo-glow */
+  --color-accent-muted: #0d49431f;/* lavender-chip */
+  --color-accent-border: rgba(13, 73, 67, 0.2);
+  --color-accent-glow: rgba(13, 73, 67, 0.2);
+  --color-accent-light: #d6ece9; /* primary-light 174 38% 94% */
 
-  /* Secondary accent: Indigo-Blue */
-  --color-secondary: #3f51b5;
-  --color-secondary-muted: rgba(63, 81, 181, 0.08);
+  /* Secondary accent */
+  --color-secondary: #e3e3e2;     /* fog / accent 60 2% 89% */
+  --color-secondary-muted: rgba(227, 227, 226, 0.5);
 
-  /* Highlight: Cyan (used sparingly for glows) */
-  --color-highlight: #00bcd4;
-  --color-highlight-glow: rgba(0, 188, 212, 0.2);
+  /* Highlight */
+  --color-highlight: #0d4943;
+  --color-highlight-glow: rgba(13, 73, 67, 0.15);
 
   /* Semantic colors */
-  --color-success: #34D399;
-  --color-success-bg: rgba(52, 211, 153, 0.12);
-  --color-warning: #FBBF24;
-  --color-warning-bg: rgba(251, 191, 36, 0.12);
-  --color-destructive: #F87171;
-  --color-destructive-bg: rgba(248, 113, 113, 0.12);
-  --color-info: #60A5FA;
-  --color-info-bg: rgba(96, 165, 250, 0.12);
+  --color-success: #0d4943;
+  --color-success-bg: rgba(13, 73, 67, 0.12);
+  --color-warning: #c4933a;
+  --color-warning-bg: rgba(196, 147, 58, 0.12);
+  --color-destructive: #c44545;
+  --color-destructive-bg: rgba(196, 69, 69, 0.12);
+  --color-info: #5a7a8a;
+  --color-info-bg: rgba(90, 122, 138, 0.12);
 
   /* Agent colors */
   --color-agent-nexus: #69bee2;
@@ -98,17 +99,20 @@
   --radius-2xl: 20px;
   --radius-full: 9999px;
 
-  /* Shadows (light theme) */
-  --shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
-  --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.08);
-  --shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.1);
-  --shadow-xl: 0 24px 64px rgba(0, 0, 0, 0.12);
-  --shadow-glow: 0 0 40px rgba(16, 185, 129, 0.12);
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(20, 20, 19, 0.05);
+  --shadow-md: 0 1px 2px rgba(20, 20, 19, 0.1), 0 4px 12px rgba(20, 20, 19, 0.06);
+  --shadow-lg: 0 12px 32px rgba(20, 20, 19, 0.08);
+  --shadow-xl: 0 24px 64px rgba(20, 20, 19, 0.1);
+  --shadow-glow: 0 0 40px rgba(13, 73, 67, 0.12);
 
   /* Transitions */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 250ms cubic-bezier(0.4, 0, 0.2, 1);
+  --transition-base: 200ms ease;
   --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Focus ring */
+  --color-ring: #0d4943;
 }
 
 /* --- Reset --- */

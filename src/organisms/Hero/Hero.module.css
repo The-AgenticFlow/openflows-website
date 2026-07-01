@@ -15,7 +15,7 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(circle at 90% 10%, rgba(16, 185, 129, 0.08) 0%, transparent 50%),
+    radial-gradient(circle at 90% 10%, rgba(13, 73, 67, 0.08) 0%, transparent 50%),
     radial-gradient(circle at 10% 90%, rgba(0, 188, 212, 0.04) 0%, transparent 50%);
 }
 
@@ -79,7 +79,7 @@
 .productFrame {
   border-radius: 12px;
   overflow: hidden;
-  background: linear-gradient(45deg, #e8f5f0, rgba(16, 185, 129, 0.15));
+  background: linear-gradient(45deg, #f2f0eb, rgba(13, 73, 67, 0.08));
   border: 1px solid var(--color-border);
   box-shadow: 0 24px 80px rgba(0, 0, 0, 0.08);
 }

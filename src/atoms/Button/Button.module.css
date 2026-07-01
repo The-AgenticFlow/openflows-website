@@ -1,20 +1,15 @@
-/* Button - Coder.com exact style */
+/* Button - IZHUB-style dark teal gradient */
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.5rem;
+  gap: 12px;
   font-family: var(--font-family);
   font-weight: 600;
   line-height: 1;
   white-space: nowrap;
-  border-radius: var(--radius-full);
-  transition: background-color var(--transition-fast),
-    color var(--transition-fast),
-    border-color var(--transition-fast),
-    box-shadow var(--transition-fast),
-    transform var(--transition-fast),
-    opacity var(--transition-fast);
+  border-radius: 12px;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
   cursor: pointer;
   text-decoration: none;
   outline: none;
@@ -22,53 +17,56 @@
 }
 
 .button:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-accent);
+  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-ring);
 }
 
 /* --- Sizes --- */
 .sm {
   font-size: 14px;
-  padding: 8px 12px;
+  min-height: 36px;
+  padding: 4px 12px 4px 14px;
 }
 
 .md {
   font-size: 16px;
-  padding: 12px 16px;
+  min-height: 40px;
+  padding: 4px 4px 4px 16px;
 }
 
 .lg {
   font-size: 16px;
-  padding: 16px 24px;
+  min-height: 48px;
+  padding: 6px 6px 6px 20px;
 }
 
 /* --- Variants */
 
-/* Primary: Electric Violet fill */
+/* Primary: dark teal gradient */
 .primary {
-  background-color: var(--color-accent);
+  background: linear-gradient(#0d4943 0%, #0b3c37 100%);
   color: #ffffff;
-  border: 1px solid var(--color-accent);
+  border: 1px solid #08302d;
+  box-shadow: 0 0 0 1px #08302d59, 0 1px 2px rgba(20, 20, 19, 0.24);
 }
 
 .primary:hover {
-  background-color: var(--color-accent-hover);
-  color: #ffffff;
-  border-color: var(--color-accent-hover);
-  transform: translateY(-1px);
-  box-shadow: 0 4px 20px var(--color-accent-glow);
+  background: linear-gradient(#0e524c 0%, #0c443e 100%);
+  border-color: #093633;
+  box-shadow: 0 0 0 1px #09363359, 0 2px 6px rgba(13, 73, 67, 0.3);
 }
 
-/* Secondary: outline ghost with accent border */
+/* Secondary: outline ghost with teal border */
 .secondary {
-  background-color: transparent;
-  color: var(--color-accent);
-  border: 1px solid var(--color-accent);
+  background: transparent;
+  color: #0d4943;
+  border: 1px solid #08302d;
+  box-shadow: 0 1px 2px rgba(20, 20, 19, 0.1);
 }
 
 .secondary:hover {
-  background-color: var(--color-accent-muted);
-  color: var(--color-accent);
-  border-color: var(--color-accent-hover);
+  background: rgba(13, 73, 67, 0.06);
+  border-color: #0d4943;
+  color: #0b3c37;
 }
 
 /* Ghost: subtle */
@@ -96,35 +94,34 @@
   background-color: var(--color-surface-2);
 }
 
-/* Cyan: accent on dark */
+/* Cyan: accent fill */
 .cyan {
-  background-color: var(--color-accent);
-  color: var(--color-bg);
-  border: 1px solid var(--color-accent);
+  background: linear-gradient(#0d4943 0%, #0b3c37 100%);
+  color: #ffffff;
+  border: 1px solid #08302d;
+  box-shadow: 0 0 0 1px #08302d59, 0 1px 2px rgba(20, 20, 19, 0.24);
 }
 
 .cyan:hover {
-  background-color: var(--color-accent-hover);
-  border-color: var(--color-accent-hover);
-  transform: translateY(-1px);
+  background: linear-gradient(#0e524c 0%, #0c443e 100%);
+  border-color: #093633;
 }
 
 /* Glass variant */
 .glassCyan {
-  background-color: var(--color-accent-muted);
-  color: var(--color-accent);
-  border: 1px solid var(--color-accent-border);
+  background-color: rgba(13, 73, 67, 0.08);
+  color: #0d4943;
+  border: 1px solid rgba(13, 73, 67, 0.2);
 }
 
 .glassCyan:hover {
-  background-color: var(--color-accent);
-  color: var(--color-bg);
-  border-color: var(--color-accent);
-  transform: translateY(-1px);
+  background: linear-gradient(#0d4943 0%, #0b3c37 100%);
+  color: #ffffff;
+  border-color: #08302d;
 }
 
 .glassCyan:active {
-  transform: translateY(0);
+  background: linear-gradient(#0b3c37 0%, #09322e 100%);
 }
 
 /* Dark surface variant */
