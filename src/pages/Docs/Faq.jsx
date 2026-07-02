@@ -8,7 +8,7 @@ const FAQ_ITEMS = [
   },
   {
     title: 'Can I run OpenFlows on a private repository?',
-    content: <p>Yes. Your GitHub PAT needs <code>repo</code> + <code>workflow</code> scopes. Set <code>GITHUB_REPOSITORY=owner/repo</code> in your <code>.env</code>. OpenFlows treats private repos identically - it clones, creates worktrees, writes code, and opens PRs the same way. Each agent can have its own token via <code>AGENT_FORGE_GITHUB_TOKEN</code> etc. for rate limit isolation.</p>,
+    content: <p>Yes. Set <code>GITHUB_REPOSITORY=owner/repo</code> in your <code>.env</code>. In Coder mode, GitHub identity is handled by Coder external auth — configure a GitHub external auth provider in your Coder deployment and include the <code>git-config</code> module in your workspace templates. OpenFlows treats private repos identically: it clones, creates worktrees, writes code, and opens PRs the same way as public repos.</p>,
   },
   {
     title: 'How does SENTINEL decide whether to approve or reject code?',

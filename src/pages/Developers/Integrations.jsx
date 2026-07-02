@@ -8,18 +8,18 @@ export default function Integrations() {
       <div className={styles.page}>
         <p className={styles.eyebrow}>Developers</p>
         <h1 className={styles.title}>Integration Guides</h1>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
+        <p style={{ color: 'var(--color-graphite)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
           Connect OpenFlows to your existing development tools and workflows. Each guide provides step-by-step instructions with code samples.
         </p>
 
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>GitHub Integration</h2>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>OpenFlows integrates deeply with GitHub. Here's how to set up the connection:</p>
-        <CodeBlock lang="bash">{`# 1. Create a GitHub Personal Access Token
-# Go to: Settings → Developer settings → Personal access tokens
-# Required scopes: repo, workflow, read:org
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>GitHub Integration</h2>
+        <p style={{ color: 'var(--color-graphite)', marginBottom: '1rem' }}>OpenFlows integrates deeply with GitHub. Here's how to set up the connection:</p>
+        <CodeBlock lang="bash">{`# 1. Configure GitHub external auth in your Coder deployment
+# Go to: Coder dashboard → External Auth → Add GitHub provider
+# This lets each workspace inherit its GitHub identity from the logged-in user
 
-# 2. Set the environment variable
-export GITHUB_PERSONAL_ACCESS_TOKEN="ghp_your_token_here"
+# 2. Include the git-config module in your workspace templates
+# This wires git author/identity and injects the GitHub token for git ops + MCP
 
 # 3. Set your target repository
 export GITHUB_REPOSITORY="my-org/my-project"
@@ -27,8 +27,8 @@ export GITHUB_REPOSITORY="my-org/my-project"
 # 4. Run the setup wizard
 openflows-setup`}</CodeBlock>
 
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>LiteLLM Proxy Integration</h2>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>Route each agent to a different model backend using a LiteLLM proxy:</p>
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>LiteLLM Proxy Integration</h2>
+        <p style={{ color: 'var(--color-graphite)', marginBottom: '1rem' }}>Route each agent to a different model backend using a LiteLLM proxy:</p>
         <CodeBlock lang="yaml">{`# litellm_config.yaml
 model_list:
   - model_name: forge-key
@@ -46,8 +46,8 @@ model_list:
       model: groq/llama-3.3-70b-versatile
       api_key: os.environ/GROQ_API_KEY`}</CodeBlock>
 
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>Docker Compose</h2>
-        <p style={{ color: 'var(--color-text-secondary)', marginBottom: '1rem' }}>Run OpenFlows with Redis and LiteLLM proxy via Docker Compose:</p>
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>Docker Compose</h2>
+        <p style={{ color: 'var(--color-graphite)', marginBottom: '1rem' }}>Run OpenFlows with Redis and LiteLLM proxy via Docker Compose:</p>
         <CodeBlock lang="yaml">{`# docker-compose.yml
 services:
   openflows:
@@ -65,7 +65,7 @@ services:
     ports: ["4000:4000"]
     command: ["--config", "/app/config.yaml"]`}</CodeBlock>
 
-        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-text-primary)', borderBottom: '1px solid var(--color-border)', paddingBottom: '0.5rem' }}>CLI Reference</h2>
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>CLI Reference</h2>
         <CodeBlock lang="bash">{`openflows              # Start the autonomous team
 openflows-setup        # Interactive TUI configuration wizard
 openflows-dashboard    # Live worker monitoring dashboard

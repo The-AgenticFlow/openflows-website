@@ -13,11 +13,6 @@ const PREREQS = [
     install: 'https://nodejs.org',
   },
   {
-    name: 'GitHub PAT',
-    detail: 'A single token with repo scope for issue assignment and PR operations. In Coder mode, GitHub identity is handled by Coder external auth.',
-    install: 'https://github.com/settings/tokens',
-  },
-  {
     name: 'LLM access',
     detail: 'Coder AI Gateway (primary) or LiteLLM proxy (fallback) for self-hosted providers',
     install: 'Configure in Coder dashboard',
@@ -160,7 +155,7 @@ openflows --version`}</CodeBlock>
       <p>
         OpenFlows needs a <code>.env</code> file with Coder credentials and a
         <code>registry.json</code> that maps each agent to its LLM model through the Coder AI
-        Gateway. GitHub identity is handled by Coder external auth — no per-agent PATs required.
+        Gateway. GitHub identity is handled by Coder external auth.
         You can generate both with the interactive wizard, or write them manually.
       </p>
 
@@ -219,10 +214,6 @@ AI_GATEWAY_URL=https://coder.your-org.com/ai-gateway
 # include the git-config module in your workspace templates. Each agent
 # then acts under its logged-in Coder user's GitHub identity — git commits,
 # the GitHub MCP server, and PRs are all auditable to that identity.
-# No per-agent PATs are required.
-#
-# Local mode fallback only — used when CODER_ACCESS_URL is unset:
-# GITHUB_PERSONAL_ACCESS_TOKEN=ghp_token_with_repo_scope
 
 # ── Debug / Logging ─────────────────────────────
 RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
@@ -236,7 +227,7 @@ RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
         credentials itself. Configure a <strong>GitHub</strong> external auth provider in your Coder
         deployment and include the <code>git-config</code> module in your workspace templates. Every
         agent then acts under its own logged-in Coder user's GitHub identity — git commits, the
-        GitHub MCP server, and PRs are all auditable to that identity. No per-agent PATs, and nothing
+        GitHub MCP server, and PRs are all auditable to that identity. Nothing
         to rotate in <code>.env</code>.
       </Callout>
 
@@ -292,7 +283,7 @@ RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
   Node.js:            v20.11.0
   Code agent CLI:     claude-code (Coder Registry module)
   Git:                2.44.0
-  GitHub identity:     via Coder external auth (no PATs)
+  GitHub identity:     via Coder external auth
   AI Gateway:         reachable
   GITHUB_REPOSITORY:  owner/repo
   registry.json:      valid (workspace_provider: coder)`}</CodeBlock>

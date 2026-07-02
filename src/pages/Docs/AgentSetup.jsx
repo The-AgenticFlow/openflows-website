@@ -81,13 +81,10 @@ export default function AgentSetup() {
       <p><strong>Disable an agent:</strong></p>
       <CodeBlock lang="json">{'{ "id": "lore", "active": false }  // LORE will not be invoked'}</CodeBlock>
 
-      <p><strong>Per-agent GitHub tokens</strong> (for rate limit isolation):</p>
+      <p><strong>GitHub identity</strong> (handled by Coder):</p>
       <CodeBlock lang="bash">{`# In Coder mode, GitHub identity is handled by Coder external auth.
-# No per-agent PATs are required — each agent inherits its GitHub
-# identity from the logged-in Coder user via the git-config module.
-#
-# Local mode fallback only — used when CODER_ACCESS_URL is unset:
-# export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_token_with_repo_scope`}</CodeBlock>
+# Each agent inherits its GitHub identity from the logged-in Coder
+# user via the git-config module — nothing to configure here.`}</CodeBlock>
 
       <h2>Recommended Model Assignments</h2>
       <DocsTable headers={['Agent', 'Recommended Model', 'Why']} rows={MODEL_ROWS} />
