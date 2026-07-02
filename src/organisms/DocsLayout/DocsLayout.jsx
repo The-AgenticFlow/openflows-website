@@ -1,5 +1,6 @@
 import { useLocation } from 'react-router-dom'
 import Layout from '@/organisms/Layout/Layout'
+import { TableOfContents } from '@/molecules/DocComponents/DocComponents'
 
 // Sidebar navigation tree
 const SIDEBAR = [
@@ -75,6 +76,7 @@ export default function DocsLayout({ children, breadcrumbs }) {
             )}
             {children}
           </main>
+          <TableOfContents />
         </div>
       </div>
     </Layout>
