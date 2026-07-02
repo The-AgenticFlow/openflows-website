@@ -4,7 +4,7 @@ import { Accordion } from '@/molecules/DocComponents/DocComponents'
 const FAQ_ITEMS = [
   {
     title: 'What LLM providers does OpenFlows support?',
-    content: <p>OpenFlows supports any provider reachable through the <strong>Coder AI Gateway</strong> — Anthropic, OpenAI, Google Gemini, Fireworks, Groq, Bedrock, and self-hosted endpoints. Each agent can use a different provider and model, configured in <code>orchestration/agent/registry.json</code>. For air-gapped or self-hosted deployments, OpenFlows falls back to a LiteLLM proxy. API keys are managed centrally by the Gateway and never exposed inside workspaces.</p>,
+    content: <p>OpenFlows routes all LLM calls through the <strong>Coder AI Gateway</strong>, which natively supports Anthropic, OpenAI, Google, and Bedrock. Any OpenAI-compatible endpoint (Fireworks, Groq, Together, etc.) also works through the Gateway. Each agent can use a different provider and model, configured in <code>orchestration/agent/registry.json</code>. For air-gapped or self-hosted deployments, OpenFlows falls back to a LiteLLM proxy pointing to local or self-hosted models. API keys are managed centrally by the Gateway and never exposed inside workspaces.</p>,
   },
   {
     title: 'What is a Coder Registry module?',
