@@ -8,7 +8,6 @@ const FIELD_ROWS = [
   ['<code>instances</code>', 'int', 'Number of parallel worker slots. FORGE with <code>instances: 2</code> → <code>forge-1</code>, <code>forge-2</code>.'],
   ['<code>model_backend</code>', 'string', 'Model identifier passed to the LLM client or LiteLLM proxy.'],
   ['<code>routing_key</code>', 'string', 'LiteLLM proxy routing key. Maps to a backend model in <code>litellm_config.yaml</code>.'],
-  ['<code>github_token_env</code>', 'string', 'Env var name holding this agent\'s GitHub PAT. Falls back to <code>GITHUB_PERSONAL_ACCESS_TOKEN</code>.'],
 ]
 
 const MODEL_ROWS = [
@@ -35,8 +34,7 @@ export default function AgentSetup() {
       "active": true,
       "instances": 1,
       "model_backend": "accounts/fireworks/models/kimi-k2p5",
-      "routing_key": "nexus-key",
-      "github_token_env": "AGENT_NEXUS_GITHUB_TOKEN"
+      "routing_key": "nexus-key"
     },
     {
       "id": "forge",
@@ -44,8 +42,7 @@ export default function AgentSetup() {
       "active": true,
       "instances": 2,
       "model_backend": "accounts/fireworks/models/kimi-k2p5",
-      "routing_key": "forge-key",
-      "github_token_env": "AGENT_FORGE_GITHUB_TOKEN"
+      "routing_key": "forge-key"
     },
     {
       "id": "sentinel",
@@ -53,8 +50,7 @@ export default function AgentSetup() {
       "active": true,
       "instances": 1,
       "model_backend": "anthropic/claude-sonnet-4-5",
-      "routing_key": "sentinel-key",
-      "github_token_env": "AGENT_SENTINEL_GITHUB_TOKEN"
+      "routing_key": "sentinel-key"
     },
     {
       "id": "vessel",
@@ -62,8 +58,7 @@ export default function AgentSetup() {
       "active": true,
       "instances": 1,
       "model_backend": "groq/llama-3.3-70b-versatile",
-      "routing_key": "vessel-key",
-      "github_token_env": "AGENT_VESSEL_GITHUB_TOKEN"
+      "routing_key": "vessel-key"
     },
     {
       "id": "lore",
@@ -71,8 +66,7 @@ export default function AgentSetup() {
       "active": true,
       "instances": 1,
       "model_backend": "openai/gpt-4o-mini",
-      "routing_key": "lore-key",
-      "github_token_env": "AGENT_LORE_GITHUB_TOKEN"
+      "routing_key": "lore-key"
     }
   ]
 }`}</CodeBlock>
@@ -88,11 +82,12 @@ export default function AgentSetup() {
       <CodeBlock lang="json">{'{ "id": "lore", "active": false }  // LORE will not be invoked'}</CodeBlock>
 
       <p><strong>Per-agent GitHub tokens</strong> (for rate limit isolation):</p>
-      <CodeBlock lang="bash">{`export AGENT_NEXUS_GITHUB_TOKEN=ghp_nexus_token
-export AGENT_FORGE_GITHUB_TOKEN=ghp_forge_token
-export AGENT_SENTINEL_GITHUB_TOKEN=ghp_sentinel_token
-export AGENT_VESSEL_GITHUB_TOKEN=ghp_vessel_token
-export AGENT_LORE_GITHUB_TOKEN=ghp_lore_token`}</CodeBlock>
+      <CodeBlock lang="bash">{`# In Coder mode, GitHub identity is handled by Coder external auth.
+# No per-agent PATs are required — each agent inherits its GitHub
+# identity from the logged-in Coder user via the git-config module.
+#
+# Local mode fallback only — used when CODER_ACCESS_URL is unset:
+# export GITHUB_PERSONAL_ACCESS_TOKEN=ghp_token_with_repo_scope`}</CodeBlock>
 
       <h2>Recommended Model Assignments</h2>
       <DocsTable headers={['Agent', 'Recommended Model', 'Why']} rows={MODEL_ROWS} />

@@ -13,8 +13,8 @@ const PREREQS = [
     install: 'https://nodejs.org',
   },
   {
-    name: 'GitHub PATs (two-tier)',
-    detail: 'One NEXUS token (repo scope) for issue assignment + one per worker for username lookup via IdentityManager. Per-agent tokens make every action auditable.',
+    name: 'GitHub PAT',
+    detail: 'A single token with repo scope for issue assignment and PR operations. In Coder mode, GitHub identity is handled by Coder external auth.',
     install: 'https://github.com/settings/tokens',
   },
   {
@@ -158,10 +158,10 @@ openflows --version`}</CodeBlock>
       {/* ── Step 3: Configure ── */}
       <StepHeading step="3" id="configure">Configure Your Environment</StepHeading>
       <p>
-        OpenFlows needs a <code>.env</code> file with Coder credentials and GitHub identity handled by
-        Coder external auth, and a <code>registry.json</code> that maps each agent to its LLM model
-        through the Coder AI Gateway. You can generate both with the interactive wizard, or write
-        them manually.
+        OpenFlows needs a <code>.env</code> file with Coder credentials and a
+        <code>registry.json</code> that maps each agent to its LLM model through the Coder AI
+        Gateway. GitHub identity is handled by Coder external auth — no per-agent PATs required.
+        You can generate both with the interactive wizard, or write them manually.
       </p>
 
       <TabSwitcher tabs={[
@@ -175,7 +175,7 @@ openflows --version`}</CodeBlock>
               <ol>
                 <li>Coder deployment URL and admin token</li>
                 <li>Target GitHub repository</li>
-                <li>GitHub identity — two-tier token model: NEXUS token for assign/comment, per-worker tokens for username lookup</li>
+                <li>GitHub identity — handled by Coder external auth, not pasted tokens</li>
                 <li>AI Gateway endpoint (or LiteLLM fallback URL)</li>
                 <li>Preferred code agent CLI (Claude Code, Codex CLI, Aider, or other Coder Registry module)</li>
                 <li>Model registry for each agent</li>
@@ -213,20 +213,16 @@ AI_GATEWAY_URL=https://coder.your-org.com/ai-gateway
 # LITELLM_PROXY_URL=http://litellm:4000
 # LITELLM_API_KEY=sk-litellm-key
 
-# ── GitHub identity (two-tier token model) ──────
-# NEXUS token: used for assign_issue and comment_on_issue calls.
-# Requires repo scope (and workflow scope if CI status checks are needed).
-GITHUB_NEXUS_TOKEN=ghp_nexus_token_with_repo_scope
-
-# Worker tokens: each used only for get_authenticated_user_login()
-# (GET /user) to resolve the GitHub username for issue assignment.
-# One per agent — referenced by github_token_env in registry.json.
-# If a worker token is missing, NEXUS posts a helpful comment on the
-# issue instead of silently skipping assignment.
-GITHUB_FORGE_TOKEN=ghp_forge_token
-GITHUB_SENTINEL_TOKEN=ghp_sentinel_token
-GITHUB_VESSEL_TOKEN=ghp_vessel_token
-GITHUB_LORE_TOKEN=ghp_lore_token
+# ── GitHub identity ──────────────────────────────
+# In Coder mode, GitHub identity is handled by Coder external auth.
+# Configure a GitHub external auth provider in your Coder deployment and
+# include the git-config module in your workspace templates. Each agent
+# then acts under its logged-in Coder user's GitHub identity — git commits,
+# the GitHub MCP server, and PRs are all auditable to that identity.
+# No per-agent PATs are required.
+#
+# Local mode fallback only — used when CODER_ACCESS_URL is unset:
+# GITHUB_PERSONAL_ACCESS_TOKEN=ghp_token_with_repo_scope
 
 # ── Debug / Logging ─────────────────────────────
 RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
@@ -235,22 +231,13 @@ RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
         },
       ]} />
 
-      <Callout type="info" title="Two-tier GitHub token model">
-        OpenFlows uses a <strong>two-tier</strong> token model for GitHub issue assignment:
-        <ul>
-          <li><strong>NEXUS token</strong> (<code>GITHUB_NEXUS_TOKEN</code>) — used for
-          <code>assign_issue</code> and <code>comment_on_issue</code> calls. This is the only
-          token that writes to issues.</li>
-          <li><strong>Worker tokens</strong> (one per agent) — used <em>only</em> for
-          <code>get_authenticated_user_login()</code> (GET /user) to dynamically resolve the
-          GitHub username. The <code>IdentityManager</code> reads each worker's token from the
-          env var named in <code>registry.json</code> via <code>github_token_env</code>.</li>
-        </ul>
-        There is <strong>no token fallback</strong>. If a worker token is missing or invalid,
-        NEXUS posts a graceful failure comment on the issue explaining the problem — it never
-        silently skips assignment. Three failure scenarios are handled:
-        token not configured, username lookup fails (expired/invalid token), and 422 invalid
-        assignee (user is not a collaborator).
+      <Callout type="info" title="GitHub identity comes from Coder, not pasted tokens">
+        Because Coder already authenticates each workspace owner, OpenFlows does not manage GitHub
+        credentials itself. Configure a <strong>GitHub</strong> external auth provider in your Coder
+        deployment and include the <code>git-config</code> module in your workspace templates. Every
+        agent then acts under its own logged-in Coder user's GitHub identity — git commits, the
+        GitHub MCP server, and PRs are all auditable to that identity. No per-agent PATs, and nothing
+        to rotate in <code>.env</code>.
       </Callout>
 
       {/* ── Step 3.1: Model Registry ── */}
@@ -269,11 +256,11 @@ RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
     "fallback": "litellm"
   },
   "agents": {
-    "nexus":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "github_token_env": "GITHUB_NEXUS_TOKEN",    "coder_module": "claude-code" },
-    "forge":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "github_token_env": "GITHUB_FORGE_TOKEN",    "coder_module": "claude-code" },
-    "sentinel": { "provider": "openai",    "model": "gpt-4.1",                  "github_token_env": "GITHUB_SENTINEL_TOKEN", "coder_module": "codex" },
-    "vessel":   { "provider": "openai",    "model": "gpt-4o",                  "github_token_env": "GITHUB_VESSEL_TOKEN",   "coder_module": "codex" },
-    "lore":     { "provider": "anthropic", "model": "claude-haiku-4-20250514", "github_token_env": "GITHUB_LORE_TOKEN",    "coder_module": "aider" }
+    "nexus":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "coder_module": "claude-code" },
+    "forge":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "coder_module": "claude-code" },
+    "sentinel": { "provider": "openai",    "model": "gpt-4.1",                  "coder_module": "codex" },
+    "vessel":   { "provider": "openai",    "model": "gpt-4o",                  "coder_module": "codex" },
+    "lore":     { "provider": "anthropic", "model": "claude-haiku-4-20250514", "coder_module": "aider" }
   }
 }`}</CodeBlock>
 
@@ -305,17 +292,15 @@ RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
   Node.js:            v20.11.0
   Code agent CLI:     claude-code (Coder Registry module)
   Git:                2.44.0
-  GitHub identity:     two-tier (NEXUS + per-worker via IdentityManager)
+  GitHub identity:     via Coder external auth (no PATs)
   AI Gateway:         reachable
   GITHUB_REPOSITORY:  owner/repo
   registry.json:      valid (workspace_provider: coder)`}</CodeBlock>
 
       <Callout type="tip" title="Missing something?">
-        The doctor prints exactly which Coder endpoint, token, or binary is missing and a link to
-        where to get it. If it reports GitHub identity unresolved, confirm that each agent's
-        <code>github_token_env</code> in <code>registry.json</code> points to a valid environment
-        variable, and that the corresponding token has <code>repo</code> scope. Fix it, re-run,
-        and proceed.
+        The doctor prints exactly which Coder endpoint, external-auth provider, or binary is missing
+        and a link to where to get it. If it reports GitHub identity unresolved, confirm your Coder
+        deployment has a GitHub external auth provider configured. Fix it, re-run, and proceed.
       </Callout>
 
       {/* ── Step 5: Run ── */}
