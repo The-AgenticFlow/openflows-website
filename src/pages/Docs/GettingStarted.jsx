@@ -23,9 +23,9 @@ const PREREQS = [
     install: 'Configure in Coder dashboard',
   },
   {
-    name: 'Code agent CLI',
-    detail: 'Claude Code (Anthropic) or Codex CLI (OpenAI) — the hands FORGE uses inside the workspace',
-    install: 'npm install -g @anthropic-ai/claude-code',
+    name: 'Coder CLI module',
+    detail: 'A Coder Registry module that installs your preferred code agent CLI into each workspace — Claude Code, Codex CLI, Aider, and more.',
+    install: 'https://registry.coder.com',
   },
 ]
 
@@ -89,11 +89,19 @@ export default function GettingStarted() {
         ))}
       </div>
 
-      <Callout type="info" title="Claude Code vs Codex CLI">
-        Claude Code is Anthropic's CLI code agent; Codex CLI is OpenAI's. Both can be invoked
-        by FORGE inside a Coder workspace. Set <code>DEFAULT_CLI=codex</code> or
-        <code>DEFAULT_CLI=claude</code> in your environment to choose. The selected CLI must be
-        available in your Coder workspace template.
+      <Callout type="info" title="Coder CLI modules — the muscle layer">
+        FORGE edits code through a CLI code agent installed into each workspace by a
+        <strong>Coder Registry module</strong>. The module you choose determines which CLI is
+        available:
+        <ul>
+          <li><strong>claude-code</strong> — Anthropic's Claude Code CLI (speaks Messages API natively)</li>
+          <li><strong>codex</strong> — OpenAI's Codex CLI (speaks Chat Completions, works with OpenAI or Fireworks)</li>
+          <li><strong>aider</strong> — open-source AI pair programming in the terminal</li>
+        </ul>
+        Set <code>DEFAULT_CLI=claude</code>, <code>DEFAULT_CLI=codex</code>, or
+        <code>DEFAULT_CLI=aider</code> in your environment to choose. You can also assign a
+        different module per agent in <code>registry.json</code> (step 3) — mixing CLIs across
+        roles is fully supported. The selected module must be published in your Coder deployment.
       </Callout>
 
       {/* ── Step 2: Install ── */}
@@ -169,7 +177,7 @@ openflows --version`}</CodeBlock>
                 <li>Target GitHub repository</li>
                 <li>GitHub identity — two-tier token model: NEXUS token for assign/comment, per-worker tokens for username lookup</li>
                 <li>AI Gateway endpoint (or LiteLLM fallback URL)</li>
-                <li>Preferred code agent (Claude Code or Codex CLI)</li>
+                <li>Preferred code agent CLI (Claude Code, Codex CLI, Aider, or other Coder Registry module)</li>
                 <li>Model registry for each agent</li>
               </ol>
             </>
@@ -190,7 +198,8 @@ CODER_TOKEN=your-coder-token
 # The repository the team will work on
 GITHUB_REPOSITORY=your-org/your-repo
 
-# Code agent: "claude" for Claude Code, "codex" for Codex CLI
+# Code agent CLI: "claude" for Claude Code, "codex" for Codex CLI, "aider" for Aider
+# The corresponding Coder Registry module must be published in your deployment.
 DEFAULT_CLI=claude
 
 # The official GitHub MCP server. In Coder mode the token this server uses is
@@ -260,19 +269,21 @@ RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
     "fallback": "litellm"
   },
   "agents": {
-    "nexus":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "github_token_env": "GITHUB_NEXUS_TOKEN" },
-    "forge":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "github_token_env": "GITHUB_FORGE_TOKEN" },
-    "sentinel": { "provider": "openai",    "model": "gpt-4.1",                  "github_token_env": "GITHUB_SENTINEL_TOKEN" },
-    "vessel":   { "provider": "openai",    "model": "gpt-4o",                  "github_token_env": "GITHUB_VESSEL_TOKEN" },
-    "lore":     { "provider": "anthropic", "model": "claude-haiku-4-20250514", "github_token_env": "GITHUB_LORE_TOKEN" }
+    "nexus":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "github_token_env": "GITHUB_NEXUS_TOKEN",    "coder_module": "claude-code" },
+    "forge":    { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "github_token_env": "GITHUB_FORGE_TOKEN",    "coder_module": "claude-code" },
+    "sentinel": { "provider": "openai",    "model": "gpt-4.1",                  "github_token_env": "GITHUB_SENTINEL_TOKEN", "coder_module": "codex" },
+    "vessel":   { "provider": "openai",    "model": "gpt-4o",                  "github_token_env": "GITHUB_VESSEL_TOKEN",   "coder_module": "codex" },
+    "lore":     { "provider": "anthropic", "model": "claude-haiku-4-20250514", "github_token_env": "GITHUB_LORE_TOKEN",    "coder_module": "aider" }
   }
 }`}</CodeBlock>
 
       <p>
         The TUI wizard generates this for you. For manual setup, place <code>registry.json</code>
         next to your <code>.env</code> file. Hot-reloaded on every NEXUS poll — no restart required.
-        The <code>coder_module</code> field names the Coder workspace template that agents run
-        inside; it must be published in your Coder deployment.
+        The <code>coder_module</code> field names the Coder Registry module that installs the CLI
+        code agent into each workspace. It must be published in your Coder deployment. Different
+        agents can use different modules — for example, FORGE on <code>claude-code</code> while
+        LORE uses <code>aider</code> — so you can match each agent's role to the best CLI for the job.
       </p>
 
       <Callout type="info" title="AI Gateway vs LiteLLM">
@@ -292,7 +303,7 @@ RUST_LOG=info,agent_team=debug,pocketflow_core=debug`}</CodeBlock>
   Coder token:        valid (workspaces:create)
   Rust toolchain:     1.88.0
   Node.js:            v20.11.0
-  Code agent CLI:     claude (found in workspace template)
+  Code agent CLI:     claude-code (Coder Registry module)
   Git:                2.44.0
   GitHub identity:     two-tier (NEXUS + per-worker via IdentityManager)
   AI Gateway:         reachable
