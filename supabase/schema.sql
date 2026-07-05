@@ -110,9 +110,68 @@
     primary key (blog_id, tag_id)
     );
 
-    -- =====================================================
-    -- ADMIN USERS
-    -- =====================================================
+-- =====================================================
+-- STORIES (Home page use-case cards)
+-- =====================================================
+create table if not exists stories (
+    id uuid primary key default gen_random_uuid(),
+    title text not null,
+    category text not null default '',
+    date text not null default '',
+    href text not null default '',
+    image text,
+    created_at timestamptz default now(),
+    updated_at timestamptz default now()
+);
+
+create index if not exists stories_created_at_idx on stories(created_at desc);
+
+-- =====================================================
+-- RESEARCH (Papers, preprints, technical reports)
+-- =====================================================
+create table if not exists research (
+    id uuid primary key default gen_random_uuid(),
+
+    -- Core content
+    title text not null,
+    slug text not null unique,
+    abstract text not null,
+    content text not null, -- Markdown
+
+    -- Metadata
+    category text not null default 'Paper',
+    venue text,
+    publish_date timestamptz,
+    pdf_url text,
+    cover_image_url text,
+    tags text[] default '{}',
+    authors jsonb default '[]'::jsonb, -- [{name, affiliation}]
+
+    -- Status & Visibility
+    status text not null default 'draft' check (status in ('draft', 'published', 'archived')),
+
+    -- Timestamps
+    created_at timestamptz default now(),
+    updated_at timestamptz default now()
+);
+
+-- Migration: add status column to existing research tables (idempotent)
+do $$ begin
+    if not exists (
+        select 1 from information_schema.columns
+        where table_name = 'research' and column_name = 'status'
+    ) then
+        alter table research add column status text not null default 'draft' check (status in ('draft', 'published', 'archived'));
+    end if;
+end $$;
+
+create index if not exists research_status_idx on research(status);
+create index if not exists research_publish_date_idx on research(publish_date desc);
+create index if not exists research_slug_idx on research(slug);
+
+-- =====================================================
+-- ADMIN USERS
+-- =====================================================
     create table if not exists admin_users (
     id uuid primary key default gen_random_uuid(),
     email text not null unique,
@@ -162,6 +221,28 @@
     using (true)
     with check (true);
 
+    -- Stories: Public can read all stories; authenticated can manage
+    create policy "Public can view stories"
+    on stories for select
+    using (true);
+
+    create policy "Admins can manage stories"
+    on stories for all
+    to authenticated
+    using (true)
+    with check (true);
+
+    -- Research: Public can read published only; authenticated can manage all
+    create policy "Public can view published research"
+    on research for select
+    using (status = 'published');
+
+    create policy "Admins can manage all research"
+    on research for all
+    to authenticated
+    using (true)
+    with check (true);
+
     -- Admin users: Authenticated can view; only admins can modify
     create policy "Authenticated users can view admin profiles"
     on admin_users for select
@@ -205,6 +286,14 @@
     before update on admin_users
     for each row execute function update_updated_at();
 
+    create trigger update_stories_updated_at
+    before update on stories
+    for each row execute function update_updated_at();
+
+    create trigger update_research_updated_at
+    before update on research
+    for each row execute function update_updated_at();
+
     -- Function to auto-set published_at when status changes to published
     create or replace function set_published_at()
     returns trigger as $$
@@ -219,6 +308,23 @@
     create trigger set_blogs_published_at
     before update on blogs
     for each row execute function set_published_at();
+
+    -- Research: auto-set publish_date when status changes to published
+    create or replace function set_research_published_at()
+    returns trigger as $$
+    begin
+    if new.status = 'published' and (old.status is null or old.status != 'published') then
+        if new.publish_date is null then
+            new.publish_date = now();
+        end if;
+    end if;
+    return new;
+    end;
+    $$ language plpgsql;
+
+    create trigger set_research_published_at_trigger
+    before update on research
+    for each row execute function set_research_published_at();
 
     -- =====================================================
     -- STORAGE BUCKET FOR BLOG IMAGES

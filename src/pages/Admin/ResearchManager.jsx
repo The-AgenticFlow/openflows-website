@@ -13,6 +13,7 @@ export default function ResearchManager() {
     const [loading, setLoading] = useState(true)
     const [error, setError] = useState(null)
     const [deleteModal, setDeleteModal] = useState({ open: false, item: null })
+    const [statusFilter, setStatusFilter] = useState('all')
 
     const fetchItems = useCallback(async () => {
         if (!isSupabaseConfigured() || !supabase) {
@@ -42,6 +43,8 @@ export default function ResearchManager() {
     useEffect(() => {
         fetchItems()
     }, [fetchItems])
+
+    const filtered = statusFilter === 'all' ? items : items.filter(i => i.status === statusFilter)
 
     const handleDelete = async (item) => {
         if (!canDeleteBlogs()) return
@@ -83,19 +86,30 @@ export default function ResearchManager() {
                     </div>
                 </header>
 
-                <div style={{ padding: '1rem 2rem', borderBottom: '1px solid var(--color-border)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <div style={{ padding: '1rem 2rem', borderBottom: '1px solid var(--color-driftwood)', display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
                     <button className={styles.actionBtn} onClick={() => navigate('/admin')}>
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                             <path d="m15 18-6-6 6-6" />
                         </svg>
                         Back to Dashboard
                     </button>
-                    <span style={{ color: 'var(--color-text-secondary)', fontSize: '0.875rem' }}>
+                    <span style={{ color: 'var(--color-graphite)', fontSize: '0.875rem' }}>
                         {items.length} publications
                     </span>
                 </div>
 
                 <div className={styles.toolbar}>
+                    <div className={styles.filterGroup}>
+                        {['all', 'published', 'draft', 'archived'].map(s => (
+                            <button
+                                key={s}
+                                className={`${styles.filterBtn}${statusFilter === s ? ' active' : ''}`}
+                                onClick={() => setStatusFilter(s)}
+                            >
+                                {s.charAt(0).toUpperCase() + s.slice(1)}
+                            </button>
+                        ))}
+                    </div>
                     {canEditBlogs() && (
                         <button
                             className={styles.newPostBtn}
@@ -119,10 +133,10 @@ export default function ResearchManager() {
                         <div className={styles.emptyState}>
                             <p className={styles.error}>{error}</p>
                         </div>
-                    ) : items.length === 0 ? (
+                    ) : filtered.length === 0 ? (
                         <div className={styles.emptyState}>
                             <h3>No publications found</h3>
-                            <p>Create your first research publication.</p>
+                            <p>{items.length === 0 ? 'Create your first research publication.' : `No ${statusFilter} publications.`}</p>
                             {canEditBlogs() && (
                                 <button
                                     className={styles.newPostBtn}
@@ -133,14 +147,17 @@ export default function ResearchManager() {
                             )}
                         </div>
                     ) : (
-                        items.map(item => (
+                        filtered.map(item => (
                             <div key={item.id} className={styles.blogItem}>
                                 <div className={styles.blogContent} style={{ flex: 1 }}>
                                     <h3 className={styles.blogTitle}>{item.title}</h3>
                                     <div className={styles.blogMeta}>
                                         <span className={styles.blogCategory}>{item.category}</span>
                                         <span>{item.venue}</span>
-                                        <span>{item.publish_date}</span>
+                                        <span>{item.publish_date ? new Date(item.publish_date).toLocaleDateString() : ''}</span>
+                                        <span className={`${styles.statusBadge} ${styles[`status-${item.status || 'draft'}`]}`}>
+                                            {item.status || 'draft'}
+                                        </span>
                                     </div>
                                 </div>
 

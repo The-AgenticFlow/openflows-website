@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
+import ImageUploader from '@/components/ImageUploader'
 import styles from './Admin.module.css'
 
 export default function ResearchEditor() {
@@ -23,6 +24,7 @@ export default function ResearchEditor() {
         cover_image_url: '',
         tags: '',
         authors: [{ name: '', affiliation: '' }],
+        status: 'draft',
     })
     const [loading, setLoading] = useState(false)
     const [saving, setSaving] = useState(false)
@@ -62,6 +64,7 @@ export default function ResearchEditor() {
                     cover_image_url: data.cover_image_url || '',
                     tags: Array.isArray(data.tags) ? data.tags.join(', ') : (data.tags || ''),
                     authors: Array.isArray(data.authors) && data.authors.length > 0 ? data.authors : [{ name: '', affiliation: '' }],
+                    status: data.status || 'draft',
                 })
             } catch (err) {
                 console.error('Error fetching research:', err)
@@ -135,6 +138,7 @@ export default function ResearchEditor() {
                 cover_image_url: form.cover_image_url.trim() || null,
                 tags: form.tags.split(',').map(t => t.trim()).filter(Boolean),
                 authors: validAuthors,
+                status: form.status || 'draft',
             }
 
             let result
@@ -249,6 +253,15 @@ export default function ResearchEditor() {
                             <div className={styles.sidebarCard}>
                                 <h3>Metadata</h3>
                                 <div className={styles.field}>
+                                    <label htmlFor="status">Status</label>
+                                    <select id="status" name="status" value={form.status} onChange={handleChange} className={styles.select}>
+                                        <option value="draft">Draft</option>
+                                        <option value="published">Published</option>
+                                        <option value="archived">Archived</option>
+                                    </select>
+                                </div>
+
+                                <div className={styles.field}>
                                     <label htmlFor="category">Category</label>
                                     <select id="category" name="category" value={form.category} onChange={handleChange} className={styles.select}>
                                         <option>Paper</option>
@@ -274,8 +287,14 @@ export default function ResearchEditor() {
                                 </div>
 
                                 <div className={styles.field}>
-                                    <label htmlFor="cover_image_url">Cover Image URL</label>
-                                    <input id="cover_image_url" name="cover_image_url" type="url" value={form.cover_image_url} onChange={handleChange} placeholder="https://..." />
+                                    <label>Cover Image</label>
+                                    <ImageUploader
+                                        currentUrl={form.cover_image_url}
+                                        onUpload={(url) => setForm(prev => ({ ...prev, cover_image_url: url }))}
+                                        alt={form.title}
+                                        size="compact"
+                                    />
+                                    <input id="cover_image_url" name="cover_image_url" type="url" value={form.cover_image_url} onChange={handleChange} placeholder="Or paste an image URL" style={{ marginTop: '0.5rem' }} />
                                 </div>
 
                                 <div className={styles.field}>

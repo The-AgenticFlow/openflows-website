@@ -56,6 +56,9 @@ import UseCasesIndex from '@/pages/UseCases/UseCasesIndex'
 import WebDevelopment from '@/pages/UseCases/WebDevelopment'
 import DevOps from '@/pages/UseCases/DevOps'
 
+// 404
+import NotFound from '@/pages/NotFound/NotFound'
+
 // Global docs styles (shared across all content pages)
 import '@/styles/docs.css'
 
@@ -186,6 +189,9 @@ export default function App() {
           <Route path="/use-cases" element={<UseCasesIndex />} />
           <Route path="/use-cases/web-development" element={<WebDevelopment />} />
           <Route path="/use-cases/devops" element={<DevOps />} />
+
+          {/* 404 */}
+          <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
     </AuthProvider>

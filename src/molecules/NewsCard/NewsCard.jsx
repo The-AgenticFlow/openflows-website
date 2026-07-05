@@ -5,7 +5,7 @@ import styles from './NewsCard.module.css'
  * @param {{ item: import('@/data/content').NewsItem, variant?: 'default' | 'wide' }} props
  */
 export default function NewsCard({ item, variant = 'default' }) {
-  const { category, date, title, href, image } = item
+  const { category, date, title, href, image, excerpt } = item
 
   return (
     <a
@@ -26,6 +26,7 @@ export default function NewsCard({ item, variant = 'default' }) {
           <span className={styles.date}>{date}</span>
         </div>
         <h3 className={styles.title}>{title}</h3>
+        {excerpt && <p className={styles.excerpt}>{excerpt}</p>}
       </div>
     </a>
   )

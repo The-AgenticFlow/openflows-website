@@ -19,7 +19,7 @@ export default function Integrations() {
 # This lets each workspace inherit its GitHub identity from the logged-in user
 
 # 2. Include the git-config module in your workspace templates
-# This wires git author/identity and injects the GitHub token for git ops + MCP
+# This wires git author/identity and injects the Coder external auth token for git ops + MCP
 
 # 3. Set your target repository
 export GITHUB_REPOSITORY="my-org/my-project"

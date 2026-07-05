@@ -21,6 +21,7 @@ export default function ResearchIndex() {
         const { data, error } = await supabase
           .from('research')
           .select('*')
+          .eq('status', 'published')
           .order('publish_date', { ascending: false })
 
         if (error) throw error

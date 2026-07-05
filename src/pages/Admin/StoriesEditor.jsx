@@ -3,6 +3,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import { useAuth } from '@/contexts/AuthContext'
 import { supabase, isSupabaseConfigured } from '@/lib/supabase'
 import Layout from '@/organisms/Layout/Layout'
+import ImageUploader from '@/components/ImageUploader'
 import styles from './Admin.module.css'
 
 export default function StoriesEditor() {
@@ -225,7 +226,15 @@ export default function StoriesEditor() {
                             </div>
 
                             <div className={styles.field}>
-                                <label htmlFor="image">Image URL</label>
+                                <label>Image</label>
+                                <ImageUploader
+                                    currentUrl={form.image}
+                                    onUpload={(url) => setForm(prev => ({ ...prev, image: url }))}
+                                    alt={form.title}
+                                />
+                                {!form.image && (
+                                    <span className={styles.hint}>Optional — leave blank for a placeholder. You can also paste an image URL below.</span>
+                                )}
                                 <input
                                     id="image"
                                     name="image"
@@ -233,6 +242,7 @@ export default function StoriesEditor() {
                                     value={form.image}
                                     onChange={handleChange}
                                     placeholder="https://images.unsplash.com/..."
+                                    style={{ marginTop: '0.5rem' }}
                                 />
                             </div>
                         </div>

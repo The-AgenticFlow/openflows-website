@@ -12,7 +12,7 @@
 }
 
 .card:hover {
-  background-color: var(--color-surface);
+  background-color: var(--color-bone);
   box-shadow: var(--shadow-sm);
 }
 
@@ -21,7 +21,7 @@
   height: 90px;
   border-radius: var(--radius-sm);
   overflow: hidden;
-  background-color: var(--color-surface-2);
+  background-color: var(--color-fog);
   flex-shrink: 0;
 }
 
@@ -47,15 +47,25 @@
 
 .date {
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  color: var(--color-graphite);
 }
 
 .title {
   font-size: var(--font-size-base);
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
   line-height: 1.35;
   letter-spacing: -0.01em;
+}
+
+.excerpt {
+  font-size: var(--font-size-sm);
+  color: var(--color-graphite);
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 /* Stories / Vertical Variant - Coder.com card style */
@@ -64,8 +74,8 @@
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-4);
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--color-bone);
+  border: 1px solid var(--color-driftwood);
   padding: 0;
   border-radius: var(--radius-lg);
   transition: transform var(--transition-base), border-color var(--transition-base), box-shadow var(--transition-base);
@@ -74,7 +84,7 @@
 .vertical:hover,
 .wide:hover {
   transform: translateY(-2px);
-  border-color: var(--color-border-hover);
+  border-color: var(--color-fog);
   box-shadow: var(--shadow-md);
 }
 
