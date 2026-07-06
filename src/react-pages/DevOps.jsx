@@ -1,0 +1,59 @@
+import Layout from '@/organisms/Layout/Layout'
+import { Comparison, Callout, CodeBlock } from '@/molecules/DocComponents/DocComponents'
+import styles from '../pages/use-cases/UseCases.module.css'
+
+const BEFORE = [
+  'Merge conflicts require manual rebase every time',
+  'Security patches take 2–3 days to propagate',
+  'CI failures block PRs with no automated retry',
+  'No consistent review of infrastructure changes',
+  'Dockerfile updates are tedious and error-prone',
+  'No documentation of infrastructure decisions',
+]
+
+const AFTER = [
+  'VESSEL detects conflicts early, attempts automated resolution',
+  'FORGE propagates patches across all repos in parallel',
+  'VESSEL polls CI at 10s intervals, merges when green',
+  'SENTINEL validates every infrastructure change',
+  'Conflict rework loop: same worker, no new branch, no context loss',
+  'LORE writes ADRs for every infrastructure decision',
+]
+
+export default function DevOps() {
+  return (
+    <Layout>
+      <div className={styles.page}>
+        <p className={styles.eyebrow}>Use Cases</p>
+        <h1 className={styles.title}>DevOps Automation</h1>
+        <p style={{ color: 'var(--color-graphite)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
+          How a platform engineering team uses OpenFlows on top of their Coder environment to automate CI/CD pipelines, security patches, and infrastructure updates — with VESSEL as the merge gatekeeper, all governed and auditable.
+        </p>
+
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>The Scenario</h2>
+        <p style={{ color: 'var(--color-graphite)', lineHeight: 1.7 }}>
+          A DevOps team manages 15+ microservices on GitHub Actions. Merge conflicts, flaky CI, and manual rebase churn consume most of their sprint capacity. Security patches take days to propagate across all repos.
+        </p>
+
+        <Comparison before={BEFORE} after={AFTER} />
+
+        <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>VESSEL's Conflict Rework Loop</h2>
+        <p style={{ color: 'var(--color-graphite)', marginBottom: '1rem', lineHeight: 1.7 }}>
+          When VESSEL detects a merge conflict, it doesn't create a new branch or lose context. It writes <code>CONFLICT_RESOLUTION.md</code> and re-routes the ticket back to the same FORGE worker. FORGE reworks the implementation with full context, re-commits, and VESSEL re-monitors CI.
+        </p>
+        <CodeBlock lang="bash">{`INFO  vessel: PR #14 - mergeable: false (conflict detected)
+INFO  vessel: Writing CONFLICT_RESOLUTION.md
+INFO  vessel: Re-routing T-009 → forge-1 for rework
+INFO  forge-1: Received conflict context, rebasing implementation
+INFO  forge-1: Re-opened PR #15 on updated branch
+INFO  vessel: CI polling PR #15 (10s interval)
+INFO  vessel: CI success ✓ - squash-merging PR #15
+INFO  lore: ADR-007 written and committed`}</CodeBlock>
+
+        <Callout type="tip" title="Result">
+          The conflict rework loop eliminates manual rebase churn entirely. VESSEL handles the full merge lifecycle - conflict detection, resolution attempt, rework routing, CI polling, and final merge - without any human involvement.
+        </Callout>
+      </div>
+    </Layout>
+  )
+}

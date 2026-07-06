@@ -1,0 +1,27 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { DocCards } from '@/molecules/DocComponents/DocComponents';
+import styles from './Demos.module.css';
+
+const CARDS = [
+  { icon: '💻', title: 'Terminal Simulation', desc: 'Live typewriter animation of a real OpenFlows run - NEXUS assigning, FORGE building, SENTINEL reviewing, VESSEL merging, LORE documenting.', href: '/demos/terminal' },
+  { icon: '📋', title: 'Step-by-Step Walkthrough', desc: 'Follow the complete pipeline from GitHub issue to merged PR - with the actual files created at each step: PLAN.md, CONTRACT.md, STATUS.json, ADR.', href: '/demos/walkthrough' },
+];
+---
+
+<BaseLayout title="Demos - OpenFlows" description="Watch the full autonomous pipeline in action">
+  <section class={styles.hero}>
+    <div class={styles.container}>
+      <p class={styles.eyebrow}>Demos</p>
+      <h1 class={styles.title}>See OpenFlows in action</h1>
+      <p class={styles.sub}>Watch the full autonomous pipeline — from open GitHub issue to merged, documented pull request — running on top of your Coder environment, with no human intervention.</p>
+    </div>
+  </section>
+  <section class={styles.section}>
+    <div class={styles.container}>
+      <DocCards cards={CARDS} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style src="./Demos.module.css" />

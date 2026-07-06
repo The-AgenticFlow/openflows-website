@@ -1,0 +1,19 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import styles from './NotFound.module.css';
+---
+
+<BaseLayout title="404 - Page Not Found">
+  <div class={styles.container}>
+    <p class={styles.code}>404</p>
+    <h1 class={styles.title}>Page not found</h1>
+    <p class={styles.text}>
+      The page you're looking for doesn't exist or has been moved.
+    </p>
+    <a href="/" class={styles.link}>
+      Back to home
+    </a>
+  </div>
+</BaseLayout>
+
+<style src="./NotFound.module.css" />

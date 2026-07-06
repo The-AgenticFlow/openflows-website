@@ -1,0 +1,9 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import ResearchEditor from '@/react-pages/ResearchEditor';
+const id = Astro.url.searchParams.get('id');
+---
+
+<BaseLayout title="Edit Research">
+  <ResearchEditor client:only="react" researchId={id} />
+</BaseLayout>

@@ -5,14 +5,14 @@
     justify-content: center;
     min-height: 60vh;
     gap: 1.5rem;
-    color: var(--color-text-secondary);
+    color: var(--color-graphite);
 }
 
 .spinner {
     width: 40px;
     height: 40px;
-    border: 2px solid var(--color-border);
-    border-top-color: var(--color-text-primary);
+    border: 2px solid var(--color-driftwood);
+    border-top-color: var(--color-ink);
     border-radius: 50%;
     animation: spin 0.8s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
@@ -35,14 +35,14 @@
 
 .error h2 {
     font-size: 1.5rem;
-    color: var(--color-text-primary);
+    color: var(--color-ink);
     margin-bottom: 1rem;
 }
 
 .error p {
-    color: var(--color-text-secondary);
+    color: var(--color-graphite);
     max-width: 400px;
-    line-height: 1.6;
+    line-height: 1.555;
 }
 
 .error ul {
@@ -53,17 +53,17 @@
 }
 
 .error li {
-    color: var(--color-text-secondary);
+    color: var(--color-graphite);
     margin-bottom: 0.5rem;
 }
 
 .error code {
-    background: var(--color-accent-bg);
+    background: var(--color-lavender-chip);
     padding: 0.2rem 0.5rem;
     border-radius: var(--radius-sm);
     font-family: 'IBM Plex Mono', monospace;
     font-size: 0.875rem;
-    color: var(--color-accent);
+    color: var(--color-aubergine);
 }
 
 /* Unavailable state - professional message for unconfigured backend */
@@ -78,19 +78,19 @@
 }
 
 .unavailableIcon {
-    color: var(--color-text-muted);
+    color: var(--color-graphite);
     margin-bottom: 1.5rem;
 }
 
 .unavailable h2 {
     font-size: 1.75rem;
-    font-weight: 600;
-    color: var(--color-text-primary);
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-ink);
     margin-bottom: 1rem;
 }
 
 .unavailable p {
-    color: var(--color-text-secondary);
+    color: var(--color-graphite);
     max-width: 420px;
     line-height: 1.7;
     margin-bottom: 2rem;
@@ -101,17 +101,17 @@
     align-items: center;
     gap: 0.5rem;
     padding: 0.75rem 1.5rem;
-    background: var(--color-surface-2);
-    color: var(--color-text-primary);
-    font-weight: 600;
+    background: var(--color-fog);
+    color: var(--color-ink);
+    font-weight: var(--font-weight-semibold);
     font-size: 0.9rem;
-    border: 1px solid var(--color-border);
+    border: 1px solid var(--color-driftwood);
     border-radius: var(--radius-md);
     text-decoration: none;
     transition: background var(--transition-fast), border-color var(--transition-fast);
 }
 
 .homeLink:hover {
-    background: var(--color-surface);
-    border-color: var(--color-text-muted);
+    background: var(--color-bone);
+    border-color: var(--color-graphite);
 }

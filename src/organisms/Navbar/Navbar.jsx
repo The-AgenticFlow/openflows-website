@@ -45,36 +45,41 @@ const NAV_DATA = [
       ]
     }
   },
-  { label: 'Company', href: '/about' },
+  { label: 'Community', href: '/about' },
 ]
+
+const GITHUB_REPO = 'The-AgenticFlow/OpenFlows'
+
+function formatStarCount(count) {
+  if (count >= 1000) {
+    return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k'
+  }
+  return String(count)
+}
 
 export default function Navbar() {
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeDropdown, setActiveDropdown] = useState(null)
-  const [isSearchOpen, setIsSearchOpen] = useState(false)
-  const [searchQuery, setSearchQuery] = useState('')
-  const [searchResults, setSearchResults] = useState([])
-  const [activeFilter, setActiveFilter] = useState('All')
+  const [starCount, setStarCount] = useState(null)
 
-  const searchInputRef = useRef(null)
   const dropdownTimerRef = useRef(null)
 
-  const handleSearchChange = (e) => {
-    const query = e.target.value
-    setSearchQuery(query)
-
-    // Dynamic import to keep nav bundle light
-    import('@/data/searchIndex').then(({ searchSite }) => {
-      setSearchResults(searchSite(query))
-    })
-  }
-
-  const filteredResults = activeFilter === 'All'
-    ? searchResults
-    : searchResults.filter(r => r.type === activeFilter)
-
-  const CATEGORIES = ['All', 'Agent', 'Docs', 'Blog', 'Use Case']
+  // Fetch GitHub star count on mount
+  useEffect(() => {
+    let cancelled = false
+    fetch(`https://api.github.com/repos/${GITHUB_REPO}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled && typeof data.stargazers_count === 'number') {
+          setStarCount(data.stargazers_count)
+        }
+      })
+      .catch(() => {
+        // Silently fail — button still links to GitHub
+      })
+    return () => { cancelled = true }
+  }, [])
 
   const handleScroll = useCallback(() => {
     setScrolled(window.scrollY > 8)
@@ -84,28 +89,6 @@ export default function Navbar() {
     window.addEventListener('scroll', handleScroll, { passive: true })
     return () => window.removeEventListener('scroll', handleScroll)
   }, [handleScroll])
-
-  useEffect(() => {
-    const handleEsc = (e) => {
-      if (e.key === 'Escape') {
-        setIsSearchOpen(false)
-        setMenuOpen(false)
-      }
-    }
-
-    if (isSearchOpen) {
-      if (searchInputRef.current) searchInputRef.current.focus()
-      document.body.style.overflow = 'hidden'
-      window.addEventListener('keydown', handleEsc)
-    } else {
-      document.body.style.overflow = ''
-      setSearchQuery('')
-      setSearchResults([])
-      window.removeEventListener('keydown', handleEsc)
-    }
-
-    return () => window.removeEventListener('keydown', handleEsc)
-  }, [isSearchOpen])
 
   // Lock body scroll when mobile menu is open
   useEffect(() => {
@@ -139,7 +122,6 @@ export default function Navbar() {
           styles.navbar,
           scrolled ? styles.scrolled : '',
           activeDropdown !== null ? styles.dropdownActive : '',
-          isSearchOpen ? styles.searchActive : ''
         ].join(' ')}
         onMouseLeave={handleMouseLeave}
       >
@@ -166,38 +148,25 @@ export default function Navbar() {
                 </a>
               </div>
             ))}
-
-            {/* Search Toggle */}
-            <button
-              className={styles.searchButton}
-              aria-label={isSearchOpen ? "Close search" : "Search"}
-              onClick={() => setIsSearchOpen(!isSearchOpen)}
-            >
-              {!isSearchOpen ? (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <circle cx="11" cy="11" r="8"></circle>
-                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-              ) : (
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <line x1="18" y1="6" x2="6" y2="18"></line>
-                  <line x1="6" y1="6" x2="18" y2="18"></line>
-                </svg>
-              )}
-            </button>
           </nav>
 
           <div className={styles.actions}>
-            {!isSearchOpen && (
-              <>
-                <Button variant="ghost" size="sm" href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer">
-                  GitHub
-                </Button>
-                <Button variant="primary" size="sm" href="/docs/getting-started">
-                  Get Started
-                </Button>
-              </>
-            )}
+            <a
+              href={`https://github.com/${GITHUB_REPO}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.starButton}
+            >
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+              </svg>
+              <span className={styles.starCount}>
+                {starCount !== null ? formatStarCount(starCount) : '—'}
+              </span>
+            </a>
+            <Button variant="primary" size="sm" href="/trial">
+              Get a Demo
+            </Button>
           </div>
 
           <button
@@ -240,67 +209,6 @@ export default function Navbar() {
         </div>
       </header>
 
-      {/* Search Overlay */}
-      <div className={[styles.searchOverlay, isSearchOpen ? styles.searchOverlayVisible : ''].join(' ')}>
-        <div className={styles.searchContent}>
-          <div className={styles.searchInputWrapper}>
-            <input
-              ref={searchInputRef}
-              type="text"
-              className={styles.largeSearchInput}
-              placeholder="Search OpenFlows docs, agents, guides..."
-              value={searchQuery}
-              onChange={handleSearchChange}
-            />
-            {searchQuery && (
-              <button
-                className={styles.clearBtn}
-                onClick={() => { setSearchQuery(''); setSearchResults([]); }}
-                aria-label="Clear search"
-              >
-                ✕
-              </button>
-            )}
-          </div>
-
-          {searchQuery.length >= 2 && (
-            <div className={styles.resultsContainer}>
-              <div className={styles.searchFilters}>
-                {CATEGORIES.map(cat => (
-                  <button
-                    key={cat}
-                    onClick={() => setActiveFilter(cat)}
-                    className={[styles.filterBtn, activeFilter === cat ? styles.filterActive : ''].join(' ')}
-                  >
-                    {cat}
-                  </button>
-                ))}
-              </div>
-
-              <div className={styles.searchResults}>
-                {filteredResults.length > 0 ? (
-                  filteredResults.map(result => (
-                    <a key={result.id} href={result.href} onClick={() => setIsSearchOpen(false)} className={styles.resultItem}>
-                      <div className={styles.resultHeader}>
-                        <span className={styles.resultTitle}>{result.title}</span>
-                        <span className={styles.resultType}>{result.type}</span>
-                      </div>
-                      {result.description && (
-                        <p className={styles.resultSnippet}>{result.description}</p>
-                      )}
-                    </a>
-                  ))
-                ) : (
-                  <div className={styles.emptyState}>
-                    No results found for "{searchQuery}"
-                  </div>
-                )}
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* Mobile Drawer */}
       <div className={[styles.mobileMenu, menuOpen ? styles.mobileMenuOpen : ''].join(' ')}>
         <nav className={styles.mobileNav}>
@@ -337,8 +245,21 @@ export default function Navbar() {
           ))}
         </nav>
         <div className={styles.mobileActions}>
-          <Button variant="primary" size="md" href="/docs/getting-started" onClick={() => setMenuOpen(false)} style={{ width: '100%', justifyContent: 'center' }}>
-            Get Started
+          <a
+            href={`https://github.com/${GITHUB_REPO}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className={styles.starButton}
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+              <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
+            </svg>
+            <span className={styles.starCount}>
+              {starCount !== null ? formatStarCount(starCount) : '—'}
+            </span>
+          </a>
+          <Button variant="primary" size="md" href="/trial" onClick={() => setMenuOpen(false)} style={{ width: '100%', justifyContent: 'center' }}>
+            Get a Demo
           </Button>
         </div>
       </div>

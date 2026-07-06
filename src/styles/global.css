@@ -1,44 +1,84 @@
 /* ===================================================
    GLOBAL STYLES - OpenFlows
-   IZHUB-inspired parchment + aubergine design system
+   IZHUB parchment + aubergine design system (exact tokens)
    =================================================== */
 
-/* --- Design Tokens (IZHUB landing page) --- */
+/* --- Design Tokens (extracted from IZHUB production CSS) --- */
 :root {
-  /* Parchment canvas palette */
-  --color-bg: #f2f0eb;            /* parchment-canvas / background 43 21% 94% */
-  --color-bg-elevated: #ffffff;   /* bone */
-  --color-surface: #ffffff;       /* bone / card 0 0% 100% */
-  --color-surface-2: #e3e3e2;     /* fog / secondary 60 2% 89% */
-  --color-surface-3: #dcd7d3;     /* driftwood */
-  --color-surface-invert: #292827; /* ink */
-  --color-border: #dcd7d3;        /* driftwood / border 27 12% 85% */
+  /* IZHUB color palette - light mode */
+  --color-parchment-canvas: #f2f0eb;
+  --color-ink: #292827;
+  --color-bone: #ffffff;
+  --color-fog: #e3e3e2;
+  --color-driftwood: #dcd7d3;
+  --color-graphite: #666666;
+  --color-aubergine: #0d4943;
+  --color-aubergine-deep: #08302d;
+  --color-iris: #0d4943;
+  --color-indigo-glow: #08302d;
+  --color-lavender-chip: #0d49431f;
+
+  /* shadcn-compatible HSL tokens (IZHUB values) */
+  --background: 43 21% 94%;
+  --foreground: 30 3% 16%;
+  --card: 0 0% 100%;
+  --card-foreground: 30 3% 16%;
+  --popover: 0 0% 100%;
+  --popover-foreground: 30 3% 16%;
+  --primary: 174 70% 17%;
+  --primary-foreground: 0 0% 100%;
+  --primary-light: 174 38% 94%;
+  --secondary: 60 2% 89%;
+  --secondary-foreground: 30 3% 16%;
+  --muted: 43 21% 94%;
+  --muted-foreground: 0 0% 40%;
+  --accent: 60 2% 89%;
+  --accent-foreground: 30 3% 16%;
+  --destructive: 4 76% 40%;
+  --destructive-foreground: 0 0% 100%;
+  --border: 27 12% 85%;
+  --input: 27 12% 85%;
+  --ring: 174 70% 24%;
+  --military: 174 70% 17%;
+  --military-foreground: 0 0% 100%;
+  --success: 151 45% 34%;
+  --success-foreground: 0 0% 100%;
+  --warning: 35 72% 42%;
+  --warning-foreground: 35 71% 25%;
+  --sidebar: 0 0% 100%;
+  --sidebar-foreground: 30 3% 16%;
+  --sidebar-primary: 174 70% 17%;
+  --sidebar-primary-foreground: 0 0% 100%;
+  --sidebar-accent: 43 21% 94%;
+  --sidebar-accent-foreground: 30 3% 16%;
+  --sidebar-border: 27 12% 85%;
+  --sidebar-ring: 174 70% 24%;
+
+  /* Legacy aliases for existing components */
+  --color-bg: var(--color-parchment-canvas);
+  --color-bg-elevated: var(--color-bone);
+  --color-surface: var(--color-bone);
+  --color-surface-2: var(--color-fog);
+  --color-surface-3: var(--color-driftwood);
+  --color-surface-invert: var(--color-ink);
+  --color-border: var(--color-driftwood);
   --color-border-hover: #c8c4bf;
-
-  --color-text-primary: #292827;  /* ink / foreground 30 3% 16% */
-  --color-text-secondary: #666;   /* graphite / muted-foreground 0 0% 40% */
-  --color-text-muted: #999;
-  --color-text-link: #0d4943;     /* aubergine */
-  --color-text-invert: #ffffff;   /* bone */
-
-  /* Primary accent: Aubergine (dark teal) */
-  --color-accent: #0d4943;        /* aubergine / primary 174 70% 17% */
-  --color-accent-hover: #08302d;  /* aubergine-deep / indigo-glow */
-  --color-accent-muted: #0d49431f;/* lavender-chip */
+  --color-text-primary: var(--color-ink);
+  --color-text-secondary: var(--color-graphite);
+  --color-text-muted: #999999;
+  --color-text-link: var(--color-aubergine);
+  --color-text-invert: var(--color-bone);
+  --color-accent: var(--color-aubergine);
+  --color-accent-hover: var(--color-aubergine-deep);
+  --color-accent-muted: var(--color-lavender-chip);
   --color-accent-border: rgba(13, 73, 67, 0.2);
   --color-accent-glow: rgba(13, 73, 67, 0.2);
-  --color-accent-light: #d6ece9; /* primary-light 174 38% 94% */
-
-  /* Secondary accent */
-  --color-secondary: #e3e3e2;     /* fog / accent 60 2% 89% */
+  --color-accent-light: hsl(var(--primary-light));
+  --color-secondary: var(--color-fog);
   --color-secondary-muted: rgba(227, 227, 226, 0.5);
-
-  /* Highlight */
-  --color-highlight: #0d4943;
+  --color-highlight: var(--color-aubergine);
   --color-highlight-glow: rgba(13, 73, 67, 0.15);
-
-  /* Semantic colors */
-  --color-success: #0d4943;
+  --color-success: var(--color-aubergine);
   --color-success-bg: rgba(13, 73, 67, 0.12);
   --color-warning: #c4933a;
   --color-warning-bg: rgba(196, 147, 58, 0.12);
@@ -54,24 +94,43 @@
   --color-agent-vessel: #06B6D4;
   --color-agent-lore: #818CF8;
 
-  /* Inter + mono */
-  --font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  /* Typography - IZHUB uses Inter Variable (body) + Phonic (display) */
+  --font-app-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  --font-family: var(--font-app-sans);
+  --font-landing-display: 'Phonic', var(--font-app-sans);
   --font-mono: 'IBM Plex Mono', 'Fira Code', 'JetBrains Mono', monospace;
 
-  --font-size-xs: 0.75rem;
-  --font-size-sm: 0.875rem;
-  --font-size-base: 1rem;
-  --font-size-lg: 1.125rem;
-  --font-size-xl: 1.25rem;
-  --font-size-2xl: 1.5rem;
-  --font-size-3xl: 1.875rem;
-  --font-size-4xl: 2.5rem;
-  --font-size-5xl: 3.5rem;
-  --font-size-6xl: 4.5rem;
-  --font-size-7xl: 5.5rem;
-  --font-size-8xl: 6.5rem;
+  /* IZHUB font weight scale */
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
 
-  /* Spacing (8px grid) */
+  /* IZHUB typography scale (exact) — size + paired line-height */
+  --font-size-xs: 0.75rem;        /* 12px / lh 1.333 */
+  --font-size-sm: 0.875rem;       /* 14px / lh 1.428 */
+  --font-size-base: 1rem;         /* 16px / lh 1.5   */
+  --font-size-lg: 1.125rem;       /* 18px / lh 1.555 */
+  --font-size-xl: 1.25rem;        /* 20px / lh 1.4   */
+  --font-size-2xl: 1.5rem;        /* 24px / lh 1.333 */
+  --font-size-3xl: 1.875rem;      /* 30px / lh 1.2   */
+  --font-size-4xl: 2.25rem;       /* 36px / lh 1.111 */
+  --font-size-5xl: 3rem;          /* 48px / lh 1     */
+  --font-size-6xl: 3.75rem;       /* 60px / lh 1     */
+  --font-size-hero: clamp(2.5rem, 6vw, 6.5rem);
+
+  /* IZHUB line-height tokens */
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-relaxed: 1.625;
+
+  /* IZHUB letter-spacing tokens */
+  --tracking-tighter: -0.05em;
+  --tracking-tight: -0.025em;
+  --tracking-wide: 0.025em;
+  --tracking-widest: 0.1em;
+
+  /* IZHUB spacing scale (0.25rem base unit) */
   --space-1: 0.25rem;
   --space-2: 0.5rem;
   --space-3: 0.75rem;
@@ -89,27 +148,37 @@
 
   /* Layout */
   --max-width: 1280px;
-  --nav-height: 72px;
+  --max-width-6xl: 1152px;
+  --max-width-7xl: 1440px;
+  --nav-height: 64px;
+  --cell-size: 2.35rem;
 
-  /* Radius */
-  --radius-sm: 4px;
-  --radius-md: 8px;
-  --radius-lg: 12px;
-  --radius-xl: 16px;
-  --radius-2xl: 20px;
+  /* Radius - IZHUB exact values */
+  --radius: 0.5rem;              /* 8px  */
+  --radius-sm: calc(var(--radius) - 4px);  /* 4px  */
+  --radius-md: calc(var(--radius) - 2px);  /* 6px  */
+  --radius-lg: var(--radius);             /* 8px  */
+  --radius-xl: calc(var(--radius) + 4px);  /* 12px */
+  --radius-2xl: calc(var(--radius) + 8px); /* 16px */
+  --radius-3xl: calc(var(--radius) + 16px); /* 24px */
   --radius-full: 9999px;
 
-  /* Shadows */
+  /* Shadows - exact IZHUB values */
   --shadow-sm: 0 1px 2px rgba(20, 20, 19, 0.05);
-  --shadow-md: 0 1px 2px rgba(20, 20, 19, 0.1), 0 4px 12px rgba(20, 20, 19, 0.06);
-  --shadow-lg: 0 12px 32px rgba(20, 20, 19, 0.08);
-  --shadow-xl: 0 24px 64px rgba(20, 20, 19, 0.1);
+  --shadow-md: 0 1px 2px rgba(20, 20, 19, 0.1), 0 4px 12px rgba(20, 20, 19, 0.05);
+  --shadow-lg: 0 10px 24px rgba(13, 73, 67, 0.16);
+  --shadow-xl: 0 24px 80px rgba(41, 40, 39, 0.12);
+  --shadow-2xl: 0 34px 110px rgba(8, 48, 45, 0.22);
+  --shadow-card: 0 18px 48px rgba(41, 40, 39, 0.07);
   --shadow-glow: 0 0 40px rgba(13, 73, 67, 0.12);
+  --shadow-inset-focus: inset 0 0 0 1px #0d4943;
 
-  /* Transitions */
+  /* Transitions - IZHUB uses 200ms/300ms with ease-in-out */
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
-  --transition-base: 200ms ease;
+  --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+  --ease-out: cubic-bezier(0, 0, 0.2, 1);
+  --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
   /* Focus ring */
   --color-ring: #0d4943;
@@ -131,48 +200,75 @@ html {
 
 body {
   font-family: var(--font-family);
-  background-color: var(--color-bg);
-  color: var(--color-text-primary);
-  line-height: 1.6;
+  background-color: var(--color-parchment-canvas);
+  color: var(--color-ink);
+  line-height: 1.555;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   overflow-x: hidden;
-  font-weight: 400;
+  font-weight: 460;
 }
 
-/* Typography - Coder.com style: tight, editorial, large */
+/* Typography - IZHUB style: Space Grotesk display, light weight, tight tracking */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  font-weight: 600;
-  letter-spacing: -0.03em;
-  color: var(--color-text-primary);
-  line-height: 1.05;
+  font-family: var(--font-landing-display);
+  font-weight: 300;
+  letter-spacing: 0;
+  color: var(--color-ink);
+  text-wrap: balance;
 }
 
 h1 {
-  font-size: var(--font-size-6xl);
-  letter-spacing: -0.04em;
+  font-size: var(--font-size-hero);
+  line-height: 1.05;
+  letter-spacing: var(--tracking-tight);
+  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) both izhub-hero-fade-slide-down;
 }
 
 h2 {
   font-size: var(--font-size-4xl);
+  line-height: 1.111;
 }
 
 h3 {
   font-size: var(--font-size-2xl);
+  line-height: 1.333;
+}
+
+@keyframes izhub-hero-fade-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 p {
-  color: var(--color-text-secondary);
+  color: var(--color-graphite);
+  line-height: var(--leading-relaxed);
+}
+
+p.text-lg {
+  font-size: var(--font-size-lg);
+  line-height: 1.555;
+}
+
+p.text-xl {
+  font-size: var(--font-size-xl);
+  line-height: 1.4;
 }
 
 strong {
-  color: var(--color-text-primary);
-  font-weight: 600;
+  color: var(--color-ink);
+  font-weight: var(--font-weight-semibold);
 }
 
 img,
@@ -183,13 +279,25 @@ video {
 }
 
 a {
-  color: var(--color-text-link);
+  color: var(--color-aubergine);
   text-decoration: none;
   transition: color var(--transition-fast);
 }
 
 a:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-aubergine-deep);
+}
+
+/* IZHUB-style link with underline offset */
+a.izhub-link {
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+  transition: color var(--transition-fast);
+}
+
+a.izhub-link:hover {
+  color: var(--color-aubergine-deep);
 }
 
 button {
@@ -199,9 +307,425 @@ button {
   font-family: inherit;
 }
 
+/* IZHUB button variants */
+.izhub-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  border-radius: var(--radius-md);
+  font-size: 0.875rem;
+  font-weight: var(--font-weight-medium);
+  line-height: 1.2;
+  transition: all var(--transition-base);
+  white-space: nowrap;
+  min-height: 2rem;
+}
+
+.izhub-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px var(--color-aubergine);
+}
+
+.izhub-btn:disabled {
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Primary button - aubergine gradient bg, bone text */
+.izhub-btn-primary {
+  background: linear-gradient(#0d4943 0%, #0b3c37 100%);
+  color: var(--color-bone);
+  border: 1px solid #08302d;
+  padding: 0 1rem;
+  box-shadow: 0 0 0 1px #08302d59, 0 1px 2px rgba(20, 20, 19, 0.24);
+}
+
+.izhub-btn-primary:hover {
+  background: linear-gradient(#0e524c 0%, #0c443e 100%);
+  border-color: #093633;
+  color: var(--color-bone);
+}
+
+/* Outline button - aubergine border, aubergine text (izhub exact) */
+.izhub-btn-outline {
+  border: 1px solid var(--color-aubergine);
+  background: transparent;
+  color: var(--color-aubergine);
+  padding: 0 1.5rem;
+  height: 52px;
+  border-radius: var(--radius-md);
+  box-shadow: none;
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  line-height: 1;
+}
+
+.izhub-btn-outline:hover {
+  background: transparent;
+  color: var(--color-aubergine-deep);
+  border-color: var(--color-aubergine-deep);
+}
+
+.izhub-btn-outline:focus-visible {
+  box-shadow: inset 0 0 0 1px var(--color-aubergine);
+  outline: none;
+}
+
+/* Secondary button - light bg */
+.izhub-btn-secondary {
+  background-color: var(--color-fog);
+  color: var(--color-ink);
+  padding: 0 1rem;
+}
+
+.izhub-btn-secondary:hover {
+  background-color: var(--color-driftwood);
+}
+
+/* Ghost button */
+.izhub-btn-ghost {
+  color: var(--color-ink);
+  padding: 0 0.75rem;
+}
+
+.izhub-btn-ghost:hover {
+  background-color: var(--color-fog);
+}
+
+/* Large button */
+.izhub-btn-lg {
+  height: 52px;
+  padding: 0 1.5rem;
+  font-size: var(--font-size-base);
+  border-radius: var(--radius-xl);
+}
+
+/* IZHUB CTA (hero button) — exact match from izhub production CSS */
+.izhub-hero-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #fff;
+  white-space: nowrap;
+  background: linear-gradient(#0d4943 0%, #0b3c37 100%);
+  border: 1px solid #08302d;
+  border-radius: var(--radius-xl);
+  min-height: 40px;
+  padding: 4px 4px 4px 16px;
+  text-decoration: none;
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+  box-shadow: 0 0 0 1px #08302d59, 0 1px 2px rgba(20, 20, 19, 0.24);
+}
+
+.izhub-hero-cta:hover {
+  background: linear-gradient(#0e524c 0%, #0c443e 100%);
+  border-color: #093633;
+  box-shadow: 0 0 0 1px #09363359, 0 2px 6px rgba(13, 73, 67, 0.3);
+}
+
+.izhub-hero-cta-text {
+  text-shadow: 0 1px rgba(20, 20, 19, 0.18);
+  font-size: 16px;
+  font-weight: var(--font-weight-bold);
+  line-height: 1;
+}
+
+.izhub-hero-cta svg {
+  transition: transform var(--transition-base);
+}
+
+.izhub-hero-cta:hover svg {
+  transform: translateX(4px);
+}
+
+/* IZHUB secondary CTA — exact match: pill-shaped, semi-transparent white, ink border */
+.izhub-hero-secondary-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  font-family: var(--font-landing-display);
+  color: #1c1c1c;
+  white-space: nowrap;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 1px solid #292827;
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 0.18s, border-color 0.18s, box-shadow 0.18s, color 0.18s;
+  box-shadow: 0 0 0 1px #292827;
+}
+
+.izhub-hero-secondary-cta:hover {
+  background-color: #fff;
+  border-color: #292827;
+  color: #1c1c1c;
+}
+
 ul,
 ol {
   list-style: none;
+}
+
+/* --- IZHUB Component Patterns --- */
+
+/* Section backgrounds */
+.izhub-section-parchment {
+  background-color: var(--color-parchment-canvas);
+  border-top: 1px solid var(--color-driftwood);
+  border-bottom: 1px solid var(--color-driftwood);
+}
+
+.izhub-section-ink {
+  background-color: var(--color-ink);
+  color: var(--color-bone);
+}
+
+.izhub-section-aubergine {
+  background-color: var(--color-aubergine);
+  color: #fff;
+}
+
+/* Section spacing - IZHUB uses generous vertical padding */
+.izhub-section {
+  padding-block: 72px;
+}
+
+@media (min-width: 768px) {
+  .izhub-section {
+    padding-block: 96px;
+  }
+}
+
+/* IZHUB card style */
+.izhub-card {
+  background-color: var(--color-bone);
+  border: 1px solid var(--color-driftwood);
+  border-radius: var(--radius-lg);
+  padding: 1.5rem;
+  transition: all var(--transition-base);
+  box-shadow: var(--shadow-sm);
+}
+
+/* IZHUB suite panel — exact match */
+.izhub-suite-panel {
+  min-height: max(440px, 100svh - 320px);
+  scroll-margin-top: 320px;
+  overflow: hidden;
+  border: 1px solid var(--color-driftwood);
+  background-color: var(--color-parchment-canvas);
+}
+
+.izhub-suite-panel + .izhub-suite-panel {
+  margin-top: -1px;
+}
+
+@media (min-width: 768px) {
+  .izhub-suite-panel {
+    min-height: max(520px, 100svh - 260px);
+    scroll-margin-top: 260px;
+  }
+}
+
+/* IZHUB suite tab — exact match */
+.izhub-suite-tab {
+  outline-offset: -2px;
+  text-decoration: none;
+  transition: background-color 0.18s, box-shadow 0.18s;
+  position: relative;
+}
+
+.izhub-suite-tab[aria-current="true"] {
+  z-index: 1;
+  background-color: #f8f7f3;
+  box-shadow: inset 0 0 0 1px rgba(41, 40, 39, 0.78);
+}
+
+.izhub-suite-tab:focus-visible {
+  outline: 2px solid #353088;
+}
+
+.izhub-suite-tabs {
+  scrollbar-width: none;
+}
+
+.izhub-suite-tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.izhub-card:hover {
+  box-shadow: var(--shadow-card);
+  border-color: var(--color-fog);
+  transform: translateY(-2px);
+}
+
+/* IZHUB content container */
+.izhub-container {
+  width: 100%;
+  max-width: var(--max-width-6xl);
+  margin-inline: auto;
+  padding-inline: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .izhub-container {
+    padding-inline: 3rem;
+  }
+}
+
+/* IZHUB grid layouts */
+.izhub-grid {
+  display: grid;
+  gap: 2rem;
+}
+
+.izhub-grid-2 {
+  grid-template-columns: 1fr;
+}
+
+.izhub-grid-3 {
+  grid-template-columns: 1fr;
+}
+
+@media (min-width: 768px) {
+  .izhub-grid-2 {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .izhub-grid-3 {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* IZHUB list with bullet circles */
+.izhub-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.izhub-list-item {
+  display: flex;
+  gap: 1.25rem;
+  font-size: var(--font-size-lg);
+  line-height: 1.555;
+  color: var(--color-ink);
+}
+
+.izhub-list-item::before {
+  content: '';
+  display: block;
+  width: 0.75rem;
+  height: 0.75rem;
+  margin-top: 0.625rem;
+  border-radius: 50%;
+  border: 1.25px solid var(--color-graphite);
+  flex-shrink: 0;
+}
+
+/* IZHUB eyebrow text */
+.izhub-eyebrow {
+  font-size: var(--font-size-xs);
+  font-weight: var(--font-weight-semibold);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-aubergine);
+  margin-bottom: var(--space-4);
+}
+
+/* IZHUB display heading class */
+.izhub-display-heading {
+  font-family: var(--font-landing-display);
+  font-weight: 300;
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+}
+
+/* IZHUB hero section pattern */
+.izhub-hero-section {
+  position: relative;
+  z-index: 10;
+  min-height: calc(100svh - 112px);
+  overflow: hidden;
+  background-color: var(--color-parchment-canvas);
+  color: var(--color-ink);
+}
+
+.izhub-hero-shell {
+  position: relative;
+  z-index: 10;
+  display: grid;
+  min-height: calc(100svh - 112px);
+  width: 100%;
+  max-width: 1440px;
+  margin-inline: auto;
+  grid-template-columns: repeat(12, 1fr);
+  align-content: center;
+  gap-y: 2rem;
+  padding: 72px 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .izhub-hero-shell {
+    padding: 72px 2rem;
+  }
+}
+
+@media (min-width: 768px) {
+  .izhub-hero-shell {
+    padding-block: 80px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .izhub-hero-shell {
+    grid-template-columns: repeat(36, 1fr);
+    padding-inline: 0;
+  }
+}
+
+/* IZHUB scroll indicator — exact match: pill-shaped, semi-transparent white */
+.izhub-scroll-continue {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-height: 40px;
+  font-family: var(--font-landing-display);
+  color: #1c1c1c;
+  white-space: nowrap;
+  -webkit-backdrop-filter: blur(2px);
+  backdrop-filter: blur(2px);
+  background-color: rgba(255, 255, 255, 0.7);
+  border: 0;
+  border-radius: var(--radius-full);
+  padding: 8px 16px;
+  font-size: 16px;
+  font-weight: var(--font-weight-normal);
+  line-height: 1;
+  text-decoration: none;
+  transition: background-color 0.18s, color 0.18s;
+  animation: 1.5s ease-in-out infinite izhub-small-bounce;
+}
+
+.izhub-scroll-continue:hover {
+  color: #1c1c1c;
+  background-color: #fff;
+}
+
+.izhub-scroll-continue:focus-visible {
+  outline-offset: 2px;
+  outline: 2px solid #292827;
+}
+
+.izhub-scroll-continue svg {
+  animation: float 2s ease-in-out infinite;
 }
 
 /* --- Utilities --- */
@@ -273,6 +797,15 @@ ol {
   }
 }
 
+@keyframes izhub-small-bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
 @keyframes pulse-glow {
   0%, 100% {
     opacity: 0.4;
@@ -324,8 +857,6 @@ ol {
 /* --- Responsive Utilities --- */
 @media (max-width: 1200px) {
   :root {
-    --font-size-8xl: 5rem;
-    --font-size-7xl: 4.5rem;
     --font-size-6xl: 3.5rem;
     --font-size-5xl: 3rem;
     --font-size-4xl: 2.25rem;
@@ -334,8 +865,6 @@ ol {
 
 @media (max-width: 900px) {
   :root {
-    --font-size-8xl: 4rem;
-    --font-size-7xl: 3.5rem;
     --font-size-6xl: 2.75rem;
     --font-size-5xl: 2.25rem;
     --font-size-4xl: 2rem;
@@ -349,8 +878,6 @@ ol {
 
 @media (max-width: 600px) {
   :root {
-    --font-size-8xl: 3rem;
-    --font-size-7xl: 2.5rem;
     --font-size-6xl: 2.25rem;
     --font-size-5xl: 1.875rem;
     --font-size-4xl: 1.5rem;
@@ -412,16 +939,16 @@ svg {
 
 /* Selection */
 ::selection {
-  background-color: var(--color-accent-muted);
-  color: var(--color-text-primary);
+  background-color: var(--color-lavender-chip);
+  color: var(--color-ink);
 }
 
 /* Enterprise section eyebrow */
 .eyebrow {
   font-size: var(--font-size-xs);
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
+  letter-spacing: var(--tracking-widest);
   color: var(--color-accent);
   margin-bottom: var(--space-4);
 }

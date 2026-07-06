@@ -4,7 +4,7 @@
   align-items: center;
   gap: 0.625rem;
   text-decoration: none;
-  color: var(--color-text-primary);
+  color: var(--color-ink);
   transition: opacity var(--transition-fast);
 }
 
@@ -19,14 +19,14 @@
 }
 
 .markBg {
-  color: var(--color-text-primary);
+  color: var(--color-ink);
 }
 
 .name {
   font-size: 20px;
-  font-weight: 700;
+  font-weight: var(--font-weight-bold);
   letter-spacing: -0.03em;
-  color: var(--color-text-primary);
+  color: var(--color-ink);
 }
 
 /* Light variant for dark surfaces */
@@ -39,9 +39,9 @@
 }
 
 .logo.light path {
-  stroke: var(--color-text-primary);
+  stroke: var(--color-ink);
 }
 
 .logo.light circle {
-  fill: var(--color-text-primary);
+  fill: var(--color-ink);
 }

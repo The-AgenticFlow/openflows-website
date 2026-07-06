@@ -1,7 +1,7 @@
 /* IndustryCards - Coder.com industry use-case cards */
 .section {
   padding-block: 120px;
-  background: var(--color-bg);
+  background: var(--color-parchment-canvas);
 }
 
 .container {
@@ -19,18 +19,18 @@
 
 .eyebrow {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-accent);
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-aubergine);
   margin-bottom: 16px;
 }
 
 .title {
   font-size: clamp(32px, 4vw, 48px);
-  font-weight: 600;
-  letter-spacing: -2px;
-  line-height: 1.1;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.05;
 }
 
 .grid {
@@ -44,15 +44,15 @@
   flex-direction: column;
   gap: 20px;
   padding: 32px;
-  border-radius: 12px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-2);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-driftwood);
+  background: var(--color-fog);
   transition: border-color var(--transition-fast), transform var(--transition-fast);
   text-decoration: none;
 }
 
 .card:hover {
-  border-color: var(--color-border-hover);
+  border-color: var(--color-fog);
   transform: translateY(-4px);
 }
 
@@ -62,8 +62,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 8px;
-  background: var(--color-surface-2);
+  border-radius: var(--radius-lg);
+  background: var(--color-fog);
 }
 
 .icon {
@@ -75,33 +75,33 @@
 .iconPlaceholder {
   width: 28px;
   height: 28px;
-  border-radius: 4px;
-  background: var(--color-surface-2);
-  border: 1px dashed var(--color-border-hover);
+  border-radius: var(--radius-sm);
+  background: var(--color-fog);
+  border: 1px dashed var(--color-fog);
 }
 
 .cardTitle {
   font-size: 20px;
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
 }
 
 .cardDesc {
   font-size: 16px;
-  color: var(--color-text-secondary);
-  line-height: 1.6;
+  color: var(--color-graphite);
+  line-height: 1.555;
   flex-grow: 1;
 }
 
 .link {
   font-size: 14px;
-  font-weight: 600;
-  color: var(--color-accent);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-aubergine);
   margin-top: auto;
 }
 
 .card:hover .link {
-  color: var(--color-accent-hover);
+  color: var(--color-aubergine-deep);
 }
 
 @media (max-width: 1024px) {

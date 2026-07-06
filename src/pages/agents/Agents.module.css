@@ -1,0 +1,199 @@
+/* ─────────────────────────────────────────
+   Agents Page - Coder.com Enterprise Style
+   ───────────────────────────────────────── */
+
+/* ── Shared container ── */
+.container {
+  max-width: 1200px;
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+/* ── Eyebrow label ── */
+.eyebrow {
+  font-size: var(--font-size-xs);
+  color: var(--color-aubergine);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-4);
+}
+
+/* ── Hero ── */
+.hero {
+  padding-top: calc(var(--nav-height) + var(--space-10));
+  padding-bottom: var(--space-10);
+  text-align: center;
+}
+
+.heroTitle {
+  font-family: var(--font-landing-display);
+  font-size: clamp(2.4rem, 6vw, 4.5rem);
+  font-weight: 300;
+  letter-spacing: 0;
+  text-wrap: balance;
+  line-height: 1.05;
+  margin-bottom: var(--space-6);
+  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) both izhub-hero-fade-slide-down;
+}
+
+.br {
+  display: block;
+}
+
+.heroSub {
+  font-size: clamp(var(--font-size-base), 2vw, var(--font-size-lg));
+  color: var(--color-graphite);
+  max-width: 640px;
+  margin-inline: auto;
+  line-height: 1.75;
+}
+
+/* ── Agent Grid ── */
+.gridSection {
+  padding-block: var(--space-20);
+  border-top: 1px solid var(--color-driftwood);
+}
+
+.sectionHeading {
+  font-size: clamp(1.6rem, 3vw, 2.25rem);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  margin-bottom: var(--space-4);
+}
+
+.agentGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+  gap: var(--space-6);
+  margin-top: var(--space-8);
+}
+
+.agentCard {
+  background-color: var(--color-bone);
+  border: 1px solid var(--color-driftwood);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast), transform var(--transition-fast);
+}
+
+.agentCard:hover {
+  border-color: var(--color-fog);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.agentImageWrap {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+}
+
+.agentImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: grayscale(0.5);
+  transition: filter var(--transition-base);
+}
+
+.agentCard:hover .agentImage {
+  filter: grayscale(0);
+}
+
+.agentContent {
+  padding: var(--space-6);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.agentRole {
+  font-size: var(--font-size-xs);
+  color: var(--color-graphite);
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: var(--font-weight-semibold);
+}
+
+.agentName {
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+}
+
+.agentMission {
+  font-size: var(--font-size-base);
+  color: var(--color-graphite);
+  line-height: 1.7;
+  margin: 0;
+  flex: 1;
+}
+
+.learnMore {
+  font-size: var(--font-size-sm);
+  color: var(--color-aubergine);
+  font-weight: var(--font-weight-medium);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-accent-border);
+  padding-bottom: 2px;
+  transition: border-color var(--transition-fast), color var(--transition-fast);
+  align-self: flex-start;
+}
+
+.learnMore:hover {
+  border-color: var(--color-aubergine);
+  color: var(--color-aubergine-deep);
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 3rem);
+    padding-bottom: 3rem;
+  }
+
+  .agentGrid {
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: var(--space-5);
+  }
+
+  .container {
+    padding-inline: var(--space-4);
+  }
+}
+
+@media (max-width: 600px) {
+  .heroTitle {
+    font-size: clamp(1.8rem, 6vw, 2.5rem);
+    letter-spacing: 0;
+  }
+
+  .br {
+    display: none;
+  }
+
+  .gridSection {
+    padding-block: var(--space-12);
+  }
+
+  .agentGrid {
+    grid-template-columns: 1fr;
+  }
+
+  .agentImageWrap {
+    height: 180px;
+  }
+
+  .agentContent {
+    padding: var(--space-5);
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + 2rem);
+    padding-bottom: 2rem;
+  }
+}

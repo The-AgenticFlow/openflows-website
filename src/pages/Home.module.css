@@ -1,0 +1,116 @@
+/* ─────────────────────────────────────────
+   Home Page - About Section (IZHUB Style)
+   ───────────────────────────────────────── */
+
+.aboutSection {
+    padding-block: 8rem;
+    border-top: 1px solid var(--color-driftwood);
+}
+
+.aboutContainer {
+    max-width: var(--max-width-6xl);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+}
+
+@media (min-width: 768px) {
+    .aboutContainer {
+        padding-inline: 3rem;
+    }
+}
+
+.aboutEyebrow {
+    font-size: 0.75rem;
+    color: var(--color-aubergine);
+    text-transform: uppercase;
+    letter-spacing: var(--tracking-widest);
+    margin-bottom: 1rem;
+    font-weight: var(--font-weight-semibold);
+}
+
+.aboutGrid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+    align-items: center;
+}
+
+.aboutText {
+    display: flex;
+    flex-direction: column;
+}
+
+.aboutHeading {
+    font-family: var(--font-landing-display);
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 300;
+    margin-bottom: 2.5rem;
+    line-height: var(--leading-tight);
+    letter-spacing: var(--tracking-tight);
+    color: var(--color-ink);
+}
+
+.aboutDesc {
+    color: var(--color-graphite);
+    line-height: 1.625;
+    margin-bottom: 2rem;
+    font-size: var(--font-size-base);
+}
+
+.aboutLink {
+    color: var(--color-aubergine);
+    text-decoration: underline;
+    text-underline-offset: 2px;
+    font-weight: var(--font-weight-medium);
+    font-size: var(--font-size-sm);
+    transition: color var(--transition-fast);
+    align-self: flex-start;
+}
+
+.aboutLink:hover {
+    color: var(--color-aubergine-deep);
+}
+
+.aboutImageWrap {
+    width: 100%;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+    border: 1px solid var(--color-driftwood);
+    box-shadow: var(--shadow-card);
+}
+
+.aboutImage {
+    width: 100%;
+    height: auto;
+    display: block;
+    border-radius: var(--radius-sm);
+}
+
+/* ─────────────────────────────────────────
+   Responsive
+   ───────────────────────────────────────── */
+
+@media (max-width: 900px) {
+    .aboutGrid {
+        grid-template-columns: 1fr;
+        gap: 2.5rem;
+    }
+
+    .aboutSection {
+        padding-block: 5rem;
+    }
+}
+
+@media (max-width: 600px) {
+    .aboutSection {
+        padding-block: 3rem;
+    }
+
+    .aboutContainer {
+        padding-inline: var(--space-4);
+    }
+
+    .aboutHeading {
+        margin-bottom: 1.5rem;
+    }
+}

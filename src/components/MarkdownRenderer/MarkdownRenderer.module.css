@@ -5,7 +5,7 @@
 .markdown {
   font-size: 1.05rem;
   line-height: 1.8;
-  color: var(--color-text-secondary);
+  color: var(--color-graphite);
   word-break: break-word;
 }
 
@@ -16,8 +16,8 @@
 .markdown :global(h4),
 .markdown :global(h5),
 .markdown :global(h6) {
-  color: var(--color-text-primary);
-  font-weight: 700;
+  color: var(--color-ink);
+  font-weight: var(--font-weight-bold);
   line-height: 1.3;
   margin-top: 2.5rem;
   margin-bottom: 1rem;
@@ -30,7 +30,7 @@
 
 .markdown :global(h2) {
   font-size: 1.6rem;
-  border-bottom: 1px solid var(--color-border);
+  border-bottom: 1px solid var(--color-driftwood);
   padding-bottom: 0.4rem;
 }
 
@@ -48,7 +48,7 @@
 
 .markdown :global(h6) {
   font-size: 0.95rem;
-  color: var(--color-text-muted);
+  color: var(--color-graphite);
 }
 
 /* Paragraphs */
@@ -102,9 +102,9 @@
 .markdown :global(blockquote) {
   margin: 1.5rem 0;
   padding: 0.75rem 1.25rem;
-  border-left: 4px solid var(--color-border-hover);
-  background: var(--color-surface);
-  color: var(--color-text-muted);
+  border-left: 4px solid var(--color-fog);
+  background: var(--color-bone);
+  color: var(--color-graphite);
   border-radius: 0 0.5rem 0.5rem 0;
 }
 
@@ -116,26 +116,26 @@
 .markdown :global(hr) {
   margin: 2.5rem 0;
   border: 0;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-driftwood);
 }
 
 /* Inline code */
 .markdown :global(:not(pre) > code) {
-  background: var(--color-surface-2);
-  border: 1px solid var(--color-border);
+  background: var(--color-fog);
+  border: 1px solid var(--color-driftwood);
   padding: 0.15em 0.4em;
-  border-radius: 4px;
+  border-radius: var(--radius-sm);
   font-family: var(--font-mono, 'Menlo', 'Consolas', monospace);
   font-size: 0.875em;
-  color: var(--color-text-primary);
+  color: var(--color-ink);
 }
 
 /* Code blocks */
 .markdown :global(pre) {
   margin: 1.5rem 0;
   padding: 1.25rem 1.5rem;
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background: var(--color-bone);
+  border: 1px solid var(--color-driftwood);
   border-radius: 0.5rem;
   overflow-x: auto;
   line-height: 1.65;
@@ -147,13 +147,13 @@
   padding: 0;
   font-family: var(--font-mono, 'Menlo', 'Consolas', monospace);
   font-size: 0.9rem;
-  color: var(--color-text-primary);
+  color: var(--color-ink);
 }
 
 /* Syntax highlighted code blocks */
 .codeBlockWrapper {
   margin: 1.5rem 0;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-driftwood);
   border-radius: 0.5rem;
   overflow: hidden;
 }
@@ -163,16 +163,16 @@
   align-items: center;
   justify-content: space-between;
   padding: 0.5rem 1rem;
-  background: var(--color-surface-2);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--color-fog);
+  border-bottom: 1px solid var(--color-driftwood);
 }
 
 .codeBlockLanguage {
   font-size: 0.75rem;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-text-muted);
+  color: var(--color-graphite);
 }
 
 .syntaxHighlighter {
@@ -195,32 +195,32 @@
 }
 
 .markdown :global(thead) {
-  background: var(--color-surface);
+  background: var(--color-bone);
 }
 
 .markdown :global(th) {
   padding: 0.6rem 1rem;
   text-align: left;
-  font-weight: 700;
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
+  border: 1px solid var(--color-driftwood);
   white-space: nowrap;
 }
 
 .markdown :global(td) {
   padding: 0.6rem 1rem;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
+  border: 1px solid var(--color-driftwood);
+  color: var(--color-graphite);
   vertical-align: top;
 }
 
 .markdown :global(tbody tr:nth-child(even)) {
-  background: var(--color-surface);
+  background: var(--color-bone);
 }
 
 /* Links */
 .markdown :global(a) {
-  color: var(--color-text-primary);
+  color: var(--color-ink);
   text-decoration: underline;
   text-underline-offset: 2px;
 }
@@ -234,14 +234,14 @@
   max-width: 100%;
   height: auto;
   border-radius: 0.5rem;
-  border: 1px solid var(--color-border);
+  border: 1px solid var(--color-driftwood);
   margin: 1rem 0;
 }
 
 /* Strong / Em / Del */
 .markdown :global(strong) {
-  font-weight: 700;
-  color: var(--color-text-primary);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-ink);
 }
 
 .markdown :global(em) {
@@ -250,5 +250,5 @@
 
 .markdown :global(del) {
   text-decoration: line-through;
-  color: var(--color-text-muted);
+  color: var(--color-graphite);
 }

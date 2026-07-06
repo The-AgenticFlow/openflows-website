@@ -10,7 +10,9 @@ export default function GetStartedBanner() {
             Get started with OpenFlows
           </h2>
           <p className={styles.sub}>
-            Install in 60 seconds. Point it at a GitHub repo with open issues. Watch your team ship.
+            Install on your Coder environment. Point it at a GitHub repo with
+            open issues. Let your team focus on architecture while the agentic
+            dev team ships — safely, securely, and with full governance.
           </p>
           <div className={styles.actions}>
             <Button

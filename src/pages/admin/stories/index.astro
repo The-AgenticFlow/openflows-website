@@ -1,0 +1,8 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import StoriesManager from '@/react-pages/StoriesManager';
+---
+
+<BaseLayout title="Stories Manager">
+  <StoriesManager client:only="react" />
+</BaseLayout>

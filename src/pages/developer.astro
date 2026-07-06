@@ -1,0 +1,104 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+import styles from './Developer.module.css';
+
+// Fetch all blogs and filter by developer category
+const allBlogs = await getCollection('blogs');
+const posts = allBlogs.filter(post => {
+  const category = post.data.category;
+  return category && category.slug === 'developer';
+}).sort((a, b) => {
+  const dateA = a.data.published_at || a.data.created_at;
+  const dateB = b.data.published_at || b.data.created_at;
+  return new Date(dateB).getTime() - new Date(dateA).getTime();
+});
+
+// Format date
+const formatDate = (dateString) => {
+  if (!dateString) return '';
+  return new Date(dateString).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+---
+
+<BaseLayout title="Developer - OpenFlows" description="Technical deep dives, API guides, integration tutorials, and SDK documentation from the OpenFlows team.">
+  <div class={styles.developerWrapper}>
+    <div class={styles.developerLayout}>
+      <main class={styles.mainFeed}>
+        {/* Header */}
+        <header class={styles.developerHeader}>
+          <div class={styles.headerContent}>
+            <p class={styles.eyebrow}>Developer</p>
+            <h1 class={styles.title}>Articles & Guides for Developers</h1>
+            <p class={styles.sub}>
+              Technical deep dives, API guides, integration tutorials, and SDK documentation from the OpenFlows team.
+            </p>
+          </div>
+        </header>
+
+        {/* Content Feed */}
+        {posts.length === 0 ? (
+          <div class={styles.emptyState}>
+            <p class={styles.emptyTitle}>No developer articles yet.</p>
+            <p class={styles.emptyText}>Check back soon for technical guides and tutorials.</p>
+          </div>
+        ) : (
+          <div class={styles.postsGrid}>
+            {posts.map((post) => {
+              const resolvedAuthors = (post.data.authors && post.data.authors.length > 0)
+                ? post.data.authors
+                : post.data.author_name
+                  ? [{ name: post.data.author_name, avatar_url: post.data.author_avatar_url }]
+                  : [];
+              const author = resolvedAuthors[0];
+              const date = post.data.published_at || post.data.created_at;
+              return (
+                <a
+                  href={`/blog/${post.data.slug}`}
+                  class={styles.postCard}
+                >
+                  {post.data.cover_image_url && (
+                    <div class={styles.postImage}>
+                      <img src={post.data.cover_image_url} alt={post.data.title} />
+                    </div>
+                  )}
+                  <div class={styles.postContent}>
+                    <div class={styles.postMeta}>
+                      {post.data.category && (
+                        <span class={styles.postCategory}>{post.data.category.name}</span>
+                      )}
+                      <span class={styles.postDate}>
+                        {formatDate(date)}
+                      </span>
+                    </div>
+                    <h2 class={styles.postTitle}>{post.data.title}</h2>
+                    <p class={styles.postExcerpt}>{post.data.excerpt}</p>
+                    <div class={styles.postFooter}>
+                      <span class={styles.readMore}>Read more →</span>
+                      {author && (
+                        <div class={styles.postAuthor}>
+                          {author.avatar_url ? (
+                            <img src={author.avatar_url} alt={author.name} class={styles.postAuthorAvatar} />
+                          ) : (
+                            <div class={styles.postAuthorAvatarPlaceholder}>{author.name?.charAt(0).toUpperCase()}</div>
+                          )}
+                          <span class={styles.postAuthorName}>{author.name}</span>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </a>
+              );
+            })}
+          </div>
+        )}
+      </main>
+    </div>
+  </div>
+</BaseLayout>
+
+<style src="./Developer.module.css" />

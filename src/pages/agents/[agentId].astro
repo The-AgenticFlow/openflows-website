@@ -1,0 +1,79 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { AGENT_DATA } from '@/data/agents';
+import styles from './AgentDetail.module.css';
+
+export function getStaticPaths() {
+  return Object.keys(AGENT_DATA).map((agentId) => ({
+    params: { agentId },
+  }));
+}
+
+const { agentId } = Astro.params;
+const agent = AGENT_DATA[agentId];
+
+if (!agent) {
+  return Astro.redirect('/');
+}
+---
+
+<BaseLayout title={`${agent.name} - OpenFlows`} description={agent.mission}>
+  {/* Header */}
+  <header class={styles.detailHero}>
+    <p class={styles.heroEyebrow}>The OpenFlows Team</p>
+    <h1 class={styles.heroTitle}>{agent.name}</h1>
+    <p class={styles.heroRole}>{agent.role}</p>
+  </header>
+
+  {/* Article Body */}
+  <article class={styles.article}>
+    <p class={styles.lead}>{agent.mission}</p>
+
+    {/* Capabilities */}
+    <h2 class={styles.sectionTitle}>Capabilities</h2>
+    <ul class={styles.capList}>
+      {agent.capabilities.map((cap, i) => (
+        <li key={i} class={styles.capItem}>
+          <span class={styles.bullet} />
+          {cap}
+        </li>
+      ))}
+    </ul>
+
+    {/* Workflow */}
+    <h2 class={styles.sectionTitle}>How it works</h2>
+    <ol class={styles.flowList}>
+      {agent.flow.map((step, i) => {
+        const [title, desc] = step.split(': ');
+        return (
+          <li key={i} class={styles.flowItem}>
+            <div class={styles.flowHeading}>
+              <span class={styles.flowNumber}>{String(i + 1).padStart(2, '0')}</span>
+              <span class={styles.flowTitle}>{title}</span>
+            </div>
+            <p>{desc}</p>
+          </li>
+        );
+      })}
+    </ol>
+
+    {/* CTA */}
+    <section class={styles.cta}>
+      <h3>Deploy {agent.name} on your repo</h3>
+      <p>
+        Install OpenFlows, point it at a GitHub repository with open issues,
+        and {agent.name} will be running in minutes.
+      </p>
+      <div class={styles.actions}>
+        <a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer" class={styles.btnOutline}>
+          View on GitHub
+        </a>
+        <a href="/docs/getting-started/installation" class={styles.btnCyan}>
+          Installation Guide →
+        </a>
+      </div>
+    </section>
+  </article>
+</BaseLayout>
+
+<style src="./AgentDetail.module.css"></style>

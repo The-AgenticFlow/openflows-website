@@ -1,0 +1,53 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+const blogs = await getCollection('blogs');
+const featured = blogs.find(b => b.data.is_featured) || blogs[0];
+const rest = blogs.filter(b => b.id !== featured?.id);
+
+const formatDate = (d) => {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+};
+---
+
+<BaseLayout title="Blog - OpenFlows" description="Latest news, releases, and insights from the OpenFlows team.">
+  <section style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;">
+    <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem;">Blog</h1>
+    
+    {featured && (
+      <article style="margin-bottom: 3rem; padding: 2rem; background: var(--color-bone); border-radius: var(--radius-lg);">
+        <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
+          <span style="font-size: 0.875rem; color: var(--color-graphite);">{formatDate(featured.data.published_at)}</span>
+          {featured.data.is_featured && <span style="font-size: 0.75rem; background: var(--color-aubergine); color: white; padding: 0.125rem 0.5rem; border-radius: 99px;">Featured</span>}
+        </div>
+        <h2 style="font-size: 1.75rem; margin-bottom: 1rem;">
+          <a href={`/blog/${featured.data.slug}`} style="color: var(--color-ink);">{featured.data.title}</a>
+        </h2>
+        <p style="color: var(--color-graphite); margin-bottom: 1rem;">{featured.data.excerpt}</p>
+        <a href={`/blog/${featured.data.slug}`} style="font-weight: 600;">Read more →</a>
+      </article>
+    )}
+    
+    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
+      {rest.map((blog) => (
+        <article style="padding: 1.5rem; background: var(--color-bone); border-radius: var(--radius-md);">
+          <span style="font-size: 0.75rem; color: var(--color-graphite);">{formatDate(blog.data.published_at)}</span>
+          <h3 style="font-size: 1.25rem; margin: 0.5rem 0;">
+            <a href={`/blog/${blog.data.slug}`} style="color: var(--color-ink);">{blog.data.title}</a>
+          </h3>
+          <p style="font-size: 0.875rem; color: var(--color-graphite);">{blog.data.excerpt}</p>
+        </article>
+      ))}
+    </div>
+    
+    {blogs.length === 0 && (
+      <p style="text-align: center; color: var(--color-graphite); padding: 3rem;">No blog posts yet.</p>
+    )}
+  </section>
+</BaseLayout>

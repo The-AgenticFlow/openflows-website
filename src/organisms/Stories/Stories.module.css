@@ -1,7 +1,7 @@
 /* Stories Section - Coder.com Enterprise Style */
 .section {
   padding: var(--space-16) 0;
-  border-top: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-driftwood);
 }
 
 .container {
@@ -19,20 +19,20 @@
 
 .title {
   font-size: var(--font-size-2xl);
-  font-weight: 600;
-  letter-spacing: -0.02em;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
 }
 
 .viewAll {
   font-size: var(--font-size-sm);
-  color: var(--color-text-link);
+  color: var(--color-aubergine);
   text-decoration: none;
-  font-weight: 500;
+  font-weight: var(--font-weight-medium);
   transition: color var(--transition-fast);
 }
 
 .viewAll:hover {
-  color: var(--color-accent-hover);
+  color: var(--color-aubergine-deep);
 }
 
 .grid {
@@ -46,14 +46,14 @@
   flex-direction: column;
   border-radius: var(--radius-lg);
   overflow: hidden;
-  background-color: var(--color-surface);
-  border: 1px solid var(--color-border);
+  background-color: var(--color-bone);
+  border: 1px solid var(--color-driftwood);
   text-decoration: none;
   transition: border-color var(--transition-base), transform var(--transition-base), box-shadow var(--transition-base);
 }
 
 .card:hover {
-  border-color: var(--color-border-hover);
+  border-color: var(--color-fog);
   transform: translateY(-2px);
   box-shadow: var(--shadow-md);
 }
@@ -62,7 +62,7 @@
   width: 100%;
   aspect-ratio: 16 / 10;
   overflow: hidden;
-  background-color: var(--color-surface-2);
+  background-color: var(--color-fog);
   flex-shrink: 0;
 }
 
@@ -83,7 +83,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background: linear-gradient(135deg, var(--color-surface) 0%, var(--color-surface-2) 100%);
+  background: linear-gradient(135deg, var(--color-bone) 0%, var(--color-fog) 100%);
 }
 
 .placeholderIcon {
@@ -106,13 +106,13 @@
 
 .date {
   font-size: var(--font-size-xs);
-  color: var(--color-text-muted);
+  color: var(--color-graphite);
 }
 
 .cardTitle {
   font-size: var(--font-size-base);
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
   line-height: 1.45;
   letter-spacing: -0.01em;
 }
@@ -126,7 +126,7 @@
 .empty {
   padding: var(--space-8) 0;
   text-align: center;
-  color: var(--color-text-muted);
+  color: var(--color-graphite);
 }
 
 @media (max-width: 768px) {

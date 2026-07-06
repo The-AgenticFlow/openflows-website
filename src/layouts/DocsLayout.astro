@@ -1,0 +1,192 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+
+interface Props {
+  breadcrumbs?: Array<{ label: string; href?: string }>;
+}
+
+const { breadcrumbs } = Astro.props;
+
+// Sidebar navigation tree
+const SIDEBAR = [
+  {
+    title: 'Getting Started',
+    links: [
+      { label: 'Quick Start', href: '/docs/getting-started' },
+      { label: 'Installation', href: '/docs/getting-started/installation' },
+    ],
+  },
+  {
+    title: 'Guides',
+    links: [
+      { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
+    ],
+  },
+  {
+    title: 'Architecture',
+    links: [
+      { label: 'Overview', href: '/docs/architecture' },
+      { label: 'System Design', href: '/docs/architecture/system-design' },
+      { label: 'Agent Roles', href: '/docs/architecture/agent-roles' },
+    ],
+  },
+  {
+    title: 'Other',
+    links: [
+      { label: 'FAQ', href: '/docs/faq' },
+    ],
+  },
+];
+
+const currentPath = Astro.url.pathname;
+---
+
+<BaseLayout title="Documentation - OpenFlows" description="Everything you need to install, configure, and operate the OpenFlows orchestration layer.">
+  <div class="docsLayout">
+    {/* Sidebar */}
+    <aside class="sidebar">
+      {SIDEBAR.map(({ title, links }) => (
+        <div class="sidebarSection">
+          <p class="sidebarTitle">{title}</p>
+          <ul class="sidebarNav">
+            {links.map(({ label, href }) => (
+              <li>
+                <a
+                  href={href}
+                  class:list={['sidebarLink', { active: currentPath === href }]}
+                >
+                  {label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </aside>
+
+    {/* Main content — centered within the right column */}
+    <div class="contentOuter">
+      <main class="content">
+        {breadcrumbs && (
+          <nav class="breadcrumbs" aria-label="Breadcrumb">
+            <a href="/">Home</a>
+            {breadcrumbs.map(({ label, href }) => (
+              <span>
+                <span class="sep">›</span>
+                {href ? <a href={href}>{label}</a> : <span class="current">{label}</span>}
+              </span>
+            ))}
+          </nav>
+        )}
+        <slot />
+      </main>
+    </div>
+  </div>
+</BaseLayout>
+
+<style is:global>
+  .docsLayout {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    gap: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+    padding: 2rem;
+  }
+
+  .sidebar {
+    position: sticky;
+    top: 2rem;
+    height: fit-content;
+  }
+
+  .sidebarSection {
+    margin-bottom: 2rem;
+  }
+
+  .sidebarTitle {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-graphite);
+    margin-bottom: 0.5rem;
+  }
+
+  .sidebarNav {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .sidebarLink {
+    display: block;
+    padding: 0.5rem 0.75rem;
+    font-size: 0.875rem;
+    color: var(--color-ink);
+    text-decoration: none;
+    border-radius: var(--radius-md);
+    transition: all var(--transition-fast);
+  }
+
+  .sidebarLink:hover {
+    background: var(--color-bone);
+  }
+
+  .sidebarLink.active {
+    background: var(--color-aubergine);
+    color: white;
+  }
+
+  .contentOuter {
+    display: grid;
+    grid-template-columns: 1fr 200px;
+    gap: 2rem;
+  }
+
+  .content {
+    max-width: 800px;
+  }
+
+  .breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+    margin-bottom: 2rem;
+  }
+
+  .breadcrumbs a {
+    color: var(--color-graphite);
+    text-decoration: none;
+  }
+
+  .breadcrumbs a:hover {
+    color: var(--color-aubergine);
+  }
+
+  .breadcrumbs .sep {
+    color: var(--color-driftwood);
+  }
+
+  .breadcrumbs .current {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+
+  @media (max-width: 1024px) {
+    .docsLayout {
+      grid-template-columns: 1fr;
+    }
+
+    .sidebar {
+      position: static;
+      margin-bottom: 2rem;
+    }
+
+    .contentOuter {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>

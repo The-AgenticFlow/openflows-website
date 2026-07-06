@@ -8,21 +8,21 @@ const INDUSTRIES = [
   {
     title: 'Tech Innovators',
     description:
-      'Move fast without breaking things. OpenFlows gives high-growth teams a 24/7 autonomous development engine.',
+      'Move fast without breaking things. OpenFlows orchestrates a 24/7 agentic dev team on top of your Coder environment — so your engineers focus on architecture, not implementation.',
     icon: '',
     href: '/use-cases',
   },
   {
     title: 'Financial Services',
     description:
-      'Stay compliant while accelerating delivery. Every agent action is logged, reviewable, and auditable.',
+      'Stay compliant while accelerating delivery. Every agent action is logged, reviewable, and auditable — governance built into the SDLC, not bolted on.',
     icon: '',
     href: '/use-cases',
   },
   {
     title: 'Government Agencies',
     description:
-      'Self-host on air-gapped infrastructure and keep sensitive code inside your network.',
+      'Self-host on air-gapped Coder infrastructure. Keep sensitive code, agent work, and audit trails inside your network at all times.',
     icon: '',
     href: '/use-cases',
   },
@@ -35,7 +35,7 @@ export default function IndustryCards() {
         <div className={styles.header}>
           <p className={styles.eyebrow}>Industries</p>
           <h2 id="industries-title" className={styles.title}>
-            Agent and flow orchestration for software engineering.
+            Orchestration on top of Coder, built for governed software delivery.
           </h2>
         </div>
 

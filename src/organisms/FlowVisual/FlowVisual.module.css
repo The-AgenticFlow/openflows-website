@@ -2,8 +2,8 @@
 .section {
   padding-block: 120px;
   background: var(--color-bg-elevated);
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
+  border-top: 1px solid var(--color-driftwood);
+  border-bottom: 1px solid var(--color-driftwood);
 }
 
 .container {
@@ -21,31 +21,31 @@
 
 .eyebrow {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-accent);
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-aubergine);
   margin-bottom: 16px;
 }
 
 .title {
   font-size: clamp(32px, 4vw, 48px);
-  font-weight: 600;
-  letter-spacing: -2px;
-  line-height: 1.1;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.05;
   margin-bottom: 16px;
 }
 
 .subtitle {
   font-size: 18px;
-  color: var(--color-text-secondary);
-  line-height: 1.6;
+  color: var(--color-graphite);
+  line-height: 1.555;
 }
 
 .stage {
-  border-radius: 12px;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-2);
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--color-driftwood);
+  background: var(--color-fog);
   overflow: hidden;
   margin-bottom: 48px;
 }
@@ -57,23 +57,23 @@
   align-items: center;
   justify-content: center;
   gap: 16px;
-  background: linear-gradient(135deg, var(--color-surface-2) 0%, var(--color-surface) 100%);
+  background: linear-gradient(135deg, var(--color-fog) 0%, var(--color-bone) 100%);
 }
 
 .placeholderIcon {
-  color: var(--color-text-muted);
+  color: var(--color-graphite);
   opacity: 0.6;
 }
 
 .placeholderTitle {
   font-size: 20px;
-  font-weight: 600;
-  color: var(--color-text-primary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-ink);
 }
 
 .placeholderHint {
   font-size: 14px;
-  color: var(--color-text-muted);
+  color: var(--color-graphite);
 }
 
 .agents {
@@ -86,14 +86,14 @@
 .agentBadge {
   font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
   letter-spacing: 0.08em;
   padding: 8px 16px;
   border-radius: 0;
-  border: 1px solid var(--color-border);
-  color: var(--color-text-secondary);
-  background: var(--color-surface-2);
+  border: 1px solid var(--color-driftwood);
+  color: var(--color-graphite);
+  background: var(--color-fog);
 }
 
 @media (max-width: 900px) {

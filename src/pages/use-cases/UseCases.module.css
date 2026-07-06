@@ -1,0 +1,148 @@
+/* ─────────────────────────────────────────
+   Use Cases Page - IZHUB parchment + aubergine style
+   ───────────────────────────────────────── */
+
+/* ── Shared container ── */
+.container {
+  max-width: var(--max-width-6xl);
+  margin-inline: auto;
+  padding-inline: var(--space-6);
+}
+
+@media (min-width: 768px) {
+  .container {
+    padding-inline: 3rem;
+  }
+}
+
+/* ── Eyebrow label ── */
+.eyebrow {
+  font-size: var(--font-size-xs);
+  color: var(--color-aubergine);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-widest);
+  font-weight: var(--font-weight-semibold);
+  margin-bottom: var(--space-4);
+}
+
+/* ── Hero ── */
+.hero {
+  padding-top: calc(var(--nav-height) + var(--space-10));
+  padding-bottom: var(--space-10);
+  border-bottom: 1px solid var(--color-driftwood);
+}
+
+.title {
+  font-family: var(--font-landing-display);
+  font-size: clamp(1.8rem, 4vw, 2.75rem);
+  font-weight: 300;
+  letter-spacing: var(--tracking-tight);
+  text-wrap: balance;
+  line-height: 1.05;
+  color: var(--color-ink);
+  margin-bottom: var(--space-4);
+  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) both izhub-hero-fade-slide-down;
+}
+
+.sub {
+  font-size: var(--font-size-base);
+  color: var(--color-graphite);
+  max-width: 560px;
+  line-height: 1.625;
+}
+
+/* ── Section ── */
+.section {
+  padding-block: var(--space-20);
+  border-top: 1px solid var(--color-driftwood);
+}
+
+/* ── Page content ── */
+.page {
+  max-width: 860px;
+  margin-inline: auto;
+  padding: calc(var(--nav-height) + var(--space-10)) var(--space-6) var(--space-20);
+}
+
+.stepList {
+  counter-reset: step;
+  list-style: none;
+  padding: 0;
+  margin: 1.5rem 0;
+}
+
+.stepList li {
+  counter-increment: step;
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding: 0.75rem 0;
+  border-bottom: 1px solid var(--color-driftwood);
+  color: var(--color-graphite);
+  font-size: var(--font-size-sm);
+  line-height: 1.625;
+}
+
+.stepList li::before {
+  content: counter(step);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 24px;
+  height: 24px;
+  background-color: var(--color-aubergine);
+  color: var(--color-bone);
+  border-radius: 50%;
+  font-size: 0.75rem;
+  font-weight: var(--font-weight-bold);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.stepList li:last-child {
+  border-bottom: none;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + var(--space-8));
+    padding-bottom: var(--space-8);
+  }
+
+  .section {
+    padding-block: var(--space-12);
+  }
+}
+
+@media (max-width: 600px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + var(--space-6));
+    padding-bottom: var(--space-6);
+  }
+
+  .title {
+    font-size: clamp(1.5rem, 5vw, 2rem);
+    letter-spacing: 0;
+  }
+
+  .page {
+    padding: calc(var(--nav-height) + var(--space-6)) var(--space-4) var(--space-12);
+  }
+
+  .container {
+    padding-inline: var(--space-4);
+  }
+
+  .stepList li {
+    font-size: var(--font-size-xs);
+    gap: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hero {
+    padding-top: calc(var(--nav-height) + var(--space-4));
+    padding-bottom: var(--space-4);
+  }
+}

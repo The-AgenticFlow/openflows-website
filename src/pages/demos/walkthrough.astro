@@ -1,0 +1,171 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { Callout, CodeBlock } from '@/molecules/DocComponents/DocComponents';
+import styles from './Demos.module.css';
+
+const STEPS = [
+  {
+    title: '1. Issue Discovery',
+    description: 'NEXUS polls GitHub for open issues and creates tickets in the SharedStore',
+    code: `// NEXUS discovers open issues
+const issues = await github.listIssues({ state: 'open' });
+for (const issue of issues) {
+  await sharedStore.createTicket({
+    issueNumber: issue.number,
+    title: issue.title,
+    body: issue.body
+  });
+}`
+  },
+  {
+    title: '2. Task Assignment',
+    description: 'NEXUS assigns tickets to idle FORGE workers based on availability',
+    code: `// NEXUS assigns work
+const worker = await sharedStore.getIdleWorker();
+const ticket = await sharedStore.getNextTicket();
+await sharedStore.assignTicket(ticket.id, worker.id);`
+  },
+  {
+    title: '3. Planning Phase',
+    description: 'FORGE creates a PLAN.md file outlining the implementation approach',
+    code: `# PLAN.md
+
+## Problem
+Fix pagination offset calculation in API endpoint
+
+## Solution
+1. Update calculateOffset() function in pagination.rs
+2. Add unit tests for edge cases
+3. Update API documentation
+
+## Risks
+- Breaking change for existing API consumers
+- Need to verify with integration tests`
+  },
+  {
+    title: '4. Code Implementation',
+    description: 'FORGE writes the actual code changes based on the plan',
+    code: `// src/api/pagination.rs
+pub fn calculate_offset(page: u32, per_page: u32) -> u32 {
+    if page == 0 {
+        0
+    } else {
+        (page - 1) * per_page
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    
+    #[test]
+    fn test_first_page() {
+        assert_eq!(calculate_offset(1, 10), 0);
+    }
+}`
+  },
+  {
+    title: '5. Code Review',
+    description: 'SENTINEL reviews the code for correctness, security, and style',
+    code: `// SENTINEL review results
+{
+  "correctness": "PASS",
+  "security": "PASS", 
+  "style": "PASS",
+  "tests": "PASS",
+  "comments": [
+    "Good edge case handling for page 0",
+    "Consider adding more test cases"
+  ],
+  "approved": true
+}`
+  },
+  {
+    title: '6. Pull Request',
+    description: 'FORGE creates a pull request with all changes',
+    code: `# Pull Request: Fix pagination offset calculation
+
+## Changes
+- Updated calculate_offset() to handle page 0 correctly
+- Added comprehensive unit tests
+- Updated API documentation
+
+## Testing
+- All unit tests passing
+- Integration tests verified
+- Manual testing completed
+
+Fixes #142`
+  },
+  {
+    title: '7. CI/CD & Merge',
+    description: 'VESSEL monitors CI status and merges when all checks pass',
+    code: `// VESSEL monitors CI
+while (!ci.complete) {
+  const status = await github.getCIStatus(pr.number);
+  if (status.success) {
+    await github.mergePR(pr.number, {
+      merge_method: 'squash',
+      commit_title: 'Fix pagination offset (#142)'
+    });
+    break;
+  }
+  await sleep(10000);
+}`
+  },
+  {
+    title: '8. Documentation',
+    description: 'LORE updates documentation and creates an ADR for the change',
+    code: `# ADR-001: Pagination Offset Fix
+
+## Status
+Accepted
+
+## Context
+The pagination offset calculation was incorrect for page 0,
+causing API responses to skip the first item.
+
+## Decision
+Updated calculate_offset() to return 0 when page is 0,
+matching expected API behavior.
+
+## Consequences
+- Fixes bug #142
+- Breaking change for clients expecting old behavior
+- Requires API version bump`
+  }
+];
+---
+
+<BaseLayout title="Step-by-Step Walkthrough - OpenFlows Demos" description="See how OpenFlows transforms a GitHub issue into a merged pull request">
+  <div class={styles.walkthroughPage}>
+    <p class={styles.eyebrow}>Demos</p>
+    <h1 class={styles.title}>Step-by-Step Walkthrough</h1>
+    <p class={styles.description}>
+      Follow the complete journey from GitHub issue to merged pull request. 
+      See how each agent contributes to the autonomous development workflow.
+    </p>
+
+    <div class={styles.timeline}>
+      {STEPS.map((step, index) => (
+        <div class={styles.timelineItem}>
+          <div class={styles.timelineMarker}>{index + 1}</div>
+          <div class={styles.timelineContent}>
+            <h3 class={styles.timelineTitle}>{step.title}</h3>
+            <p class={styles.timelineDescription}>{step.description}</p>
+            <CodeBlock lang={step.code.includes('pub fn') ? 'rust' : step.code.includes('#') ? 'markdown' : 'javascript'}>
+              {step.code}
+            </CodeBlock>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <Callout type="tip" title="Try it yourself">
+      Ready to see this in action with your own repository? 
+      <a href="/docs/getting-started">Get started with OpenFlows</a> and watch your autonomous development team in action.
+    </Callout>
+  </div>
+</BaseLayout>
+
+<style src="./Demos.module.css" />

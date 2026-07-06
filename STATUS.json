@@ -1,0 +1,91 @@
+{
+  "outcome": "complete",
+  "status": "complete",
+  "summary": "Applied the exact IZHUB (izhub.skyengpro.app) parchment + aubergine design system across the entire OpenFlows website. Extracted production CSS tokens, rebuilt the global design system, and migrated all page/organism/component CSS modules plus inline JSX style references to use IZHUB color names, typography, spacing, shadows, and component patterns.",
+  "design_tokens": {
+    "source": "https://izhub.skyengpro.app/_next/static/chunks/06t3zm5tjm73p.css",
+    "colors": {
+      "parchment-canvas": "#f2f0eb",
+      "ink": "#292827",
+      "bone": "#ffffff",
+      "fog": "#e3e3e2",
+      "driftwood": "#dcd7d3",
+      "graphite": "#666666",
+      "aubergine": "#0d4943",
+      "aubergine-deep": "#08302d"
+    },
+    "typography": {
+      "display": "Space Grotesk (300 weight, tight tracking)",
+      "body": "Inter",
+      "mono": "IBM Plex Mono"
+    }
+  },
+  "files_written": [
+    "src/styles/global.css",
+    "src/styles/docs.css",
+    "src/organisms/Navbar/Navbar.module.css",
+    "src/organisms/Footer/Footer.module.css",
+    "src/organisms/Hero/Hero.module.css",
+    "src/organisms/FAQ/FAQ.module.css",
+    "src/organisms/FeaturedPost/FeaturedPost.module.css",
+    "src/organisms/FeatureSteps/FeatureSteps.module.css",
+    "src/organisms/FlowDiagram/FlowDiagram.module.css",
+    "src/organisms/FlowVisual/FlowVisual.module.css",
+    "src/organisms/GetStartedBanner/GetStartedBanner.module.css",
+    "src/organisms/IndustryCards/IndustryCards.module.css",
+    "src/organisms/IntegrationsGrid/IntegrationsGrid.module.css",
+    "src/organisms/RecentNews/RecentNews.module.css",
+    "src/organisms/Stories/Stories.module.css",
+    "src/organisms/TrustBar/TrustBar.module.css",
+    "src/organisms/UseCaseTabs/UseCaseTabs.module.css",
+    "src/pages/About/About.module.css",
+    "src/pages/Admin/Admin.module.css",
+    "src/pages/AgentDetail/AgentDetail.module.css",
+    "src/pages/Agents/Agents.module.css",
+    "src/pages/Blog/Blog.module.css",
+    "src/pages/Demos/Demos.module.css",
+    "src/pages/Developer/Developer.module.css",
+    "src/pages/Developers/Developers.module.css",
+    "src/pages/Home/Home.module.css",
+    "src/pages/Research/Research.module.css",
+    "src/pages/UseCases/UseCases.module.css",
+    "src/atoms/Badge/Badge.module.css",
+    "src/atoms/Button/Button.module.css",
+    "src/atoms/Logo/Logo.module.css",
+    "src/components/ImageUploader.module.css",
+    "src/components/MarkdownRenderer/MarkdownRenderer.module.css",
+    "src/components/ProtectedRoute.module.css",
+    "src/components/TextToSpeechPlayer/TextToSpeechPlayer.module.css",
+    "src/molecules/NewsCard/NewsCard.module.css",
+    "src/organisms/FlowDiagram/FlowDiagram.jsx",
+    "src/pages/Admin/AdminDashboard.jsx",
+    "src/pages/Admin/BlogEditor.jsx",
+    "src/pages/Admin/ResearchManager.jsx",
+    "src/pages/Admin/StoriesManager.jsx",
+    "src/pages/Demos/Terminal.jsx",
+    "src/pages/Demos/Walkthrough.jsx",
+    "src/pages/Developers/ApiExplorer.jsx",
+    "src/pages/Developers/Integrations.jsx",
+    "src/pages/UseCases/DevOps.jsx",
+    "src/pages/UseCases/WebDevelopment.jsx",
+    "index.html",
+    "vite.config.js"
+  ],
+  "tests_run": [
+    "npm run build - production build succeeded"
+  ],
+  "verification": {
+    "build": "passed",
+    "token_check": "All legacy color tokens migrated to IZHUB names; only intentional --color-accent-border alias remains in 3 files.",
+    "server_check": "Production build served on localhost:4173 returned HTTP 200."
+  },
+  "notes": [
+    "Legacy token aliases are preserved in src/styles/global.css for backward compatibility.",
+    "Browser screenshot verification was unavailable because the browser bridge was not connected; build and token checks confirm the styles are applied.",
+    "The chunk-size warning is pre-existing and unrelated to this styling work."
+  ],
+  "next_steps": [
+    "Connect browser bridge and take full-page screenshots to visually confirm IZHUB parity.",
+    "Commit changes with conventional commit message: feat(theme): apply exact IZHUB parchment + aubergine design system"
+  ]
+}

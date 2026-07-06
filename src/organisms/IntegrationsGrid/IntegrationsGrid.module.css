@@ -1,8 +1,8 @@
 /* IntegrationsGrid - Coder.com logo cloud */
 .section {
   padding-block: 120px;
-  background: var(--color-bg);
-  border-bottom: 1px solid var(--color-border);
+  background: var(--color-parchment-canvas);
+  border-bottom: 1px solid var(--color-driftwood);
 }
 
 .container {
@@ -20,25 +20,25 @@
 
 .eyebrow {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-accent);
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-aubergine);
   margin-bottom: 16px;
 }
 
 .title {
   font-size: clamp(32px, 4vw, 48px);
-  font-weight: 600;
-  letter-spacing: -2px;
-  line-height: 1.1;
+  font-weight: var(--font-weight-semibold);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1.05;
   margin-bottom: 16px;
 }
 
 .subtitle {
   font-size: 18px;
-  color: var(--color-text-secondary);
-  line-height: 1.6;
+  color: var(--color-graphite);
+  line-height: 1.555;
 }
 
 .grid {
@@ -55,13 +55,13 @@
   gap: 12px;
   padding: 24px 16px;
   border-radius: 0;
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-2);
+  border: 1px solid var(--color-driftwood);
+  background: var(--color-fog);
   transition: border-color var(--transition-fast), transform var(--transition-fast);
 }
 
 .card:hover {
-  border-color: var(--color-border-hover);
+  border-color: var(--color-fog);
   transform: translateY(-2px);
 }
 
@@ -75,14 +75,14 @@
   width: 40px;
   height: 40px;
   border-radius: 0;
-  background: var(--color-surface-2);
-  border: 1px dashed var(--color-border-hover);
+  background: var(--color-fog);
+  border: 1px dashed var(--color-fog);
 }
 
 .name {
   font-size: 14px;
-  font-weight: 500;
-  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-graphite);
 }
 
 @media (max-width: 1024px) {

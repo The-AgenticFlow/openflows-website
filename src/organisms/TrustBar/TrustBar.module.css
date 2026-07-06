@@ -1,9 +1,9 @@
-/* TrustBar - Coder.com customer strip */
+/* TrustBar - IZHUB: white bg to match nav treatment */
 .section {
   padding-block: 48px;
-  border-top: 1px solid var(--color-border);
-  border-bottom: 1px solid var(--color-border);
-  background: var(--color-bg);
+  border-top: 1px solid var(--color-fog);
+  border-bottom: 1px solid var(--color-fog);
+  background: var(--color-bone);
 }
 
 .container {
@@ -15,45 +15,66 @@
 
 .eyebrow {
   font-size: 12px;
-  font-weight: 600;
+  font-weight: var(--font-weight-semibold);
   text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: var(--color-text-muted);
+  letter-spacing: var(--tracking-widest);
+  color: var(--color-graphite);
   margin-bottom: 32px;
+}
+
+.marquee {
+  overflow: hidden;
+  width: 100%;
+  -webkit-mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
+  mask-image: linear-gradient(to right, transparent, #000 8%, #000 92%, transparent);
 }
 
 .logoRow {
   display: flex;
-  flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
-  gap: 40px;
+  gap: 60px;
   opacity: 0.7;
+  width: max-content;
+  animation: trustbar-scroll 25s linear infinite;
+}
+
+.logoRow:hover {
+  animation-play-state: paused;
+}
+
+@keyframes trustbar-scroll {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
 .logoPlaceholder {
-  height: 28px;
+  height: 64px;
   display: flex;
   align-items: center;
   justify-content: center;
-  min-width: 120px;
+  min-width: 160px;
 }
 
 .logoImage {
-  height: 100%;
+  max-height: 100%;
   width: auto;
-  filter: grayscale(100%) brightness(1.2);
-  transition: filter var(--transition-fast);
+  object-fit: contain;
+  opacity: 0.8;
+  transition: opacity var(--transition-fast);
 }
 
 .logoPlaceholder:hover .logoImage {
-  filter: grayscale(0%) brightness(1);
+  opacity: 1;
 }
 
 .logoText {
   font-size: 14px;
-  font-weight: 600;
-  color: var(--color-text-secondary);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-graphite);
   letter-spacing: 0.04em;
 }
 
@@ -63,7 +84,7 @@
   }
 
   .logoPlaceholder {
-    min-width: 100px;
-    height: 22px;
+    min-width: 120px;
+    height: 48px;
   }
 }

@@ -11,34 +11,34 @@ const USE_CASES = [
     label: 'Govern AI agents',
     title: 'Run AI agents with boundaries you control',
     description:
-      'Define which agents can access production repos, run dangerous commands, or merge to main. Every action is logged and auditable.',
+      'Coder governs where agents run. OpenFlows governs how they coordinate. Define which agents can access production repos, run dangerous commands, or merge to main — every action logged and auditable.',
     image: '',
     href: '/use-cases',
   },
   {
     id: 'onboard',
     label: 'Accelerate onboarding',
-    title: 'New developers ship on day one',
+    title: 'Your team focuses on architecture, not boilerplate',
     description:
-      'OpenFlows turns issue backlogs into working code, so junior developers learn by reviewing agent output instead of getting blocked.',
+      'OpenFlows turns issue backlogs into working code inside your Coder environment. Junior developers learn by reviewing agent output against architectural specs instead of getting blocked on implementation.',
     image: '',
     href: '/use-cases',
   },
   {
     id: 'secure',
     label: 'Secure source code',
-    title: 'Keep sensitive code in your infrastructure',
+    title: 'Keep sensitive code in your Coder environment',
     description:
-      'Self-host OpenFlows and route agent work through your own GitHub accounts, models, and CI runners. No data leaves your environment.',
+      'Self-host OpenFlows on top of Coder and route agent work through your own GitHub accounts, models, and CI runners. No data leaves your governed infrastructure.',
     image: '',
     href: '/use-cases',
   },
   {
     id: 'scale',
     label: 'Optimize compute',
-    title: 'Parallelize development work',
+    title: 'Parallelize development work safely',
     description:
-      'Spin up multiple FORGE workers to tackle independent issues in parallel. SENTINEL reviews each one, VESSEL merges the winners.',
+      'Spin up multiple FORGE workers to tackle independent issues in parallel. SENTINEL reviews each one, VESSEL merges the winners — all coordinated, governed, and auditable from end to end.',
     image: '',
     href: '/use-cases',
   },

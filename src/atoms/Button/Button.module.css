@@ -1,14 +1,14 @@
-/* Button - IZHUB-style dark teal gradient */
+/* Button - IZHUB exact: dark teal gradient, 700 weight CTA text */
 .button {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 12px;
   font-family: var(--font-family);
-  font-weight: 600;
+  font-weight: var(--font-weight-bold);
   line-height: 1;
   white-space: nowrap;
-  border-radius: 12px;
+  border-radius: var(--radius-xl);
   transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
   cursor: pointer;
   text-decoration: none;
@@ -17,7 +17,7 @@
 }
 
 .button:focus-visible {
-  box-shadow: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-ring);
+  box-shadow: 0 0 0 2px var(--color-parchment-canvas), 0 0 0 4px var(--color-ring);
 }
 
 /* --- Sizes --- */
@@ -30,23 +30,27 @@
 .md {
   font-size: 16px;
   min-height: 40px;
-  padding: 4px 4px 4px 16px;
+  padding: 8px 12px;
 }
 
 .lg {
   font-size: 16px;
   min-height: 48px;
-  padding: 6px 6px 6px 20px;
+  padding: 8px 12px;
 }
 
 /* --- Variants */
 
-/* Primary: dark teal gradient */
+/* Primary: dark teal gradient — IZHUB hero CTA text */
 .primary {
   background: linear-gradient(#0d4943 0%, #0b3c37 100%);
   color: #ffffff;
   border: 1px solid #08302d;
   box-shadow: 0 0 0 1px #08302d59, 0 1px 2px rgba(20, 20, 19, 0.24);
+  text-shadow: 0 1px #1414132e;
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .primary:hover {
@@ -55,43 +59,52 @@
   box-shadow: 0 0 0 1px #09363359, 0 2px 6px rgba(13, 73, 67, 0.3);
 }
 
-/* Secondary: outline ghost with teal border */
+/* Secondary: IZHUB glass outline — white blur bg, ink border, pill radius */
 .secondary {
-  background: transparent;
-  color: #0d4943;
-  border: 1px solid #08302d;
-  box-shadow: 0 1px 2px rgba(20, 20, 19, 0.1);
+  background-color: rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  color: #1c1c1c;
+  border: 1px solid #292827;
+  border-radius: 3.40282e38px;
+  box-shadow: 0 0 0 1px #292827;
+  font-family: var(--font-landing-display);
+  font-weight: 400;
+  transition: background-color 0.18s, border-color 0.18s, box-shadow 0.18s, color 0.18s;
 }
 
 .secondary:hover {
-  background: rgba(13, 73, 67, 0.06);
-  border-color: #0d4943;
-  color: #0b3c37;
+  background-color: rgba(255, 255, 255, 0.9);
+  border-color: #292827;
+  box-shadow: 0 0 0 1px #292827;
+  color: #1c1c1c;
 }
 
 /* Ghost: subtle */
 .ghost {
   background-color: transparent;
-  color: var(--color-text-secondary);
+  color: var(--color-graphite);
   border: 1px solid transparent;
+  font-weight: var(--font-weight-medium);
 }
 
 .ghost:hover {
-  color: var(--color-text-primary);
-  background-color: var(--color-surface-2);
+  color: var(--color-ink);
+  background-color: var(--color-fog);
 }
 
 /* Outline: light border */
 .outline {
   background-color: transparent;
-  color: var(--color-text-primary);
-  border: 1px solid var(--color-border);
+  color: var(--color-ink);
+  border: 1px solid var(--color-driftwood);
+  font-weight: var(--font-weight-medium);
 }
 
 .outline:hover {
-  color: var(--color-text-primary);
-  border-color: var(--color-border-hover);
-  background-color: var(--color-surface-2);
+  color: var(--color-ink);
+  border-color: var(--color-fog);
+  background-color: var(--color-fog);
 }
 
 /* Cyan: accent fill */

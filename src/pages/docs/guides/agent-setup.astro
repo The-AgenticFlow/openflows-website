@@ -1,0 +1,149 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const TOP_LEVEL_ROWS = [
+  ['<code>workspace_provider</code>', 'string', '<code>"coder"</code> — tells OpenFlows to provision ephemeral Coder workspaces instead of local Git worktrees.'],
+  ['<code>coder_module</code>', 'string', 'Default Coder Registry module that installs the code agent CLI into every workspace (e.g. <code>"claude-code"</code>, <code>"codex"</code>, <code>"aider"</code>). Overridden per-agent.'],
+  ['<code>ai_gateway.primary</code>', 'string', '<code>"coder"</code> — route all LLM calls through the Coder AI Gateway. API keys are managed centrally and never exposed inside workspaces.'],
+  ['<code>ai_gateway.fallback</code>', 'string', '<code>"litellm"</code> — fall back to a LiteLLM proxy when the Gateway is unavailable (air-gapped or self-hosted providers).'],
+];
+
+const AGENT_ROWS = [
+  ['<code>provider</code>', 'string', 'LLM provider for this agent: <code>anthropic</code>, <code>openai</code>, <code>google</code>, <code>fireworks</code>, <code>groq</code>, etc.'],
+  ['<code>model</code>', 'string', 'Model identifier passed to the provider via the AI Gateway (e.g. <code>claude-sonnet-4-20250514</code>).'],
+  ['<code>coder_module</code>', 'string', 'Per-agent override of the top-level <code>coder_module</code>. Lets FORGE run <code>claude-code</code> while LORE uses <code>aider</code>.'],
+  ['<code>active</code>', 'bool', 'Set <code>false</code> to exclude the agent from orchestration entirely.'],
+  ['<code>instances</code>', 'int', 'Number of parallel worker slots. FORGE with <code>instances: 2</code> → <code>forge-1</code>, <code>forge-2</code>, each in its own Coder workspace.'],
+];
+
+const MODEL_ROWS = [
+  ['<code style="color:var(--color-agent-forge)">FORGE</code>', 'anthropic / claude-sonnet-4-20250514', 'claude-code', 'Primary coding agent — needs top-tier reasoning'],
+  ['<code style="color:var(--color-agent-nexus)">NEXUS</code>', 'anthropic / claude-sonnet-4-20250514', 'claude-code', 'Orchestrator – needs reliable decision-making'],
+  ['<code style="color:var(--color-agent-sentinel)">SENTINEL</code>', 'openai / gpt-4.1', 'codex', 'Code review – strong reasoning, different provider for adversarial review'],
+  ['<code style="color:var(--color-agent-vessel)">VESSEL</code>', 'openai / gpt-4o', 'codex', 'CI/CD scripting – fast and cost-effective'],
+  ['<code style="color:var(--color-agent-lore)">LORE</code>', 'anthropic / claude-haiku-4-20250514', 'aider', 'Documentation – lightweight task, lightweight model'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Agent Setup' }]}>
+  <h1>Agent Setup</h1>
+  <p>
+    OpenFlows agents are configured through two files: <code>.env</code> for Coder credentials
+    and runtime settings, and <code>orchestration/agent/registry.json</code> for agent
+    definitions, model routing, and Coder workspace provisioning. Run
+    <code>openflows-setup</code> to generate both interactively, or write them manually.
+  </p>
+  <p>
+    In Coder mode, each agent runs inside an <strong>ephemeral Coder workspace</strong> that is
+    provisioned when a task is assigned and torn down after merge. The registry controls which
+    LLM each agent uses (via the Coder AI Gateway), which Coder Registry module installs the
+    code agent CLI, and how many parallel worker instances to run.
+  </p>
+
+  <h2>registry.json — The Single Source of Truth</h2>
+  <CodeBlock lang="json">{`{
+  "workspace_provider": "coder",
+  "coder_module": "claude-code",
+  "ai_gateway": {
+    "primary": "coder",
+    "fallback": "litellm"
+  },
+  "agents": {
+    "nexus": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514",
+      "coder_module": "claude-code",
+      "active": true,
+      "instances": 1
+    },
+    "forge": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514",
+      "coder_module": "claude-code",
+      "active": true,
+      "instances": 2
+    },
+    "sentinel": {
+      "provider": "openai",
+      "model": "gpt-4.1",
+      "coder_module": "codex",
+      "active": true,
+      "instances": 1
+    },
+    "vessel": {
+      "provider": "openai",
+      "model": "gpt-4o",
+      "coder_module": "codex",
+      "active": true,
+      "instances": 1
+    },
+    "lore": {
+      "provider": "anthropic",
+      "model": "claude-haiku-4-20250514",
+      "coder_module": "aider",
+      "active": true,
+      "instances": 1
+    }
+  }
+}`}</CodeBlock>
+
+  <h2>Top-Level Fields</h2>
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={TOP_LEVEL_ROWS} />
+
+  <h2>Per-Agent Fields</h2>
+  <p>Each key under <code>agents</code> is an agent role. The fields below apply to every agent entry.</p>
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={AGENT_ROWS} />
+
+  <Callout type="info" title="Mixing CLI modules across agents">
+    The <code>coder_module</code> field is set per-agent, so you can mix CLIs across roles.
+    FORGE can run <code>claude-code</code> while SENTINEL uses <code>codex</code> and LORE uses
+    <code>aider</code> — each gets the right tool for the job. The top-level
+    <code>coder_module</code> acts as a default; per-agent values override it.
+  </Callout>
+
+  <h2>Common Operations</h2>
+
+  <p><strong>Scale FORGE workers:</strong></p>
+  <CodeBlock lang="json">{`"forge": { "instances": 4 }
+// → forge-1, forge-2, forge-3, forge-4
+// Each gets its own ephemeral Coder workspace.`}</CodeBlock>
+
+  <p><strong>Disable an agent:</strong></p>
+  <CodeBlock lang="json">{`"lore": { "active": false }
+// LORE will not be invoked`}</CodeBlock>
+
+  <p><strong>Switch an agent to a different model:</strong></p>
+  <CodeBlock lang="json">{`"sentinel": { "provider": "google", "model": "gemini-2.5-pro" }
+// SENTINEL now uses Gemini via the AI Gateway`}</CodeBlock>
+
+  <p><strong>Use a different CLI for one agent:</strong></p>
+  <CodeBlock lang="json">{`"forge": { "coder_module": "aider" }
+// FORGE now uses Aider instead of Claude Code`}</CodeBlock>
+
+  <p><strong>GitHub identity</strong> (handled by Coder):</p>
+  <CodeBlock lang="bash">{`# In Coder mode, GitHub identity is handled by Coder external auth.
+# Each agent inherits its GitHub identity from the logged-in Coder
+# user via the git-config module — nothing to configure in registry.json.
+# Configure a GitHub external auth provider in your Coder deployment.`}</CodeBlock>
+
+  <h2>Recommended Model Assignments</h2>
+  <p>
+    These defaults balance reasoning quality, cost, and adversarial review. Mixing providers
+    (Anthropic for FORGE, OpenAI for SENTINEL) creates natural adversarial review — the code
+    reviewer uses a different model family than the code writer.
+  </p>
+  <DocsTable headers={['Agent', 'Provider / Model', 'CLI Module', 'Why']} rows={MODEL_ROWS} />
+
+  <Callout type="info" title="Hot Reload">
+    <code>registry.json</code> is re-read on every NEXUS poll cycle — no restart required when
+    you change instances, models, CLI modules, or active flags.
+  </Callout>
+
+  <Callout type="tip" title="Ephemeral workspace lifecycle">
+    When NEXUS assigns a ticket to a FORGE worker, it provisions a fresh Coder workspace from
+    your template. The <code>coder_module</code> installs the CLI code agent into that workspace.
+    After the PR is merged, the workspace is torn down — no lingering state, no stale
+    credentials, no disk bloat. Each parallel FORGE instance gets its own workspace.
+  </Callout>
+</DocsLayout>

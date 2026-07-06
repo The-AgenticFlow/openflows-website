@@ -1,0 +1,48 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { AGENT_DATA } from '@/data/agents';
+import styles from './Agents.module.css';
+
+const agents = Object.entries(AGENT_DATA);
+---
+
+<BaseLayout title="Agents - OpenFlows" description="Meet the five specialized AI agents that make up the OpenFlows autonomous development team.">
+  {/* Hero Section */}
+  <section class={styles.hero}>
+    <div class={styles.container}>
+      <p class={styles.eyebrow}>The Team</p>
+      <h1 class={styles.heroTitle}>Five agents. One pipeline.<br/> Zero manual steps.</h1>
+      <p class={styles.heroSub}>
+        OpenFlows orchestrates five specialized AI agents on top of your Coder environment
+        through a deterministic, event-driven pipeline. Coder governs where each agent runs;
+        OpenFlows governs how they coordinate. Each agent has a distinct architecture, isolated
+        permissions, and its own GitHub identity — just like a real development team, but
+        coordinated, governed, and auditable from end to end.
+      </p>
+    </div>
+  </section>
+
+  {/* Agent Grid */}
+  <section class={styles.gridSection}>
+    <div class={styles.container}>
+      <h2 class={styles.sectionHeading}>Meet the Team</h2>
+      <div class={styles.agentGrid}>
+        {agents.map(([id, data]) => (
+          <a key={id} href={`/agents/${id}`} class={styles.agentCard}>
+            <div class={styles.agentContent}>
+              <p class={styles.agentRole}>{data.role}</p>
+              <h3 class={styles.agentName}>{data.name}</h3>
+              <p class={styles.agentMission}>{data.mission.slice(0, 120)}...</p>
+              <span class={styles.learnMore}>Explore {data.name} ›</span>
+            </div>
+            <div class={styles.agentImageWrap}>
+              <img src={data.image} alt={data.name} class={styles.agentImage} />
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style src="./Agents.module.css"></style>

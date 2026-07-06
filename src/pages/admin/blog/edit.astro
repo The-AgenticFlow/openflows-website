@@ -1,0 +1,9 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import BlogEditor from '@/react-pages/BlogEditor';
+const id = Astro.url.searchParams.get('id');
+---
+
+<BaseLayout title="Edit Blog Post">
+  <BlogEditor client:only="react" postId={id} />
+</BaseLayout>

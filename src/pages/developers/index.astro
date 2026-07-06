@@ -1,0 +1,28 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { DocCards } from '@/molecules/DocComponents/DocComponents';
+import styles from './Developers.module.css';
+
+const CARDS = [
+  { icon: '🔗', title: 'Integration Guides', desc: 'Connect OpenFlows to GitHub Actions, LiteLLM proxy, Redis, Docker Compose, and your existing CI/CD stack.', href: '/developers/integrations' },
+  { icon: '⭐', title: 'GitHub Repository ↗', desc: 'Full source code, issues, discussions, and releases. MIT licensed. Built in Rust with Tokio, reqwest, and fred (Redis).', href: 'https://github.com/The-AgenticFlow/OpenFlows' },
+  { icon: '🏗️', title: 'Architecture Reference', desc: 'PocketFlow engine, SharedStore keys, crate structure, and the full data flow from GitHub issue to merged PR.', href: '/docs/architecture/system-design' },
+];
+---
+
+<BaseLayout title="Developer Resources - OpenFlows" description="Everything you need to integrate with OpenFlows - integration guides, architecture docs, and the full source code on GitHub.">
+  <section class={styles.hero}>
+    <div class={styles.container}>
+      <p class={styles.eyebrow}>Developers</p>
+      <h1 class={styles.title}>Developer Resources</h1>
+      <p class={styles.sub}>Everything you need to integrate with OpenFlows - integration guides, architecture docs, and the full source code on GitHub.</p>
+    </div>
+  </section>
+  <section class={styles.section}>
+    <div class={styles.container}>
+      <DocCards cards={CARDS} />
+    </div>
+  </section>
+</BaseLayout>
+
+<style src="./Developers.module.css" />

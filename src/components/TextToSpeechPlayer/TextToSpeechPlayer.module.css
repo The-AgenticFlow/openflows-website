@@ -3,8 +3,8 @@
     align-items: center;
     gap: 1rem;
     padding: 0.75rem 1rem 0.75rem 0.75rem;
-    background: var(--color-surface);
-    border: 1px solid var(--color-border);
+    background: var(--color-bone);
+    border: 1px solid var(--color-driftwood);
     border-radius: var(--radius-full);
     margin-bottom: 2.5rem;
     box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
@@ -12,7 +12,7 @@
 }
 
 .ttsContainer:hover {
-    border-color: var(--color-border-hover);
+    border-color: var(--color-fog);
 }
 
 .playBtn {
@@ -22,8 +22,8 @@
     width: 44px;
     height: 44px;
     border-radius: 50%;
-    background: var(--color-primary, var(--color-surface));
-    color: var(--color-text-primary);
+    background: var(--color-primary, var(--color-bone));
+    color: var(--color-ink);
     border: none;
     cursor: pointer;
     transition: transform var(--transition-fast), background var(--transition-fast);
@@ -42,14 +42,14 @@
 
 .ttsTitle {
     font-size: 0.875rem;
-    font-weight: 700;
-    color: var(--color-text-primary);
+    font-weight: var(--font-weight-bold);
+    color: var(--color-ink);
     line-height: 1.2;
 }
 
 .ttsStatus {
     font-size: 0.75rem;
-    color: var(--color-text-muted);
+    color: var(--color-graphite);
 }
 
 /* Audio visualizer dots */
@@ -64,7 +64,7 @@
 .bar {
     width: 3px;
     height: 100%;
-    background: var(--color-text-primary);
+    background: var(--color-ink);
     border-radius: 2px;
     opacity: 0.6;
     transition: height 0.1s ease;

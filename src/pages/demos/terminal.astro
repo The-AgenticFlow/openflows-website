@@ -1,0 +1,35 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import TerminalAnimation from '@/react-pages/Terminal';
+import { Callout } from '@/molecules/DocComponents/DocComponents';
+import styles from './Demos.module.css';
+---
+
+<BaseLayout title="Terminal Simulation - OpenFlows Demos" description="Watch OpenFlows autonomously discover, plan, implement, review, and merge code">
+  <div class={styles.terminalPage}>
+    <p class={styles.eyebrow}>Demos</p>
+    <h1 class={styles.title}>Terminal Simulation</h1>
+    <p style={{ color: 'var(--color-graphite)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
+      Watch OpenFlows autonomously discover a GitHub issue, plan the implementation, write code, review it, and merge the pull request - all without human intervention.
+    </p>
+
+    <TerminalAnimation client:load />
+
+    <Callout type="tip" title="This is a simulation">
+      This demo plays a pre-recorded session. In production, OpenFlows reads your real GitHub issues, clones your actual codebase, and writes production code. Try it yourself with the <a href="/docs/getting-started">Quick Start Guide</a>.
+    </Callout>
+
+    <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)' }}>What you just saw</h2>
+    <ol style={{ color: 'var(--color-graphite)', lineHeight: 1.8, paddingLeft: '1.5rem' }}>
+      <li><strong>NEXUS</strong> polls GitHub, discovers open issues, assigns T-001 to forge-1</li>
+      <li><strong>FORGE</strong> creates an isolated worktree, writes PLAN.md, spawns Claude Code</li>
+      <li><strong>SENTINEL</strong> reviews the plan (CONTRACT.md: AGREED) before any code is written</li>
+      <li><strong>FORGE</strong> implements segment by segment; SENTINEL evaluates each one</li>
+      <li><strong>SENTINEL</strong> final review approved - FORGE opens PR #7 via GitHub MCP</li>
+      <li><strong>VESSEL</strong> polls CI at 10s intervals, squash-merges when green</li>
+      <li><strong>LORE</strong> writes ADR-003 and commits it to the repo</li>
+    </ol>
+  </div>
+</BaseLayout>
+
+<style src="./Demos.module.css" />

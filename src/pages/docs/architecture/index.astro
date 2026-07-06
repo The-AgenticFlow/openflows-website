@@ -1,0 +1,36 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DocCards, Callout } from '@/molecules/DocComponents/DocComponents';
+
+const CARDS = [
+  { icon: '🏗️', title: 'System Design', desc: 'PocketFlow engine, SharedStore state machine, Coder workspace lifecycle, crash recovery, and the design principle behind it all: architecture is the product.', href: '/docs/architecture/system-design' },
+  { icon: '👥', title: 'Agent Roles', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, LORE — each agent\'s role, permissions, workspace lifecycle, CLI module, and how they interact through the SharedStore.', href: '/docs/architecture/agent-roles' },
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture' }]}>
+  <h1>Architecture</h1>
+  <p>
+    OpenFlows is built on a simple thesis: <strong>architecture is the product</strong>.
+    AI can generate code against a spec, but it can't write the spec. OpenFlows encodes
+    the engineering — the architecture, the contracts, the review gates, the recovery
+    patterns — so that agents can produce software, not just code.
+  </p>
+  <p>
+    The system runs as two complementary layers. <strong>Coder</strong> governs
+    <em>where</em> agents run: ephemeral Terraform-defined workspaces with centrally
+    managed LLM keys, SSO identity, and full audit trails. <strong>OpenFlows</strong>
+    governs <em>how</em> agents coordinate: a directed flow graph (PocketFlow) where
+    five specialized agents communicate through a typed SharedStore, plan before
+    executing, review before merging, and self-heal on failure.
+  </p>
+
+  <Callout type="info" title="The flow in brief">
+    GitHub issue → NEXUS assigns ticket → Coder workspace provisioned → FORGE writes
+    PLAN.md → SENTINEL reviews plan → FORGE implements segment by segment → SENTINEL
+    evaluates each segment → FORGE opens PR → VESSEL polls CI and squash-merges →
+    LORE writes ADR and CHANGELOG → Coder workspace torn down. No human intervention.
+  </Callout>
+
+  <DocCards cards={CARDS} />
+</DocsLayout>

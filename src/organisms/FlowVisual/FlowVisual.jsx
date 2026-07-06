@@ -18,8 +18,10 @@ export default function FlowVisual() {
             Watch the team work in real time.
           </h2>
           <p className={styles.subtitle}>
-            NEXUS triages, FORGE builds, SENTINEL reviews, VESSEL ships, and LORE documents — all
-            through a shared Redis state machine.
+            NEXUS triages, FORGE builds, SENTINEL reviews, VESSEL ships, and LORE
+            documents — all coordinated through a shared Redis state machine on
+            top of your Coder environment. Every step governed, auditable, and
+            safe.
           </p>
         </div>
 
