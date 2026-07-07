@@ -1,6 +1,6 @@
-/* Navbar - IZHUB exact: sticky, white bg, fog border-bottom */
+/* Navbar - IZHUB exact: fixed, white bg, fog border-bottom */
 .navbar {
-  position: sticky;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -223,6 +223,18 @@
 }
 
 .barOpen:nth-child(3) {
+  transform: translateY(-7px) rotate(-45deg);
+}
+
+.hamburgerOpen .bar:nth-child(1) {
+  transform: translateY(7px) rotate(45deg);
+}
+
+.hamburgerOpen .bar:nth-child(2) {
+  opacity: 0;
+}
+
+.hamburgerOpen .bar:nth-child(3) {
   transform: translateY(-7px) rotate(-45deg);
 }
 

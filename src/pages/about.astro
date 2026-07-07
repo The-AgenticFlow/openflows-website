@@ -9,43 +9,83 @@ const STATS = [
   { value: 'MIT', label: 'Open source license' },
 ];
 
+const AGENTS = [
+  {
+    name: 'NEXUS',
+    role: 'Orchestrator',
+    desc: 'Polls GitHub for issues, provisions workspaces, assigns work to agents, and manages the entire pipeline lifecycle.',
+  },
+  {
+    name: 'FORGE',
+    role: 'Builder',
+    desc: 'Receives tickets, writes PLAN.md, implements code segment by segment, and opens pull requests.',
+  },
+  {
+    name: 'SENTINEL',
+    role: 'Reviewer',
+    desc: 'Reviews every code segment against 5 criteria: correctness, security, test coverage, standards compliance, and no regressions.',
+  },
+  {
+    name: 'VESSEL',
+    role: 'Shipper',
+    desc: 'Handles CI status, resolves merge conflicts, and squash-merges approved PRs after SENTINEL approval.',
+  },
+  {
+    name: 'LORE',
+    role: 'Documenter',
+    desc: 'Writes ADRs (Architecture Decision Records) and updates CHANGELOG.md after each successful merge.',
+  },
+];
+
 const VALUES = [
   {
     title: 'Autonomous by default',
-    desc: 'The team runs without human input. NEXUS only reaches out when it genuinely needs you - spec ambiguity, security concerns, or resource limits.',
+    desc: 'The pipeline runs without human input. NEXUS polls GitHub, assigns tickets, provisions ephemeral Coder workspaces, and manages the full lifecycle. It only escalates to AwaitingHuman for spec ambiguity, security concerns, or resource limits.',
   },
   {
     title: 'Each agent has an identity',
-    desc: 'Every agent gets its own GitHub account. They create branches, open PRs, and review code - just like human developers on your team.',
+    desc: 'Agent = CLI backend (muscle) + configuration harness (brain). Each agent has its own persona, skills, hooks, and permissions. GitHub identity is handled by Coder external auth — agents inherit identity from the logged-in Coder user via the git-config module. No personal access tokens needed.',
   },
   {
     title: 'Built for resilience',
-    desc: 'Flow recovery detects orphaned tickets, stale workers, and unmerged PRs on every cycle. The pipeline resumes at the correct phase automatically.',
+    desc: 'A five-layer crash recovery stack catches failures at every level, from malformed LLM output to crashed nodes. NEXUS reconcile() detects orphaned tickets, stale workers, and unmerged PRs on every cycle. Ephemeral Coder workspaces are torn down after merge — no lingering state, no stale credentials.',
   },
   {
     title: 'Model-agnostic, adversarial by design',
-    desc: 'You choose the model behind each agent. NEXUS can run Claude, FORGE can run Kimi, SENTINEL can run Gemini. Different models create natural adversarial behavior - the reviewer catches what the builder misses.',
+    desc: 'Each agent\'s LLM provider and model are configured independently in registry.json. FORGE and SENTINEL can use different providers — Anthropic for the builder, OpenAI for the reviewer — so the reviewer\'s blind spots differ from the writer\'s. SENTINEL spawns fresh per evaluation, read-only and bias-free.',
   },
   {
     title: 'Open source, MIT licensed',
-    desc: 'The entire orchestration engine - from PocketFlow core to the TUI setup wizard - is on GitHub. Install via npm, cargo, Docker, or a one-line curl installer.',
+    desc: 'The orchestration engine — PocketFlow core, SharedStore, agent harnesses, and TUI setup wizard — is on GitHub under the MIT license. Install via npm, cargo, Docker, or a one-line curl installer. Self-hosted on your infrastructure, with Coder AI Gateway and LiteLLM fallback for any model provider.',
+  },
+  {
+    title: 'Ship faster, not harder',
+    desc: 'FORGE implements and opens PRs in 15–30 minutes. SENTINEL reviews every segment automatically. VESSEL merges when CI is green. A 2-person startup can ship 40 features in a month because the pipeline eliminates the PR review queue and founder context-switching.',
+  },
+  {
+    title: 'Conflict rework, not rebase churn',
+    desc: 'When VESSEL detects a merge conflict, it does not create a new branch or lose context. It writes CONFLICT_RESOLUTION.md and re-routes the ticket back to the same FORGE worker. FORGE reworks the implementation, re-commits, and VESSEL re-monitors CI — no manual rebase.',
+  },
+  {
+    title: 'Documentation as a byproduct',
+    desc: 'LORE writes Architecture Decision Records and updates CHANGELOG.md after every successful merge. Technical decisions are captured automatically, not as an afterthought. The team ships code and the paper trail writes itself.',
   },
 ];
 ---
 
-<BaseLayout title="About - OpenFlows" description="Learn about OpenFlows - the autonomous AI development team orchestration layer.">
+<BaseLayout title="About - OpenFlows" description="Learn about OpenFlows - the autonomous AI development team orchestration layer that coordinates five specialized agents to take GitHub issues to merged pull requests.">
   {/* ── Hero ── */}
   <section class={styles.hero}>
     <div class={styles.container}>
       <p class={styles.eyebrow}>About OpenFlows</p>
       <h1 class={styles.heroTitle}>
-        Orchestration on top of your<br class={styles.br} /> Coder environment.
+        The orchestration layer for<br class={styles.br} /> autonomous AI development teams.
       </h1>
       <p class={styles.heroSub}>
-        OpenFlows sits on top of Coder so your engineering team can focus on
-        architecture. Five specialized AI agents coordinate through a Redis-backed state
-        machine to take GitHub issues all the way to merged, documented pull requests —
-        safely, securely, and with full governance.
+        OpenFlows coordinates five specialized AI agents through a Redis-backed state machine
+        to take GitHub issues all the way to merged, documented pull requests. GitHub identity
+        is handled by Coder external auth — no personal access tokens. The entire pipeline runs
+        autonomously - you wake up to completed features, reviewed PRs, and updated documentation.
       </p>
     </div>
   </section>
@@ -64,41 +104,18 @@ const VALUES = [
     </div>
   </section>
 
-  {/* ── Vision - text left, image right ── */}
+  {/* ── The Agents ── */}
   <section class={styles.split}>
     <div class={styles.container}>
-      <div class={styles.splitGrid}>
-        <div class={styles.splitText}>
-          <p class={styles.eyebrow}>The big idea</p>
-          <h2 class={styles.splitHeading}>Your team focuses on architecture</h2>
-          <p class={styles.splitDesc}>
-            Coder governs where agents run. OpenFlows governs how they coordinate. Each AI
-            agent gets their own GitHub account and identity — they create branches, open PRs,
-            review code, run CI/CD, and deploy, just like human developers. NEXUS (the
-            orchestrator) notifies you only when necessary: spec ambiguity, security concerns,
-            or resource limits. Otherwise, the agentic dev team runs autonomously within your
-            governed Coder environment. You wake up to completed features, reviewed PRs, and
-            updated documentation.
-          </p>
-          <div class={styles.linkRow}>
-            <a href="/docs/architecture" class={styles.textLink}>Architecture Overview ›</a>
-            <a
-              href="https://github.com/The-AgenticFlow/OpenFlows"
-              class={styles.textLink}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              View on GitHub ›
-            </a>
+      <p class={styles.eyebrow}>The team</p>
+      <h2 class={styles.valuesHeading}>Five agents, one pipeline</h2>
+      <div class={styles.valuesGrid}>
+        {AGENTS.map(({ name, role, desc }) => (
+          <div key={name} class={styles.valueCard}>
+            <h3 class={styles.valueTitle}>{name} <span class={styles.agentRole}>— {role}</span></h3>
+            <p class={styles.valueDesc}>{desc}</p>
           </div>
-        </div>
-        <div class={styles.splitImageWrap}>
-          <img
-            src="https://images.unsplash.com/photo-1519389950473-47ba0277781c?auto=format&fit=crop&q=80&w=900"
-            alt="Engineering team collaborating"
-            class={styles.splitImage}
-          />
-        </div>
+        ))}
       </div>
     </div>
   </section>
@@ -113,15 +130,29 @@ const VALUES = [
     </div>
   </section>
 
-  {/* ── Full-width team image ── */}
-  <section class={styles.imageSection}>
+  {/* ── How it works - text left ── */}
+  <section class={styles.split}>
     <div class={styles.container}>
-      <div class={styles.fullImageWrap}>
-        <img
-          src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?auto=format&fit=crop&q=80&w=1400"
-          alt="Developers collaborating"
-          class={styles.fullImage}
-        />
+      <div class={styles.splitGrid}>
+        <div class={styles.splitText}>
+          <p class={styles.eyebrow}>How it works</p>
+          <h2 class={styles.splitHeading}>From issue to merged PR, autonomously</h2>
+          <p class={styles.splitDesc}>
+            NEXUS polls GitHub for open issues and provisions ephemeral workspaces for each task.
+            FORGE receives the ticket, writes a PLAN.md, and implements the code segment by segment.
+            SENTINEL reviews every segment against five criteria before approval. VESSEL handles CI
+            status and merges approved PRs. LORE documents everything with ADRs and CHANGELOG updates.
+          </p>
+          <p class={styles.splitDesc}>
+            The entire pipeline runs without human intervention. NEXUS only reaches out when it
+            genuinely needs you - spec ambiguity, security concerns, or resource limits. Otherwise,
+            the team runs autonomously within your governed environment.
+          </p>
+          <div class={styles.linkRow}>
+            <a href="/docs/architecture" class={styles.textLink}>Architecture Overview ›</a>
+            <a href="/docs/getting-started" class={styles.textLink}>Get Started ›</a>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -142,25 +173,25 @@ const VALUES = [
     </div>
   </section>
 
-  {/* ── Open source - image left, text right ── */}
+  {/* ── Community ── */}
   <section class={styles.split}>
     <div class={styles.container}>
-      <div class={`${styles.splitGrid} ${styles.splitReverse}`}>
-        <div class={styles.splitImageWrap}>
-          <img
-            src="https://images.unsplash.com/photo-1531482615713-2afd69097998?auto=format&fit=crop&q=80&w=900"
-            alt="Developers collaborating on open source"
-            class={styles.splitImage}
-          />
-        </div>
+      <div class={styles.splitGrid}>
         <div class={styles.splitText}>
-          <p class={styles.eyebrow}>Open Source</p>
-          <h2 class={styles.splitHeading}>MIT licensed, community driven</h2>
+          <p class={styles.eyebrow}>Community</p>
+          <h2 class={styles.splitHeading}>Build the orchestration layer with us</h2>
           <p class={styles.splitDesc}>
-            OpenFlows is fully open source. The project is maintained by The AgenticFlow
-            team and welcomes contributions from the community. Install via npm, cargo,
-            Homebrew, Docker, or a one-line curl installer. The entire orchestration
-            engine - from PocketFlow core to the TUI setup wizard - is available on GitHub.
+            OpenFlows is MIT licensed and self-hosted on your infrastructure. Contributors
+            publish Coder Registry modules that install code agent CLIs (claude-code, codex,
+            aider, and more) into ephemeral workspaces, extend the PocketFlow engine with new
+            agent node types, improve the five-layer crash recovery stack, and integrate with
+            additional LLM providers through the Coder AI Gateway and LiteLLM fallback.
+          </p>
+          <p class={styles.splitDesc}>
+            The project is maintained by The AgenticFlow team. Whether you're writing agent
+            harnesses with custom personas and permissions, improving VESSEL's merge conflict
+            resolution, enhancing the TUI dashboard, or documenting architecture decisions,
+            your work directly shapes how autonomous development teams operate.
           </p>
           <div class={styles.linkRow}>
             <a
@@ -170,6 +201,14 @@ const VALUES = [
               rel="noopener noreferrer"
             >
               View the repository ›
+            </a>
+            <a
+              href="https://github.com/The-AgenticFlow/OpenFlows/issues"
+              class={styles.textLink}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Report an issue ›
             </a>
             <a href="/docs/getting-started/installation" class={styles.textLink}>
               Installation Guide ›

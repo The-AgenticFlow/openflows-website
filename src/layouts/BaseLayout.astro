@@ -38,7 +38,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     {ogImage && <meta name="twitter:image" content={ogImage} />}
   </head>
   <body>
-    <Navbar client:only="react" />
+    <Navbar />
     <slot />
   </body>
 </html>

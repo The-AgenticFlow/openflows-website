@@ -1,19 +1,309 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { DocCards } from '@/molecules/DocComponents/DocComponents';
 
-const CARDS = [
+const QUICK_START = [
   { icon: '🚀', title: 'Getting Started', desc: 'Install OpenFlows and run your first autonomous workflow in minutes.', href: '/docs/getting-started' },
-  { icon: '⚙️', title: 'Installation Guide', desc: 'All install methods: npm, one-liner, cargo, Docker, Homebrew, and source.', href: '/docs/getting-started/installation' },
-  { icon: '🤖', title: 'Agent Setup', desc: 'Configure NEXUS, FORGE, SENTINEL, VESSEL, and LORE - registry.json, model routing, Coder modules.', href: '/docs/guides/agent-setup' },
-  { icon: '🏗️', title: 'System Design', desc: 'PocketFlow engine, SharedStore state machine, data flow from issue to merged PR.', href: '/docs/architecture/system-design' },
-  { icon: '👥', title: 'Agent Roles', desc: 'Deep dive into each agent - permissions, workflows, and how they interact.', href: '/docs/architecture/agent-roles' },
-  { icon: '❓', title: 'FAQ', desc: 'Answers to common questions about setup, LLM providers, Coder workspaces, and troubleshooting.', href: '/docs/faq' },
+  { icon: '⚙️', title: 'Installation', desc: 'All install methods: npm, one-liner, cargo, Docker, and source builds.', href: '/docs/getting-started/installation' },
+  { icon: '🤖', title: 'Agent Setup', desc: 'Configure agents, model routing, and Coder modules.', href: '/docs/guides/agent-setup' },
+];
+
+const ARCHITECTURE = [
+  { icon: '🏗️', title: 'System Design', desc: 'PocketFlow engine, SharedStore state machine, and data flow.', href: '/docs/architecture/system-design' },
+  { icon: '👥', title: 'Agent Roles', desc: 'Deep dive into each agent - permissions, workflows, and interactions.', href: '/docs/architecture/agent-roles' },
+  { icon: '🔐', title: 'Security', desc: 'Governance, audit trails, and security best practices.', href: '/docs/architecture/security' },
+];
+
+const RESOURCES = [
+  { icon: '❓', title: 'FAQ', desc: 'Answers to common questions about setup, LLM providers, and troubleshooting.', href: '/docs/faq' },
+  { icon: '📚', title: 'API Reference', desc: 'REST API endpoints and configuration options.', href: '/docs/api' },
+  { icon: '🔧', title: 'Troubleshooting', desc: 'Common issues and solutions.', href: '/docs/troubleshooting' },
 ];
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Documentation' }]}>
-  <h1>Documentation</h1>
-  <p>Everything you need to install, configure, and operate the OpenFlows orchestration layer on top of your Coder environment. Five agents, one pipeline, zero manual steps — all governed and auditable.</p>
-  <DocCards cards={CARDS} />
+  <div class="docsHero">
+    <h1 class="docsTitle">OpenFlows Documentation</h1>
+    <p class="docsLead">
+      OpenFlows is a self-hosted orchestration layer for running autonomous AI development teams on top of your Coder environment. 
+      Five agents, one pipeline, zero manual steps — all governed and auditable.
+    </p>
+    <div class="docsCta">
+      <a href="/docs/getting-started" class="docsCtaPrimary">Get Started →</a>
+      <a href="/docs/getting-started/installation" class="docsCtaSecondary">Installation Guide</a>
+    </div>
+  </div>
+
+  <section class="docsSection">
+    <h2 class="docsSectionTitle">Quick Start</h2>
+    <p class="docsSectionDesc">Get up and running in minutes with these essential guides.</p>
+    <div class="docsGrid">
+      {QUICK_START.map(({ icon, title, desc, href }) => (
+        <a href={href} class="docsCard">
+          <div class="docsCardIcon">{icon}</div>
+          <h3 class="docsCardTitle">{title}</h3>
+          <p class="docsCardDesc">{desc}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="docsSection">
+    <h2 class="docsSectionTitle">Architecture & Design</h2>
+    <p class="docsSectionDesc">Understand how OpenFlows works under the hood.</p>
+    <div class="docsGrid">
+      {ARCHITECTURE.map(({ icon, title, desc, href }) => (
+        <a href={href} class="docsCard">
+          <div class="docsCardIcon">{icon}</div>
+          <h3 class="docsCardTitle">{title}</h3>
+          <p class="docsCardDesc">{desc}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="docsSection">
+    <h2 class="docsSectionTitle">Resources</h2>
+    <p class="docsSectionDesc">Additional documentation and reference materials.</p>
+    <div class="docsGrid">
+      {RESOURCES.map(({ icon, title, desc, href }) => (
+        <a href={href} class="docsCard">
+          <div class="docsCardIcon">{icon}</div>
+          <h3 class="docsCardTitle">{title}</h3>
+          <p class="docsCardDesc">{desc}</p>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  <section class="docsSection docsWhatIsNot">
+    <h2 class="docsSectionTitle">What OpenFlows is not</h2>
+    <div class="docsWhatGrid">
+      <div class="docsWhatItem">
+        <h3>Not a CI/CD platform</h3>
+        <p>OpenFlows orchestrates agents but doesn't replace your CI/CD pipeline. It integrates with existing workflows.</p>
+      </div>
+      <div class="docsWhatItem">
+        <h3>Not a SaaS offering</h3>
+        <p>OpenFlows is self-hosted on your infrastructure. You control the data, the models, and the execution environment.</p>
+      </div>
+      <div class="docsWhatItem">
+        <h3>Not an IDE</h3>
+        <p>OpenFlows works with any IDE through Coder workspaces. It orchestrates agents, not your editor.</p>
+      </div>
+      <div class="docsWhatItem">
+        <h3>Not a code generation tool</h3>
+        <p>OpenFlows orchestrates AI agents that write code. The agents use LLMs, but OpenFlows itself doesn't generate code.</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="docsSection docsLearnMore">
+    <h2 class="docsSectionTitle">Learn more</h2>
+    <ul class="docsLearnList">
+      <li><a href="/docs/getting-started">Getting Started Guide</a> — Install and run your first autonomous workflow</li>
+      <li><a href="/docs/architecture/agent-roles">Agent Roles</a> — Understand each agent's responsibilities</li>
+      <li><a href="/docs/guides/agent-setup">Agent Setup</a> — Configure model routing and Coder modules</li>
+      <li><a href="/docs/faq">FAQ</a> — Common questions and troubleshooting</li>
+      <li><a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer">GitHub Repository</a> — Source code and issue tracker</li>
+    </ul>
+  </section>
 </DocsLayout>
+
+<style>
+  .docsHero {
+    padding: 3rem 0 2rem;
+    border-bottom: 1px solid var(--color-fog);
+    margin-bottom: 3rem;
+  }
+
+  .docsTitle {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .docsLead {
+    font-size: 1.125rem;
+    color: var(--color-graphite);
+    line-height: 1.6;
+    max-width: 700px;
+    margin-bottom: 2rem;
+  }
+
+  .docsCta {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap;
+  }
+
+  .docsCtaPrimary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: var(--color-aubergine);
+    color: white;
+    text-decoration: none;
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: background-color 0.2s;
+  }
+
+  .docsCtaPrimary:hover {
+    background-color: var(--color-aubergine-dark);
+  }
+
+  .docsCtaSecondary {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.75rem 1.5rem;
+    background-color: transparent;
+    color: var(--color-aubergine);
+    text-decoration: none;
+    border: 2px solid var(--color-aubergine);
+    border-radius: 0.5rem;
+    font-weight: 600;
+    transition: all 0.2s;
+  }
+
+  .docsCtaSecondary:hover {
+    background-color: var(--color-aubergine);
+    color: white;
+  }
+
+  .docsSection {
+    margin-bottom: 3rem;
+  }
+
+  .docsSectionTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--color-ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .docsSectionDesc {
+    font-size: 1rem;
+    color: var(--color-graphite);
+    margin-bottom: 1.5rem;
+  }
+
+  .docsGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+
+  .docsCard {
+    display: block;
+    padding: 1.5rem;
+    background-color: white;
+    border: 1px solid var(--color-fog);
+    border-radius: 0.5rem;
+    text-decoration: none;
+    transition: all 0.2s;
+  }
+
+  .docsCard:hover {
+    border-color: var(--color-aubergine);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+
+  .docsCardIcon {
+    font-size: 2rem;
+    margin-bottom: 1rem;
+  }
+
+  .docsCardTitle {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .docsCardDesc {
+    font-size: 0.9375rem;
+    color: var(--color-graphite);
+    line-height: 1.5;
+  }
+
+  .docsWhatIsNot {
+    background-color: var(--color-parchment);
+    padding: 2rem;
+    border-radius: 0.5rem;
+  }
+
+  .docsWhatGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+  }
+
+  .docsWhatItem {
+    padding: 1rem;
+    background-color: white;
+    border-radius: 0.5rem;
+  }
+
+  .docsWhatItem h3 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-ink);
+    margin-bottom: 0.5rem;
+  }
+
+  .docsWhatItem p {
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+    line-height: 1.5;
+  }
+
+  .docsLearnMore {
+    border-top: 1px solid var(--color-fog);
+    padding-top: 2rem;
+  }
+
+  .docsLearnList {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+
+  .docsLearnList li {
+    padding: 0.75rem 0;
+    border-bottom: 1px solid var(--color-fog);
+    font-size: 1rem;
+    color: var(--color-graphite);
+  }
+
+  .docsLearnList li:last-child {
+    border-bottom: none;
+  }
+
+  .docsLearnList a {
+    color: var(--color-aubergine);
+    text-decoration: none;
+    font-weight: 600;
+  }
+
+  .docsLearnList a:hover {
+    text-decoration: underline;
+  }
+
+  @media (max-width: 768px) {
+    .docsTitle {
+      font-size: 2rem;
+    }
+
+    .docsGrid {
+      grid-template-columns: 1fr;
+    }
+
+    .docsWhatGrid {
+      grid-template-columns: 1fr;
+    }
+  }
+</style>
