@@ -13,7 +13,12 @@
 }
 
 .card {
-  background-color: var(--color-fog);
+  background-color: #f8f7f3;
+  background-image: repeating-linear-gradient(
+    45deg,
+    #dcd7d3b3 0 1px,
+    #0000 1px 5px
+  );
   border-radius: var(--radius-xl);
   padding: 80px 48px;
   display: flex;

@@ -549,6 +549,16 @@ ol {
   box-shadow: inset 0 0 0 1px rgba(41, 40, 39, 0.78);
 }
 
+/* IZHUB hatch pattern styling — diagonal stripe texture */
+.izhub-suite-hatch {
+  background-color: #f8f7f3;
+  background-image: repeating-linear-gradient(
+    45deg,
+    #dcd7d3b3 0 1px,
+    #0000 1px 5px
+  );
+}
+
 .izhub-suite-tab:focus-visible {
   outline: 2px solid #353088;
 }
