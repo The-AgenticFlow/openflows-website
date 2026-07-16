@@ -10,37 +10,57 @@ const USE_CASES = [
     id: 'govern',
     label: 'Govern AI agents',
     title: 'Run AI agents with boundaries you control',
-    description:
+    summary:
       'Coder governs where agents run. OpenFlows governs how they coordinate. Define which agents can access production repos, run dangerous commands, or merge to main — every action logged and auditable.',
-    image: '',
     href: '/use-cases',
+    bullets: [
+      'Role-based permissions per agent and repo',
+      ' Audit trail from issue to merged PR',
+      'Human escalation only for security or ambiguity',
+      ' Agent identity inherited from Coder external auth',
+    ],
   },
   {
     id: 'onboard',
     label: 'Accelerate onboarding',
-    title: 'Your team focuses on architecture, not boilerplate',
-    description:
-      'OpenFlows turns issue backlogs into working code inside your Coder environment. Junior developers learn by reviewing agent output against architectural specs instead of getting blocked on implementation.',
-    image: '',
-    href: '/use-cases',
+    title: 'Spend less time on boilerplate',
+    summary:
+      'Turn issue backlogs into working code inside your Coder environment. Junior developers learn by reviewing agent output against architectural specs instead of getting blocked on implementation.',
+    href: '/use-cases/web-development',
+    bullets: [
+      'FORGE turns tickets into plan documents and code',
+      'New hires learn by reading SENTINEL review reports',
+      'Reusable registry patterns for common frameworks',
+      'Architecture stays explicit in every PLAN.md',
+    ],
   },
   {
     id: 'secure',
     label: 'Secure source code',
-    title: 'Keep sensitive code in your Coder environment',
-    description:
-      'Self-host OpenFlows on top of Coder and route agent work through your own GitHub accounts, models, and CI runners. No data leaves your governed infrastructure.',
-    image: '',
+    title: 'Keep code in your governed environment',
+    summary:
+      'Self-host OpenFlows on top of Coder and route agent work through your own GitHub identities, models, and CI runners. No source code or tokens leave your infrastructure.',
     href: '/use-cases',
+    bullets: [
+      'No personal access tokens in agent configuration',
+      'Every action tied to a Coder-authenticated user',
+      'Sensitive code stays inside your network',
+      'Models route through Coder AI Gateway or LiteLLM fallback',
+    ],
   },
   {
     id: 'scale',
     label: 'Optimize compute',
-    title: 'Parallelize development work safely',
-    description:
-      'Spin up multiple FORGE workers to tackle independent issues in parallel. SENTINEL reviews each one, VESSEL merges the winners — all coordinated, governed, and auditable from end to end.',
-    image: '',
-    href: '/use-cases',
+    title: 'Parallelize work without losing control',
+    summary:
+      'Spin up multiple FORGE workers to tackle independent issues in parallel. SENTINEL reviews each one, VESSEL merges when CI is green — coordinated, governed, and auditable end to end.',
+    href: '/use-cases/devops',
+    bullets: [
+      'Multi-worker FORGE pools for independent tickets',
+      'VESSEL resolves conflicts without creating new branches',
+      'CI-aware merge gating with automatic retry',
+      'Redis-backed state machine tracks every ticket',
+    ],
   },
 ]
 
@@ -76,20 +96,12 @@ export default function UseCaseTabs() {
           <div className={styles.content} role="tabpanel">
             <div className={styles.text}>
               <h3 className={styles.contentTitle}>{activeCase.title}</h3>
-              <p className={styles.contentDesc}>{activeCase.description}</p>
-              <a href={activeCase.href} className={styles.link}>
-                Learn more →
-              </a>
-            </div>
-
-            <div className={styles.media}>
-              {activeCase.image ? (
-                <img src={activeCase.image} alt={activeCase.title} className={styles.mediaImage} />
-              ) : (
-                <div className={styles.mediaPlaceholder}>
-                  <span>Image / Lottie / Video placeholder</span>
-                </div>
-              )}
+              <p className={styles.contentDesc}>{activeCase.summary}</p>
+              <ul className={styles.bulletList}>
+                {activeCase.bullets.map((bullet, i) => (
+                  <li key={i} className={styles.bulletItem}>{bullet}</li>
+                ))}
+              </ul>
             </div>
           </div>
         </div>

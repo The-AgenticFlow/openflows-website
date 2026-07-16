@@ -79,11 +79,11 @@
 
 .content {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 48px;
-  align-items: center;
+  align-items: start;
   min-height: 420px;
-  padding: 32px;
+  padding: 40px 48px;
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-driftwood);
   background: var(--color-fog);
@@ -107,40 +107,42 @@
   line-height: 1.555;
 }
 
+.bulletList {
+  display: grid;
+  gap: 12px;
+  list-style: none;
+  margin-top: 8px;
+}
+
+.bulletItem {
+  position: relative;
+  padding-left: 24px;
+  font-size: var(--font-size-base);
+  color: var(--color-ink);
+  line-height: 1.5;
+}
+
+.bulletItem::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--color-aubergine);
+}
+
 .link {
   font-size: 16px;
   font-weight: var(--font-weight-medium);
   color: var(--color-aubergine);
   align-self: flex-start;
+  margin-top: 8px;
 }
 
 .link:hover {
   color: var(--color-aubergine-deep);
-}
-
-.media {
-  aspect-ratio: 16 / 10;
-  border-radius: var(--radius-lg);
-  overflow: hidden;
-  background: var(--color-bg-elevated);
-}
-
-.mediaImage {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.mediaPlaceholder {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--color-graphite);
-  font-size: 14px;
-  border: 1px dashed var(--color-fog);
-  border-radius: var(--radius-lg);
 }
 
 @media (max-width: 1024px) {

@@ -14,11 +14,6 @@
 
 .card {
   background-color: #f8f7f3;
-  background-image: repeating-linear-gradient(
-    45deg,
-    #dcd7d3b3 0 1px,
-    #0000 1px 5px
-  );
   border-radius: var(--radius-xl);
   padding: 80px 48px;
   display: flex;
@@ -29,6 +24,41 @@
   position: relative;
   overflow: hidden;
   border: 1px solid var(--color-driftwood);
+}
+
+.card::before,
+.card::after {
+  content: '';
+  position: absolute;
+  top: 16px;
+  bottom: 16px;
+  width: 20px;
+  border-radius: var(--radius-md);
+  pointer-events: none;
+  opacity: 0.3;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--color-driftwood) 0 1px,
+    transparent 1px 5px
+  );
+}
+
+.card::before {
+  left: 12px;
+}
+
+.card::after {
+  right: 12px;
+}
+
+@media (max-width: 768px) {
+  .card::before,
+  .card::after {
+    width: 10px;
+    top: 10px;
+    bottom: 10px;
+    opacity: 0.25;
+  }
 }
 
 .heading {

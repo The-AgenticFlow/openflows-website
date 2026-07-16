@@ -2,11 +2,6 @@
 .section {
   padding-block: 120px;
   background-color: #f8f7f3;
-  background-image: repeating-linear-gradient(
-    45deg,
-    #dcd7d3b3 0 1px,
-    #0000 1px 5px
-  );
   border-top: 1px solid var(--color-driftwood);
   border-bottom: 1px solid var(--color-driftwood);
 }

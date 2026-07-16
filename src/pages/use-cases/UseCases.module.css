@@ -57,6 +57,113 @@
   border-top: 1px solid var(--color-driftwood);
 }
 
+/* ── Use case overview grid ── */
+.overviewSection {
+  padding-block: var(--space-20);
+}
+
+.overviewSection .container {
+  display: grid;
+  gap: var(--space-8);
+}
+
+.useCase {
+  display: grid;
+  gap: var(--space-4);
+  padding: var(--space-8);
+  background: var(--color-bone);
+  border: 1px solid var(--color-driftwood);
+  border-radius: var(--radius-xl);
+  box-shadow: var(--shadow-sm);
+}
+
+.useCaseHeader {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.useCaseIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  font-size: 24px;
+  background: var(--color-parchment-canvas);
+  border: 1px solid var(--color-driftwood);
+  border-radius: var(--radius-lg);
+}
+
+.useCaseTitle {
+  font-family: var(--font-landing-display);
+  font-size: var(--font-size-xl);
+  font-weight: 300;
+  letter-spacing: var(--tracking-tight);
+  margin: 0;
+  color: var(--color-ink);
+}
+
+.useCaseSummary {
+  font-size: var(--font-size-lg);
+  color: var(--color-ink);
+  font-weight: var(--font-weight-medium);
+  margin: 0;
+  padding-left: calc(48px + var(--space-4));
+}
+
+.useCaseBody {
+  display: grid;
+  gap: var(--space-4);
+  padding-left: calc(48px + var(--space-4));
+}
+
+.useCaseBody p {
+  margin: 0;
+  color: var(--color-graphite);
+  line-height: var(--leading-relaxed);
+}
+
+.useCaseLink {
+  justify-self: flex-start;
+  margin-left: calc(48px + var(--space-4));
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--color-aubergine);
+}
+
+.useCaseLink:hover {
+  color: var(--color-aubergine-deep);
+}
+
+.useCaseSoon {
+  margin-left: calc(48px + var(--space-4));
+  font-size: var(--font-size-sm);
+  color: var(--color-graphite);
+}
+
+/* ── Case study navigation ── */
+.caseNav {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--space-4);
+  margin-top: var(--space-12);
+  padding-top: var(--space-6);
+  border-top: 1px solid var(--color-driftwood);
+}
+
+.caseNavLink {
+  font-weight: var(--font-weight-medium);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  color: var(--color-aubergine);
+}
+
+.caseNavLink:hover {
+  color: var(--color-aubergine-deep);
+}
+
 /* ── Page content ── */
 .page {
   max-width: 860px;
@@ -132,6 +239,18 @@
 
   .container {
     padding-inline: var(--space-4);
+  }
+
+  .useCase {
+    padding: var(--space-5);
+  }
+
+  .useCaseSummary,
+  .useCaseBody,
+  .useCaseLink,
+  .useCaseSoon {
+    padding-left: 0;
+    margin-left: 0;
   }
 
   .stepList li {

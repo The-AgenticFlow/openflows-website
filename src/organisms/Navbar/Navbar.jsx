@@ -164,8 +164,8 @@ export default function Navbar() {
                 {starCount !== null ? formatStarCount(starCount) : '—'}
               </span>
             </a>
-            <Button variant="primary" size="sm" href="/trial">
-              Get a Demo
+            <Button variant="primary" size="sm" href="/docs/getting-started">
+              Get Started
             </Button>
           </div>
 
@@ -258,9 +258,9 @@ export default function Navbar() {
               {starCount !== null ? formatStarCount(starCount) : '—'}
             </span>
           </a>
-          <Button variant="primary" size="md" href="/trial" onClick={() => setMenuOpen(false)} style={{ width: '100%', justifyContent: 'center' }}>
-            Get a Demo
-          </Button>
+            <Button variant="primary" size="md" href="/docs/getting-started" onClick={() => setMenuOpen(false)} style={{ width: '100%', justifyContent: 'center' }}>
+              Get Started
+            </Button>
         </div>
       </div>
     </>

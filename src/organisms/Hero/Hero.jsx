@@ -38,8 +38,8 @@ export default function Hero() {
             <Button variant="primary" size="lg" href="/docs/getting-started">
               Install OpenFlows
             </Button>
-            <Button variant="secondary" size="lg" href="/trial">
-              Start a trial
+            <Button variant="secondary" size="lg" href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer">
+              View on GitHub
             </Button>
           </div>
         </div>
