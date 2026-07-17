@@ -3,7 +3,7 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import Hero from '@/organisms/Hero/Hero';
 import TrustBar from '@/organisms/TrustBar/TrustBar';
 import FeatureSteps from '@/organisms/FeatureSteps/FeatureSteps';
-import FlowVisual from '@/organisms/FlowVisual/FlowVisual';
+// import FlowVisual from '@/organisms/FlowVisual/FlowVisual'; // Temporarily suppressed - no flow content yet
 import UseCaseTabs from '@/organisms/UseCaseTabs/UseCaseTabs';
 import IndustryCards from '@/organisms/IndustryCards/IndustryCards';
 import RecentNews from '@/organisms/RecentNews/RecentNews';
@@ -16,7 +16,7 @@ import GetStartedBanner from '@/organisms/GetStartedBanner/GetStartedBanner';
   <Hero client:load />
   <TrustBar client:visible />
   <FeatureSteps client:visible />
-  <FlowVisual client:visible />
+  {/* <FlowVisual client:visible /> */} {/* Temporarily suppressed - no flow content yet */}
   <UseCaseTabs client:visible />
   <IndustryCards client:visible />
   <RecentNews client:visible />

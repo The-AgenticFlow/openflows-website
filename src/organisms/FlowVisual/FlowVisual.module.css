@@ -37,9 +37,17 @@
 }
 
 .subtitle {
-  font-size: 18px;
+  /* IZHUB sub-text styling */
+  font-family: var(--font-landing-display);
+  font-weight: 400;
+  font-size: clamp(1.125rem, 1.75vw, 1.5rem);
+  line-height: 1.4;
+  letter-spacing: 0;
+  text-wrap: balance;
   color: var(--color-graphite);
-  line-height: 1.555;
+  opacity: 1;
+  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
+  margin-bottom: var(--space-3);
 }
 
 .stage {

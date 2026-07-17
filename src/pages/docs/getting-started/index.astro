@@ -101,12 +101,19 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
   </h2>
   <p>The recommended setup uses Docker Compose to bring up the entire OpenFlows stack including Coder, Redis, and the orchestration engine.</p>
 
-  <div class="codeBlock">
-    <div class="codeHeader">
-      <span class="codeLang">bash</span>
-      <button class="copyBtn">Copy</button>
-    </div>
-    <pre><code>git clone https://github.com/The-AgenticFlow/openflows.git
+  <div class="install-code-wrapper">
+    <div class="codeBlock install-code">
+      <div class="codeHeader">
+        <span class="codeLang">bash</span>
+        <button class="copyBtn">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          Copy
+        </button>
+      </div>
+      <pre><code>git clone https://github.com/The-AgenticFlow/openflows.git
 cd openflows
 cp .env.example .env   # edit .env with your GitHub OAuth app credentials
 
@@ -120,6 +127,26 @@ cargo run -p openflows --bin openflows -- bootstrap
 cargo run -p openflows --bin openflows -- tenant add owner/repo --name my-team
 
 # 4. Create a GitHub issue in your repo — OpenFlows picks it up automatically</code></pre>
+    </div>
+    
+    <div class="step-breakdown">
+      <div class="step-marker">
+        <span class="step-number">1</span>
+        <span class="step-label">Clone & Setup</span>
+      </div>
+      <div class="step-marker">
+        <span class="step-number">2</span>
+        <span class="step-label">Bootstrap</span>
+      </div>
+      <div class="step-marker">
+        <span class="step-number">3</span>
+        <span class="step-label">Add Tenant</span>
+      </div>
+      <div class="step-marker">
+        <span class="step-number">4</span>
+        <span class="step-label">Create Issue</span>
+      </div>
+    </div>
   </div>
 
   <div class="callout info">
@@ -148,7 +175,13 @@ cargo run -p openflows --bin openflows -- tenant add owner/repo --name my-team
   <div class="codeBlock">
     <div class="codeHeader">
       <span class="codeLang">bash</span>
-      <button class="copyBtn">Copy</button>
+      <button class="copyBtn">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+        </svg>
+        Copy
+      </button>
     </div>
     <pre><code># Add a new tenant
 cargo run -p openflows --bin openflows -- tenant add another-org/another-repo --name team-b</code></pre>

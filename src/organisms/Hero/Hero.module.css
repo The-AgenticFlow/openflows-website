@@ -139,6 +139,7 @@
   max-width: 760px;
   text-wrap: balance;
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
+  margin-bottom: var(--space-4); /* Added for consistency with IZHUB sub-text */
 }
 
 /* CTA Group */
