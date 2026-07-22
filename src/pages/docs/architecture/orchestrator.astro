@@ -95,11 +95,11 @@ type Decision =
 
   <DocsTable headers={['Key Pattern', 'Description']} rows={[
     ['<code>tickets</code>', 'Sorted set of all ticket IDs'],
-    ['<code>ticket:{{id}}:status</code>', 'Current status: <code>open</code> | <code>assigned</code> | <code>working</code> | <code>review_ready</code> | <code>awaiting_human</code> | <code>merged</code>'],
-    ['<code>ticket:{{id}}:dispatch</code>', 'Task payload: {{ issue, repo, phase, contract_path }}'],
-    ['<code>ticket:{{id}}:contract</code>', '<code>CONTRACT.md</code> content for SENTINEL review'],
-    ['<code>worker_slots</code>', 'Map: <code>forge-1</code> → {{ status, workspace_id, last_heartbeat }}'],
-    ['<code>ns:{[tenant]}:heartbeat:{{worker}}</code>', 'Unix timestamp of last heartbeat'],
+    ['<code>ticket:{id}:status</code>', 'Current status: <code>open</code> | <code>assigned</code> | <code>working</code> | <code>review_ready</code> | <code>awaiting_human</code> | <code>merged</code>'],
+    ['<code>ticket:{id}:dispatch</code>', 'Task payload: { issue, repo, phase, contract_path }'],
+    ['<code>ticket:{id}:contract</code>', '<code>CONTRACT.md</code> content for SENTINEL review'],
+    ['<code>worker_slots</code>', 'Map: <code>forge-1</code> → { status, workspace_id, last_heartbeat }'],
+    ['<code>ns:{[tenant]}:heartbeat:{worker}</code>', 'Unix timestamp of last heartbeat'],
     ['<code>ns:{[tenant]}:event_ring</code>', 'Ring buffer of last 1000 events for TUI'],
     ['<code>ns:{[tenant]}:flow_recovery</code>', 'Recovery state and inconsistencies detected'],
   ]} />
