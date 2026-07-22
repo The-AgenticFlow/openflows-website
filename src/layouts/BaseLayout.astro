@@ -9,8 +9,10 @@ interface Props {
   ogImage?: string;
 }
 
-const { title, description = 'OpenFlows - Autonomous AI Development Team', ogImage } = Astro.props;
-const canonicalURL = new URL(Astro.url.pathname, Astro.site);
+const siteUrl = Astro.site?.toString() || 'https://openflows.ai';
+const { title, description = 'OpenFlows - Autonomous AI Development Team. Five specialized AI agents coordinate to take GitHub issues all the way to merged, documented pull requests.', ogImage } = Astro.props;
+const canonicalURL = new URL(Astro.url.pathname, siteUrl);
+const defaultOgImage = '/openlogo.png';
 ---
 
 <!DOCTYPE html>
@@ -19,6 +21,8 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/png" href="/openlogo.png" />
+    <link rel="icon" sizes="any" href="/openlogo.png" />
+    <link rel="apple-touch-icon" href="/openlogo.png" />
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" as="script" crossorigin="anonymous" />
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" as="script" crossorigin="anonymous" />
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js" as="script" crossorigin="anonymous" />
@@ -29,7 +33,7 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js" as="script" crossorigin="anonymous" />
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-eSwD2HTaT2/2nJqjgGgZ9/XR4gFqkGQ3Q/rcE/0Bd5BENch+S1/6NQ5T3yLaJ5gq701JbnP+TqfZF9R4a7s3Wg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" integrity="sha512-ku4wx2ZbQPY4aqO9DQ5Hv+uabx7o+jIVcXeC5QezG1t+SEe0qEeQq4 bokWrR8eVybBIQ7U2c7K0lQ7pAr3w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" integrity="sha512-ku4wx2ZbQPY4aqO9DQ5Hv+uabx7o+jIVcXeC5QezG1t+SEe0qEeQq4bokWrR8eVybBIQ7U2c7K0lQ7pAr3w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js" integrity="sha512-zVCFOctytVhLJNb5lN6/iN5sDW4m+4uN1Q1W68R4EuYIE02Rklsf7NHW7fU58jFXY99Z8NvV21CEJ6tE8jw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js" integrity="sha512-hQ85M/Pd8tU2zxD8ZYa1tQ+sccl3FkTHL8XKM5LiPBVF8kmQnF3NpME2FQ4Z3ihh5nqx7nSJvP9543k6qyA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" integrity="sha512-QxAi9eUjKGgQ+T//0TmwJt2F6Oi3k4eZ0QxUl2Mz4mt+a7c+S6L3RYbO6A4/7SgB7W6rxBSg5B6Te4+dp0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
@@ -41,18 +45,27 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
     
-    <!-- Open Graph -->
+    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="OpenFlows" />
     <meta property="og:url" content={canonicalURL} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    {ogImage && <meta property="og:image" content={ogImage} />}
+    <meta property="og:image" content={ogImage || defaultOgImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:locale" content="en_US" />
     
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:site" content="@openflows" />
+    <meta name="twitter:creator" content="@openflows" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    {ogImage && <meta name="twitter:image" content={ogImage} />}
+    <meta name="twitter:image" content={ogImage || defaultOgImage} />
+    
+    <!-- LinkedIn -->
+    <meta property="og:image" content={ogImage || defaultOgImage} />
   </head>
   <body>
     <Navbar />
