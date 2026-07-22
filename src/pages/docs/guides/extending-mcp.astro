@@ -2,20 +2,7 @@
 import DocsLayout from '@/layouts/DocsLayout.astro';
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
-const mcpConfig = `"mcps": [
-  {
-    "name": "github-mcp",
-    "command": "npx",
-    "args": ["-y", "@anthropic-ai/mcp-server-github"],
-    "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "{{env.GITHUB_PAT}}" },
-    "timeout_ms": 30000,
-    "permissions": ["search_issues", "get_issue", "create_pull_request"]
-  }
-],
-"agents": {
-  "forge": { "mcps": ["github-mcp"] },
-  "nexus": { "mcps": ["github-mcp"] }
-}`;
+const mcpConfig = '"mcps": [\n  {\n    "name": "github-mcp",\n    "command": "npx",\n    "args": ["-y", "@anthropic-ai/mcp-server-github"],\n    "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "{{env.GITHUB_PAT}}" },\n    "timeout_ms": 30000,\n    "permissions": ["search_issues", "get_issue", "create_pull_request"]\n  }\n],\n"agents": {\n  "forge": { "mcps": ["github-mcp"] },\n  "nexus": { "mcps": ["github-mcp"] }\n}';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Extending' }, { label: 'MCP Servers' }]}>

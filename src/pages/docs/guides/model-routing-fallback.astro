@@ -9,12 +9,7 @@ const LITELLM_ROWS = [
   ['<code>ANTHROPIC_API_KEY</code>', 'Only needed if LiteLLM forwards directly to Anthropic without proxy-managed keys.'],
 ];
 
-const fallbackGatewayConfig = `"ai_gateway": {
-  "primary": "coder",
-  "fallback": "litellm",
-  "litellm_url": "http://litellm.internal:4000",
-  "timeout_ms": 120000
-}`;
+const fallbackGatewayConfig = '"ai_gateway": {\n  "primary": "coder",\n  "fallback": "litellm",\n  "litellm_url": "http://litellm.internal:4000",\n  "timeout_ms": 120000\n}';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Model Routing' }, { label: 'Fallback & Gateway' }]}>

@@ -58,92 +58,11 @@ const MODEL_ROWS = [
   ['<code style="color:var(--color-agent-lore)">LORE</code>', 'anthropic / claude-haiku-4-20250514', 'aider', 'Documentation and changelog  -  lightweight task, lightweight model.'],
 ];
 
-const defaultRegistry = `"workspace_provider": "coder",
-"coder_module": "claude-code",
-"ai_gateway": {
-  "primary": "coder",
-  "fallback": "litellm",
-  "litellm_url": "http://litellm.internal:4000",
-  "timeout_ms": 120000
-},
-"agents": {
-  "nexus": {
-    "provider": "anthropic",
-    "model": "claude-sonnet-4-20250514",
-    "coder_module": "claude-code",
-    "active": true,
-    "instances": 1,
-    "skills": ["nexus-orchestration"],
-    "mcp": {}
-  },
-  "forge": {
-    "provider": "anthropic",
-    "model": "claude-sonnet-4-20250514",
-    "coder_module": "claude-code",
-    "active": true,
-    "instances": 2,
-    "skills": ["forge-coding", "git-workflow"],
-    "mcp": {
-      "github": { "source": "coder", "coder_server_name": "github" }
-    }
-  },
-  "sentinel": {
-    "provider": "openai",
-    "model": "gpt-4.1",
-    "coder_module": "codex",
-    "active": true,
-    "instances": 1,
-    "skills": ["sentinel-review"],
-    "mcp": {}
-  },
-  "vessel": {
-    "provider": "openai",
-    "model": "gpt-4o",
-    "coder_module": "codex",
-    "active": true,
-    "instances": 1,
-    "skills": ["vessel-ci"],
-    "mcp": {
-      "github": { "source": "coder", "coder_server_name": "github" }
-    }
-  },
-  "lore": {
-    "provider": "anthropic",
-    "model": "claude-haiku-4-20250514",
-    "coder_module": "aider",
-    "active": true,
-    "instances": 1,
-    "skills": ["lore-docs"],
-    "mcp": {}
-  }
-}`;
+const defaultRegistry = "\"workspace_provider\": \"coder\",\n\"coder_module\": \"claude-code\",\n\"ai_gateway\": {\n  \"primary\": \"coder\",\n  \"fallback\": \"litellm\",\n  \"litellm_url\": \"http://litellm.internal:4000\",\n  \"timeout_ms\": 120000\n},\n\"agents\": {\n  \"nexus\": {\n    \"provider\": \"anthropic\",\n    \"model\": \"claude-sonnet-4-20250514\",\n    \"coder_module\": \"claude-code\",\n    \"active\": true,\n    \"instances\": 1,\n    \"skills\": [\"nexus-orchestration\"],\n    \"mcp\": {}\n  },\n  \"forge\": {\n    \"provider\": \"anthropic\",\n    \"model\": \"claude-sonnet-4-20250514\",\n    \"coder_module\": \"claude-code\",\n    \"active\": true,\n    \"instances\": 2,\n    \"skills\": [\"forge-coding\", \"git-workflow\"],\n    \"mcp\": {\n      \"github\": { \"source\": \"coder\", \"coder_server_name\": \"github\" }\n    }\n  },\n  \"sentinel\": {\n    \"provider\": \"openai\",\n    \"model\": \"gpt-4.1\",\n    \"coder_module\": \"codex\",\n    \"active\": true,\n    \"instances\": 1,\n    \"skills\": [\"sentinel-review\"],\n    \"mcp\": {}\n  },\n  \"vessel\": {\n    \"provider\": \"openai\",\n    \"model\": \"gpt-4o\",\n    \"coder_module\": \"codex\",\n    \"active\": true,\n    \"instances\": 1,\n    \"skills\": [\"vessel-ci\"],\n    \"mcp\": {\n      \"github\": { \"source\": \"coder\", \"coder_server_name\": \"github\" }\n    }\n  },\n  \"lore\": {\n    \"provider\": \"anthropic\",\n    \"model\": \"claude-haiku-4-20250514\",\n    \"coder_module\": \"aider\",\n    \"active\": true,\n    \"instances\": 1,\n    \"skills\": [\"lore-docs\"],\n    \"mcp\": {}\n  }\n}";
 
-const skillsExample = `"agents": {
-  "forge": {
-    "skills": [
-      "forge-coding",
-      "git-workflow",
-      { "name": "rust-patterns", "enabled": true }
-    ]
-  }
-}`;
+const skillsExample = "\"agents\": {\n  \"forge\": {\n    \"skills\": [\n      \"forge-coding\",\n      \"git-workflow\",\n      { \"name\": \"rust-patterns\", \"enabled\": true }\n    ]\n  }\n}";
 
-const mcpExample = `"agents": {
-  "forge": {
-    "mcp": {
-      "github": {
-        "source": "coder",
-        "coder_server_name": "github"
-      },
-      "local-docs": {
-        "source": "local",
-        "command": "npx",
-        "args": ["-y", "@modelcontextprotocol/server-docs"],
-        "env": { "DOCS_ROOT": "/docs" }
-      }
-    }
-  }
-}`;
+const mcpExample = "\"agents\": {\n  \"forge\": {\n    \"mcp\": {\n      \"github\": {\n        \"source\": \"coder\",\n        \"coder_server_name\": \"github\"\n      },\n      \"local-docs\": {\n        \"source\": \"local\",\n        \"command\": \"npx\",\n        \"args\": [\"-y\", \"@modelcontextprotocol/server-docs\"],\n        \"env\": { \"DOCS_ROOT\": \"/docs\" }\n      }\n    }\n  }\n}";
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }, { label: 'registry.json Schema' }]}>

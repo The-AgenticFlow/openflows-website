@@ -2,16 +2,7 @@
 import DocsLayout from '@/layouts/DocsLayout.astro';
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
-const forgeConfig = `"forge": {
-  "provider": "anthropic",
-  "model": "claude-sonnet-4-20250514",
-  "coder_module": "claude-code",
-  "active": true,
-  "instances": 2,
-  "plan_mode": false,
-  "skills": ["terraform", "openapi"],
-  "mcps": ["github-mcp"]
-}`;
+const forgeConfig = '"forge": {\n  "provider": "anthropic",\n  "model": "claude-sonnet-4-20250514",\n  "coder_module": "claude-code",\n  "active": true,\n  "instances": 2,\n  "plan_mode": false,\n  "skills": ["terraform", "openapi"],\n  "mcps": ["github-mcp"]\n}';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'FORGE (Builder)' }]}>

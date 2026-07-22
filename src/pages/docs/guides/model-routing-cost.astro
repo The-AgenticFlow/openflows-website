@@ -18,12 +18,7 @@ const FAMILY_ROWS = [
   ['LORE', 'Anthropic', 'Claude Haiku', 'Cheapest sufficient model for docs and summarization.'],
 ];
 
-const agentCostConfig = `"agents": {
-  "forge": { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "instances": 2 },
-  "sentinel": { "provider": "openai", "model": "gpt-4.1", "instances": 1 },
-  "vessel": { "provider": "openai", "model": "gpt-4o-mini", "instances": 1 },
-  "lore": { "provider": "anthropic", "model": "claude-haiku-4-20250514", "instances": 1 }
-}`;
+const agentCostConfig = '"agents": {\n  "forge": { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "instances": 2 },\n  "sentinel": { "provider": "openai", "model": "gpt-4.1", "instances": 1 },\n  "vessel": { "provider": "openai", "model": "gpt-4o-mini", "instances": 1 },\n  "lore": { "provider": "anthropic", "model": "claude-haiku-4-20250514", "instances": 1 }\n}';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Model Routing' }, { label: 'Cost & Adversarial' }]}>

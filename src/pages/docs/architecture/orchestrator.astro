@@ -2,17 +2,7 @@
 import DocsLayout from '@/layouts/DocsLayout.astro';
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
-const orchestratorConfig = `"workspace_provider": "coder",
-"ai_gateway": { "primary": "coder", "fallback": "litellm" },
-"agents": {
-  "nexus": {
-    "provider": "anthropic",
-    "model": "claude-sonnet-4-20250514",
-    "active": true,
-    "instances": 1,
-    "plan_mode": true
-  }
-}`;
+const orchestratorConfig = '"workspace_provider": "coder",\n"ai_gateway": { "primary": "coder", "fallback": "litellm" },\n"agents": {\n  "nexus": {\n    "provider": "anthropic",\n    "model": "claude-sonnet-4-20250514",\n    "active": true,\n    "instances": 1,\n    "plan_mode": true\n  }\n}';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Orchestrator (NEXUS)' }]}>
