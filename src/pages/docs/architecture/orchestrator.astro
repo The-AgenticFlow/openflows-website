@@ -129,17 +129,15 @@ redis-cli HGETALL ns:my-team:worker_slots
 
   <h2>Configuration</h2>
 
-  <CodeBlock lang="json">{`{
-  "workspace_provider": "coder",
-  "ai_gateway": { "primary": "coder", "fallback": "litellm" },
-  "agents": {
-    "nexus": {
-      "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
-      "active": true,
-      "instances": 1,
-      "plan_mode": true
-    }
+  <CodeBlock lang="json">{`"workspace_provider": "coder",
+"ai_gateway": { "primary": "coder", "fallback": "litellm" },
+"agents": {
+  "nexus": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "active": true,
+    "instances": 1,
+    "plan_mode": true
   }
 }`}</CodeBlock>
 

@@ -117,19 +117,15 @@ Implement idempotent retries for PocketFlow executor with exponential backoff.
 
   <h2>Configuration</h2>
 
-  <CodeBlock lang="json">{`{
-  "agents": {
-    "forge": {
-      "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
-      "coder_module": "claude-code",
-      "active": true,
-      "instances": 2,
-      "plan_mode": false,
-      "skills": ["terraform", "openapi"],
-      "mcps": ["github-mcp"]
-    }
-  }
+  <CodeBlock lang="json">{`"forge": {
+  "provider": "anthropic",
+  "model": "claude-sonnet-4-20250514",
+  "coder_module": "claude-code",
+  "active": true,
+  "instances": 2,
+  "plan_mode": false,
+  "skills": ["terraform", "openapi"],
+  "mcps": ["github-mcp"]
 }`}</CodeBlock>
 
   <Callout type="info" title="plan_mode: false">

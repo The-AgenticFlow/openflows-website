@@ -81,16 +81,12 @@ so restarts resume from correct count. Emit node_retry / node_failed events for 
 
   <h2>Configuration</h2>
 
-  <CodeBlock lang="json">{`{
-  "agents": {
-    "lore": {
-      "provider": "anthropic",
-      "model": "claude-haiku-4-20250514",
-      "coder_module": "aider",
-      "active": false,
-      "instances": 1
-    }
-  }
+  <CodeBlock lang="json">{`"lore": {
+  "provider": "anthropic",
+  "model": "claude-haiku-4-20250514",
+  "coder_module": "aider",
+  "active": false,
+  "instances": 1
 }`}</CodeBlock>
 
   <Callout type="tip" title="Enable LORE">

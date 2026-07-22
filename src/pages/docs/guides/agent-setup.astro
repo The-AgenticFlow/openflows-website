@@ -42,49 +42,47 @@ const MODEL_ROWS = [
   </p>
 
   <h2>registry.json  -  The Single Source of Truth</h2>
-  <CodeBlock lang="json">{`{
-  "workspace_provider": "coder",
-  "coder_module": "claude-code",
-  "ai_gateway": {
-    "primary": "coder",
-    "fallback": "litellm"
+  <CodeBlock lang="json">{`"workspace_provider": "coder",
+"coder_module": "claude-code",
+"ai_gateway": {
+  "primary": "coder",
+  "fallback": "litellm"
+},
+"agents": {
+  "nexus": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "coder_module": "claude-code",
+    "active": true,
+    "instances": 1
   },
-  "agents": {
-    "nexus": {
-      "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
-      "coder_module": "claude-code",
-      "active": true,
-      "instances": 1
-    },
-    "forge": {
-      "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
-      "coder_module": "claude-code",
-      "active": true,
-      "instances": 2
-    },
-    "sentinel": {
-      "provider": "openai",
-      "model": "gpt-4.1",
-      "coder_module": "codex",
-      "active": true,
-      "instances": 1
-    },
-    "vessel": {
-      "provider": "openai",
-      "model": "gpt-4o",
-      "coder_module": "codex",
-      "active": true,
-      "instances": 1
-    },
-    "lore": {
-      "provider": "anthropic",
-      "model": "claude-haiku-4-20250514",
-      "coder_module": "aider",
-      "active": true,
-      "instances": 1
-    }
+  "forge": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "coder_module": "claude-code",
+    "active": true,
+    "instances": 2
+  },
+  "sentinel": {
+    "provider": "openai",
+    "model": "gpt-4.1",
+    "coder_module": "codex",
+    "active": true,
+    "instances": 1
+  },
+  "vessel": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "coder_module": "codex",
+    "active": true,
+    "instances": 1
+  },
+  "lore": {
+    "provider": "anthropic",
+    "model": "claude-haiku-4-20250514",
+    "coder_module": "aider",
+    "active": true,
+    "instances": 1
   }
 }`}</CodeBlock>
 

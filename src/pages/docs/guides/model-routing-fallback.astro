@@ -42,13 +42,11 @@ const LITELLM_ROWS = [
     holds the LiteLLM credentials; worker workspaces never see them.
   </p>
 
-  <CodeBlock lang="json">{`{
-  "ai_gateway": {
-    "primary": "coder",
-    "fallback": "litellm",
-    "litellm_url": "http://litellm.internal:4000",
-    "timeout_ms": 120000
-  }
+  <CodeBlock lang="json">{`"ai_gateway": {
+  "primary": "coder",
+  "fallback": "litellm",
+  "litellm_url": "http://litellm.internal:4000",
+  "timeout_ms": 120000
 }`}</CodeBlock>
 
   <CodeBlock lang="bash">{`# In the orchestrator environment (the machine running NEXUS / the controller)

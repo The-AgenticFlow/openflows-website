@@ -56,13 +56,11 @@ const FAMILY_ROWS = [
     separate LLM call stream. Increase instances only when you have a backlog of independent
     tickets, not because you want a single ticket to run faster.</p>
 
-  <CodeBlock lang="json">{`{
-  "agents": {
-    "forge": { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "instances": 2 },
-    "sentinel": { "provider": "openai", "model": "gpt-4.1", "instances": 1 },
-    "vessel": { "provider": "openai", "model": "gpt-4o-mini", "instances": 1 },
-    "lore": { "provider": "anthropic", "model": "claude-haiku-4-20250514", "instances": 1 }
-  }
+  <CodeBlock lang="json">{`"agents": {
+  "forge": { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "instances": 2 },
+  "sentinel": { "provider": "openai", "model": "gpt-4.1", "instances": 1 },
+  "vessel": { "provider": "openai", "model": "gpt-4o-mini", "instances": 1 },
+  "lore": { "provider": "anthropic", "model": "claude-haiku-4-20250514", "instances": 1 }
 }`}</CodeBlock>
 
   <Callout type="tip" title="Monitor cost per role">
