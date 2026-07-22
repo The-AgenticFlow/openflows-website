@@ -35,21 +35,11 @@ import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComp
     The NEXUS controller runs a tight loop every 15 seconds. Each iteration follows a three-phase pattern:
   </p>
 
-  <CodeBlock lang="typescript">{`interface NexusController {
-  async prep(): Promise<void>      // Sync state from GitHub, Redis, Coder
-  async exec(): Promise<Decision>  // Rule-based routing (no LLM)
-  async post(decision: Decision): Promise<void>  // Execute decision
-  async run(): Promise<void>       // Loop every 15s
-}
-
-// Decision types
-type Decision =
-  | { type: 'assign_ticket'; ticketId: string; workerId: string }
-  | { type: 'provision_workspace'; workerId: string; role: 'forge' | 'sentinel' }
-  | { type: 'mark_stale'; ticketId: string; reason: string }
-  | { type: 'escalate_human'; ticketId: string; blocker: Blocker }
-  | { type: 'pause'; reason: string }
-  | { type: 'noop' };`}</CodeBlock>
+  <p>
+    The NEXUS controller implements a three-phase pattern: <code>prep()</code> syncs state from external systems,
+    <code>exec()</code> performs rule-based routing decisions, and <code>post()</code> executes those decisions.
+    The <code>run()</code> method orchestrates these phases in a tight loop every 15 seconds.
+  </p>
 
   <h3>Phase Details</h3>
 

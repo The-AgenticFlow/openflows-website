@@ -88,32 +88,10 @@ openflows-harness handoff write \
     SENTINEL reviews against it during code review.
   </p>
 
-  <CodeBlock lang="markdown">{`# CONTRACT.md
-
-## Goal
-Implement idempotent retries for PocketFlow executor with exponential backoff.
-
-## Acceptance Criteria
-- [ ] Retry count persisted in SharedStore (survives restart)
-- [ ] Max retries configurable (default 3)
-- [ ] Exponential backoff with jitter (base 1s, max 30s)
-- [ ] <code>node_retry</code> event emitted on each retry
-- [ ] All existing tests pass
-- [ ] New tests: retry success, retry exhaustion, idempotency
-
-## Security Requirements
-- No secrets in logs
-- No direct Redis access (use harness)
-- Input validation on all user-facing endpoints
-
-## Files to Touch
-- <code>src/flow.rs</code>  -  executor retry logic
-- <code>src/store/state.rs</code>  -  retry_count field
-- <code>tests/flow_retries.rs</code>  -  new test coverage
-
-## Risks
-- Backoff strategy for external API calls (suggest exponential)
-- Idempotency of SharedStore writes`}</CodeBlock>
+  <p>
+    The CONTRACT.md is a markdown document that specifies the goal, acceptance criteria, security requirements,
+    files to be modified, and risks. It serves as the specification that FORGE implements against and SENTINEL reviews.
+  </p>
 
   <h2>Configuration</h2>
 

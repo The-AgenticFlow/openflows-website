@@ -37,47 +37,18 @@ openflows-harness event listen ticket_merged
 
   <h2>ADR Template</h2>
 
-  <CodeBlock lang="markdown">{`# docs/adr/0042-rate-limiting.md
-
----
-title: Rate Limiting Middleware
-date: 2026-07-20
-status: Accepted
-ticket: ISSUE-42
-pr: #123
----
-
-## Context
-The PocketFlow executor needed resilient retries for transient failures (network blips, rate limits).
-Previous implementation had no retry logic, causing cascading failures.
-
-## Decision
-Add exponential backoff with jitter to Node::run(). Persist retry count in SharedStore
-so restarts resume from correct count. Emit node_retry / node_failed events for observability.
-
-## Consequences
-- Positive: Transient failures self-heal; operators see retry events in TUI
-- Negative: Slightly increased latency for failing nodes; additional state in SharedStore
-- Neutral: Max retries default 3; configurable via registry.json
-
-## Alternatives Considered
-- Circuit breaker pattern (too complex for v1)
-- Fixed retry delay (doesn't handle throttling well)
-- No retries (status quo  -  operator burden)
-`}</CodeBlock>
+  <p>
+    LORE generates Architecture Decision Records (ADRs) in <code>docs/adr/</code> with YAML frontmatter 
+    and markdown content. Each ADR documents the context, decision, consequences, and alternatives for 
+    significant changes to the system.
+  </p>
 
   <h2>CHANGELOG.md Format</h2>
 
-  <CodeBlock lang="markdown">{`## [Unreleased]
-
-### Added
-- Rate limiting middleware with exponential backoff (ISSUE-42, #123)
-
-### Changed
-- NodeState now includes retry_count field
-
-### Fixed
-- Workspace teardown now waits for heartbeat daemon to stop`}</CodeBlock>
+  <p>
+    LORE maintains a <code>CHANGELOG.md</code> at the repository root using the Keep a Changelog format,
+    with sections for Added, Changed, Fixed, and other change types grouped by release.
+  </p>
 
   <h2>Configuration</h2>
 
