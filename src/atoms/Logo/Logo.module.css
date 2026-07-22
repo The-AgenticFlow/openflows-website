@@ -1,4 +1,4 @@
-/* Coder.com-style logo */
+/* Logo styles */
 .logo {
   display: inline-flex;
   align-items: center;
@@ -12,14 +12,11 @@
   opacity: 0.8;
 }
 
-.icon {
-  width: 28px;
-  height: 28px;
+.logoImage {
+  width: 32px;
+  height: 32px;
   display: block;
-}
-
-.markBg {
-  color: var(--color-ink);
+  object-fit: contain;
 }
 
 .name {
@@ -32,16 +29,4 @@
 /* Light variant for dark surfaces */
 .logo.light .name {
   color: #FFFFFF;
-}
-
-.logo.light .markBg {
-  color: #FFFFFF;
-}
-
-.logo.light path {
-  stroke: var(--color-ink);
-}
-
-.logo.light circle {
-  fill: var(--color-ink);
 }
