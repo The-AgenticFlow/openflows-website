@@ -2,7 +2,6 @@
 import DocsLayout from '@/layouts/DocsLayout.astro';
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
-const mcpConfig = '"mcps": [\n  {\n    "name": "github-mcp",\n    "command": "npx",\n    "args": ["-y", "@anthropic-ai/mcp-server-github"],\n    "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "{{env.GITHUB_PAT}}" },\n    "timeout_ms": 30000,\n    "permissions": ["search_issues", "get_issue", "create_pull_request"]\n  }\n],\n"agents": {\n  "forge": { "mcps": ["github-mcp"] },\n  "nexus": { "mcps": ["github-mcp"] }\n}';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Extending' }, { label: 'MCP Servers' }]}>
@@ -16,7 +15,6 @@ const mcpConfig = '"mcps": [\n  {\n    "name": "github-mcp",\n    "command": "np
 
   <h2>MCP Server Configuration</h2>
 
-  <CodeBlock lang="json">{mcpConfig}</CodeBlock>
 
   <DocsTable headers={['Field', 'Type', 'Description']} rows={[
     ['<code>name</code>', 'string', 'Human-readable name referenced in agent prompts and registry entries.'],

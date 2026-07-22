@@ -24,8 +24,6 @@ const MODEL_ROWS = [
   ['<code style="color:var(--color-agent-vessel)">VESSEL</code>', 'openai / gpt-4o', 'codex', 'CI/CD scripting – fast and cost-effective'],
   ['<code style="color:var(--color-agent-lore)">LORE</code>', 'anthropic / claude-haiku-4-20250514', 'aider', 'Documentation – lightweight task, lightweight model'],
 ];
-
-const registryJsonConfig = '"workspace_provider": "coder",\n"coder_module": "claude-code",\n"ai_gateway": {\n  "primary": "coder",\n  "fallback": "litellm"\n},\n"agents": {\n  "nexus": {\n    "provider": "anthropic",\n    "model": "claude-sonnet-4-20250514",\n    "coder_module": "claude-code",\n    "active": true,\n    "instances": 1\n  },\n  "forge": {\n    "provider": "anthropic",\n    "model": "claude-sonnet-4-20250514",\n    "coder_module": "claude-code",\n    "active": true,\n    "instances": 2\n  },\n  "sentinel": {\n    "provider": "openai",\n    "model": "gpt-4.1",\n    "coder_module": "codex",\n    "active": true,\n    "instances": 1\n  },\n  "vessel": {\n    "provider": "openai",\n    "model": "gpt-4o",\n    "coder_module": "codex",\n    "active": true,\n    "instances": 1\n  },\n  "lore": {\n    "provider": "anthropic",\n    "model": "claude-haiku-4-20250514",\n    "coder_module": "aider",\n    "active": true,\n    "instances": 1\n  }\n}';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Agent Setup' }]}>
@@ -44,7 +42,9 @@ const registryJsonConfig = '"workspace_provider": "coder",\n"coder_module": "cla
   </p>
 
   <h2>registry.json  -  The Single Source of Truth</h2>
-  <CodeBlock lang="json">{registryJsonConfig}</CodeBlock>
+  <p>
+    See <a href="/docs/reference/registry-schema">registry.json Schema</a> for the complete configuration reference. The file defines <code>workspace_provider</code>, <code>ai_gateway</code> routing, and per-agent settings.
+  </p>
 
   <h2>Top-Level Fields</h2>
   <DocsTable headers={['Field', 'Type', 'Description']} rows={TOP_LEVEL_ROWS} />

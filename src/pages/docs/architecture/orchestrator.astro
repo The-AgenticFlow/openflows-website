@@ -1,8 +1,6 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
-
-const orchestratorConfig = '"workspace_provider": "coder",\n"ai_gateway": { "primary": "coder", "fallback": "litellm" },\n"agents": {\n  "nexus": {\n    "provider": "anthropic",\n    "model": "claude-sonnet-4-20250514",\n    "active": true,\n    "instances": 1,\n    "plan_mode": true\n  }\n}';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Orchestrator (NEXUS)' }]}>
@@ -131,7 +129,9 @@ redis-cli HGETALL ns:my-team:worker_slots
 
   <h2>Configuration</h2>
 
-  <CodeBlock lang="json">{orchestratorConfig}</CodeBlock>
+  <p>
+    NEXUS is configured in <code>registry.json</code> with <code>workspace_provider: "coder"</code>, AI gateway routing, and the NEXUS agent definition.
+  </p>
 
   <Callout type="warning" title="NEXUS does not use LLM in Coder-only mode">
     The <code>provider</code> and <code>model</code> fields for NEXUS are ignored in the current architecture.

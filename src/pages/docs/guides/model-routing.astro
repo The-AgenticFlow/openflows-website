@@ -17,7 +17,6 @@ const GATEWAY_ROWS = [
   ['<code>ai_gateway.timeout_ms</code>', 'int', 'Request timeout for LLM calls. Default <code>120000</code> (2 minutes). SENTINEL and NEXUS may override per-call.'],
 ];
 
-const fullRegistryConfig = '"workspace_provider": "coder",\n"coder_module": "claude-code",\n"ai_gateway": {\n  "primary": "coder",\n  "fallback": "litellm",\n  "litellm_url": "http://litellm.internal:4000",\n  "timeout_ms": 120000\n},\n"agents": {\n  "nexus": {\n    "provider": "anthropic",\n    "model": "claude-sonnet-4-20250514",\n    "coder_module": "claude-code",\n    "active": true,\n    "instances": 1\n  },\n  "forge": {\n    "provider": "anthropic",\n    "model": "claude-sonnet-4-20250514",\n    "coder_module": "claude-code",\n    "active": true,\n    "instances": 2\n  },\n  "sentinel": {\n    "provider": "openai",\n    "model": "gpt-4.1",\n    "coder_module": "codex",\n    "active": true,\n    "instances": 1\n  },\n  "vessel": {\n    "provider": "openai",\n    "model": "gpt-4o",\n    "coder_module": "codex",\n    "active": true,\n    "instances": 1\n  },\n  "lore": {\n    "provider": "anthropic",\n    "model": "claude-haiku-4-20250514",\n    "coder_module": "aider",\n    "active": true,\n    "instances": 1\n  }\n}';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Model Routing' }]}>
@@ -54,7 +53,6 @@ const fullRegistryConfig = '"workspace_provider": "coder",\n"coder_module": "cla
     API calls and handles authentication centrally.
   </p>
 
-  <CodeBlock lang="json">{fullRegistryConfig}</CodeBlock>
 
   <h2>AI Gateway Fields</h2>
 
