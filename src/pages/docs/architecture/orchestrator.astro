@@ -135,17 +135,15 @@ redis-cli HGETALL ns:my-team:worker_slots
     The NEXUS workspace auto-starts the controller via <code>startup_script</code> in the Coder template:
   </p>
 
-  <CodeBlock lang="bash">{`#!/bin/bash
-# startup_script for openflows-nexus template
+  <p>
+    The NEXUS workspace auto-starts via a startup script that:
+  </p>
 
-# 1. Install openflows-harness binary
-curl -fsSL https://releases.openflows.dev/harness/latest | bash
-
-# 2. Start heartbeat daemon (writes worker health to Redis)
-openflows-harness heartbeat start --tenant my-team &
-
-# 3. Execute the controller
-exec openflows run --tenant my-team`}</CodeBlock>
+  <ol>
+    <li>Installs the <code>openflows-harness</code> binary from the releases repository</li>
+    <li>Starts the heartbeat daemon to write worker health signals to Redis</li>
+    <li>Executes the NEXUS controller with the tenant configuration</li>
+  </ol>
 
   <h2>Monitoring</h2>
 

@@ -21,10 +21,14 @@ import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComp
     development  -  only post-merge.
   </p>
 
-  <CodeBlock lang="bash">{`# LORE reads the event
-openflows-harness event listen ticket_merged
+  <p>
+    LORE is triggered by the <code>ticket_merged</code> event emitted by VESSEL:
+  </p>
 
-# Output: variable output structure`}</CodeBlock>
+  <ul>
+    <li><code>openflows-harness event listen ticket_merged</code> — Listens for the event from VESSEL</li>
+    <li>The event contains ticket ID, PR number, and repository information</li>
+  </ul>
 
   <h2>Artifacts Produced</h2>
 
@@ -63,13 +67,15 @@ openflows-harness event listen ticket_merged
 
   <h2>Harness Integration</h2>
 
-  <CodeBlock lang="bash">{`# Write documentation
-openflows-harness doc write --adr 0042 --content "..."
+  <p>
+    LORE uses the following harness commands:
+  </p>
 
-# Commit to default branch via GitHub MCP
-openflows-harness git commit --branch main --message "docs: ADR 0042 rate limiting"
-
-# LORE does NOT open PRs  -  commits directly to main`}</CodeBlock>
+  <ul>
+    <li><code>openflows-harness doc write --adr NNNN --content "..."</code> — Writes ADR documentation</li>
+    <li><code>openflows-harness git commit --branch main --message "..."</code> — Commits directly to default branch</li>
+    <li>LORE does not open PRs; it commits documentation directly to main</li>
+  </ul>
 
   <Callout type="info" title="Direct commit to main">
     LORE commits documentation directly to the default branch via GitHub MCP. It does not

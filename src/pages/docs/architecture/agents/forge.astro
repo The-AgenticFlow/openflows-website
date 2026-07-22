@@ -63,23 +63,18 @@ import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComp
 
   <h2>Coordination via Harness</h2>
 
-  <CodeBlock lang="bash">{`# Read task assignment
-openflows-harness dispatch read
-# Output: variable with task details
+  <p>
+    FORGE uses the following harness commands to coordinate with NEXUS and SENTINEL:
+  </p>
 
-# Update progress
-openflows-harness status set building
+  <ul>
+    <li><code>openflows-harness dispatch read</code> — Reads task assignment from NEXUS</li>
+    <li><code>openflows-harness status set building</code> — Updates progress to building phase</li>
+    <li><code>openflows-harness pr opened</code> — Records PR creation</li>
+    <li><code>openflows-harness heartbeat start</code> — Starts heartbeat daemon for liveness signal</li>
+    <li><code>openflows-harness handoff write</code> — Hands off to SENTINEL for review</li>
+  </ul>
 
-# Record PR creation
-openflows-harness pr opened --pr 123 --branch forge-1/issue-42 --title "Fix rate limiting"
-
-# Start heartbeat (runs as daemon)
-openflows-harness heartbeat start
-
-# Handoff to SENTINEL
-openflows-harness handoff write \
-  --contract changes.md \
-  --notes "Implemented rate limiting per contract. Tests passing."}`}</CodeBlock>
 
   <h2>CONTRACT.md Format</h2>
 
