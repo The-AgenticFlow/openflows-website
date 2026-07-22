@@ -16,43 +16,8 @@ const GATEWAY_ROWS = [
   ['<code>ai_gateway.litellm_url</code>', 'string', 'Optional URL of the LiteLLM fallback (e.g. <code>http://litellm.internal:4000</code>). If unset, the orchestrator reads <code>LITELLM_URL</code> from the environment.'],
   ['<code>ai_gateway.timeout_ms</code>', 'int', 'Request timeout for LLM calls. Default <code>120000</code> (2 minutes). SENTINEL and NEXUS may override per-call.'],
 ];
----
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Model Routing' }]}>
-  <h1>Model Routing</h1>
-
-  <p>
-    OpenFlows does not embed LLM API keys inside worker workspaces. Instead, every LLM call
-    routes through the <strong>Coder AI Gateway</strong>, which centralizes provider
-    credentials, model governance, audit logging, and cost tracking. The orchestrator
-    (NEXUS) decides <em>which agent</em> runs, but <code>registry.json</code> decides
-    <em>which model and provider</em> each agent uses. This guide explains how to configure
-    per-agent routing, optimize costs, set up adversarial review across model families, and
-    configure an air-gapped LiteLLM fallback.
-  </p>
-
-  <p>
-    The routing model is intentionally simple: each agent role has a single
-    <code>provider</code> and <code>model</code> field. There is no prompt-level routing,
-    no dynamic model selection, and no A/B testing framework. The goal is predictability and
-    operator control. If you want a different model for a specific task, create a different
-    agent role or adjust the agent's configuration in <code>registry.json</code>.
-  </p>
-
-  <h2>Routing Strategy</h2>
-
-  <DocsTable headers={['Strategy', 'Description']} rows={STRATEGY_ROWS} />
-
-  <h2>registry.json Routing Configuration</h2>
-
-  <p>
-    The top-level <code>ai_gateway</code> block controls where LLM calls go. The per-agent
-    <code>provider</code> and <code>model</code> fields are passed through to that gateway as
-    the model identifier. The Coder AI Gateway translates these into the provider-specific
-    API calls and handles authentication centrally.
-  </p>
-
-  <CodeBlock lang="json">{`"workspace_provider": "coder",
+const fullRegistryConfig = `"workspace_provider": "coder",
 "coder_module": "claude-code",
 "ai_gateway": {
   "primary": "coder",
@@ -96,7 +61,44 @@ const GATEWAY_ROWS = [
     "active": true,
     "instances": 1
   }
-}`}</CodeBlock>
+}`;
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Model Routing' }]}>
+  <h1>Model Routing</h1>
+
+  <p>
+    OpenFlows does not embed LLM API keys inside worker workspaces. Instead, every LLM call
+    routes through the <strong>Coder AI Gateway</strong>, which centralizes provider
+    credentials, model governance, audit logging, and cost tracking. The orchestrator
+    (NEXUS) decides <em>which agent</em> runs, but <code>registry.json</code> decides
+    <em>which model and provider</em> each agent uses. This guide explains how to configure
+    per-agent routing, optimize costs, set up adversarial review across model families, and
+    configure an air-gapped LiteLLM fallback.
+  </p>
+
+  <p>
+    The routing model is intentionally simple: each agent role has a single
+    <code>provider</code> and <code>model</code> field. There is no prompt-level routing,
+    no dynamic model selection, and no A/B testing framework. The goal is predictability and
+    operator control. If you want a different model for a specific task, create a different
+    agent role or adjust the agent's configuration in <code>registry.json</code>.
+  </p>
+
+  <h2>Routing Strategy</h2>
+
+  <DocsTable headers={['Strategy', 'Description']} rows={STRATEGY_ROWS} />
+
+  <h2>registry.json Routing Configuration</h2>
+
+  <p>
+    The top-level <code>ai_gateway</code> block controls where LLM calls go. The per-agent
+    <code>provider</code> and <code>model</code> fields are passed through to that gateway as
+    the model identifier. The Coder AI Gateway translates these into the provider-specific
+    API calls and handles authentication centrally.
+  </p>
+
+  <CodeBlock lang="json">{fullRegistryConfig}</CodeBlock>
 
   <h2>AI Gateway Fields</h2>
 

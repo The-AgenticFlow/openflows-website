@@ -24,25 +24,8 @@ const MODEL_ROWS = [
   ['<code style="color:var(--color-agent-vessel)">VESSEL</code>', 'openai / gpt-4o', 'codex', 'CI/CD scripting – fast and cost-effective'],
   ['<code style="color:var(--color-agent-lore)">LORE</code>', 'anthropic / claude-haiku-4-20250514', 'aider', 'Documentation – lightweight task, lightweight model'],
 ];
----
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Agent Setup' }]}>
-  <h1>Agent Setup</h1>
-  <p>
-    OpenFlows agents are configured through two files: <code>.env</code> for Coder credentials
-    and runtime settings, and <code>orchestration/agent/registry.json</code> for agent
-    definitions, model routing, and Coder workspace provisioning. Run
-    <code>openflows-setup</code> to generate both interactively, or write them manually.
-  </p>
-  <p>
-    In Coder mode, each agent runs inside an <strong>ephemeral Coder workspace</strong> that is
-    provisioned when a task is assigned and torn down after merge. The registry controls which
-    LLM each agent uses (via the Coder AI Gateway), which Coder Registry module installs the
-    code agent CLI, and how many parallel worker instances to run.
-  </p>
-
-  <h2>registry.json  -  The Single Source of Truth</h2>
-  <CodeBlock lang="json">{`"workspace_provider": "coder",
+const registryJsonConfig = `"workspace_provider": "coder",
 "coder_module": "claude-code",
 "ai_gateway": {
   "primary": "coder",
@@ -84,7 +67,26 @@ const MODEL_ROWS = [
     "active": true,
     "instances": 1
   }
-}`}</CodeBlock>
+}`;
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Agent Setup' }]}>
+  <h1>Agent Setup</h1>
+  <p>
+    OpenFlows agents are configured through two files: <code>.env</code> for Coder credentials
+    and runtime settings, and <code>orchestration/agent/registry.json</code> for agent
+    definitions, model routing, and Coder workspace provisioning. Run
+    <code>openflows-setup</code> to generate both interactively, or write them manually.
+  </p>
+  <p>
+    In Coder mode, each agent runs inside an <strong>ephemeral Coder workspace</strong> that is
+    provisioned when a task is assigned and torn down after merge. The registry controls which
+    LLM each agent uses (via the Coder AI Gateway), which Coder Registry module installs the
+    code agent CLI, and how many parallel worker instances to run.
+  </p>
+
+  <h2>registry.json  -  The Single Source of Truth</h2>
+  <CodeBlock lang="json">{registryJsonConfig}</CodeBlock>
 
   <h2>Top-Level Fields</h2>
   <DocsTable headers={['Field', 'Type', 'Description']} rows={TOP_LEVEL_ROWS} />

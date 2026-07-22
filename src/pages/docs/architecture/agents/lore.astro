@@ -1,6 +1,14 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const loreConfig = `"lore": {
+  "provider": "anthropic",
+  "model": "claude-haiku-4-20250514",
+  "coder_module": "aider",
+  "active": false,
+  "instances": 1
+}`;
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'LORE (Documentation)' }]}>
@@ -81,13 +89,7 @@ so restarts resume from correct count. Emit node_retry / node_failed events for 
 
   <h2>Configuration</h2>
 
-  <CodeBlock lang="json">{`"lore": {
-  "provider": "anthropic",
-  "model": "claude-haiku-4-20250514",
-  "coder_module": "aider",
-  "active": false,
-  "instances": 1
-}`}</CodeBlock>
+  <CodeBlock lang="json">{loreConfig}</CodeBlock>
 
   <Callout type="tip" title="Enable LORE">
     Set <code>"lore": { "active": true }</code> in <code>registry.json</code>. LORE is lightweight

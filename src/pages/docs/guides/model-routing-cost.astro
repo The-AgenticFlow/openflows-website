@@ -17,6 +17,13 @@ const FAMILY_ROWS = [
   ['VESSEL', 'OpenAI', 'GPT-4o', 'Different provider than FORGE; optional, but useful for CI script robustness.'],
   ['LORE', 'Anthropic', 'Claude Haiku', 'Cheapest sufficient model for docs and summarization.'],
 ];
+
+const agentCostConfig = `"agents": {
+  "forge": { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "instances": 2 },
+  "sentinel": { "provider": "openai", "model": "gpt-4.1", "instances": 1 },
+  "vessel": { "provider": "openai", "model": "gpt-4o-mini", "instances": 1 },
+  "lore": { "provider": "anthropic", "model": "claude-haiku-4-20250514", "instances": 1 }
+}`;
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Model Routing' }, { label: 'Cost & Adversarial' }]}>
@@ -56,12 +63,7 @@ const FAMILY_ROWS = [
     separate LLM call stream. Increase instances only when you have a backlog of independent
     tickets, not because you want a single ticket to run faster.</p>
 
-  <CodeBlock lang="json">{`"agents": {
-  "forge": { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "instances": 2 },
-  "sentinel": { "provider": "openai", "model": "gpt-4.1", "instances": 1 },
-  "vessel": { "provider": "openai", "model": "gpt-4o-mini", "instances": 1 },
-  "lore": { "provider": "anthropic", "model": "claude-haiku-4-20250514", "instances": 1 }
-}`}</CodeBlock>
+  <CodeBlock lang="json">{agentCostConfig}</CodeBlock>
 
   <Callout type="tip" title="Monitor cost per role">
     The Coder AI Gateway emits usage events with a <code>role</code> tag derived from the

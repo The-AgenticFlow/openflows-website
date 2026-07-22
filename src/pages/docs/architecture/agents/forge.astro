@@ -1,6 +1,17 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const forgeConfig = `"forge": {
+  "provider": "anthropic",
+  "model": "claude-sonnet-4-20250514",
+  "coder_module": "claude-code",
+  "active": true,
+  "instances": 2,
+  "plan_mode": false,
+  "skills": ["terraform", "openapi"],
+  "mcps": ["github-mcp"]
+}`;
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'FORGE (Builder)' }]}>
@@ -117,16 +128,7 @@ Implement idempotent retries for PocketFlow executor with exponential backoff.
 
   <h2>Configuration</h2>
 
-  <CodeBlock lang="json">{`"forge": {
-  "provider": "anthropic",
-  "model": "claude-sonnet-4-20250514",
-  "coder_module": "claude-code",
-  "active": true,
-  "instances": 2,
-  "plan_mode": false,
-  "skills": ["terraform", "openapi"],
-  "mcps": ["github-mcp"]
-}`}</CodeBlock>
+  <CodeBlock lang="json">{forgeConfig}</CodeBlock>
 
   <Callout type="info" title="plan_mode: false">
     FORGE runs with <code>plan_mode: false</code> because it executes implementation, not planning.
