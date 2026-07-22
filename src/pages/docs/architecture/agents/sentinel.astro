@@ -71,7 +71,7 @@ import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComp
 
   <h2>Configuration</h2>
 
-  <CodeBlock lang="json">{{
+  <CodeBlock lang="json">{`{
   "agents": {
     "sentinel": {
       "provider": "openai",
@@ -84,7 +84,7 @@ import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComp
       "mcps": ["github-mcp"]
     }
   }
-}}</CodeBlock>
+}`}</CodeBlock>
 
   <Callout type="warning" title="Adversarial routing matters">
     FORGE and SENTINEL <strong>must</strong> use different model families (e.g., FORGE on Anthropic,

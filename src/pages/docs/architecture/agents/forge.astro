@@ -117,7 +117,7 @@ Implement idempotent retries for PocketFlow executor with exponential backoff.
 
   <h2>Configuration</h2>
 
-  <CodeBlock lang="json">{{
+  <CodeBlock lang="json">{`{
   "agents": {
     "forge": {
       "provider": "anthropic",
@@ -130,7 +130,7 @@ Implement idempotent retries for PocketFlow executor with exponential backoff.
       "mcps": ["github-mcp"]
     }
   }
-}}</CodeBlock>
+}`}</CodeBlock>
 
   <Callout type="info" title="plan_mode: false">
     FORGE runs with <code>plan_mode: false</code> because it executes implementation, not planning.
