@@ -81,7 +81,7 @@ so restarts resume from correct count. Emit node_retry / node_failed events for 
 
   <h2>Configuration</h2>
 
-  <CodeBlock lang="json">{{
+  <CodeBlock lang="json">{`{
   "agents": {
     "lore": {
       "provider": "anthropic",
@@ -91,7 +91,7 @@ so restarts resume from correct count. Emit node_retry / node_failed events for 
       "instances": 1
     }
   }
-}}</CodeBlock>
+}`}</CodeBlock>
 
   <Callout type="tip" title="Enable LORE">
     Set <code>"lore": { "active": true }</code> in <code>registry.json</code>. LORE is lightweight
