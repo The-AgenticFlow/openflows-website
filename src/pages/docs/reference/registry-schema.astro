@@ -57,6 +57,93 @@ const MODEL_ROWS = [
   ['<code style="color:var(--color-agent-vessel)">VESSEL</code>', 'openai / gpt-4o', 'codex', 'CI/CD scripting and merge decisions  -  fast and cost-effective.'],
   ['<code style="color:var(--color-agent-lore)">LORE</code>', 'anthropic / claude-haiku-4-20250514', 'aider', 'Documentation and changelog  -  lightweight task, lightweight model.'],
 ];
+
+const defaultRegistry = `"workspace_provider": "coder",
+"coder_module": "claude-code",
+"ai_gateway": {
+  "primary": "coder",
+  "fallback": "litellm",
+  "litellm_url": "http://litellm.internal:4000",
+  "timeout_ms": 120000
+},
+"agents": {
+  "nexus": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "coder_module": "claude-code",
+    "active": true,
+    "instances": 1,
+    "skills": ["nexus-orchestration"],
+    "mcp": {}
+  },
+  "forge": {
+    "provider": "anthropic",
+    "model": "claude-sonnet-4-20250514",
+    "coder_module": "claude-code",
+    "active": true,
+    "instances": 2,
+    "skills": ["forge-coding", "git-workflow"],
+    "mcp": {
+      "github": { "source": "coder", "coder_server_name": "github" }
+    }
+  },
+  "sentinel": {
+    "provider": "openai",
+    "model": "gpt-4.1",
+    "coder_module": "codex",
+    "active": true,
+    "instances": 1,
+    "skills": ["sentinel-review"],
+    "mcp": {}
+  },
+  "vessel": {
+    "provider": "openai",
+    "model": "gpt-4o",
+    "coder_module": "codex",
+    "active": true,
+    "instances": 1,
+    "skills": ["vessel-ci"],
+    "mcp": {
+      "github": { "source": "coder", "coder_server_name": "github" }
+    }
+  },
+  "lore": {
+    "provider": "anthropic",
+    "model": "claude-haiku-4-20250514",
+    "coder_module": "aider",
+    "active": true,
+    "instances": 1,
+    "skills": ["lore-docs"],
+    "mcp": {}
+  }
+}`;
+
+const skillsExample = `"agents": {
+  "forge": {
+    "skills": [
+      "forge-coding",
+      "git-workflow",
+      { "name": "rust-patterns", "enabled": true }
+    ]
+  }
+}`;
+
+const mcpExample = `"agents": {
+  "forge": {
+    "mcp": {
+      "github": {
+        "source": "coder",
+        "coder_server_name": "github"
+      },
+      "local-docs": {
+        "source": "local",
+        "command": "npx",
+        "args": ["-y", "@modelcontextprotocol/server-docs"],
+        "env": { "DOCS_ROOT": "/docs" }
+      }
+    }
+  }
+}`;
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }, { label: 'registry.json Schema' }]}>
@@ -79,67 +166,7 @@ const MODEL_ROWS = [
     by default, the Coder AI Gateway as the primary LLM path, and LiteLLM as an air-gapped fallback. The five agent roles
     are NEXUS, FORGE, SENTINEL, VESSEL, and LORE.
   </p>
-  <CodeBlock lang="json">{`{
-  "workspace_provider": "coder",
-  "coder_module": "claude-code",
-  "ai_gateway": {
-    "primary": "coder",
-    "fallback": "litellm",
-    "litellm_url": "http://litellm.internal:4000",
-    "timeout_ms": 120000
-  },
-  "agents": {
-    "nexus": {
-      "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
-      "coder_module": "claude-code",
-      "active": true,
-      "instances": 1,
-      "skills": ["nexus-orchestration"],
-      "mcp": {}
-    },
-    "forge": {
-      "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
-      "coder_module": "claude-code",
-      "active": true,
-      "instances": 2,
-      "skills": ["forge-coding", "git-workflow"],
-      "mcp": {
-        "github": { "source": "coder", "coder_server_name": "github" }
-      }
-    },
-    "sentinel": {
-      "provider": "openai",
-      "model": "gpt-4.1",
-      "coder_module": "codex",
-      "active": true,
-      "instances": 1,
-      "skills": ["sentinel-review"],
-      "mcp": {}
-    },
-    "vessel": {
-      "provider": "openai",
-      "model": "gpt-4o",
-      "coder_module": "codex",
-      "active": true,
-      "instances": 1,
-      "skills": ["vessel-ci"],
-      "mcp": {
-        "github": { "source": "coder", "coder_server_name": "github" }
-      }
-    },
-    "lore": {
-      "provider": "anthropic",
-      "model": "claude-haiku-4-20250514",
-      "coder_module": "aider",
-      "active": true,
-      "instances": 1,
-      "skills": ["lore-docs"],
-      "mcp": {}
-    }
-  }
-}`}</CodeBlock>
+  <CodeBlock lang="json">{defaultRegistry}</CodeBlock>
   <Callout type="info" title="Where the file lives">
     The default path is <code>orchestration/agent/registry.json</code> relative to the OpenFlows repository root. You can
     override it with the <code>OPENFLOWS_REGISTRY_PATH</code> environment variable or the <code>--registry-path</code> CLI flag.
@@ -174,17 +201,7 @@ const MODEL_ROWS = [
     contains a <code>SKILL.md</code> manifest and any supporting files. Adding a skill to an agent does not require any code
     change; the skill is symlinked into the workspace at provisioning time.
   </p>
-  <CodeBlock lang="json">{`{
-  "agents": {
-    "forge": {
-      "skills": [
-        "forge-coding",
-        "git-workflow",
-        { "name": "rust-patterns", "enabled": true }
-      ]
-    }
-  }
-}`}</CodeBlock>
+  <CodeBlock lang="json">{skillsExample}</CodeBlock>
   <DocsTable headers={['Field', 'Type', 'Description']} rows={SKILL_ROWS} />
   <p>
     A skill entry can be a simple string (the directory name, enabled by default) or an object with an explicit
@@ -198,24 +215,7 @@ const MODEL_ROWS = [
     (command-based) or referenced from the Coder dashboard (central registration). Central servers are preferred for secrets
     and versioning; local servers are useful for development and one-off tools.
   </p>
-  <CodeBlock lang="json">{`{
-  "agents": {
-    "forge": {
-      "mcp": {
-        "github": {
-          "source": "coder",
-          "coder_server_name": "github"
-        },
-        "local-docs": {
-          "source": "local",
-          "command": "npx",
-          "args": ["-y", "@modelcontextprotocol/server-docs"],
-          "env": { "DOCS_ROOT": "/docs" }
-        }
-      }
-    }
-  }
-}`}</CodeBlock>
+  <CodeBlock lang="json">{mcpExample}</CodeBlock>
   <DocsTable headers={['Field', 'Type', 'Description']} rows={MCP_ROWS} />
   <Callout type="warning" title="Local MCP server security">
     Local command-based MCP servers run inside the workspace. Use them only for read-only or low-risk tools. High-privilege
