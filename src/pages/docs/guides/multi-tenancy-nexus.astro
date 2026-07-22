@@ -61,7 +61,7 @@ tail -f /tmp/openflows-controller.log
     To debug tenant operations, SSH into the tenant's NEXUS workspace and check the controller logs:
   </p>
   <CodeBlock lang="bash">{`# Connect to the tenant's NEXUS workspace
-coder ssh openflows-nexus-{{tenant}}
+coder ssh openflows-nexus-{"{tenant}"}
 
 # Watch the controller log file
 tail -f /tmp/openflows-controller.log

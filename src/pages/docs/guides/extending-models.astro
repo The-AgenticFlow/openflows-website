@@ -47,7 +47,7 @@ import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComp
 }`}</CodeBlock>
 
   <DocsTable headers={['Field', 'Type', 'Description']} rows={[
-    ['<code>id</code>', 'string', 'Canonical model identifier used in <code>agents.{{role}}.model</code>.'],
+    ['<code>id</code>', 'string', 'Canonical model identifier used in <code>agents.{"{role}"}.model</code>.'],
     ['<code>provider</code>', 'string', 'Provider slug that hosts this model.'],
     ['<code>aliases</code>', 'array', 'Alternative names that resolve to this model.'],
     ['<code>context_window</code>', 'int', 'Approximate context window in tokens. Used by planner to estimate fit.'],
@@ -63,7 +63,7 @@ import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComp
   </p>
 
   <Callout type="info" title="Provider slugs">
-    The <code>agents.{{role}}.provider</code> value must match a provider slug configured
+    The <code>agents.{"{role}"}.provider</code> value must match a provider slug configured
     in the Coder AI Gateway. Common slugs: <code>anthropic</code>, <code>openai</code>,
     <code>google</code>, <code>fireworks</code>, <code>groq</code>.
   </Callout>

@@ -5,8 +5,8 @@ import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComp
 const TENANT_ROWS = [
   ['Coder user', 'A normal Coder user account that belongs to the team. The tenant acts as that user for workspace and GitHub operations.'],
   ['Repository binding', 'A GitHub repository (e.g. <code>owner/repo</code>) the tenant is authorized to work on. Multiple repos per tenant are allowed.'],
-  ['NEXUS workspace', 'A dedicated Coder workspace named <code>openflows-nexus-{{tenant}}</code> that hosts the orchestrator controller for that tenant.'],
-  ['Redis keyspace prefix', 'All SharedStore keys are prefixed with <code>ns:{{tenant}}:</code> to isolate state, queues, and worker slots from other tenants.'],
+  ['NEXUS workspace', 'A dedicated Coder workspace named <code>openflows-nexus-{"{tenant}"}</code> that hosts the orchestrator controller for that tenant.'],
+  ['Redis keyspace prefix', 'All SharedStore keys are prefixed with <code>ns:{"{tenant}"}:</code> to isolate state, queues, and worker slots from other tenants.'],
   ['Coder RBAC', 'Role-based access controls inside Coder determine which tenant users can create workspaces, view the tenant, or manage external auth.'],
 ];
 
@@ -14,15 +14,15 @@ const RBAC_ROWS = [
   ['Owner', 'Tenant admin. Can add/remove repos, manage Coder external auth, and operate the NEXUS workspace.'],
   ['Member', 'Team member. Can view tenant status, create worker workspaces, and open tickets.'],
   ['Viewer', 'Read-only. Can view the TUI dashboard and logs but cannot trigger or modify work.'],
-  ['NEXUS service account', 'A non-human Coder user that owns the <code>openflows-nexus-{{tenant}}</code> workspace and has limited, scoped permissions.'],
+  ['NEXUS service account', 'A non-human Coder user that owns the <code>openflows-nexus-{"{tenant}"}</code> workspace and has limited, scoped permissions.'],
 ];
 
 const REDIS_ROWS = [
-  ['<code>ns:{{tenant}}:tickets</code>', 'Map of ticket IDs to ticket status for the tenant.'],
-  ['<code>ns:{{tenant}}:worker_slots</code>', 'Map of worker IDs to worker status for the tenant.'],
-  ['<code>ns:{{tenant}}:pending_prs</code>', 'List of PRs waiting for VESSEL to merge.'],
-  ['<code>ns:{{tenant}}:flow_recovery</code>', 'Recovery state and inconsistencies detected by NEXUS.'],
-  ['<code>ns:{{tenant}}:event_ring</code>', 'Ring buffer of the last 1000 events for the tenant TUI.'],
+  ['<code>ns:{"{tenant}"}:tickets</code>', 'Map of ticket IDs to ticket status for the tenant.'],
+  ['<code>ns:{"{tenant}"}:worker_slots</code>', 'Map of worker IDs to worker status for the tenant.'],
+  ['<code>ns:{"{tenant}"}:pending_prs</code>', 'List of PRs waiting for VESSEL to merge.'],
+  ['<code>ns:{"{tenant}"}:flow_recovery</code>', 'Recovery state and inconsistencies detected by NEXUS.'],
+  ['<code>ns:{"{tenant}"}:event_ring</code>', 'Ring buffer of the last 1000 events for the tenant TUI.'],
 ];
 ---
 
@@ -98,7 +98,7 @@ coder template update --acl-group my-team:use openflows-nexus
   <p>
     SharedStore is the central state machine. In production, it runs on Redis. Without
     namespacing, all tenants would share the same keys and collide on ticket IDs, worker IDs,
-    and event rings. OpenFlows enforces a mandatory prefix of <code>ns:{{tenant}}:</code> on
+    and event rings. OpenFlows enforces a mandatory prefix of <code>ns:{"{tenant}"}:</code> on
     every Redis key. The tenant slug is the canonical namespace identifier.
   </p>
   <p>

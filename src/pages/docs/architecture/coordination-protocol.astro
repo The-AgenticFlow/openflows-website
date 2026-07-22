@@ -96,7 +96,7 @@ Known: backoff policy uses default exponential (1s base, max 30s).
 openflows-harness heartbeat start
 
 # Heartbeat key in Redis
-ns:{{tenant}}:heartbeat:forge-1 → 1719000000 (unix timestamp)
+ns:{"{tenant}"}:heartbeat:forge-1 → 1719000000 (unix timestamp)
 
 # NEXUS reconcile check:
 # if (now - last_heartbeat > 90s) → mark worker stale`}</CodeBlock>

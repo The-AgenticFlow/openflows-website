@@ -43,9 +43,9 @@ const MCP_ROWS = [
 const VALIDATION_ROWS = [
   ['<code>workspace_provider</code>', 'Must be <code>"coder"</code> in the current version. Local worktree mode is deprecated.'],
   ['<code>coder_module</code>', 'Must be a published Coder Registry module in your deployment.'],
-  ['<code>agents.{{role}}.provider</code>', 'Must match a provider slug configured in the Coder AI Gateway or LiteLLM proxy.'],
-  ['<code>agents.{{role}}.instances</code>', 'Must be an integer between 1 and 32. Set to 0 or <code>active: false</code> to disable.'],
-  ['<code>agents.{{role}}.active</code>', 'Must be a boolean. Inactive agents are skipped by NEXUS.'],
+  ['<code>agents.{"{role}"}.provider</code>', 'Must match a provider slug configured in the Coder AI Gateway or LiteLLM proxy.'],
+  ['<code>agents.{"{role}"}.instances</code>', 'Must be an integer between 1 and 32. Set to 0 or <code>active: false</code> to disable.'],
+  ['<code>agents.{"{role}"}.active</code>', 'Must be a boolean. Inactive agents are skipped by NEXUS.'],
   ['<code>skills</code>', 'Each entry must resolve to a directory containing a <code>SKILL.md</code> manifest.'],
   ['<code>mcp</code>', 'Either <code>source: "coder"</code> with a valid <code>coder_server_name</code>, or a command that exists in the workspace.'],
 ];

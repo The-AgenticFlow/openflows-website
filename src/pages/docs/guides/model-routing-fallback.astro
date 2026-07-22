@@ -68,13 +68,13 @@ export ANTHROPIC_API_KEY=sk-ant-...`}</CodeBlock>
     needs to know that the gateway exists and which model/provider slugs to pass to it.
   </p>
 
-  <p><strong>Provider slugs.</strong> The value of <code>agents.{{role}}.provider</code> must
+  <p><strong>Provider slugs.</strong> The value of <code>agents.{"{role}"}.provider</code> must
     match a provider slug configured in the Coder AI Gateway. Common slugs are
     <code>anthropic</code>, <code>openai</code>, <code>google</code>, <code>fireworks</code>,
     and <code>groq</code>. If you add a custom provider, add the same slug to
     <code>registry.json</code>.</p>
 
-  <p><strong>Model identifiers.</strong> The value of <code>agents.{{role}}.model</code> is
+  <p><strong>Model identifiers.</strong> The value of <code>agents.{"{role}"}.model</code> is
     passed through to the gateway. The gateway may accept the raw model identifier (e.g.
     <code>claude-sonnet-4-20250514</code>) or a gateway alias. Check your gateway's model list
     to confirm.</p>

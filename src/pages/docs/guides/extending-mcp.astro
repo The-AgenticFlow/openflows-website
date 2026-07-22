@@ -27,7 +27,7 @@ import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComp
 
   <Callout type="warning" title="MCP credentials live in the environment">
     MCP server configuration can reference environment variables with the
-    <code class="language-text">{env.VAR_NAME}</code> syntax. The orchestrator substitutes these values when
+    <code class="language-text">{'{'} env.VAR_NAME {'}'}</code> syntax. The orchestrator substitutes these values when
     starting the MCP server. The values are not written to <code>registry.json</code>. Worker
     workspaces still never see the credentials; MCP servers run in the orchestrator or in a
     dedicated sidecar workspace, not inside the worker.

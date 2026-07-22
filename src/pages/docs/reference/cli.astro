@@ -87,7 +87,7 @@ const TENANT_ROWS = [
   <h2>bootstrap</h2>
   <p>
     <code>openflows bootstrap</code> is the first command you run after starting the infrastructure stack. It creates the
-    OpenFlows admin user in Coder, pushes the <code>openflows-{role}</code> workspace templates, validates the
+    OpenFlows admin user in Coder, pushes the <code>openflows-{"{role}"}</code> workspace templates, validates the
     <code>.env</code> configuration, and verifies connectivity to Redis, Coder, and the AI Gateway. It is safe to run multiple
     times; subsequent runs are idempotent and only update changed templates.
   </p>

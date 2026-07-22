@@ -3,8 +3,8 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
 const STRATEGY_ROWS = [
-  ['Per-agent provider', 'Each agent entry in <code>agents.{{role}}.provider</code> maps to a Coder AI Gateway provider slug. No global override.'],
-  ['Per-agent model', '<code>agents.{{role}}.model</code> selects the exact model identifier. FORGE and NEXUS can share the same model, SENTINEL should differ.'],
+  ['Per-agent provider', 'Each agent entry in <code>agents.{"{role}"}.provider</code> maps to a Coder AI Gateway provider slug. No global override.'],
+  ['Per-agent model', '<code>agents.{"{role}"}.model</code> selects the exact model identifier. FORGE and NEXUS can share the same model, SENTINEL should differ.'],
   ['Cost tier routing', 'Lightweight agents (LORE, VESSEL) use smaller / cheaper models; reasoning-heavy agents (FORGE, NEXUS) use frontier models.'],
   ['Adversarial routing', 'FORGE and SENTINEL must be configured with different providers or model families to avoid correlated reasoning failures.'],
   ['Fallback routing', 'If the Coder AI Gateway is unavailable, the orchestrator switches to <code>ai_gateway.fallback</code> (LiteLLM) for all providers.'],

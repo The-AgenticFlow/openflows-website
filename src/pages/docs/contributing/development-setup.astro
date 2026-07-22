@@ -209,10 +209,10 @@ redis-cli -h localhost -p 6379 ping
     A typical change looks like this. Adjust the exact test commands based on the crate you are
     touching, but never skip the test step before opening a PR.
   </p>
-  <ol>
-    <li>Start Docker Compose if you will run Coder mode or integration tests.</li>
-    <li>Check out a branch named <code>forge-{slot}/{ticket-id}</code>.</li>
-    <li>Make the change and add or update tests.</li>
+   <ol>
+     <li>Start Docker Compose if you will run Coder mode or integration tests.</li>
+     <li>Check out a branch named <code>forge-&#123;slot&#125;/&#123;ticket-id&#125;</code>.</li>
+     <li>Make the change and add or update tests.</li>
     <li>Run unit tests: <code>cargo test -p openflows-core</code> or <code>cargo test --workspace</code>.</li>
     <li>Run <code>./update-binaries.sh</code> if you are testing Coder mode.</li>
     <li>Run integration tests against the local Coder deployment.</li>

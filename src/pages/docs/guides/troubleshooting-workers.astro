@@ -131,7 +131,7 @@ gh pr view 123 --repo owner/repo --json mergeable,state,reviewDecision,statusChe
     <li>The exact tenant and ticket ID.</li>
     <li>The relevant <code>STATUS.json</code> from the worker workspace.</li>
     <li>The last 100 lines of <code>/tmp/openflows-controller.log</code> for the tenant.</li>
-    <li>The output of <code>openflows doctor --tenant {{tenant}}</code>.</li>
+    <li>The output of <code>openflows doctor --tenant {"{tenant}"}</code>.</li>
     <li>Whether the Coder AI Gateway and Redis are healthy.</li>
     <li>Whether the GitHub external auth link is active for the tenant user.</li>
   </ul>

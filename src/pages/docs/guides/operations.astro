@@ -25,12 +25,12 @@ const TUI_ROWS = [
 ];
 
 const REDIS_ROWS = [
-  ['<code>KEYS ns:{{tenant}}:*</code>', 'List all keys for a tenant (avoid in production; use <code>SCAN</code> instead).'],
-  ['<code>SCAN 0 MATCH ns:{{tenant}}:tickets COUNT 100</code>', 'Paginate through ticket keys safely.'],
-  ['<code>HGET ns:{{tenant}}:tickets ISSUE-123</code>', 'Read the status of a specific ticket.'],
-  ['<code>HGETALL ns:{{tenant}}:worker_slots</code>', 'Read all worker slot statuses.'],
-  ['<code>LRANGE ns:{{tenant}}:event_ring 0 99</code>', 'Read the most recent 100 events.'],
-  ['<code>HLEN ns:{{tenant}}:pending_prs</code>', 'Count PRs awaiting merge.'],
+  ['<code>KEYS ns:{"{tenant}"}:*</code>', 'List all keys for a tenant (avoid in production; use <code>SCAN</code> instead).'],
+  ['<code>SCAN 0 MATCH ns:{"{tenant}"}:tickets COUNT 100</code>', 'Paginate through ticket keys safely.'],
+  ['<code>HGET ns:{"{tenant}"}:tickets ISSUE-123</code>', 'Read the status of a specific ticket.'],
+  ['<code>HGETALL ns:{"{tenant}"}:worker_slots</code>', 'Read all worker slot statuses.'],
+  ['<code>LRANGE ns:{"{tenant}"}:event_ring 0 99</code>', 'Read the most recent 100 events.'],
+  ['<code>HLEN ns:{"{tenant}"}:pending_prs</code>', 'Count PRs awaiting merge.'],
 ];
 
 const RECONCILE_ROWS = [
@@ -62,7 +62,7 @@ const SCALE_ROWS = [
   </p>
   <p>
     The controller runs inside a per-tenant Coder workspace named
-    <code>openflows-nexus-{{tenant}}</code>. That workspace is the only long-lived component. All
+    <code>openflows-nexus-{"{tenant}"}</code>. That workspace is the only long-lived component. All
     other workspaces are ephemeral and are created and destroyed as tickets move through the
     pipeline. Operators should treat the NEXUS workspace as the source of truth for a tenant's
     health.
@@ -167,7 +167,7 @@ rg 'forge-1' /tmp/openflows-controller.log | tail -100
   <h2>Redis Inspection</h2>
   <p>
     Redis is the production SharedStore backend. Every tenant's keys are prefixed with
-    <code>ns:{{tenant}}:</code>. Operators can inspect the live state directly with
+    <code>ns:{"{tenant}"}:</code>. Operators can inspect the live state directly with
     <code>redis-cli</code>. This is useful when the TUI is unavailable or when you need to run
     programmatic checks.
   </p>
