@@ -58,7 +58,7 @@ export function DocCards({ cards }) {
   )
 }
 
-/** Accordion — items: [{title, content (JSX)}] */
+/** Accordion  -  items: [{title, content (JSX)}] */
 export function Accordion({ items }) {
   const [open, setOpen] = useState(0)
 
@@ -83,7 +83,7 @@ export function Accordion({ items }) {
   )
 }
 
-/** Tab switcher — tabs: [{label, content (JSX)}] */
+/** Tab switcher  -  tabs: [{label, content (JSX)}] */
 export function TabSwitcher({ tabs }) {
   const [active, setActive] = useState(0)
 
@@ -128,7 +128,7 @@ const CALLOUT_ICONS = {
   ),
 }
 
-/** Callout box — type: 'info' | 'warning' | 'tip' (with icon) */
+/** Callout box  -  type: 'info' | 'warning' | 'tip' (with icon) */
 export function Callout({ type = 'info', title, children }) {
   return (
     <div className={`callout ${type}`}>
@@ -143,7 +143,7 @@ export function Callout({ type = 'info', title, children }) {
   )
 }
 
-/** Step heading — numbered badge + title for scannable progression */
+/** Step heading  -  numbered badge + title for scannable progression */
 export function StepHeading({ step, id, children }) {
   return (
     <h2 id={id} className="stepHeading" data-step={step}>
@@ -154,17 +154,23 @@ export function StepHeading({ step, id, children }) {
 }
 
 /** Prerequisite card */
-export function PrereqCard({ name, detail, install }) {
+export function PrereqCard({ name, detail, installUrl, installText }) {
   return (
     <div className="prereqCard">
       <div className="prereqCardName">{name}</div>
       <div className="prereqCardDetail">{detail}</div>
-      <div className="prereqCardInstall">{install}</div>
+      {installUrl && installText && (
+        <div className="prereqCardInstall">
+          <a href={installUrl} target="_blank" rel="noopener noreferrer">
+            {installText}
+          </a>
+        </div>
+      )}
     </div>
   )
 }
 
-/** Feedback footer — "Was this helpful?" */
+/** Feedback footer  -  "Was this helpful?" */
 export function FeedbackFooter() {
   const [vote, setVote] = useState(null)
   return (
@@ -197,7 +203,7 @@ export function FeedbackFooter() {
   )
 }
 
-/** Table of Contents — auto-generated from h2/h3 in content, with scroll-spy */
+/** Table of Contents  -  auto-generated from h2/h3 in content, with scroll-spy */
 export function TableOfContents() {
   const [headings, setHeadings] = useState([])
   const [activeId, setActiveId] = useState('')

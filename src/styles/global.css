@@ -401,7 +401,7 @@ button {
   border-radius: var(--radius-xl);
 }
 
-/* IZHUB CTA (hero button) — exact match from izhub production CSS */
+/* IZHUB CTA (hero button)  -  exact match from izhub production CSS */
 .izhub-hero-cta {
   display: inline-flex;
   align-items: center;
@@ -440,7 +440,7 @@ button {
   transform: translateX(4px);
 }
 
-/* IZHUB secondary CTA — exact match: pill-shaped, semi-transparent white, ink border */
+/* IZHUB secondary CTA  -  exact match: pill-shaped, semi-transparent white, ink border */
 .izhub-hero-secondary-cta {
   display: inline-flex;
   align-items: center;
@@ -515,7 +515,7 @@ ol {
   box-shadow: var(--shadow-sm);
 }
 
-/* IZHUB suite panel — exact match */
+/* IZHUB suite panel  -  exact match */
 .izhub-suite-panel {
   min-height: max(440px, 100svh - 320px);
   scroll-margin-top: 320px;
@@ -535,7 +535,7 @@ ol {
   }
 }
 
-/* IZHUB suite tab — exact match */
+/* IZHUB suite tab  -  exact match */
 .izhub-suite-tab {
   outline-offset: -2px;
   text-decoration: none;
@@ -549,7 +549,7 @@ ol {
   box-shadow: inset 0 0 0 1px rgba(41, 40, 39, 0.78);
 }
 
-/* IZHUB hatch pattern styling — diagonal stripe texture */
+/* IZHUB hatch pattern styling  -  diagonal stripe texture */
 .izhub-suite-hatch {
   background-color: #f8f7f3;
   background-image: repeating-linear-gradient(
@@ -700,7 +700,7 @@ ol {
   }
 }
 
-/* IZHUB scroll indicator — exact match: pill-shaped, semi-transparent white */
+/* IZHUB scroll indicator  -  exact match: pill-shaped, semi-transparent white */
 .izhub-scroll-continue {
   display: inline-flex;
   align-items: center;
@@ -953,6 +953,141 @@ svg {
   color: var(--color-ink);
 }
 
+/* Prism Syntax Highlighting - IZHUB theme */
+code[class*="language-"],
+pre[class*="language-"] {
+  color: var(--color-graphite);
+  background: none;
+  text-shadow: none;
+  font-family: var(--font-mono);
+  font-size: 0.875rem;
+  line-height: 1.7;
+  direction: ltr;
+  text-align: left;
+  white-space: pre;
+  word-spacing: normal;
+  word-break: normal;
+  -moz-tab-size: 4;
+  -o-tab-size: 4;
+  tab-size: 4;
+  -webkit-hyphens: none;
+  hyphens: none;
+}
+
+pre[class*="language-"] {
+  padding: 1.25rem;
+  margin: 0;
+  overflow: auto;
+  border-radius: var(--radius-lg);
+  background-color: var(--color-fog);
+  border: 1px solid var(--color-driftwood);
+}
+
+:not(pre) > code[class*="language-"],
+pre[class*="language-"] {
+  background-color: var(--color-bone);
+  border: 1px solid var(--color-driftwood);
+  border-radius: var(--radius-sm);
+  padding: 0.15em 0.4em;
+}
+
+.token.comment,
+.token.prolog,
+.token.doctype,
+.token.cdata {
+  color: var(--color-text-muted);
+}
+
+.token.punctuation {
+  color: var(--color-graphite);
+}
+
+.token.namespace {
+  opacity: 0.7;
+}
+
+.token.property,
+.token.tag,
+.token.boolean,
+.token.number,
+.token.constant,
+.token.symbol,
+.token.deleted {
+  color: #c44545;
+}
+
+.token.selector,
+.token.attr-name,
+.token.string,
+.token.char,
+.token.builtin,
+.token.inserted {
+  color: #0d4943;
+}
+
+.token.operator,
+.token.entity,
+.token.url,
+.language-css .token.string,
+.style .token.string {
+  color: #c4933a;
+}
+
+.token.atrule,
+.token.attr-value,
+.token.keyword {
+  color: #08302d;
+}
+
+.token.function,
+.token.class-name {
+  color: #0d4943;
+}
+
+.token.regex,
+.token.important,
+.token.variable {
+  color: #5a7a8a;
+}
+
+.token.important,
+.token.bold {
+  font-weight: bold;
+}
+
+.token.italic {
+  font-style: italic;
+}
+
+.token.entity {
+  cursor: help;
+}
+
+.line-numbers .line-numbers-rows {
+  border-right: 1px solid var(--color-driftwood);
+}
+
+.line-numbers-rows > span:before {
+  color: var(--color-text-muted);
+}
+
+.code-line {
+  display: block;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+  margin-left: -1.25rem;
+  margin-right: -1.25rem;
+  border-left: 2px solid transparent;
+}
+
+.code-line.inserted {
+  background-color: rgba(13, 73, 67, 0.1);
+}
+
+.code-line.deleted {
+  background-color: rgba(196, 69, 69, 0.1);
+}
+
 /* Enterprise section eyebrow */
 .eyebrow {
   font-size: var(--font-size-xs);
@@ -968,18 +1103,22 @@ svg {
   /* Typography */
   font-family: var(--font-landing-display);
   font-weight: 400;
-  font-size: clamp(1.25rem, 2vw, 1.75rem); /* ~20-28px responsive */
+  font-size: clamp(1.25rem, 2vw, 1.75rem);
   line-height: 1.3;
   letter-spacing: 0;
   text-wrap: balance;
-  
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+
   /* Color */
   color: var(--color-ink);
-  opacity: 0.7; /* Subtle contrast for secondary text */
-  
+  opacity: 0.7;
+
   /* Animation */
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
-  
+
   /* Spacing */
   margin-bottom: var(--space-4);
 }
@@ -988,14 +1127,18 @@ svg {
   /* Inherit all properties from primary */
   font-family: var(--font-landing-display);
   font-weight: 400;
-  font-size: clamp(1.125rem, 1.75vw, 1.5rem); /* ~18-24px */
+  font-size: clamp(1.125rem, 1.75vw, 1.5rem);
   line-height: 1.4;
   letter-spacing: 0;
   text-wrap: balance;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   
   /* Different color for hierarchy */
   color: var(--color-graphite);
-  opacity: 1; /* Full opacity for better readability */
+  opacity: 1;
   
   /* Animation */
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
@@ -1008,9 +1151,14 @@ svg {
   /* Inherit all properties from primary */
   font-family: var(--font-landing-display);
   font-weight: 400;
-  font-size: var(--font-size-base); /* 17px */
+  font-size: var(--font-size-base);
   line-height: 1.5;
   letter-spacing: 0;
+  text-wrap: balance;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   
   /* Muted appearance */
   color: var(--color-graphite);
@@ -1027,9 +1175,14 @@ svg {
   /* Smaller variant */
   font-family: var(--font-landing-display);
   font-weight: 400;
-  font-size: var(--font-size-sm); /* 15px */
+  font-size: var(--font-size-sm);
   line-height: 1.428;
   letter-spacing: 0;
+  text-wrap: balance;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   
   /* Color */
   color: var(--color-graphite);
@@ -1057,12 +1210,12 @@ svg {
 
 @media (max-width: 480px) {
   .izhub-sub-text {
-    font-size: 1.125rem; /* 18px */
+    font-size: 1.125rem;
     line-height: 1.5;
   }
   
   .izhub-sub-text-secondary {
-    font-size: 1rem; /* 16px */
+    font-size: 1rem;
     line-height: 1.6;
   }
 }

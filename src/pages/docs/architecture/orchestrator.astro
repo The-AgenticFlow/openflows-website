@@ -1,0 +1,178 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Orchestrator (NEXUS)' }]}>
+  <h1>NEXUS Orchestrator</h1>
+
+  <p>
+    NEXUS is the central coordinator of the OpenFlows system. It runs as a controller process inside a dedicated
+    per-tenant Coder workspace (<code>openflows-nexus-[tenant]</code>) and owns all coordination logic.
+    Unlike the worker agents, NEXUS does not use an LLM for routing decisions  -  it uses a deterministic
+    rule-based loop that requires no model calls.
+  </p>
+
+  <Callout type="info" title="Coder-only design">
+    In the current architecture, NEXUS runs without an LLM. All routing, assignment, and recovery decisions
+    are made through rule-based logic in the <code>exec()</code> phase. This simplifies the controller,
+    reduces latency, and removes the need for model credentials in the orchestrator.
+  </Callout>
+
+  <h2>Responsibilities</h2>
+
+  <ul>
+    <li><strong>Ticket Assignment</strong>  -  Fetches GitHub issues, creates tickets in SharedStore, assigns to idle workers</li>
+    <li><strong>Worker Provisioning</strong>  -  Creates Coder workspaces for FORGE/SENTINEL workers on demand via Coder API</li>
+    <li><strong>Recovery</strong>  -  Monitors for crashed workspaces, orphaned tickets, stale workers, unmerged PRs</li>
+    <li><strong>Team Coordination</strong>  -  Routes work between agents based on phase transitions</li>
+    <li><strong>Heartbeat Monitoring</strong>  -  Tracks worker liveness via Redis heartbeats</li>
+  </ul>
+
+  <h2>Decision Loop</h2>
+
+  <p>
+    The NEXUS controller runs a tight loop every 15 seconds. Each iteration follows a three-phase pattern:
+  </p>
+
+  <CodeBlock lang="typescript">{`interface NexusController {
+  async prep(): Promise<void>      // Sync state from GitHub, Redis, Coder
+  async exec(): Promise<Decision>  // Rule-based routing (no LLM)
+  async post(decision: Decision): Promise<void>  // Execute decision
+  async run(): Promise<void>       // Loop every 15s
+}
+
+// Decision types
+type Decision =
+  | { type: 'assign_ticket'; ticketId: string; workerId: string }
+  | { type: 'provision_workspace'; workerId: string; role: 'forge' | 'sentinel' }
+  | { type: 'mark_stale'; ticketId: string; reason: string }
+  | { type: 'escalate_human'; ticketId: string; blocker: Blocker }
+  | { type: 'pause'; reason: string }
+  | { type: 'noop' };`}</CodeBlock>
+
+  <h3>Phase Details</h3>
+
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Phase</th>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Operations</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><code>prep()</code></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">
+          Sync GitHub issues → create tickets in Redis<br>
+          Check worker health from heartbeats<br>
+          Load current Redis state (tickets, workers, dispatches)
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><code>exec()</code></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">
+          Rule-based routing:<br>
+          • Unassigned tickets → assign to idle FORGE<br>
+          • Stale workers → mark tickets for re-assignment<br>
+          • Ready PRs → handoff to SENTINEL<br>
+          • Approved PRs → handoff to VESSEL
+        </td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><code>post()</code></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">
+          Execute decision:<br>
+          • Create Coder workspace via API<br>
+          • Write dispatch to Redis<br>
+          • Send kickoff message via Coder Chat
+        </td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Redis Key Schema</h2>
+
+  <DocsTable headers={['Key Pattern', 'Description']} rows={[
+    ['<code>tickets</code>', 'Sorted set of all ticket IDs'],
+    ['<code>ticket:{{id}}:status</code>', 'Current status: <code>open</code> | <code>assigned</code> | <code>working</code> | <code>review_ready</code> | <code>awaiting_human</code> | <code>merged</code>'],
+    ['<code>ticket:{{id}}:dispatch</code>', 'Task payload: {{ issue, repo, phase, contract_path }}'],
+    ['<code>ticket:{{id}}:contract</code>', '<code>CONTRACT.md</code> content for SENTINEL review'],
+    ['<code>worker_slots</code>', 'Map: <code>forge-1</code> → {{ status, workspace_id, last_heartbeat }}'],
+    ['<code>ns:{[tenant]}:heartbeat:{{worker}}</code>', 'Unix timestamp of last heartbeat'],
+    ['<code>ns:{[tenant]}:event_ring</code>', 'Ring buffer of last 1000 events for TUI'],
+    ['<code>ns:{[tenant]}:flow_recovery</code>', 'Recovery state and inconsistencies detected'],
+  ]} />
+
+  <Callout type="tip" title="Inspecting NEXUS state">
+    From the NEXUS workspace, use <code>redis-cli</code> to inspect live state:
+    <pre style="background: var(--color-parchment-canvas); padding: 1rem; border-radius: var(--radius-md);">
+redis-cli --scan --pattern 'ns:my-team:*'
+redis-cli GET ns:my-team:ticket:123:status
+redis-cli HGETALL ns:my-team:worker_slots
+    </pre>
+  </Callout>
+
+  <h2>Recovery Behaviors</h2>
+
+  <p>
+    The <code>reconcile()</code> method runs on every loop iteration and handles:
+  </p>
+
+  <ul>
+    <li><strong>Orphaned tickets</strong>  -  Ticket assigned to worker that no longer exists → reassign</li>
+    <li><strong>Stale workers</strong>  -  Worker heartbeat older than 90s → mark ticket for reassignment</li>
+    <li><strong>Unmerged PRs</strong>  -  PR merged but ticket not marked → complete ticket</li>
+    <li><strong>Completed without PR</strong>  -  Worker finished but no PR opened → investigate</li>
+    <li><strong>SENTINEL rejection loop</strong>  -  Same segment rejected > 3 times → escalate to <code>AwaitingHuman</code></li>
+  </ul>
+
+  <h2>Configuration</h2>
+
+  <CodeBlock lang="json">{`{
+  "workspace_provider": "coder",
+  "ai_gateway": { "primary": "coder", "fallback": "litellm" },
+  "agents": {
+    "nexus": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514",
+      "active": true,
+      "instances": 1,
+      "plan_mode": true
+    }
+  }
+}`}</CodeBlock>
+
+  <Callout type="warning" title="NEXUS does not use LLM in Coder-only mode">
+    The <code>provider</code> and <code>model</code> fields for NEXUS are ignored in the current architecture.
+    NEXUS routing is entirely rule-based via <code>exec()</code>. These fields are reserved for future
+    LLM-assisted routing features.
+  </Callout>
+
+  <h2>Startup Script</h2>
+
+  <p>
+    The NEXUS workspace auto-starts the controller via <code>startup_script</code> in the Coder template:
+  </p>
+
+  <CodeBlock lang="bash">{`#!/bin/bash
+# startup_script for openflows-nexus template
+
+# 1. Install openflows-harness binary
+curl -fsSL https://releases.openflows.dev/harness/latest | bash
+
+# 2. Start heartbeat daemon (writes worker health to Redis)
+openflows-harness heartbeat start --tenant my-team &
+
+# 3. Execute the controller
+exec openflows run --tenant my-team`}</CodeBlock>
+
+  <h2>Monitoring</h2>
+
+  <ul>
+    <li><strong>Logs</strong>  -  <code>/tmp/openflows-controller.log</code> on NEXUS workspace</li>
+    <li><strong>TUI</strong>  -  <code>cargo run -p openflows-tui</code> for real-time dashboard</li>
+    <li><strong>Doctor</strong>  -  <code>openflows doctor --tenant my-team</code> for health checks</li>
+    <li><strong>Metrics</strong>  -  Controller exposes <code>:8080/metrics</code> (Prometheus format)</li>
+  </ul>
+</DocsLayout>

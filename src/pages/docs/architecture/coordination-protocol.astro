@@ -1,0 +1,140 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Coordination Protocol' }]}>
+  <h1>Coordination Protocol</h1>
+
+  <p>
+    All inter-agent coordination happens through the <code>openflows-harness</code> CLI
+    and the Redis-backed SharedStore. Workers never access Redis directly  -  the harness
+    provides typed, validated access to the state machine.
+  </p>
+
+  <Callout type="warning" title="No direct Redis access">
+    The <code>pre_bash_guard.sh</code> hook blocks <code>redis-cli</code>, <code>redis</code>,
+    and any direct Redis commands. All state operations must go through the harness.
+  </Callout>
+
+  <h2>Harness Command Reference</h2>
+
+  <DocsTable headers={['Command', 'Description', 'Example']} rows={[
+    ['<code>dispatch read</code>', 'Read assigned task payload', '<code>openflows-harness dispatch read</code>'],
+    ['<code>dispatch status</code>', 'Show assignment status', '<code>openflows-harness dispatch status</code>'],
+    ['<code>status get</code>', 'Read current phase from STATUS.json', '<code>openflows-harness status get</code>'],
+    ['<code>status set &lt;phase&gt;</code>', 'Update phase (planning/building/testing/review_ready/blocked)', '<code>openflows-harness status set building</code>'],
+    ['<code>pr opened --pr N --branch B --title "T"</code>', 'Record PR creation', '<code>openflows-harness pr opened --pr 123 --branch forge-1/42 --title "Fix bug"</code>'],
+    ['<code>pr merged --pr N</code>', 'Record PR merge', '<code>openflows-harness pr merged --pr 123</code>'],
+    ['<code>handoff write --contract FILE --notes "..."</code>', 'Handoff to next agent', '<code>openflows-harness handoff write --contract changes.md --notes "Done"</code>'],
+    ['<code>heartbeat start</code>', 'Start 30s heartbeat daemon', '<code>openflows-harness heartbeat start</code>'],
+    ['<code>event emit ticket_merged --ticket ID --pr N</code>', 'Emit merge event for LORE', '<code>openflows-harness event emit ticket_merged --ticket 42 --pr 123</code>'],
+  ]} />
+
+  <h2>Phase Lifecycle</h2>
+
+  <p>
+    Each ticket progresses through a deterministic sequence of phases. The current phase
+    is tracked in <code>STATUS.json</code> in the worker workspace and mirrored in Redis.
+  </p>
+
+  <DocsTable headers={['Phase', 'Agent', 'Description', 'Next Phase']} rows={[
+    ['<code>planning</code>', 'FORGE', 'Analyze issue, read repo, write CONTRACT.md', '<code>building</code>'],
+    ['<code>building</code>', 'FORGE', 'Implement solution per contract', '<code>testing</code>'],
+    ['<code>testing</code>', 'FORGE', 'Run test suite, fix failures', '<code>review_ready</code>'],
+    ['<code>review_ready</code>', 'SENTINEL', 'PR opened, awaiting review', '<code>reviewing</code>'],
+    ['<code>reviewing</code>', 'SENTINEL', 'Reviewing diff against contract', '<code>approved</code> | <code>changes_requested</code>'],
+    ['<code>changes_requested</code>', 'FORGE', 'Address review comments', '<code>review_ready</code>'],
+    ['<code>approved</code>', 'VESSEL', 'SENTINEL approved, CI running', '<code>merging</code>'],
+    ['<code>merging</code>', 'VESSEL', 'Merge conflict resolution / squash merge', '<code>merged</code>'],
+    ['<code>merged</code>', 'VESSEL/LORE', 'PR merged, docs updated', 'done'],
+    ['<code>blocked</code>', 'Any', 'Cannot proceed  -  human escalation', '<code>awaiting_human</code>'],
+    ['<code>awaiting_human</code>', 'NEXUS', 'Waiting for human input', '<code>planning</code> (after unblock)'],
+  ]} />
+
+  <CodeBlock lang="json">{`// STATUS.json example
+{
+  "outcome": "building",
+  "phase": "building",
+  "ticket": "ISSUE-123",
+  "pr_url": null,
+  "blocker": null,
+  "errors": [],
+  "last_updated": "2026-07-20T15:43:21Z"
+}`}</CodeBlock>
+
+  <h2>Handoff Protocol</h2>
+
+  <p>
+    Phase transitions between agents are explicit. The outgoing agent writes a handoff
+    document that the incoming agent reads.
+  </p>
+
+  <DocsTable headers={['From → To', 'Artifact', 'Purpose']} rows={[
+    ['FORGE → SENTINEL', '<code>handoff.md</code> + <code>CONTRACT.md</code>', 'Implementation summary + contract for review'],
+    ['SENTINEL → FORGE', '<code>segment-N-eval.md</code>', 'Per-segment approval/rejection'],
+    ['SENTINEL → VESSEL', '<code>final-review.md</code>', 'APPROVED unblocks merge'],
+    ['VESSEL → LORE', '<code>ticket_merged</code> event', 'Trigger documentation'],
+  ]} />
+
+  <CodeBlock lang="bash">{`# FORGE → SENTINEL handoff
+openflows-harness handoff write \
+  --contract changes.md \
+  --notes "Implemented rate limiting per CONTRACT.md segments 1-3.
+All tests pass. PR #123 opened.
+Known: backoff policy uses default exponential (1s base, max 30s).
+`}</CodeBlock>
+
+  <h2>Heartbeat Protocol</h2>
+
+  <p>
+    Workers send heartbeats every 30 seconds to Redis. NEXUS monitors these and marks
+    workers as stale after 90 seconds of silence.
+  </p>
+
+  <CodeBlock lang="bash">{`# Start heartbeat (runs as background daemon)
+openflows-harness heartbeat start
+
+# Heartbeat key in Redis
+ns:{{tenant}}:heartbeat:forge-1 → 1719000000 (unix timestamp)
+
+# NEXUS reconcile check:
+# if (now - last_heartbeat > 90s) → mark worker stale`}</CodeBlock>
+
+  <h2>Event Ring</h2>
+
+  <p>
+    A ring buffer of the last 1000 events for each tenant. Used by the TUI for
+    real-time dashboard and by operators for debugging.
+  </p>
+
+  <CodeBlock lang="bash">{`# Read recent events
+redis-cli LRANGE ns:my-team:event_ring 0 99
+
+# Event format (JSON)
+{"ts": "2026-07-20T15:43:21Z", "tenant": "my-team", "worker": "forge-1", "level": "INFO", "msg": "segment review APPROVED", "ticket": "ISSUE-123", "segment": 2}`}</CodeBlock>
+
+  <h2>GitHub MCP Integration</h2>
+
+  <p>
+    All GitHub operations (clone, push, PR creation, review comments, merge) route
+    through the GitHub MCP server. Workers authenticate via Coder external auth  - 
+    no PATs ever enter the workspace.
+  </p>
+
+  <Callout type="info" title="GitHub identity">
+    The Coder MCP server resolves the GitHub identity from the Coder external auth
+    token attached to the workspace owner. FORGE acts as the Coder user that owns
+    the tenant's NEXUS workspace.
+  </Callout>
+
+  <h2>SharedStore Key Contracts</h2>
+
+  <DocsTable headers={['Key', 'Type', 'Schema']} rows={[
+    ['<code>ticket:{id}:status</code>', 'String', '<code>open</code> | <code>assigned</code> | <code>working</code> | <code>review_ready</code> | <code>reviewing</code> | <code>approved</code> | <code>merging</code> | <code>merged</code> | <code>blocked</code> | <code>awaiting_human</code>'],
+    ['<code>ticket:{id}:dispatch</code>', 'JSON', '<code>{ issue, repo, phase, contract_path }</code>'],
+    ['<code>ticket:{id}:contract</code>', 'String', 'Full CONTRACT.md content'],
+    ['<code>ticket:{id}:handoff</code>', 'JSON', '<code>{ from_agent, to_agent, contract_changes, notes }</code>'],
+    ['<code>worker_slots</code>', 'Hash', '<code>forge-1 → {status, workspace_id, last_heartbeat}</code>'],
+  ]} />
+</DocsLayout>

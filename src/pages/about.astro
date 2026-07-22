@@ -44,19 +44,19 @@ const VALUES = [
   },
   {
     title: 'Each agent has an identity',
-    desc: 'Agent = CLI backend (muscle) + configuration harness (brain). Each agent has its own persona, skills, hooks, and permissions. GitHub identity is handled by Coder external auth — agents inherit identity from the logged-in Coder user via the git-config module. No personal access tokens needed.',
+    desc: 'Agent = CLI backend (muscle) + configuration harness (brain). Each agent has its own persona, skills, hooks, and permissions. GitHub identity is handled by Coder external auth  -  agents inherit identity from the logged-in Coder user via the git-config module. No personal access tokens needed.',
   },
   {
     title: 'Built for resilience',
-    desc: 'A five-layer crash recovery stack catches failures at every level, from malformed LLM output to crashed nodes. NEXUS reconcile() detects orphaned tickets, stale workers, and unmerged PRs on every cycle. Ephemeral Coder workspaces are torn down after merge — no lingering state, no stale credentials.',
+    desc: 'A five-layer crash recovery stack catches failures at every level, from malformed LLM output to crashed nodes. NEXUS reconcile() detects orphaned tickets, stale workers, and unmerged PRs on every cycle. Ephemeral Coder workspaces are torn down after merge  -  no lingering state, no stale credentials.',
   },
   {
     title: 'Model-agnostic, adversarial by design',
-    desc: 'Each agent\'s LLM provider and model are configured independently in registry.json. FORGE and SENTINEL can use different providers — Anthropic for the builder, OpenAI for the reviewer — so the reviewer\'s blind spots differ from the writer\'s. SENTINEL spawns fresh per evaluation, read-only and bias-free.',
+    desc: 'Each agent\'s LLM provider and model are configured independently in registry.json. FORGE and SENTINEL can use different providers  -  Anthropic for the builder, OpenAI for the reviewer  -  so the reviewer\'s blind spots differ from the writer\'s. SENTINEL spawns fresh per evaluation, read-only and bias-free.',
   },
   {
     title: 'Open source, MIT licensed',
-    desc: 'The orchestration engine — PocketFlow core, SharedStore, agent harnesses, and TUI setup wizard — is on GitHub under the MIT license. Install via npm, cargo, Docker, or a one-line curl installer. Self-hosted on your infrastructure, with Coder AI Gateway and LiteLLM fallback for any model provider.',
+    desc: 'The orchestration engine  -  PocketFlow core, SharedStore, agent harnesses, and TUI setup wizard  -  is on GitHub under the MIT license. Install via npm, cargo, Docker, or a one-line curl installer. Self-hosted on your infrastructure, with Coder AI Gateway and LiteLLM fallback for any model provider.',
   },
   {
     title: 'Ship faster, not harder',
@@ -64,7 +64,7 @@ const VALUES = [
   },
   {
     title: 'Conflict rework, not rebase churn',
-    desc: 'When VESSEL detects a merge conflict, it does not create a new branch or lose context. It writes CONFLICT_RESOLUTION.md and re-routes the ticket back to the same FORGE worker. FORGE reworks the implementation, re-commits, and VESSEL re-monitors CI — no manual rebase.',
+    desc: 'When VESSEL detects a merge conflict, it does not create a new branch or lose context. It writes CONFLICT_RESOLUTION.md and re-routes the ticket back to the same FORGE worker. FORGE reworks the implementation, re-commits, and VESSEL re-monitors CI  -  no manual rebase.',
   },
   {
     title: 'Documentation as a byproduct',
@@ -84,7 +84,7 @@ const VALUES = [
       <p class={styles.heroSub}>
         OpenFlows coordinates five specialized AI agents through a Redis-backed state machine
         to take GitHub issues all the way to merged, documented pull requests. GitHub identity
-        is handled by Coder external auth — no personal access tokens. The entire pipeline runs
+        is handled by Coder external auth  -  no personal access tokens. The entire pipeline runs
         autonomously - you wake up to completed features, reviewed PRs, and updated documentation.
       </p>
     </div>
@@ -112,7 +112,7 @@ const VALUES = [
       <div class={styles.valuesGrid}>
         {AGENTS.map(({ name, role, desc }) => (
           <div key={name} class={styles.valueCard}>
-            <h3 class={styles.valueTitle}>{name} <span class={styles.agentRole}>— {role}</span></h3>
+            <h3 class={styles.valueTitle}>{name} <span class={styles.agentRole}> -  {role}</span></h3>
             <p class={styles.valueDesc}>{desc}</p>
           </div>
         ))}

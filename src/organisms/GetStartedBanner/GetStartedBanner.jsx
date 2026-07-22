@@ -12,7 +12,7 @@ export default function GetStartedBanner() {
           <p className={styles.sub}>
             Install on your Coder environment. Point it at a GitHub repo with
             open issues. Let your team focus on architecture while the agentic
-            dev team ships — safely, securely, and with full governance.
+            dev team ships  -  safely, securely, and with full governance.
           </p>
           <div className={styles.actions}>
             <Button

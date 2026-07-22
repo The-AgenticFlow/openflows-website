@@ -1,0 +1,163 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'FORGE (Builder)' }]}>
+  <h1>FORGE  -  Builder Agent</h1>
+
+  <p>
+    FORGE is the primary code generation agent. It writes implementation code against a
+    <code>CONTRACT.md</code> that defines the acceptance criteria, security requirements,
+    and test expectations. FORGE runs inside an ephemeral Coder workspace with its own
+    isolated Git worktree and branch.
+  </p>
+
+  <h2>Architecture</h2>
+
+  <pre style="background: var(--color-parchment-canvas); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font-mono); font-size: 0.875rem; overflow-x: auto;">
+┌─────────────────────────────────────────────────────────────┐
+│ FORGE Workspace (ephemeral Coder workspace)                  │
+│                                                              │
+│  ┌────────────────┐     ┌──────────────────────────────────┐│
+│  │ Coder Agent    │────▶│ openflows-harness                ││
+│  │ (LLM Session)  │     │ - dispatch read (get task)       ││
+│  └────────────────┘     │ - status get/set (track phase)   ││
+│                          │ - pr opened (record PR)          ││
+│                          │ - heartbeat start (alive signal) ││
+│                          │ - handoff write (to Sentinel)    ││
+│                          └──────────────────────────────────┘│
+│                                      │                        │
+│                                      ▼                        │
+│                              ┌─────────────┐                 │
+│                              │    Redis    │                 │
+│                              │ SharedStore │                 │
+│                              └─────────────┘                 │
+└─────────────────────────────────────────────────────────────┘</pre>
+
+  <h2>Workflow Phases</h2>
+
+  <DocsTable headers={['Phase', 'Status Value', 'Description']} rows={[
+    ['Planning', '<code>planning</code>', 'Analyze task, read repository, create <code>CONTRACT.md</code>'],
+    ['Building', '<code>building</code>', 'Implement solution per contract'],
+    ['Testing', '<code>testing</code>', 'Run test suite, verify all pass'],
+    ['Review Ready', '<code>review_ready</code>', 'PR opened, awaiting SENTINEL review'],
+    ['Revising', '<code>revising</code>', 'Addressing SENTINEL review comments'],
+    ['Blocked', '<code>blocked</code>', 'Cannot proceed  -  human escalation needed'],
+  ]} />
+
+  <h2>Hook System (Claude Code)</h2>
+
+  <p>
+    FORGE uses a comprehensive hook system for policy enforcement and quality:
+  </p>
+
+  <DocsTable headers={['Hook', 'Trigger', 'Purpose']} rows={[
+    ['<code>session_start.sh</code>', 'Session starts', 'Provides dispatch context, workflow guide, contract path'],
+    ['<code>pre_bash_guard.sh</code>', 'Before any bash', 'Blocks direct Redis access, destructive commands, git push --force'],
+    ['<code>post_write_lint.sh</code>', 'After file write', 'Auto-formats code (rustfmt, prettier, gofmt)'],
+    ['<code>stop_require_artifact.sh</code>', 'On stop attempt', 'Refuses to stop unless PR is created or blocked'],
+    ['<code>pre_task_guard.sh</code>', 'Before subagent', 'Validates task scope, prevents scope creep'],
+    ['<code>post_task_guard.sh</code>', 'After subagent', 'Verifies subagent completed expected work'],
+  ]} />
+
+  <h2>Coordination via Harness</h2>
+
+  <CodeBlock lang="bash">{`# Read task assignment
+openflows-harness dispatch read
+# Output: { ticketId, issueNumber, repo, phase, contractPath }
+
+# Update progress
+openflows-harness status set building
+
+# Record PR creation
+openflows-harness pr opened --pr 123 --branch forge-1/issue-42 --title "Fix rate limiting"
+
+# Start heartbeat (runs as daemon)
+openflows-harness heartbeat start
+
+# Handoff to SENTINEL
+openflows-harness handoff write \
+  --contract changes.md \
+  --notes "Implemented rate limiting per contract. Tests passing."}`}</CodeBlock>
+
+  <h2>CONTRACT.md Format</h2>
+
+  <p>
+    The contract is the agreement between FORGE and SENTINEL. FORGE writes it during planning;
+    SENTINEL reviews against it during code review.
+  </p>
+
+  <CodeBlock lang="markdown">{`# CONTRACT.md
+
+## Goal
+Implement idempotent retries for PocketFlow executor with exponential backoff.
+
+## Acceptance Criteria
+- [ ] Retry count persisted in SharedStore (survives restart)
+- [ ] Max retries configurable (default 3)
+- [ ] Exponential backoff with jitter (base 1s, max 30s)
+- [ ] <code>node_retry</code> event emitted on each retry
+- [ ] All existing tests pass
+- [ ] New tests: retry success, retry exhaustion, idempotency
+
+## Security Requirements
+- No secrets in logs
+- No direct Redis access (use harness)
+- Input validation on all user-facing endpoints
+
+## Files to Touch
+- <code>src/flow.rs</code>  -  executor retry logic
+- <code>src/store/state.rs</code>  -  retry_count field
+- <code>tests/flow_retries.rs</code>  -  new test coverage
+
+## Risks
+- Backoff strategy for external API calls (suggest exponential)
+- Idempotency of SharedStore writes`}</CodeBlock>
+
+  <h2>Configuration</h2>
+
+  <CodeBlock lang="json">{{
+  "agents": {
+    "forge": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514",
+      "coder_module": "claude-code",
+      "active": true,
+      "instances": 2,
+      "plan_mode": false,
+      "skills": ["terraform", "openapi"],
+      "mcps": ["github-mcp"]
+    }
+  }
+}}</CodeBlock>
+
+  <Callout type="info" title="plan_mode: false">
+    FORGE runs with <code>plan_mode: false</code> because it executes implementation, not planning.
+    SENTINEL uses <code>plan_mode: true</code> for adversarial review.
+  </Callout>
+
+  <h2>Workspace Template</h2>
+
+  <p>
+    The <code>openflows-forge</code> template includes:
+  </p>
+
+  <ul>
+    <li>Repository clone</li>
+    <li><code>openflows-harness</code> binary</li>
+    <li>Claude Code CLI with hook scripts</li>
+    <li>Rust toolchain, Node.js, Go (as needed per workspace)</li>
+    <li>Git configuration for FORGE user identity</li>
+  </ul>
+
+  <h2>Security Controls</h2>
+
+  <ul>
+    <li><strong>No direct Redis</strong>  -  All access via <code>openflows-harness</code></li>
+    <li><strong>No GitHub tokens</strong>  -  Identity via Coder external auth</li>
+    <li><strong>No LLM keys</strong>  -  All calls route through Coder AI Gateway</li>
+    <li><strong>Hook guards</strong>  -  Prevent <code>redis-cli</code>, <code>git push --force</code>, destructive ops</li>
+    <li><strong>Ephemeral workspace</strong>  -  Destroyed after PR merge</li>
+  </ul>
+</DocsLayout>

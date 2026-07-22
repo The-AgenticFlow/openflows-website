@@ -8,23 +8,23 @@ const INDUSTRIES = [
   {
     title: 'Tech Innovators',
     description:
-      'Move fast without breaking things. OpenFlows orchestrates a 24/7 agentic dev team on top of your Coder environment — so your engineers focus on architecture, not implementation.',
+      'Move fast without breaking things. OpenFlows orchestrates a 24/7 agentic dev team on top of your Coder environment  -  so your engineers focus on architecture, not implementation.',
     icon: '',
-    href: '/use-cases',
+    href: '/docs',
   },
   {
     title: 'Financial Services',
     description:
-      'Stay compliant while accelerating delivery. Every agent action is logged, reviewable, and auditable — governance built into the SDLC, not bolted on.',
+      'Stay compliant while accelerating delivery. Every agent action is logged, reviewable, and auditable  -  governance built into the SDLC, not bolted on.',
     icon: '',
-    href: '/use-cases',
+    href: '/docs',
   },
   {
     title: 'Government Agencies',
     description:
       'Self-host on air-gapped Coder infrastructure. Keep sensitive code, agent work, and audit trails inside your network at all times.',
     icon: '',
-    href: '/use-cases',
+    href: '/docs',
   },
 ]
 

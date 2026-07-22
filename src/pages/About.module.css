@@ -49,19 +49,37 @@
 }
 
 .heroSub {
-  /* IZHUB sub-text styling */
+  /* Use global IZHUB sub-text secondary class with component-specific overrides */
   font-family: var(--font-landing-display);
   font-weight: 400;
   font-size: clamp(1.125rem, 1.75vw, 1.5rem);
   line-height: 1.4;
   letter-spacing: 0;
   text-wrap: balance;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   color: var(--color-graphite);
   opacity: 1;
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
   margin-bottom: var(--space-3);
   max-width: 640px;
   margin-inline: auto;
+}
+
+@media (max-width: 768px) {
+  .heroSub {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 480px) {
+  .heroSub {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
 }
 
 /* ── Stats bar ── */
@@ -143,18 +161,36 @@
 }
 
 .splitDesc {
-  /* IZHUB sub-text styling */
+  /* Use global IZHUB sub-text secondary class with component-specific overrides */
   font-family: var(--font-landing-display);
   font-weight: 400;
   font-size: clamp(1.125rem, 1.75vw, 1.5rem);
   line-height: 1.4;
   letter-spacing: 0;
   text-wrap: balance;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   color: var(--color-graphite);
   opacity: 1;
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
   margin-bottom: var(--space-3);
   margin: 0;
+}
+
+@media (max-width: 768px) {
+  .splitDesc {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 480px) {
+  .splitDesc {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
 }
 
 .linkRow {
@@ -204,13 +240,17 @@
 }
 
 .quote {
-  /* IZHUB sub-text styling */
+  /* Use global IZHUB sub-text secondary class with component-specific overrides */
   font-family: var(--font-landing-display);
   font-weight: 400;
   font-size: clamp(1.125rem, 1.75vw, 1.5rem);
   line-height: 1.4;
   letter-spacing: 0;
   text-wrap: balance;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   color: var(--color-graphite);
   opacity: 1;
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
@@ -219,6 +259,20 @@
   margin-inline: auto;
   font-style: italic;
   quotes: none;
+}
+
+@media (max-width: 768px) {
+  .quote {
+    font-size: clamp(1rem, 2.5vw, 1.25rem);
+    line-height: 1.5;
+  }
+}
+
+@media (max-width: 480px) {
+  .quote {
+    font-size: 1rem;
+    line-height: 1.6;
+  }
 }
 
 /* ── Full-width image ── */
@@ -294,12 +348,17 @@
 }
 
 .valueDesc {
-  /* IZHUB sub-text styling */
+  /* Use global IZHUB sub-text muted class with component-specific overrides */
   font-family: var(--font-landing-display);
   font-weight: 400;
   font-size: var(--font-size-sm);
   line-height: 1.428;
   letter-spacing: 0;
+  text-wrap: balance;
+  text-rendering: optimizelegibility;
+  -webkit-font-smoothing: antialiased;
+  overflow-wrap: anywhere;
+  word-break: break-word;
   color: var(--color-graphite);
   opacity: 0.7;
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;

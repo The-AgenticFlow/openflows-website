@@ -1,0 +1,108 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Token Guide' }, { label: 'Coder Auth' }]}>
+  <h1>Token Guide: Coder Auth &amp; API Token</h1>
+
+  <p>For OAuth App creation, see <a href="/docs/getting-started/token-guide">Token Guide: OAuth App</a>.</p>
+
+  <h2>Wire the OAuth App into Coder external auth</h2>
+
+  <p>
+    Coder external auth is a first-class feature that stores a per-user GitHub token inside the Coder control plane and
+    exposes it to Coder Agents through the Chats API. OpenFlows does not manage this token directly; it relies on Coder
+    to attach the correct identity to each agent request.
+  </p>
+
+  <h3>Add the external auth provider in Coder</h3>
+
+  <ol>
+    <li>Log in to your Coder deployment as an administrator and navigate to
+      <strong>Admin → External auth → Add provider</strong>.</li>
+    <li>Select <strong>GitHub</strong> as the provider type.</li>
+    <li>Paste the <strong>Client ID</strong> and <strong>Client secret</strong> from the OAuth App you created.</li>
+    <li>Set the <strong>Authorization callback URL</strong> to exactly the value registered in the OAuth App. Coder will
+      show you this URL; copy it back to GitHub if it differs.</li>
+    <li>Save the provider. Coder will display the provider ID, which you will reference when adding a tenant.</li>
+  </ol>
+
+  <h3>Tenant authorization</h3>
+
+  <p>
+    When you run the tenant add command, OpenFlows asks Coder to link the repository to a Coder user via the configured
+    external auth provider. The tenant owner must authenticate with GitHub and approve the requested scopes. After that,
+    every agent action for that tenant uses the token stored in Coder.
+  </p>
+
+  <CodeBlock lang="bash">{`# Add a tenant and link GitHub through Coder external auth
+./scripts/prod.sh tenant owner/repo --name my-team`}</CodeBlock>
+
+  <p>
+    The command does not ask for a GitHub token. It asks Coder to resolve the identity, and Coder completes the OAuth
+    exchange. The token is stored in the Coder control plane, never in the OpenFlows database or in a worker workspace.
+  </p>
+
+  <Callout type="info" title="Why external auth beats PATs in production">
+    Personal access tokens are bound to a user account, bypass organization-level controls, and are easy to leak through
+    logs, dotfiles, or accidental commits. OAuth App tokens are scoped to the app, can be revoked centrally, carry a known
+    scope set, and can be refreshed by Coder. For an autonomous system, central control is non-negotiable.
+  </Callout>
+
+  <h2>Obtain the Coder API token</h2>
+
+  <p>
+    The OpenFlows orchestrator is a Coder user with a long-lived API token. It needs this token to provision workspaces,
+    query templates, read user details, and send messages to the Coder Chats API. The token is stored in the orchestrator
+    environment as <code>CODER_SESSION_TOKEN</code>.
+  </p>
+
+  <h3>Create a dedicated Coder user</h3>
+
+  <p>
+    Do not use your own Coder user account for the orchestrator. Create a dedicated user such as
+    <code>openflows-orchestrator</code>, assign it the appropriate roles, and issue the API token under that user. This
+    keeps audit logs unambiguous and lets you revoke the token without disabling a human account.
+  </p>
+
+  <h3>Generate the token</h3>
+
+  <ol>
+    <li>Log in to Coder as the orchestrator user.</li>
+    <li>Go to <strong>User settings → Tokens → New token</strong>.</li>
+    <li>Give the token a clear name, such as <code>openflows-orchestrator-prod</code>.</li>
+    <li>Select the scopes required for the orchestrator:
+      <ul>
+        <li><strong>Workspaces</strong>  -  create, read, update, and delete ephemeral worker workspaces.</li>
+        <li><strong>Templates</strong>  -  read templates so OpenFlows can pick the correct role-specific template.</li>
+        <li><strong>Users</strong>  -  read user and organization metadata for tenant mapping.</li>
+        <li><strong>Organizations</strong>  -  read organization membership when using org-scoped templates.</li>
+      </ul>
+    </li>
+    <li>Copy the token and store it in your secret manager. Coder shows it only once.</li>
+  </ol>
+
+  <h3>Set the token in the environment</h3>
+
+  <p>
+    Open <code>.env</code> in the OpenFlows repository and add the token. If you are running in a container orchestrator,
+    mount the token as a secret instead of putting it in an image or environment variable in version control.
+  </p>
+
+  <CodeBlock lang="bash">{`# .env
+CODER_URL=https://coder.example.com
+CODER_SESSION_TOKEN=coder_token_...`}</CodeBlock>
+
+  <Callout type="warning" title="Keep the token off the worker plane">
+    The <code>CODER_SESSION_TOKEN</code> is an orchestrator secret. It is loaded by the <code>openflows</code> binary, not
+    by the worker workspaces. Coder workspaces contain neither the Coder token nor the GitHub token. If a worker is
+    compromised, the attacker gains only the ability to run commands inside that ephemeral workspace, and the workspace is
+    destroyed when the ticket is merged.
+  </Callout>
+
+  <Callout type="info" title="Continue reading">
+    See <a href="/docs/getting-started/token-guide-testing">Test PAT &amp; Environment Config</a> for test-only GitHub PAT usage and .env configuration.
+    See <a href="/docs/getting-started/token-guide-security">Scopes, Rotation &amp; Security</a> for least-privilege scopes, rotation procedures, and security best practices.
+  </Callout>
+</DocsLayout>

@@ -1,80 +1,295 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Accordion, Callout } from '@/molecules/DocComponents/DocComponents';
 
 const FAQ_ITEMS = [
   {
-    title: 'What LLM providers does OpenFlows support?',
-    content: 'OpenFlows routes all LLM calls through the <strong>Coder AI Gateway</strong>, which natively supports Anthropic, OpenAI, Google, and Bedrock. Any OpenAI-compatible endpoint (Fireworks, Groq, Together, etc.) also works through the Gateway. Each agent can use a different provider and model, configured in <code>orchestration/agent/registry.json</code>. For air-gapped or self-hosted deployments, OpenFlows falls back to a LiteLLM proxy pointing to local or self-hosted models. API keys are managed centrally by the Gateway and never exposed inside workspaces.',
+    title: 'What is OpenFlows, and how does it relate to Coder?',
+    content: (
+      <div>
+        <p>
+          OpenFlows is a thin orchestration brain that runs on top of a self-hosted Coder deployment.
+          <strong> Coder is the only runtime.</strong> OpenFlows provides the PocketFlow graph, typed
+          Redis SharedStore contracts, and the NEXUS reconcile loop; Coder provides ephemeral
+          workspaces, control-plane AI agents, model governance, identity, audit logging, and cost
+          tracking. Worker workspaces contain zero AI software, zero LLM keys, and zero GitHub tokens.
+        </p>
+      </div>
+    ),
   },
   {
-    title: 'What is a Coder Registry module?',
-    content: 'A Coder Registry module is a pluggable package that installs a code agent CLI into each workspace. OpenFlows supports <code>claude-code</code> (Anthropic Claude Code), <code>codex</code> (OpenAI Codex CLI), <code>aider</code> (open-source AI pair programming), and more. You set a default module in <code>registry.json</code> and can override it per agent - so FORGE can use <code>claude-code</code> while LORE uses <code>aider</code>. The module must be published in your Coder deployment.',
+    title: 'What LLM providers does OpenFlows support?',
+    content: (
+      <div>
+        <p>
+          OpenFlows routes all LLM calls through the <strong>Coder AI Gateway</strong>, which natively
+          supports Anthropic, OpenAI, Google, and Bedrock. Any OpenAI-compatible endpoint (Fireworks,
+          Groq, Together, etc.) also works through the Gateway. Each agent can use a different provider
+          and model, configured in <code>orchestration/agent/registry.json</code>. For air-gapped or
+          self-hosted deployments, point the Coder AI Gateway at local or self-hosted models. API keys
+          are managed centrally by the Gateway and never exposed inside workspaces.
+        </p>
+      </div>
+    ),
   },
   {
     title: 'How does the Coder AI Gateway work?',
-    content: 'The Coder AI Gateway is the primary LLM route. It manages API keys centrally - keys never enter workspaces. When an agent makes an LLM call, it goes through the Gateway, which handles authentication, rate limiting, usage tracking, and cost attribution per user. If the Gateway is unavailable (e.g. air-gapped deployment), OpenFlows automatically falls back to a LiteLLM proxy configured in your <code>.env</code>.',
+    content: (
+      <div>
+        <p>
+          The Coder AI Gateway is the primary LLM route. It manages API keys centrally  -  keys never enter
+          workspaces. When an agent makes an LLM call, it goes through the Gateway, which handles
+          authentication, rate limiting, usage tracking, and cost attribution per user. OpenFlows does not
+          maintain a separate LiteLLM fallback; all routing is configured in Coder.
+        </p>
+      </div>
+    ),
+  },
+  {
+    title: 'What is a Coder control-plane agent, and why does OpenFlows use it?',
+    content: (
+      <div>
+        <p>
+          Coder Agents run in the Coder control plane, not inside workspaces. OpenFlows uses the{' '}
+          <strong>Coder Chats API</strong> to ask a control-plane agent to perform work, and the agent
+          connects to the worker workspace over the same secure tunnel used by IDEs. This keeps LLM keys,
+          model access, and long-lived credentials out of the workspace. The legacy in-workspace AgentAPI
+          path is not used by OpenFlows.
+        </p>
+      </div>
+    ),
   },
   {
     title: 'Can I run OpenFlows on a private repository?',
-    content: 'Yes. Set <code>GITHUB_REPOSITORY=owner/repo</code> in your <code>.env</code>. GitHub identity is handled by <strong>Coder external auth</strong> - configure a GitHub external auth provider in your Coder deployment and include the <code>git-config</code> module in your workspace templates. Each agent then acts under its logged-in Coder user\'s GitHub identity. No personal access tokens are needed. OpenFlows treats private repos identically: it clones, creates worktrees, writes code, and opens PRs the same way as public repos.',
+    content: (
+      <>
+        <p>
+          Yes. GitHub identity is handled by <strong>Coder external auth</strong>  -  configure a GitHub
+          external auth provider in your Coder deployment and include the <code>git-config</code> module
+          in your workspace templates. Each tenant then acts under its logged-in Coder user's GitHub
+          identity. No personal access tokens are stored in OpenFlows or inside workspaces. OpenFlows
+          treats private repos identically: it clones, creates worktrees, writes code, and opens PRs the
+          same way as public repos.
+        </p>
+      </>
+    ),
   },
   {
     title: 'Can I run OpenFlows air-gapped or on-premises?',
-    content: 'Yes. Coder runs in a VPC, on-prem, or fully air-gapped environment. Configure the AI Gateway to point to self-hosted or local model endpoints, or use the LiteLLM fallback proxy to route to local models. No data leaves your infrastructure. Coder provides full audit logging and SSO integration for enterprise compliance.',
+    content: (
+      <>
+        <p>
+          Yes. Coder runs in a VPC, on-prem, or fully air-gapped environment. Configure the Coder AI
+          Gateway to point to self-hosted or local model endpoints. No data leaves your infrastructure.
+          Coder provides full audit logging and SSO integration for enterprise compliance.
+        </p>
+      </>
+    ),
   },
   {
     title: 'How does SENTINEL decide whether to approve or reject code?',
-    content: 'SENTINEL evaluates against 5 criteria on every segment: correctness, security vulnerabilities, test coverage, standards compliance, and no regressions. It writes <code>segment-N-eval.md</code> after each FORGE commit and <code>final-review.md</code> at the end. SENTINEL runs in its own ephemeral Coder workspace - spawned fresh per evaluation - so it has no accumulated bias. It is read-only and cannot modify code.',
+    content: (
+      <>
+        <p>
+          SENTINEL evaluates against five criteria on every segment: correctness, security
+          vulnerabilities, test coverage, standards compliance, and no regressions. It writes{' '}
+          <code>segment-N-eval.md</code> after each FORGE commit and <code>final-review.md</code> at the
+          end. SENTINEL runs in its own ephemeral Coder workspace, spawned fresh per evaluation, so it has
+          no accumulated bias. It is read-only and cannot modify code.
+        </p>
+      </>
+    ),
   },
   {
     title: 'What happens if FORGE gets blocked or times out?',
-    content: 'FORGE writes a <code>STATUS.json</code> with <code>status: "BLOCKED"</code> and a specific, answerable question. NEXUS detects this on the next cycle and can re-assign the ticket or escalate. If a worker times out (default 30 min), the ticket is marked <code>failed</code> and retried up to 3 times before being marked <code>exhausted</code>. The ephemeral Coder workspace is torn down on failure - no lingering state. NEXUS never re-assigns an exhausted ticket.',
+    content: (
+      <>
+        <p>
+          FORGE writes a <code>STATUS.json</code> with <code>status: "BLOCKED"</code> and a specific,
+          answerable question. NEXUS detects this on the next cycle and can re-assign the ticket or
+          escalate. If a worker times out (default 30 minutes), the ticket is marked failed and retried
+          up to three times before being marked exhausted. The ephemeral Coder workspace is torn down on
+          failure  -  no lingering state. NEXUS never re-assigns an exhausted ticket.
+        </p>
+      </>
+    ),
   },
   {
     title: 'How much does OpenFlows cost to run?',
-    content: 'OpenFlows itself is free and MIT licensed. The cost is LLM API usage, tracked by the Coder AI Gateway with per-user and per-group spend controls. A typical full cycle (NEXUS + FORGE + SENTINEL + VESSEL + LORE) uses roughly 50,000-150,000 tokens depending on task complexity. Per-agent model routing via <code>registry.json</code> lets you optimize cost per role - use a top-tier model for FORGE and a lightweight model for LORE. Coder\'s usage analytics dashboard shows spend breakdown by agent and user.',
+    content: (
+      <>
+        <p>
+          OpenFlows itself is MIT licensed and free to run. The cost is LLM API usage, tracked by the
+          Coder AI Gateway with per-user and per-group spend controls. A typical full cycle (NEXUS + FORGE
+          + SENTINEL + VESSEL + LORE) uses roughly 50,000–150,000 tokens depending on task complexity.
+          Per-agent model routing via <code>registry.json</code> lets you optimize cost per role  -  for
+          example, using a top-tier model for FORGE and a lightweight model for LORE. Coder's usage
+          analytics dashboard shows spend breakdown by agent and user.
+        </p>
+      </>
+    ),
   },
   {
     title: 'Can I run multiple FORGE workers in parallel?',
-    content: 'Yes. Set <code>"instances": 4</code> for FORGE in <code>registry.json</code> to get <code>forge-1</code> through <code>forge-4</code> running in parallel. Each gets its own isolated ephemeral Coder workspace with its own Git worktree and branch. NEXUS automatically distributes tickets across idle workers. Scale is limited only by your LLM rate limits and Coder workspace capacity.',
+    content: (
+      <>
+        <p>
+          Yes. Set <code>"instances": 4</code> for FORGE in <code>registry.json</code> to provision{' '}
+          <code>forge-1</code> through <code>forge-4</code> running in parallel. Each gets its own isolated
+          ephemeral Coder workspace with its own Git worktree and branch. NEXUS automatically distributes
+          tickets across idle workers. Scale is limited only by your LLM rate limits and Coder workspace
+          capacity.
+        </p>
+      </>
+    ),
   },
   {
     title: 'Is my code sent to third parties?',
-    content: 'Code context is sent only to the LLM provider you configure in <code>registry.json</code>, routed through the Coder AI Gateway. If you use Anthropic or OpenAI, their API data policy applies. OpenFlows itself does not send code to any third-party service. For maximum privacy, run Coder air-gapped with the AI Gateway pointing to a self-hosted or local model - no data leaves your infrastructure.',
+    content: (
+      <>
+        <p>
+          Code context is sent only to the LLM provider you configure in <code>registry.json</code>, routed
+          through the Coder AI Gateway. If you use Anthropic or OpenAI, their API data policy applies.
+          OpenFlows itself does not send code to any third-party service. For maximum privacy, run Coder
+          air-gapped with the AI Gateway pointing to a self-hosted or local model  -  no data leaves your
+          infrastructure.
+        </p>
+      </>
+    ),
   },
   {
     title: 'What happens when there are merge conflicts?',
-    content: 'VESSEL detects conflicts early via GitHub\'s <code>mergeable</code> field before CI even completes. It attempts automated resolution via GitHub\'s update-branch API or a local rebase inside the Coder workspace. If it can\'t resolve automatically, it writes <code>CONFLICT_RESOLUTION.md</code> with context and re-routes the ticket back to the same FORGE worker - no new branch, no context loss. FORGE reworks the implementation and re-opens the PR.',
+    content: (
+      <>
+        <p>
+          VESSEL detects conflicts early via GitHub's <code>mergeable</code> field before CI completes. It
+          attempts automated resolution via GitHub's update-branch API or a local rebase inside the Coder
+          workspace. If it cannot resolve automatically, it writes <code>CONFLICT_RESOLUTION.md</code> with
+          context and re-routes the ticket back to the same FORGE worker  -  no new branch, no context loss.
+          FORGE reworks the implementation and re-opens the PR.
+        </p>
+      </>
+    ),
   },
   {
     title: 'What happens to workspaces after a task completes?',
-    content: 'Each FORGE worker runs inside an ephemeral Coder workspace that is provisioned when NEXUS assigns a ticket and <strong>torn down after the PR is merged</strong>. This means no lingering state, no stale credentials, and no disk bloat. If a task fails or times out, the workspace is also torn down. The next ticket gets a fresh workspace with the latest template and CLI module - clean slate every time.',
+    content: (
+      <>
+        <p>
+          Each FORGE worker runs inside an ephemeral Coder workspace that is provisioned when NEXUS assigns
+          a ticket and <strong>torn down after the PR is merged</strong>. This means no lingering state, no
+          stale credentials, and no disk bloat. If a task fails or times out, the workspace is also torn
+          down. The next ticket gets a fresh workspace with the latest template and harness  -  a clean
+          slate every time.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: 'What is the SharedStore?',
+    content: (
+      <>
+        <p>
+          The SharedStore is a typed Redis state layer that every agent reads and writes through the{' '}
+          <code>openflows-harness</code> CLI. It uses validated schemas for tickets, plans, segment
+          evaluations, CI status, and final reviews. By centralizing state in Redis rather than passing
+          free-form messages between agents, OpenFlows guarantees that every role sees a consistent,
+          strongly typed view of the ticket.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: 'How does NEXUS recover from failures?',
+    content: (
+      <>
+        <p>
+          NEXUS is the controller. It polls the SharedStore and GitHub on a regular cadence, compares the
+          observed state to the desired state, and takes action: retry a failed worker, reassign a blocked
+          ticket, or escalate to a human. Recovery is built into the flow graph, not bolted on as an
+          afterthought. Every worker writes a <code>STATUS.json</code> so NEXUS can reason about progress
+          without guessing.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: 'How do I update OpenFlows after a code change?',
+    content: (
+      <>
+        <p>
+          Run <code>./update-binaries.sh</code> from the repository root. It rebuilds the Rust binaries and
+          pushes fresh harness and orchestration artifacts to all Coder workspaces. For registry-only
+          changes (skills, models, MCP servers), updating <code>orchestration/agent/registry.json</code>
+          and running <code>./update-binaries.sh</code> is usually sufficient. See{' '}
+          <a href="/docs/guides/operations">Operations</a> for the full day-two workflow.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: 'How do I add a new skill or model?',
+    content: (
+      <>
+        <p>
+          Drop a skill directory into <code>orchestration/plugin/skills/</code> with a{' '}
+          <code>SKILL.md</code>, list it in <code>orchestration/agent/registry.json</code> under the
+          role's <code>skills</code> array, and run <code>./update-binaries.sh</code>. To add a model,
+          configure it in the Coder dashboard (AI Settings → Coder Agents → Models) and reference it in
+          <code>registry.json</code> via the <code>model</code> field. See{' '}
+          <a href="/docs/guides/extending">Extending</a> and <a href="/docs/guides/model-routing">Model Routing</a>.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: 'Where is the API reference?',
+    content: (
+      <>
+        <p>
+          OpenFlows control-plane endpoints are documented in the{' '}
+          <a href="/docs/reference/api">API Reference</a>. The primary integration surface for most
+          users, however, is the CLI (<code>bootstrap</code>, <code>tenant</code>) and the{' '}
+          <code>orchestration/agent/registry.json</code> v2 configuration file.
+        </p>
+      </>
+    ),
+  },
+  {
+    title: 'Where do I go if something is broken?',
+    content: (
+      <>
+        <p>
+          Start with the <a href="/docs/guides/troubleshooting">Troubleshooting</a> guide. It covers
+          bootstrap failures, Coder connectivity, Redis issues, stuck tickets, merge conflicts, and the
+          <code>STATUS.json</code> protocol. If you cannot resolve the issue, open a discussion on the
+          OpenFlows GitHub repository with the error message, the relevant <code>STATUS.json</code>, and
+          the Coder workspace logs.
+        </p>
+      </>
+    ),
   },
 ];
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'FAQ' }]}>
   <h1>Frequently Asked Questions</h1>
-  <p>Common questions about OpenFlows and Coder integration. Can't find what you're looking for? <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions ↗</a></p>
-  
-  <div class="callout warning">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">⚠️ Content Update in Progress</p>
-        <div class="calloutText">This page is being updated to reflect the current OpenFlows workflow. Some information may be temporarily outdated.</div>
-      </div>
-    </div>
-  </div>
-  
-  <div class="accordion">
-    {FAQ_ITEMS.map((item) => (
-      <details class="accordionItem">
-        <summary class="accordionHeader">
-          <span class="accordionTitle">{item.title}</span>
-          <span class="accordionIcon">▼</span>
-        </summary>
-        <div class="accordionBody" set:html={item.content} />
-      </details>
-    ))}
-  </div>
+  <p>
+    Common questions about OpenFlows architecture, security, and operations. For step-by-step diagnostics,
+    see the <a href="/docs/guides/troubleshooting">Troubleshooting</a> guide. Can't find what you're
+    looking for?{' '}
+    <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">Ask on GitHub Discussions ↗</a>
+  </p>
+
+  <Callout type="info" title="Key architecture facts">
+    <ul>
+      <li>Coder is the only runtime.</li>
+      <li>OpenFlows = PocketFlow + typed Redis SharedStore contracts + NEXUS reconcile.</li>
+      <li>Worker workspaces contain zero AI software, zero LLM keys, and zero GitHub tokens.</li>
+      <li>GitHub authentication is Coder external auth only.</li>
+      <li>Extension happens through <code>orchestration/agent/registry.json</code> v2.</li>
+    </ul>
+  </Callout>
+
+  <Accordion items={FAQ_ITEMS} />
 </DocsLayout>

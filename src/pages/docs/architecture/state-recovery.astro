@@ -1,0 +1,272 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DocsTable, Callout, CodeBlock } from '@/molecules/DocComponents/DocComponents';
+
+const STORE_KEYS = [
+  ['<code>tickets</code>', 'Map&lt;TicketId, TicketStatus&gt;', 'Canonical source of truth for every GitHub issue that OpenFlows has loaded. Tracks state from <code>open</code> through <code>merged</code> and terminal states.'],
+  ['<code>worker_slots</code>', 'Map&lt;WorkerId, WorkerStatus&gt;', 'One entry per configured worker. Records idle, assigned, working, suspended, or done status plus workspace and chat bindings.'],
+  ['<code>pending_prs</code>', 'Vec&lt;PrEntry&gt;', 'Pull requests that have been opened but not yet merged. VESSEL polls these entries until they are merged or closed.'],
+  ['<code>flow_recovery</code>', 'Map&lt;TicketId, RecoveryRecord&gt;', 'Detected inconsistencies, retry counts, and escalation reasons that NEXUS must resolve.'],
+  ['<code>event_ring</code>', 'RingBuffer (1000)', 'Last 1000 lifecycle events. Powers the TUI, audit correlation, and post-mortem analysis.'],
+];
+
+const TICKET_STATES = [
+  ['<code>open</code>', 'Issue discovered by NEXUS GitHub poll but not yet assigned.'],
+  ['<code>assigned</code>', 'Ticket bound to a worker slot; workspace provisioning in progress or complete.'],
+  ['<code>in_progress</code>', 'Worker has written PLAN.md and is actively implementing segments.'],
+  ['<code>review</code>', 'Segment or final review is in progress; SENTINEL workspace is active.'],
+  ['<code>pr_opened</code>', 'PR created and recorded in <code>pending_prs</code>; VESSEL monitoring.'],
+  ['<code>completed_without_pr</code>', 'Worker reports done but no PR exists; NEXUS must reconcile.'],
+  ['<code>merged</code>', 'VESSEL merged the PR; LORE documentation may still be pending.'],
+  ['<code>awaiting_human</code>', 'Escalation terminal state; worker suspended and workspace torn down.'],
+  ['<code>closed</code>', 'Issue was closed or ticket abandoned; no further action.'],
+];
+
+const ANOMALIES = [
+  ['Orphaned ticket', 'Ticket is <code>assigned</code> or <code>in_progress</code> but its worker slot is idle or missing.'],
+  ['Stale worker', 'Worker slot is <code>working</code> but the bound Coder workspace is stopped or deleted.'],
+  ['Unmerged PR', 'Entry in <code>pending_prs</code> references a PR that is still open after a configurable timeout.'],
+  ['completed_without_pr', 'Ticket status is <code>completed</code> but there is no matching entry in <code>pending_prs</code>.'],
+  ['Dangling SENTINEL workspace', 'A SENTINEL workspace is running but no active review state exists in the parent ticket.'],
+  ['Lost chat', 'A worker slot references a Coder chat that no longer exists.'],
+];
+
+const RETRY_SEMANTICS = [
+  ['Node retry', '<code>max_retries=3</code> at the PocketFlow layer. Resets the same node and re-runs prep/exec/post.'],
+  ['Decision retry', '<code>DECISION_RETRY_LIMIT=2</code> at the agent decision layer. Sends a clarified prompt to the LLM.'],
+  ['Reconcile retry', 'Exponential backoff up to 5 attempts for transient Coder or GitHub API failures.'],
+  ['Escalation', 'After all retry budgets are exhausted, NEXUS marks the ticket <code>awaiting_human</code> and suspends the worker.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'State Machine & Recovery' }]}>
+  <h1>State Machine &amp; Recovery</h1>
+  <p>
+    OpenFlows is a state-driven system. The SharedStore is the single source of truth, and every agent action is a
+    state transition. NEXUS is the only component that is allowed to reconcile the global state: on every poll
+    cycle it runs <code>reconcile()</code>, compares the SharedStore against the real world (GitHub, Coder,
+    worker heartbeats), and fixes any inconsistencies it finds.
+  </p>
+  <p>
+    This page explains that reconciliation engine in detail: the SharedStore state machine, the anomalies NEXUS
+    detects, the retry semantics for each failure mode, and the <code>AwaitingHuman</code> escalation path that
+    prevents infinite loops when automatic recovery is impossible.
+  </p>
+
+  <h2>SharedStore as the State Machine</h2>
+  <p>
+    The SharedStore is not just a cache. It is the canonical state machine of the OpenFlows pipeline. Every
+    ticket, every worker, every pending PR, and every recovery action is stored in typed Redis keys. The in-memory
+    backend used during development is a behavior-preserving mirror of the Redis implementation, so tests and
+    production share the same contract semantics.
+  </p>
+  <DocsTable headers={['Key', 'Type', 'Purpose']} rows={STORE_KEYS} />
+  <p>
+    These keys are the contract surface between agents. An agent never talks to another agent directly; it reads
+    and writes these keys. NEXUS is the coordinator because it is the only role that reads all of them. FORGE only
+    writes to its own ticket and reads the SENTINEL review state for that ticket. SENTINEL only writes review
+    files. VESSEL only reads <code>pending_prs</code> and writes <code>ticket_merged</code> events. LORE only listens
+    for merge events.
+  </p>
+
+  <h2>Ticket State Machine</h2>
+  <p>
+    A ticket is the OpenFlows representation of a GitHub issue. It moves through a well-defined state machine,
+    and each state tells NEXUS what to do next. The terminal states are <code>merged</code>,
+    <code>awaiting_human</code>, and <code>closed</code>. Every other state is recoverable.
+  </p>
+  <DocsTable headers={['State', 'Meaning']} rows={TICKET_STATES} />
+
+  <Callout type="info" title="State is the interface">
+    An agent's job is to advance the ticket state. FORGE writes a PLAN and moves the ticket to
+    <code>in_progress</code>. SENTINEL's APPROVED moves it to <code>pr_opened</code>. VESSEL's merge moves it to
+    <code>merged</code>. If an agent crashes, NEXUS reads the state and knows exactly which agent should take
+    over next.
+  </Callout>
+
+  <h2>What NEXUS reconcile() Actually Does</h2>
+  <p>
+    <code>reconcile()</code> is the heartbeat of the system. It runs on every NEXUS poll cycle, which defaults to
+    10 seconds. The cycle is deliberately simple: fetch state, compare state to reality, emit recovery actions,
+    advance tickets, and sleep. The simplicity makes it easy to reason about and easy to debug from logs.
+  </p>
+  <p>
+    The reconcile loop follows these steps in order:
+  </p>
+  <ol>
+    <li><strong>Load global state</strong>  -  read all SharedStore keys into a consistent snapshot.</li>
+    <li><strong>Sync GitHub issues</strong>  -  discover new, closed, or renamed issues; update <code>tickets</code>.</li>
+    <li><strong>Inspect worker slots</strong>  -  compare each slot's <code>working</code> state against the Coder API to detect stale workspaces.</li>
+    <li><strong>Inspect pending PRs</strong>  -  query GitHub for merge status, conflicts, and CI results.</li>
+    <li><strong>Detect anomalies</strong>  -  classify each inconsistency as one of the known anomaly types.</li>
+    <li><strong>Emit recovery actions</strong>  -  write <code>flow_recovery</code> records and dispatch follow-up actions.</li>
+    <li><strong>Assign idle workers</strong>  -  match ready tickets to idle workers and provision workspaces.</li>
+    <li><strong>Write event_ring</strong>  -  record the cycle's actions for observability.</li>
+  </ol>
+
+  <CodeBlock lang="rust">
+{`// Pseudocode of the reconcile loop
+async fn reconcile(&self) -> Result<()> {
+    let state = self.shared_store.snapshot().await?;
+    let github_issues = self.github.poll_open_issues().await?;
+    let coder_workspaces = self.coder.list_workspaces().await?;
+
+    for ticket in state.tickets.values() {
+        match ticket.status {
+            TicketStatus::Open => self.try_assign(ticket, &state).await?,
+            TicketStatus::Assigned | TicketStatus::InProgress => {
+                self.check_worker_health(ticket, &state, &coder_workspaces).await?;
+            }
+            TicketStatus::PrOpened => self.check_pr_status(ticket, &state).await?,
+            TicketStatus::CompletedWithoutPr => self.recover_pr_creation(ticket).await?,
+            TicketStatus::AwaitingHuman => self.check_human_resolution(ticket).await?,
+            _ => {}
+        }
+    }
+
+    self.event_ring.push(Event::ReconcileComplete).await?;
+    Ok(())
+}`}
+  </CodeBlock>
+
+  <h2>Anomaly Detection</h2>
+  <p>
+    NEXUS recognizes a closed set of anomalies. Each anomaly maps to a recovery action, and the recovery action is
+    idempotent. If an anomaly persists across multiple cycles, NEXUS increments a retry counter and eventually
+    escalates. This prevents the system from flapping on transient inconsistencies.
+  </p>
+  <DocsTable headers={['Anomaly', 'Detection rule']} rows={ANOMALIES} />
+
+  <h3>Orphaned Tickets</h3>
+  <p>
+    An orphaned ticket is a ticket that is supposed to be in progress but has no healthy worker attached. This
+    happens when a workspace crashes, a worker process panics, or a Coder auto-stop removes the workspace before
+    NEXUS can update the slot. The ticket is "orphaned" because its state machine says it is assigned, but the
+    worker slot is gone.
+  </p>
+  <p>
+    NEXUS handles orphans by checking whether the ticket is recoverable. If the ticket has a recent commit on its
+    branch and a clear next state, NEXUS provisions a new workspace and re-assigns the ticket to the same or a
+    different worker slot. If the ticket state is ambiguous, NEXUS writes the reason to <code>flow_recovery</code>
+    and may escalate to <code>AwaitingHuman</code>.
+  </p>
+
+  <h3>Stale Workers</h3>
+  <p>
+    A stale worker is the opposite of an orphaned ticket: the worker slot is still marked <code>working</code>, but
+    the Coder workspace it references is stopped or deleted. Stale workers are dangerous because they consume a
+    worker slot without doing work. If every slot becomes stale, the pipeline stops assigning new tickets.
+  </p>
+  <p>
+    NEXUS resolves stale workers by first querying the Coder API for the workspace status. If the workspace is
+    stopped, NEXUS can restart it and resume the ticket. If the workspace is deleted, NEXUS clears the worker slot
+    and either reassigns the ticket or escalates it. The stale-worker check is also the mechanism that enforces
+    workspace TTL: a stopped workspace after TTL expiry is treated as stale.
+  </p>
+
+  <h3>Unmerged PRs</h3>
+  <p>
+    A PR in <code>pending_prs</code> that remains open after a timeout is classified as unmerged. Timeouts can be
+    caused by long-running CI, failing checks, or a GitHub merge conflict that VESSEL has not yet resolved. NEXUS
+    delegates unmerged PRs to VESSEL, which polls the PR, checks <code>mergeable</code>, and either merges it,
+    resolves the conflict, or routes the ticket back to FORGE for rework.
+  </p>
+  <p>
+    The unmerged-PR check is the bridge between the SharedStore and GitHub reality. If a PR is merged by a human
+    while OpenFlows is offline, NEXUS detects the merged state on the next reconcile and moves the ticket to
+    <code>merged</code> without requiring a new VESSEL action.
+  </p>
+
+  <h3>completed_without_pr</h3>
+  <p>
+    <code>completed_without_pr</code> is a specific state that means the worker believes the ticket is done but no
+    PR has been recorded. This can happen when a FORGE workspace is destroyed right after the final commit but
+    before the GitHub MCP PR creation call completes. It can also happen when a human closes the issue while the
+    ticket is in progress.
+  </p>
+  <p>
+    NEXUS resolves this by looking at the branch. If the branch has commits that are not on the base branch, NEXUS
+    instructs FORGE to open the PR. If the branch is empty, NEXUS checks whether the issue is still relevant and
+    either closes the ticket or escalates. The <code>completed_without_pr</code> state is the safety net that
+    prevents "done but not delivered" tickets from silently disappearing.
+  </p>
+
+  <Callout type="warning" title="completed_without_pr is not a success state">
+    A ticket in <code>completed_without_pr</code> has not been merged. It is a reconcile flag, not a terminal
+    state. NEXUS will not stop working on it until it is either merged, closed, or escalated to human.
+  </Callout>
+
+  <h2>Retry Semantics</h2>
+  <p>
+    OpenFlows has three separate retry layers, each with its own budget and purpose. They are designed to avoid
+    both premature escalation and infinite loops. A failure that is not transient exhausts its budget and then
+    escalates.
+  </p>
+  <DocsTable headers={['Layer', 'Semantics']} rows={RETRY_SEMANTICS} />
+  <p>
+    The retry counters are stored in the <code>flow_recovery</code> key. NEXUS increments them atomically and
+    reads them back on the next cycle to decide whether to retry again or escalate. Because the SharedStore is the
+    source of truth, a NEXUS crash in the middle of a retry does not lose the retry count; the next NEXUS process
+    resumes from the same counter value.
+  </p>
+
+  <h2>Flow Recovery Record</h2>
+  <p>
+    The <code>flow_recovery</code> key holds a record per ticket. It is the scratchpad for NEXUS's healing
+    decisions. The record includes the anomaly type, the retry count, the last action taken, the expected next
+    state, and a human-readable reason. Operators can inspect these records in the TUI to understand why a ticket
+    is stuck.
+  </p>
+
+  <CodeBlock lang="json">
+{`{
+  "T-001": {
+    "anomaly": "StaleWorker",
+    "retry_count": 1,
+    "max_retries": 3,
+    "last_action": "workspace_restart",
+    "expected_next_state": "InProgress",
+    "reason": "Coder workspace was auto-stopped after TTL; restarting to resume segment 3",
+    "escalate_at": "2026-07-20T17:00:00Z"
+  }
+}`}
+  </CodeBlock>
+
+  <h2>AwaitingHuman Escalation</h2>
+  <p>
+    Not every failure is recoverable. When a ticket has exhausted all retry budgets, when the specification is
+    ambiguous, or when a security concern is raised, NEXUS moves the ticket to <code>awaiting_human</code>. This is
+    a terminal state for automation: no further agent actions are taken until a human operator intervenes.
+  </p>
+  <p>
+    The escalation is not silent. NEXUS writes a detailed reason to the SharedStore, sends a notification if
+    configured, and marks the worker slot as <code>suspended</code>. The worker's workspace is torn down, because
+    a suspended worker should not hold resources. When the human resolves the blocker, they update the ticket
+    state in the TUI or by pushing a state update, and NEXUS resumes the flow from the appropriate phase.
+  </p>
+  <p>
+    The <code>AwaitingHuman</code> path is the final safety valve. It prevents OpenFlows from making speculative
+    decisions about ambiguous requirements, security exceptions, or external dependencies. The design philosophy is
+    clear: recover automatically when possible, stop cleanly when it is not, and always tell the human why.
+  </p>
+
+  <Callout type="tip" title="Recoverable vs. human-escalated">
+    Recoverable failures are infrastructure problems: a workspace stopped, a PR not yet merged, a malformed LLM
+    response that can be retried. Human-escalated failures are semantic problems: the issue is unclear, the
+    implementation contradicts the spec, or a security review requires a human judgment call.
+  </Callout>
+
+  <h2>Observability and Operations</h2>
+  <p>
+    The reconcile loop is fully observable. Every cycle writes to <code>event_ring</code>, and every recovery action
+    updates <code>flow_recovery</code>. The TUI displays the current state of every ticket, the health of every
+    worker slot, and the count of pending anomalies. Operators can drill into a ticket to see the full history of
+    state transitions, retry counts, and escalation reasons.
+  </p>
+  <p>
+    For long-running deployments, the reconcile metrics are also exposed for external monitoring. The most
+    important metrics are: tickets assigned per cycle, reconcile duration, anomaly count, retry count per anomaly
+    type, and tickets in <code>awaiting_human</code>. A sudden spike in anomalies is usually the first sign of an
+    upstream dependency issue (Coder, GitHub, or the LLM provider).
+  </p>
+</DocsLayout>

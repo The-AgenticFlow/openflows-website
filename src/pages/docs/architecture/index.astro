@@ -3,33 +3,94 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { DocCards, Callout } from '@/molecules/DocComponents/DocComponents';
 
 const CARDS = [
-  { icon: '🏗️', title: 'System Design', desc: 'PocketFlow engine, SharedStore state machine, Coder workspace lifecycle, crash recovery, and the design principle behind it all: architecture is the product.', href: '/docs/architecture/system-design' },
-  { icon: '👥', title: 'Agent Roles', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, LORE — each agent\'s role, permissions, workspace lifecycle, CLI module, and how they interact through the SharedStore.', href: '/docs/architecture/agent-roles' },
+  { icon: '🏗️', title: 'System Design', desc: 'PocketFlow engine, SharedStore state contracts, Coder workspace lifecycle, and the design principle that architecture is the product.', href: '/docs/architecture/system-design' },
+  { icon: '👥', title: 'Agent Roles', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, LORE  -  each agent\'s role, permissions, workspace lifecycle, CLI module, and SharedStore contract.', href: '/docs/architecture/agent-roles' },
+  { icon: '♻️', title: 'Workspace Lifecycle', desc: 'Deep dive into Coder workspace provisioning, coder_module installation, Coder Agent chat binding, per-evaluation SENTINEL workspaces, and teardown on merge, failure, or timeout.', href: '/docs/architecture/workspace-lifecycle' },
+  { icon: '🛡️', title: 'State Machine & Recovery', desc: 'NEXUS reconcile(), SharedStore state machine, orphaned tickets, stale workers, unmerged PRs, retry semantics, and AwaitingHuman escalation.', href: '/docs/architecture/state-recovery' },
+  { icon: '⚡', title: 'Decision & Routing', desc: 'How agents make decisions, the five-layer crash recovery stack, the decision routing table, and the Node trait prep/exec/post flow plus action dispatch.', href: '/docs/architecture/decision-routing' },
 ];
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture' }]}>
   <h1>Architecture</h1>
+
   <p>
-    OpenFlows is built on a simple thesis: <strong>architecture is the product</strong>.
-    AI can generate code against a spec, but it can't write the spec. OpenFlows encodes
-    the engineering — the architecture, the contracts, the review gates, the recovery
-    patterns — so that agents can produce software, not just code.
+    OpenFlows is built on a simple thesis: <strong>architecture is the product</strong>. AI can generate
+    code against a spec, but it cannot write the spec. OpenFlows encodes the engineering  -  the
+    architecture, the contracts, the review gates, and the recovery patterns  -  so that agents produce
+    software, not just code.
   </p>
+
+  <h2 id="runtime-contract">Runtime Contract: Coder is the Only Runtime</h2>
   <p>
-    The system runs as two complementary layers. <strong>Coder</strong> governs
-    <em>where</em> agents run: ephemeral Terraform-defined workspaces with centrally
-    managed LLM keys, SSO identity, and full audit trails. <strong>OpenFlows</strong>
-    governs <em>how</em> agents coordinate: a directed flow graph (PocketFlow) where
-    five specialized agents communicate through a typed SharedStore, plan before
-    executing, review before merging, and self-heal on failure.
+    <strong>Coder is the only runtime.</strong> OpenFlows is a thin orchestration brain that runs on
+    top of a self-hosted Coder deployment. It does not provision its own VMs, manage its own SSH keys,
+    or host AI agents directly. Instead, it delegates every execution concern to Coder:
+  </p>
+
+  <ul>
+    <li><strong>Ephemeral workspaces</strong>  -  Terraform-defined templates, one per worker, created on demand and destroyed after use.</li>
+    <li><strong>Control-plane AI agents</strong>  -  Coder Agents live in the Coder control plane, not inside workspaces. They invoke tools by connecting to workspaces over the same secure tunnel used by IDEs.</li>
+    <li><strong>Model governance</strong>  -  the Coder AI Gateway centralizes API keys, rate limits, cost tracking, and per-user spend controls.</li>
+    <li><strong>Identity</strong>  -  SSO, RBAC, and audit logging are handled by Coder.</li>
+    <li><strong>Cost tracking</strong>  -  workspace and LLM usage are attributed per Coder user and group.</li>
+  </ul>
+
+  <p>
+    Worker workspaces have <strong>zero AI software, zero LLM keys, and zero GitHub tokens</strong>.
+    The only software they receive is a small <code>openflows-harness</code> binary that talks to Redis
+    with typed, validated schemas. This is a deliberate security boundary: if a workspace is compromised,
+    it contains no long-lived credentials and no model access.
+  </p>
+
+  <h2 id="openflows-core">OpenFlows Core</h2>
+  <p>At the center of OpenFlows are three primitives:</p>
+
+  <ul>
+    <li><strong>PocketFlow flow graph</strong>  -  a directed graph of nodes that models the engineering lifecycle: triage, planning, implementation, review, CI, merge, and documentation.</li>
+    <li><strong>Typed Redis SharedStore contracts</strong>  -  every agent reads and writes through validated schemas, giving the system a single source of truth for state, decisions, and handoffs.</li>
+    <li><strong>NEXUS reconcile loop</strong>  -  the controller that polls GitHub, assigns tickets, monitors worker health, retries failures, and escalates when human judgment is required.</li>
+  </ul>
+
+  <p>
+    OpenFlows uses the <strong>Coder Chats API</strong> (control plane) for orchestration, not the
+    in-workspace AgentAPI. This means NEXUS asks Coder to run a chat session with a control-plane
+    agent, which then connects to the worker workspace over a secure tunnel. The worker itself never
+    initiates LLM calls or outbound GitHub requests.
+  </p>
+
+  <h2 id="role-topology">Role Topology</h2>
+  <p>Five roles cooperate through the SharedStore:</p>
+
+  <ul>
+    <li><strong>nexus</strong>  -  orchestrator / controller. Owns issue polling, ticket assignment, recovery, and escalation.</li>
+    <li><strong>forge</strong>  -  builder. Writes code against an agreed contract and opens PRs.</li>
+    <li><strong>sentinel</strong>  -  reviewer. Adversarially evaluates every segment for correctness, security, tests, and standards.</li>
+    <li><strong>vessel</strong>  -  DevOps. Monitors CI, resolves merge conflicts, and squash-merges green PRs.</li>
+    <li><strong>lore</strong>  -  writer. Documents decisions, updates changelogs, and maintains project history.</li>
+  </ul>
+
+  <h2 id="extension">Extension Point</h2>
+  <p>
+    The primary extension surface is <code>orchestration/agent/registry.json</code> (v2). It declares
+    skills, MCP servers, model assignments, and instance counts per role. Adding a skill, MCP, or
+    model typically requires no Rust code change  -  only a registry entry and a
+    <code>./update-binaries.sh</code> run.
+  </p>
+
+  <h2 id="auth">Authentication</h2>
+  <p>
+    GitHub authentication is <strong>Coder external auth only</strong>. There are no personal access
+    tokens stored in OpenFlows or inside workspaces. Each tenant authenticates through Coder's OAuth
+    flow, and every Git operation is performed under that tenant's Coder identity. See the
+    <a href="/docs/getting-started/token-guide">Token Guide</a> for the exact scope requirements.
   </p>
 
   <Callout type="info" title="The flow in brief">
-    GitHub issue → NEXUS assigns ticket → Coder workspace provisioned → FORGE writes
-    PLAN.md → SENTINEL reviews plan → FORGE implements segment by segment → SENTINEL
-    evaluates each segment → FORGE opens PR → VESSEL polls CI and squash-merges →
-    LORE writes ADR and CHANGELOG → Coder workspace torn down. No human intervention.
+    GitHub issue → NEXUS assigns ticket → Coder workspace provisioned → FORGE writes PLAN.md →
+    SENTINEL reviews plan → FORGE implements segment by segment → SENTINEL evaluates each segment →
+    FORGE opens PR → VESSEL polls CI and squash-merges → LORE writes ADR and CHANGELOG → Coder
+    workspace torn down. No human intervention.
   </Callout>
 
   <DocCards cards={CARDS} />

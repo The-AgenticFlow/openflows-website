@@ -1,0 +1,93 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Troubleshooting' }, { label: 'Connectivity & Auth' }]}>
+  <h1>Connectivity &amp; Auth Issues</h1>
+
+  <p>
+    For common failures and diagnostics overview, see the <a href="/docs/guides/troubleshooting">Troubleshooting</a> page.
+    For worker/pipeline issues, see <a href="/docs/guides/troubleshooting-workers">Worker &amp; Pipeline Issues</a>.
+  </p>
+
+  <h2>Coder Connectivity Issues</h2>
+
+  <p>
+    Coder is the only runtime. If the orchestrator cannot reach Coder, it cannot provision
+    worker workspaces, and the pipeline stalls. Most connectivity issues are network,
+    token, or permission problems.
+  </p>
+
+  <DocsTable headers={['Command', 'Purpose']} rows={[
+    ['<code>coder ping</code>', 'Check basic connectivity from orchestrator to Coder.'],
+    ['<code>coder ws ls</code>', 'List Coder workspaces to see if provisioning succeeded.'],
+    ['<code>coder logs workspace-name</code>', 'Read build logs for a failed workspace provision.'],
+    ['<code>coder ssh workspace-name</code>', 'Open shell on worker workspace to inspect state.'],
+    ['<code>coder tokens list</code>', 'Verify NEXUS service account token is valid and not expired.'],
+  ]} />
+
+  <CodeBlock lang="bash">{`# From NEXUS workspace, verify Coder API reachable
+curl -H "Authorization: Bearer $CODER_NEXUS_TOKEN" \
+  $CODER_URL/api/v2/users/me
+
+# If this fails, token is invalid or network path is broken`}</CodeBlock>
+
+  <Callout type="warning" title="Token expiry is silent">
+    A Coder API token may be valid enough to open a connection but return 401 on every
+    request. The controller log will show repeated Coder API errors. Do not assume
+    connectivity is fine just because the NEXUS workspace is running; verify the token with
+    <code>coder tokens list</code> or <code>curl</code>.
+  </Callout>
+
+  <h2>Token Problems</h2>
+
+  <p>
+    OpenFlows deliberately does not store long-lived GitHub tokens or LLM keys in worker
+    workspaces. The only tokens the operator must manage are the Coder API token for the NEXUS
+    service account and, optionally, the LiteLLM fallback key. GitHub identity is handled by
+    Coder external auth.
+  </p>
+
+  <DocsTable headers={['Variable', 'Meaning']} rows={[
+    ['<code>CODER_NEXUS_TOKEN</code>', 'Coder API token for NEXUS service account. Stored in orchestrator env.'],
+    ['<code>CODER_SESSION_TOKEN</code>', 'Human operator token for Coder CLI. Not used by orchestrator.'],
+    ['<code>GITHUB_TOKEN</code>', 'Deprecated. GitHub identity via Coder external auth only.'],
+    ['<code>LITELLM_API_KEY</code>', 'LiteLLM fallback key. Only needed if Coder AI Gateway unavailable.'],
+  ]} />
+
+  <h3>Rotating Coder Tokens</h3>
+
+  <CodeBlock lang="bash">{`coder tokens create --name nexus-my-team --user nexus-my-team
+
+# Copy new token into NEXUS workspace environment
+coder ssh openflows-nexus-my-team
+export CODER_NEXUS_TOKEN=sk-...
+
+openflows controller restart --tenant my-team`}</CodeBlock>
+
+  <h2>GitHub External Auth</h2>
+
+  <p>
+    GitHub identity is provided by Coder external auth only. There are no GitHub PATs inside
+    OpenFlows. If workers cannot clone, push, or open PRs, the external auth link is the
+    first thing to check.
+  </p>
+
+  <CodeBlock lang="bash">{`# Check current user's external auth providers
+coder external-auth list
+
+# If GitHub missing or expired, re-link it
+coder external-auth login github
+
+# Verify git access from worker workspace
+coder ssh forge-1-my-team
+git remote -v
+git fetch origin`}</CodeBlock>
+
+  <Callout type="info" title="External auth is per-user, not per-workspace">
+    The GitHub identity belongs to the Coder user that owns the workspace. If the NEXUS
+    service account owns the controller workspace, it needs its own GitHub external auth
+    link. If a human user owns a worker workspace, that user needs a link.
+  </Callout>
+</DocsLayout>

@@ -1,0 +1,289 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DocsTable, Callout, CodeBlock } from '@/molecules/DocComponents/DocComponents';
+
+const LAYERS = [
+  ['1. Decision Tool', 'Primary path. The LLM calls <code>submit_decision</code> with structured arguments; reasoning is in the tool text, the decision is in the tool parameters. No parsing is required.'],
+  ['2. Enhanced Extraction', 'Fallback path. Seven parsing strategies clean and extract a decision from a text-only response: clean JSON, fenced markdown blocks, last JSON object, truncated repair, line-by-line, loose key extraction, and pattern matching.'],
+  ['3. Retry', 'If extraction fails, <code>recover_decision()</code> sends a clarified prompt up to <code>DECISION_RETRY_LIMIT=2</code> times.'],
+  ['4. Safe Default', 'If retry is exhausted, the harness returns a <code>no_work</code> AgentDecision with a <code>[SELF-HEAL]</code> prefix. The agent skips this cycle and lets NEXUS reconcile.'],
+  ['5. Flow Recovery', 'If the node itself fails (panic, I/O error, unhandled exception), <code>Flow::run()</code> retries the node up to <code>max_retries=3</code> and then routes to the <code>node_error</code> or <code>awaiting_human</code> handler.'],
+];
+
+const ROUTING_TABLE = [
+  ['no_work', 'Agent has no actionable task for this cycle. May carry a <code>[SELF-HEAL]</code> reason. Flow returns to NEXUS, which reconciles and retries.'],
+  ['plan', 'FORGE creates or updates <code>PLAN.md</code> with a segment breakdown. Advances ticket to <code>in_progress</code>.'],
+  ['implement', 'FORGE implements the next segment from the active plan. Writes code, commits, and updates <code>WORKLOG.md</code>.'],
+  ['review_request', 'FORGE asks SENTINEL to evaluate the current segment or final plan. NEXUS provisions a SENTINEL workspace.'],
+  ['pr_open', 'FORGE opens a pull request via GitHub MCP after final APPROVED. Writes <code>STATUS.json</code> and <code>pending_prs</code>.'],
+  ['merge', 'VESSEL polls CI and squash-merges the PR. Emits <code>ticket_merged</code> and moves ticket to <code>merged</code>.'],
+  ['document', 'LORE writes ADR and CHANGELOG entries after a merge event. Does not block the pipeline.'],
+  ['awaiting_human', 'Escalation decision. NEXUS suspends the worker and tears down the workspace.'],
+];
+
+const NODE_TRAIT = [
+  ['<code>prep</code>', 'Prepare the node context. Reads the SharedStore, loads skills, and assembles the prompt.'],
+  ['<code>exec</code>', 'Execute the action. Makes LLM calls, runs commands, writes files, or opens PRs.'],
+  ['<code>post</code>', 'Post-process the result. Validates the decision, writes state updates, and dispatches the next action.'],
+];
+
+const ACTIONS = [
+  ['<code>WriteFile</code>', 'Write or overwrite a file in the workspace. Validates against path allow-list.'],
+  ['<code>RunCommand</code>', 'Execute a bash command in the workspace. Routes through CommandGate for dangerous commands.'],
+  ['<code>SubmitDecision</code>', 'Structured tool call that returns the agent&#39;s next decision.'],
+  ['<code>OpenPr</code>', 'Create a GitHub pull request via MCP. Records the PR in <code>pending_prs</code>.'],
+  ['<code>MergePr</code>', 'Squash-merge a PR. Only VESSEL is allowed to emit this action.'],
+  ['<code>RequestReview</code>', 'Trigger a SENTINEL evaluation for a plan or segment.'],
+  ['<code>Escalate</code>', 'Move the ticket to <code>awaiting_human</code> with a reason.'],
+  ['<code>NoOp</code>', 'Do nothing this cycle. Used for self-healing and idle states.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Decision & Routing' }]}>
+  <h1>Decision &amp; Routing</h1>
+  <p>
+    OpenFlows is a directed graph of decisions. Each agent node decides what to do next, and the PocketFlow engine
+    routes that decision to the correct handler. The decision layer is the boundary between the unreliable world
+    of LLM outputs and the deterministic world of state machines. It is also where most of the system's
+    self-healing lives.
+  </p>
+  <p>
+    This page explains how agents make decisions, how malformed decisions are recovered, how the routing table
+    maps a decision to the next action, and how the Node trait's prep/exec/post phases work together with the
+    action dispatcher to advance the pipeline.
+  </p>
+
+  <h2>How Agents Make Decisions</h2>
+  <p>
+    An agent does not "run to completion." It runs in cycles. Each cycle, the agent's harness reads the current
+    ticket state from the SharedStore, assembles a prompt with the right context, and asks the LLM to choose the
+    next action. The LLM's answer is expected to be a structured decision object, not free-form code. That object
+    is validated, dispatched, and the cycle repeats.
+  </p>
+  <p>
+    The decision object contains three things: the decision type (e.g. <code>plan</code>, <code>implement</code>,
+    <code>pr_open</code>), the reasoning string, and a payload of parameters specific to the decision. The reasoning
+    is stored for audit; the decision type and payload determine which action is dispatched. This separation makes
+    the agent's intent explicit and auditable.
+  </p>
+
+  <CodeBlock lang="json">
+{`{
+  "decision": "implement",
+  "reasoning": "Segment 2 of the plan is to add Redis connection pooling. The current state shows the previous segment was approved, so I will implement this segment next.",
+  "payload": {
+    "segment_id": 2,
+    "segment_name": "Add Redis connection pooling",
+    "files": ["src/store/redis.rs", "src/config.rs"]
+  }
+}`}
+  </CodeBlock>
+
+  <h2 id="five-layer">The Five-Layer Crash Recovery Stack</h2>
+  <p>
+    LLMs are unreliable. They return malformed JSON, ignore instructions, hallucinate functions, or produce
+    text that is almost right but not quite. OpenFlows does not expect perfect LLM behavior; it expects failure and
+    has a five-layer recovery stack to handle it. Each layer is a fallback for the one above it.
+  </p>
+  <DocsTable headers={['Layer', 'How it works']} rows={LAYERS} />
+
+  <h3>Layer 1: Decision Tool</h3>
+  <p>
+    The primary path is for the LLM to call a tool named <code>submit_decision</code>. The tool schema is defined
+    in the agent's prompt, and the harness registers the tool with the LLM provider. When the LLM calls the tool,
+    the arguments are delivered in a structured format that the harness can validate directly. There is no regex
+    parsing, no JSON extraction, and no guessing. This works across all providers that support function calling.
+  </p>
+  <p>
+    The tool schema includes an enum of allowed decision types and a typed payload object. The harness validates
+    the payload against the schema before dispatching. If the LLM tries to call an unknown decision type or passes
+    an invalid payload, the tool call is rejected and the fallback path begins.
+  </p>
+
+  <h3>Layer 2: Enhanced Extraction</h3>
+  <p>
+    Some providers or models do not reliably call tools, especially when context is long or the prompt is
+    adversarial. If the LLM returns plain text instead of a tool call, the harness runs a sequence of seven
+    fallback parsing strategies to extract a valid decision object.
+  </p>
+  <ol>
+    <li><strong>Clean JSON</strong>  -  try to parse the entire response as a JSON object.</li>
+    <li><strong>Markdown fenced block</strong>  -  extract JSON from <code>```json</code> blocks.</li>
+    <li><strong>Last JSON object</strong>  -  find the last <code>{ }</code> block in the response.</li>
+    <li><strong>Truncated repair</strong>  -  detect unterminated strings or missing braces and repair them heuristically.</li>
+    <li><strong>Line-by-line</strong>  -  parse each line as a key-value pair and assemble a decision object.</li>
+    <li><strong>Loose key extraction</strong>  -  search for known keys like <code>decision</code>, <code>payload</code>, <code>reasoning</code> anywhere in the text.</li>
+    <li><strong>Pattern matching</strong>  -  match against a set of known decision phrases and map them to safe decisions.</li>
+  </ol>
+  <p>
+    The strategies are ordered from most reliable to least reliable. If any strategy produces a structurally valid
+    decision object, the harness uses it. If none do, the next layer is triggered.
+  </p>
+
+  <h3>Layer 3: Retry</h3>
+  <p>
+    When the decision cannot be extracted, the harness calls <code>recover_decision()</code>. This sends a
+    clarified prompt to the LLM that includes the original request, the malformed response, and a reminder to use
+    the <code>submit_decision</code> tool. The retry counter is <code>DECISION_RETRY_LIMIT=2</code>, meaning the
+    harness tries the original call plus two retries before giving up.
+  </p>
+  <p>
+    The retry counter is stored in the SharedStore per ticket, so it survives NEXUS restarts. The clarified prompt
+    is progressively more explicit: the first retry reminds the LLM of the tool schema, the second retry includes a
+    worked example of a valid decision.
+  </p>
+
+  <h3>Layer 4: Safe Default</h3>
+  <p>
+    If the LLM still cannot produce a valid decision after all retries, the harness returns a safe default:
+    <code>no_work</code> with a <code>[SELF-HEAL]</code> prefix in the reasoning. This is not a failure; it is a
+    deliberate pause. The agent tells the flow, "I could not decide this cycle, so I am doing nothing and letting
+    NEXUS reconcile."
+  </p>
+  <p>
+    The <code>[SELF-HEAL]</code> prefix is important because it signals to NEXUS that the agent is not blocked,
+    it is just taking a break. NEXUS will try the same node again on a future cycle, and the global state will
+    have a chance to change (for example, a SENTINEL review might complete and provide new context). This prevents
+    a single bad LLM response from crashing the entire ticket.
+  </p>
+
+  <Callout type="warning" title="Safe default is not silent failure">
+    The <code>no_work</code> safe default is logged, counted in metrics, and surfaced in the TUI. It is a controlled
+    pause, not a hidden failure. If a ticket emits too many self-heal events, NEXUS escalates it to
+    <code>awaiting_human</code> because the LLM is clearly unable to make progress.
+  </Callout>
+
+  <h3>Layer 5: Flow Recovery</h3>
+  <p>
+    The final layer handles failures that are not about LLM output format. If a node panics, if a command fails, if
+    a file cannot be written, or if the workspace loses connectivity, the PocketFlow engine catches the error and
+    retries the node up to <code>max_retries=3</code>. After the retries are exhausted, the engine routes to the
+    <code>node_error</code> handler, which writes the error to <code>flow_recovery</code> and either retries the whole
+    flow at a coarser level or routes to the <code>awaiting_human</code> handler.
+  </p>
+
+  <h2 id="routing-table">Decision Routing Table</h2>
+  <p>
+    The routing table is the mapping from a decision type to a pipeline action. It is implemented in the action
+    dispatcher, which is shared by all agents. The dispatcher validates the decision, checks role-based permissions,
+    and executes the action. Every decision type is handled, even if the handler is just to log and escalate.
+  </p>
+  <DocsTable headers={['Decision', 'Route / handler']} rows={ROUTING_TABLE} />
+  <p>
+    The dispatcher is role-aware. FORGE is not allowed to emit <code>MergePr</code>; VESSEL is not allowed to emit
+    <code>plan</code>. If a decision type violates the role contract, the dispatcher rejects it and triggers the
+    recovery stack. This enforces the separation of responsibilities even if an LLM hallucinates a decision.
+  </p>
+
+  <h2 id="node-trait">The Node Trait: Prep / Exec / Post</h2>
+  <p>
+    Every agent in the flow graph is implemented as a node that satisfies the <code>Node</code> trait. The trait has
+    three methods: <code>prep</code>, <code>exec</code>, and <code>post</code>. This structure separates the concerns
+    of context assembly, execution, and state validation, making nodes easy to test and easy to debug.
+  </p>
+  <DocsTable headers={['Phase', 'Responsibility']} rows={NODE_TRAIT} />
+
+  <h3>Prep</h3>
+  <p>
+    <code>prep</code> is the context-building phase. It reads the SharedStore, loads the agent's skills and standards
+    files, and assembles the prompt that will be sent to the LLM. It does not make any side effects. It returns a
+    <code>PrepResult</code> that contains the prompt context and the expected decision schema. If prep fails, the
+    node is not executed; the failure is usually due to missing state or a corrupted skill file.
+  </p>
+
+  <h3>Exec</h3>
+  <p>
+    <code>exec</code> is the execution phase. It sends the prompt to the LLM through the Coder AI Gateway,
+    receives the response, and runs the decision recovery stack if needed. The result is a validated
+    <code>AgentDecision</code>. If exec returns a <code>no_work</code> safe default, the post phase is still run
+    so that the agent can write a status update and NEXUS can reconcile.
+  </p>
+
+  <h3>Post</h3>
+  <p>
+    <code>post</code> is the state-commit phase. It takes the validated decision and dispatches the corresponding
+    action. This is where files are written, commands are run, PRs are opened, and SharedStore keys are updated. The
+    post phase is also responsible for writing <code>STATUS.json</code> with the current ticket status. If post fails,
+    the action may have partially applied; NEXUS reconcile detects this and heals the partial state on the next cycle.
+  </p>
+
+  <CodeBlock lang="rust">
+{`// Pseudocode of the Node trait
+#[async_trait]
+trait Node {
+    async fn prep(&self, ctx: &NodeContext, store: &SharedStore) -> Result<PrepResult>;
+    async fn exec(&self, ctx: &NodeContext, prep: PrepResult) -> Result<AgentDecision>;
+    async fn post(&self, ctx: &NodeContext, store: &SharedStore, decision: AgentDecision) -> Result<()>;
+}
+
+impl Node for ForgeNode {
+    async fn prep(&self, ctx, store) -> Result<PrepResult> {
+        let ticket = store.get_ticket(&ctx.ticket_id).await?;
+        let plan = read_file("PLAN.md")?;
+        let skills = load_skills("forge")?;
+        let prompt = build_prompt(ticket, plan, skills);
+        Ok(PrepResult { prompt, schema: decision_schema_for(ticket.status) })
+    }
+
+    async fn exec(&self, ctx, prep) -> Result<AgentDecision> {
+        let raw = llm_call(ctx.model, &prep.prompt, &prep.schema).await?;
+        recover_decision(raw, &prep.schema).await
+    }
+
+    async fn post(&self, ctx, store, decision) -> Result<()> {
+        dispatch_action(ctx.role, decision, store).await?;
+        write_status_json(ctx.ticket_id, decision).await?;
+        Ok(())
+    }
+}`}
+  </CodeBlock>
+
+  <h2 id="action-dispatch">Action Dispatch</h2>
+  <p>
+    The action dispatcher is the bridge between a decision and the real world. It takes a validated
+    <code>AgentDecision</code>, looks up the action type, checks that the role is authorized to emit it, and then
+    executes the action. The dispatcher is the single place where role permissions are enforced, which makes it easy
+    to audit and hard to bypass.
+  </p>
+  <DocsTable headers={['Action', 'Effect']} rows={ACTIONS} />
+  <p>
+    Dangerous actions are routed through the CommandGate. For example, a <code>RunCommand</code> that deletes files
+    or modifies system state is paused and sent to NEXUS for approval before execution. Safe commands, such as
+    running tests or linting, execute immediately. The allow-list is defined in the agent's registry configuration
+    and can be customized per deployment.
+  </p>
+
+  <h2>Putting It Together: A Decision Cycle</h2>
+  <p>
+    A full decision cycle looks like this:
+  </p>
+  <ol>
+    <li>NEXUS assigns a ticket to a FORGE worker and provisions a Coder workspace.</li>
+    <li>The FORGE harness enters the first node and calls <code>prep</code>, which loads the issue and assembles the planning prompt.</li>
+    <li><code>exec</code> sends the prompt to the LLM and expects a <code>submit_decision</code> tool call with decision <code>plan</code>.</li>
+    <li>If the LLM returns malformed JSON, enhanced extraction tries the seven strategies.</li>
+    <li>If extraction fails, <code>recover_decision()</code> retries up to two times.</li>
+    <li>If retry fails, the safe default <code>no_work [SELF-HEAL]</code> is returned.</li>
+    <li><code>post</code> dispatches the action. For a <code>plan</code> decision, it writes <code>PLAN.md</code> and updates the ticket state.</li>
+    <li>If the node fails, <code>Flow::run()</code> retries up to three times before escalating.</li>
+    <li>NEXUS reads the new state on the next reconcile cycle and routes the ticket to the next node.</li>
+  </ol>
+
+  <Callout type="tip" title="Decisions are state transitions">
+    Every decision is a request to change the SharedStore state. The action dispatcher applies the change
+    atomically where possible, and NEXUS reconcile cleans up any partial changes. This is why the system is robust
+    to LLM mistakes: a bad decision is caught before it can corrupt the state.
+  </Callout>
+
+  <h2>Testing and Observability</h2>
+  <p>
+    The decision layer is heavily tested. Unit tests cover each parsing strategy with a corpus of malformed LLM
+    outputs. Integration tests simulate the full decision cycle against a fake LLM and a SharedStore. The most
+    important property to test is that a bad LLM response never produces an invalid state transition.
+  </p>
+  <p>
+    In production, the decision layer emits metrics for each layer: tool-call success rate, extraction success
+    rate by strategy, retry count distribution, and safe-default frequency. A spike in safe-default events is a
+    leading indicator that the prompt, model, or provider needs attention.
+  </p>
+</DocsLayout>

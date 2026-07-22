@@ -30,7 +30,7 @@ export default function IntegrationsGrid() {
           </h2>
           <p className={styles.subtitle}>
             OpenFlows orchestrates on top of Coder and connects to the tools your
-            team already uses — from Git providers and cloud platforms to the AI
+            team already uses  -  from Git providers and cloud platforms to the AI
             models that power each agent. Everything stays inside your governed
             environment.
           </p>

@@ -1,3 +1,4 @@
+import { useState } from 'react'
 import ReactMarkdown from 'react-markdown'
 import remarkGfm from 'remark-gfm'
 import { Prism as SyntaxHighlighter } from 'react-syntax-highlighter'
@@ -56,49 +57,68 @@ function getLanguageLabel(lang) {
   return languageLabels[normalized] || lang.charAt(0).toUpperCase() + lang.slice(1)
 }
 
+function CodeBlockComponent({ node, inline, className, children, ...props }) {
+  const match = /language-(\w+)/.exec(className || '')
+  const language = match ? match[1] : ''
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    const codeText = String(children).replace(/\n$/, '').trim()
+    navigator.clipboard.writeText(codeText)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 1800)
+  }
+
+  if (!inline && language) {
+    const codeContent = String(children).replace(/\n$/, '')
+
+    return (
+      <div className={styles.codeBlockWrapper}>
+        <div className={styles.codeBlockHeader}>
+          <span className={styles.codeBlockLanguage}>
+            {getLanguageLabel(language)}
+          </span>
+          <button
+            className={styles.copyBtn}
+            onClick={handleCopy}
+            aria-label="Copy code"
+          >
+            {copied ? 'Copied!' : 'Copy'}
+          </button>
+        </div>
+        <SyntaxHighlighter
+          style={vscDarkPlus}
+          language={language}
+          PreTag="div"
+          className={styles.syntaxHighlighter}
+          customStyle={{
+            margin: 0,
+            borderRadius: '0 0 0.5rem 0.5rem',
+            fontSize: '0.9rem',
+            lineHeight: '1.65',
+          }}
+          {...props}
+        >
+          {codeContent}
+        </SyntaxHighlighter>
+      </div>
+    )
+  }
+
+  return (
+    <code className={className} {...props}>
+      {children}
+    </code>
+  )
+}
+
 export default function MarkdownRenderer({ children, className = '' }) {
   return (
     <div className={`${styles.markdown} ${className}`}>
       <ReactMarkdown
         remarkPlugins={[remarkGfm]}
         components={{
-          code({ node, inline, className, children, ...props }) {
-            const match = /language-(\w+)/.exec(className || '')
-            const language = match ? match[1] : ''
-
-            if (!inline && language) {
-              return (
-                <div className={styles.codeBlockWrapper}>
-                  <div className={styles.codeBlockHeader}>
-                    <span className={styles.codeBlockLanguage}>
-                      {getLanguageLabel(language)}
-                    </span>
-                  </div>
-                  <SyntaxHighlighter
-                    style={vscDarkPlus}
-                    language={language}
-                    PreTag="div"
-                    className={styles.syntaxHighlighter}
-                    customStyle={{
-                      margin: 0,
-                      borderRadius: '0 0 0.5rem 0.5rem',
-                      fontSize: '0.9rem',
-                      lineHeight: '1.65',
-                    }}
-                    {...props}
-                  >
-                    {String(children).replace(/\n$/, '')}
-                  </SyntaxHighlighter>
-                </div>
-              )
-            }
-
-            return (
-              <code className={className} {...props}>
-                {children}
-              </code>
-            )
-          },
+          code: CodeBlockComponent,
         }}
       >
         {children}

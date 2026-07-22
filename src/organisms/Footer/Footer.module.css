@@ -21,7 +21,7 @@
   margin-inline: auto;
 }
 
-/* ── Link columns — IZHUB grid: 1.3fr 1fr 1fr 1fr on lg ── */
+/* ── Link columns  -  IZHUB grid: 1.3fr 1fr 1fr 1fr on lg ── */
 .columns {
   display: grid;
   gap: 3.5rem 4rem;
@@ -40,7 +40,7 @@
   }
 }
 
-/* ── Brand column — IZHUB style ── */
+/* ── Brand column  -  IZHUB style ── */
 .brandColumn {
   max-width: 20rem;
 }
@@ -62,7 +62,7 @@
   margin-top: 1.25rem;
 }
 
-/* ── Giant background text — IZHUB style ── */
+/* ── Giant background text  -  IZHUB style ── */
 .bgText {
   position: absolute;
   inset-inline: 0;

@@ -1,19 +1,20 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, DocCards, Callout, StepHeading, PrereqCard, FeedbackFooter } from '@/molecules/DocComponents/DocComponents';
 
 const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started' }];
 ---
 
 <DocsLayout breadcrumbs={breadcrumbs}>
-  <!-- Hero header -->
   <header class="docHero">
     <p class="docEyebrow">Quick Start Guide</p>
     <h1>Getting Started</h1>
     <p class="docLead">
-      OpenFlows orchestrates autonomous AI agents that discover issues, write code, review it, 
-      and merge pull requests without human intervention. Give it a GitHub repo and some issues, 
-      and OpenFlows coordinates a team of AI agents that plan the work, write the code, review it 
-      adversarially, and ship reviewed PRs — without you writing a single line of code.
+      OpenFlows is a thin orchestration layer that runs on top of a self-hosted Coder deployment.
+      It turns a declared PocketFlow graph, typed Redis SharedStore contracts, and a reconcile loop
+      into an autonomous engineering team: issue detection, planning, implementation, adversarial
+      review, CI verification, and merge  -  all driven by NEXUS and executed by ephemeral Coder
+      workspaces. No AI software, no LLM keys, and no GitHub tokens live inside a worker workspace.
     </p>
     <div class="docMeta">
       <span class="docMetaItem">
@@ -27,348 +28,261 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
     </div>
   </header>
 
-  <div class="callout warning">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">⚠️ Content Update in Progress</p>
-        <div class="calloutText">This page is being updated to reflect the current OpenFlows workflow. Some information may be temporarily outdated.</div>
-      </div>
-    </div>
-  </div>
+  <Callout type="tip" title="Why architecture-first">
+    AI can generate code against a spec, but it cannot write the spec. As models make boilerplate
+    cheap, the real difficulty shifts upward  -  into architectural thinking, typed contracts, and
+    security-aware execution. OpenFlows encodes that discipline: a declared PocketFlow graph, typed
+    SharedStore state contracts, an explicit routing table, and recovery built into every step.
+    <strong>Engineering goes in; software comes out.</strong>
+  </Callout>
 
-  <div class="callout tip">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">Why architecture-first</p>
-        <div class="calloutText">
-          AI can generate code against a spec, but it can't write the spec. As models make boilerplate cheap, 
-          the real difficulty shifts <em>up the stack</em> — into architectural thinking, product judgment, 
-          and security awareness. OpenFlows encodes that discipline: a declared flow graph (PocketFlow), 
-          typed SharedStore state contracts, an explicit routing table, and recovery built into every step. 
-          <strong>Engineering goes in, software comes out.</strong>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Step 1: Prerequisites -->
-  <h2 class="stepHeading" id="prerequisites">
-    <span class="stepNumber">1</span>
-    Prerequisites
-  </h2>
+  <StepHeading step="1" id="prerequisites">Prerequisites</StepHeading>
   <div class="prereqGrid">
-    <div class="prereqCard">
-      <h3>Docker 24+</h3>
-      <p>Required for running the Docker Compose stack with Coder, Redis, and OpenFlows.</p>
-      <a href="https://docs.docker.com/get-docker/" target="_blank" rel="noopener noreferrer">Get Docker</a>
-    </div>
-    <div class="prereqCard">
-      <h3>Git 2.x+</h3>
-      <p>Required for cloning repositories and version control operations.</p>
-      <a href="https://git-scm.com/downloads" target="_blank" rel="noopener noreferrer">Get Git</a>
-    </div>
-    <div class="prereqCard">
-      <h3>GitHub OAuth App</h3>
-      <p>Required for Coder external authentication. Create a GitHub OAuth App for your organization.</p>
-      <a href="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app" target="_blank" rel="noopener noreferrer">Create OAuth App</a>
-    </div>
-    <div class="prereqCard">
-      <h3>LLM Provider</h3>
-      <p>At least one LLM provider configured in the Coder dashboard (AI Settings → Coder Agents → Models).</p>
-      <p>Configure in Coder dashboard</p>
-    </div>
+    <PrereqCard
+      name="Docker 24+"
+      detail="Required for running the Docker Compose stack with Coder, Redis, and OpenFlows."
+      installUrl="https://docs.docker.com/get-docker/"
+      installText="Get Docker"
+    />
+    <PrereqCard
+      name="Git 2.x+"
+      detail="Required for cloning repositories and version control operations."
+      installUrl="https://git-scm.com/downloads"
+      installText="Get Git"
+    />
+    <PrereqCard
+      name="GitHub OAuth App"
+      detail="Required for Coder external authentication. Create a GitHub OAuth App for your organization."
+      installUrl="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"
+      installText="Create OAuth App"
+    />
+    <PrereqCard
+      name="LLM Provider"
+      detail="At least one model configured in the Coder dashboard (AI Settings → Coder Agents → Models)."
+    />
   </div>
 
-  <div class="callout info">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">Coder governs where agents run — OpenFlows governs how they coordinate</p>
-        <div class="calloutText">
-          The integration is deliberate and asymmetrical:
-          <ul>
-            <li><strong>Coder</strong> provides the governed environment: ephemeral workspaces, control-plane AI agents, model governance, identity, audit logging, cost tracking. The workspace has zero AI software and zero LLM keys.</li>
-            <li><strong>OpenFlows</strong> provides the brain: the flow graph, typed SharedStore contracts, the Node trait's <code>prep → exec → post</code> separation, and the FORGE↔SENTINEL planning cycle.</li>
-          </ul>
-          Coder Agents run in the <strong>control plane</strong> (not in workspaces). They execute tool calls by connecting to workspaces over the same secure tunnel as IDEs.
-        </div>
-      </div>
-    </div>
-  </div>
+  <Callout type="info" title="Coder governs where agents run; OpenFlows governs how they coordinate">
+    The integration is deliberate and asymmetrical:
+    <ul>
+      <li><strong>Coder</strong> is the only runtime. It provides ephemeral workspaces, control-plane
+      AI agents, model governance, identity, audit logging, and cost tracking. Worker workspaces
+      contain zero AI software, zero LLM keys, and zero GitHub tokens.</li>
+      <li><strong>OpenFlows</strong> is the orchestration brain. It provides the PocketFlow graph,
+      typed SharedStore contracts, the NEXUS reconcile loop, and the FORGE↔SENTINEL planning cycle.</li>
+    </ul>
+    Coder Agents run in the <strong>control plane</strong>, not in workspaces. They invoke tools by
+    connecting to workspaces over the same secure tunnel used by IDEs.
+  </Callout>
 
-  <h2 class="stepHeading" id="install">
-    <span class="stepNumber">2</span>
-    Quick Start Installation
-  </h2>
-  <p>The recommended setup uses Docker Compose to bring up the entire OpenFlows stack including Coder, Redis, and the orchestration engine.</p>
+  <StepHeading step="2" id="install">Quick Start Installation</StepHeading>
+  <p>
+    The only supported path is Docker Compose. Clone the repository, copy the environment template,
+    start the stack, bootstrap OpenFlows, and add your first tenant. The entire sequence takes a few
+    minutes.
+  </p>
 
-  <div class="install-code-wrapper">
-    <div class="codeBlock install-code">
-      <div class="codeHeader">
-        <span class="codeLang">bash</span>
-        <button class="copyBtn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-          </svg>
-          Copy
-        </button>
-      </div>
-      <pre><code>git clone https://github.com/The-AgenticFlow/openflows.git
+  <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/openflows.git
 cd openflows
-cp .env.example .env   # edit .env with your GitHub OAuth app credentials
+cp .env.example .env   # Edit .env: set GITHUB_TOKEN but leave CODER_SESSION_TOKEN empty
 
-# 1. Start the infrastructure stack
-docker compose up -d
+# 1. One-time Bootstrap (creates admin user, pushes templates, verifies LLM/GitHub auth)
+./scripts/prod.sh bootstrap
 
-# 2. Bootstrap OpenFlows (creates admin, pushes templates, verifies config)
-cargo run -p openflows --bin openflows -- bootstrap
+# 2. Start the Controller (resets Redis, starts controller)
+./scripts/prod.sh run
 
-# 3. Add a tenant (links GitHub via Coder external auth, creates nexus workspace)
-cargo run -p openflows --bin openflows -- tenant add owner/repo --name my-team
+# 3. Add a tenant (links GitHub repo, creates nexus workspace)
+./scripts/prod.sh tenant owner/repo --name my-team
 
-# 4. Create a GitHub issue in your repo — OpenFlows picks it up automatically</code></pre>
-    </div>
-    
-    <div class="step-breakdown">
-      <div class="step-marker">
-        <span class="step-number">1</span>
-        <span class="step-label">Clone & Setup</span>
-      </div>
-      <div class="step-marker">
-        <span class="step-number">2</span>
-        <span class="step-label">Bootstrap</span>
-      </div>
-      <div class="step-marker">
-        <span class="step-number">3</span>
-        <span class="step-label">Add Tenant</span>
-      </div>
-      <div class="step-marker">
-        <span class="step-number">4</span>
-        <span class="step-label">Create Issue</span>
-      </div>
-    </div>
-  </div>
+# 4. Create a GitHub issue  -  OpenFlows picks it up automatically`}</CodeBlock>
+
+  <h2>Production Architecture</h2>
+
+  <p>
+    In production, the controller runs inside a <strong>Nexus workspace</strong> provisioned by Coder.
+    The workspace auto-starts the controller via its <code>startup_script</code>.
+  </p>
+
+  <CodeBlock lang="text">{`Coder provisions nexus workspace from template
+    ↓
+Workspace startup script runs
+    ↓
+Line 1: Installs openflows-harness binary
+    ↓
+Line 2: Starts heartbeat daemon
+    ↓
+Line 3: Executes: openflows run
+    ↓
+Controller auto-starts inside workspace`}</CodeBlock>
+
+  <p>
+    The nexus workspace template is in <code>crates/coder-client/templates/openflows-nexus/</code>.
+    It receives all env vars from Coder and auto-starts the controller.
+  </p>
 
   <div class="callout info">
     <div class="calloutBody">
       <div class="calloutContent">
         <p class="calloutTitle">The openflows-harness CLI</p>
         <div class="calloutText">
-          Each worker workspace gets a small <code>openflows-harness</code> binary. The Coder Agent invokes it via shell (guided by skills) to read/write the Redis SharedStore with typed, validated schemas. Agents never run <code>redis-cli</code> directly — the harness is the only Redis client in a workspace.
+          Each worker workspace receives a small <code>openflows-harness</code> binary. The Coder Agent
+          invokes it via shell (guided by skills) to read and write the Redis SharedStore with typed,
+          validated schemas. Agents never run <code>redis-cli</code> directly  -  the harness is the only
+          Redis client inside a workspace.
         </div>
       </div>
     </div>
   </div>
 
-  <p>See the <a href="/docs/getting-started/installation">Installation Guide</a> for detailed configuration and alternative setups.</p>
-
-  <!-- Step 3: Multi-Tenancy -->
-  <h2 class="stepHeading" id="configure">
-    <span class="stepNumber">3</span>
-    Multi-Tenancy Model
-  </h2>
   <p>
-    One Coder server serves many teams. Each tenant = a real Coder user + a repo binding + an <code>openflows-nexus</code> workspace. 
-    Tenants are isolated by Coder RBAC and per-tenant Redis keyspace prefixes (<code>ns:&#123;tenant&#125;:...</code>).
+    See the <a href="/docs/getting-started/installation">Installation Guide</a> for a detailed
+    configuration reference, the     <a href="/docs/getting-started/token-guide">Token Guide</a> for
+    GitHub and Coder auth scopes, and the <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a> for a complete end-to-end example.
+  </p>
+
+  <StepHeading step="3" id="configure">Multi-Tenancy Model</StepHeading>
+  <p>
+    One Coder server serves many teams. Each tenant is a real Coder user, a repository binding, and an
+    <code>openflows-nexus</code> workspace. Tenants are isolated by Coder RBAC and by per-tenant
+    Redis keyspace prefixes (<code>ns:&#123;tenant&#125;:...</code>).
   </p>
 
   <div class="codeBlock">
-    <div class="codeHeader">
-      <span class="codeLang">bash</span>
-      <button class="copyBtn">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-          <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-          <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-        </svg>
-        Copy
-      </button>
-    </div>
-    <pre><code># Add a new tenant
-cargo run -p openflows --bin openflows -- tenant add another-org/another-repo --name team-b</code></pre>
+    <div class="codeHeader"><span class="codeLang">bash</span></div>
+    <pre><code class="language-bash"># Add another tenant
+./scripts/prod.sh tenant another-org/another-repo --name team-b</code></pre>
   </div>
 
-  <div class="callout info">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">Environment Configuration</p>
-        <div class="calloutText">
-          Copy <code>.env.example</code> to <code>.env</code> and configure:
-          <ul>
-            <li>GitHub OAuth App credentials for Coder external auth</li>
-            <li>Coder deployment settings</li>
-            <li>Repository configurations</li>
-            <li>LLM provider settings (configured in Coder dashboard)</li>
-          </ul>
-          The bootstrap process handles template deployment and initial setup.
-        </div>
-      </div>
-    </div>
-  </div>
+  <Callout type="info" title="Environment Configuration">
+    Copy <code>.env.example</code> to <code>.env</code> and configure:
+    <ul>
+      <li>GitHub OAuth App credentials for Coder external auth</li>
+      <li>Coder deployment settings</li>
+      <li>LLM provider settings in the Coder dashboard</li>
+    </ul>
+    The bootstrap process handles template deployment and initial validation. For a full reference,
+    see <a href="/docs/guides/multi-tenancy">Multi-Tenancy</a>.
+  </Callout>
 
-  <!-- Step 3.1: Plug-and-Play Extension -->
   <h3 id="extension">3.1 Plug-and-Play Extension</h3>
-  <p>
-    OpenFlows is designed for easy extension without code changes:
-  </p>
+  <p>OpenFlows is designed for extension without modifying core orchestration code:</p>
 
   <div class="extension-grid">
     <div class="extension-item">
       <h4>Add a skill</h4>
-      <p>Drop a directory in <code>orchestration/plugin/skills/</code> with a <code>SKILL.md</code>, list it in <code>registry.json</code> under the role's <code>skills</code> array. No code change.</p>
+      <p>Drop a directory into <code>orchestration/plugin/skills/</code> with a <code>SKILL.md</code>, list it in <code>orchestration/agent/registry.json</code> under the role's <code>skills</code> array, and run <code>./update-binaries.sh</code>. No Rust code change is required.</p>
     </div>
-    
     <div class="extension-item">
       <h4>Add an MCP server</h4>
       <p>Add it to the role's <code>mcp</code> object in <code>registry.json</code>, or register it centrally in the Coder dashboard (AI Settings → MCP Servers). Both coexist.</p>
     </div>
-    
     <div class="extension-item">
       <h4>Enable a new model</h4>
-      <p>Configure it in the Coder dashboard (AI Settings → Coder Agents → Models). Reference it in <code>registry.json</code> via the <code>model</code> field.</p>
+      <p>Configure it in the Coder dashboard (AI Settings → Coder Agents → Models), then reference it in <code>orchestration/agent/registry.json</code> via the <code>model</code> field. See <a href="/docs/guides/model-routing">Model Routing</a>.</p>
     </div>
-    
     <div class="extension-item">
       <h4>Development updates</h4>
-      <p>After code changes, run <code>./update-binaries.sh</code> to rebuild and update all workspaces with fresh binaries.</p>
+      <p>After code changes, run <code>./update-binaries.sh</code> to rebuild and redeploy binaries to all workspaces.</p>
     </div>
   </div>
 
-  <div class="callout info">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">How It Works</p>
-        <div class="calloutText">
-          OpenFlows runs a team of AI agents that collaborate just like a real engineering team:
-          <pre style="margin: 0; padding: 1rem; background: var(--color-parchment-canvas); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.875rem;">
+  <Callout type="info" title="How it works">
+    OpenFlows runs a team of AI agents that collaborate like a real engineering team:
+    <pre style="margin: 0; padding: 1rem; background: var(--color-parchment-canvas); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.875rem;">
 You create a GitHub issue → NEXUS picks it up → FORGE writes code → SENTINEL reviews adversarially
 → VESSEL merges green PRs → LORE documents → you get a merged PR</pre>
-          You stay in the loop only when needed — security concerns, ambiguous specs, or major decisions.
-        </div>
-      </div>
-    </div>
-  </div>
+    You are escalated only for security concerns, ambiguous specifications, or major architectural decisions.
+  </Callout>
 
-  <!-- Step 4: Verify -->
-  <h2 class="stepHeading" id="verify">
-    <span class="stepNumber">4</span>
-    Create Your First Issue
-  </h2>
-  <p>Once OpenFlows is running with your tenant configured, create a GitHub issue in your repository. OpenFlows will automatically:</p>
-  
+  <StepHeading step="4" id="verify">Create Your First Issue</StepHeading>
+  <p>Once OpenFlows is running and your tenant is configured, create a GitHub issue in your repository. OpenFlows will automatically:</p>
   <ol>
-    <li><strong>NEXUS detects</strong> the new issue on its next poll cycle</li>
-    <li><strong>FORGE is assigned</strong> the ticket with a unique ID</li>
-    <li><strong>Ephemeral Coder workspace</strong> is provisioned for the FORGE worker</li>
-    <li><strong>FORGE writes code</strong> against the agreed contract</li>
-    <li><strong>SENTINEL reviews</strong> every segment adversarially</li>
-    <li><strong>VESSEL handles</strong> CI, conflicts, and merge</li>
-    <li><strong>LORE documents</strong> the changes automatically</li>
-    <li><strong>Workspace is torn down</strong> after merge — no lingering state</li>
+    <li><strong>NEXUS detects</strong> the issue on its next poll cycle.</li>
+    <li><strong>FORGE is assigned</strong> the ticket with a unique identifier.</li>
+    <li><strong>An ephemeral Coder workspace</strong> is provisioned for the FORGE worker.</li>
+    <li><strong>FORGE writes code</strong> against the agreed contract.</li>
+    <li><strong>SENTINEL reviews</strong> every segment adversarially.</li>
+    <li><strong>VESSEL handles</strong> CI, conflicts, and merge.</li>
+    <li><strong>LORE documents</strong> the changes automatically.</li>
+    <li><strong>The workspace is torn down</strong> after merge  -  no lingering state.</li>
   </ol>
 
-  <div class="callout tip">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">The Team</p>
-        <div class="calloutText">
-          <table style="width: 100%; border-collapse: collapse;">
-            <thead>
-              <tr>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Agent</th>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Role</th>
-                <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">What it does</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>NEXUS</strong></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Orchestrator</td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Assigns issues, coordinates the team, owns recovery, notifies you when needed</td>
-              </tr>
-              <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>FORGE</strong></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Builder</td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Writes code against an agreed contract, creates branches, opens PRs</td>
-              </tr>
-              <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>SENTINEL</strong></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Reviewer</td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Adversarially reviews code for security, quality, and test coverage</td>
-              </tr>
-              <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>VESSEL</strong></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">DevOps</td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Monitors CI, handles merge conflicts, squash-merges green PRs</td>
-              </tr>
-              <tr>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>LORE</strong></td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Writer</td>
-                <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Documents decisions, updates changelogs, maintains project history</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </div>
-  </div>
+  <Callout type="tip" title="The team">
+    <table style="width: 100%; border-collapse: collapse;">
+      <thead>
+        <tr>
+          <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Agent</th>
+          <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Role</th>
+          <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">What it does</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>NEXUS</strong></td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Orchestrator / Controller</td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Assigns issues, coordinates the team, owns recovery, and notifies you when needed.</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>FORGE</strong></td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Builder</td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Writes code against an agreed contract, creates branches, and opens PRs.</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>SENTINEL</strong></td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Reviewer</td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Adversarially reviews code for security, quality, and test coverage.</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>VESSEL</strong></td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">DevOps</td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Monitors CI, handles merge conflicts, and squash-merges green PRs.</td>
+        </tr>
+        <tr>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>LORE</strong></td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Writer</td>
+          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Documents decisions, updates changelogs, and maintains project history.</td>
+        </tr>
+      </tbody>
+    </table>
+  </Callout>
 
-  <!-- Step 5: Next Steps -->
-  <h2 class="stepHeading" id="next-steps">
-    <span class="stepNumber">5</span>
-    Next Steps
-  </h2>
-  
-  <div class="docCards">
-    <a href="/docs/architecture/agent-roles" class="docCard">
-      <div class="docCardIcon">🧭</div>
-      <div class="docCardTitle">Agent Roles</div>
-      <div class="docCardDesc">Understand each agent's contract, recovery behavior, and workspace lifecycle.</div>
-    </a>
-    
-    <a href="/docs/faq" class="docCard">
-      <div class="docCardIcon">❓</div>
-      <div class="docCardTitle">FAQ & Troubleshooting</div>
-      <div class="docCardDesc">Coder connectivity, tenant setup, token scopes, and common fixes.</div>
-    </a>
-    
-    <a href="https://github.com/The-AgenticFlow/openflows" target="_blank" rel="noopener noreferrer" class="docCard">
-      <div class="docCardIcon">🐙</div>
-      <div class="docCardTitle">GitHub Repository</div>
-      <div class="docCardDesc">Source code, issues, and discussions for OpenFlows development.</div>
-    </a>
-  </div>
+  <StepHeading step="5" id="next-steps">Next Steps</StepHeading>
+  <DocCards cards={[
+    { icon: '🔑', title: 'Token Guide', desc: 'GitHub OAuth scopes, Coder external auth, and the minimum viable credential setup.', href: '/docs/getting-started/token-guide' },
+    { icon: '🎯', title: 'First Issue Walkthrough', desc: 'Step through a complete ticket from issue creation to merged PR.', href: '/docs/getting-started/first-issue' },
+    { icon: '🏗️', title: 'System Design', desc: 'PocketFlow, SharedStore contracts, and the NEXUS reconcile loop.', href: '/docs/architecture/system-design' },
+    { icon: '👥', title: 'Agent Roles', desc: 'Contracts, permissions, workspace lifecycle, and CLI modules for each role.', href: '/docs/architecture/agent-roles' },
+    { icon: '❓', title: 'FAQ', desc: 'Short answers to common setup, security, and operational questions.', href: '/docs/faq' },
+  ]} />
 
-  <div class="callout info">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">Documentation</p>
-        <div class="calloutText">
-          <ul>
-            <li><a href="/docs/architecture/system-design">System Design</a> - PocketFlow engine and SharedStore architecture</li>
-            <li><a href="/docs/coder-compatibility">Coder Compatibility</a> - Version compatibility and verification</li>
-            <li><a href="/docs/tenancy">Tenancy</a> - Multi-tenant model and Redis namespacing</li>
-            <li><a href="/docs/governance">Governance</a> - AI governance controls and network policy</li>
-            <li><a href="/docs/extending">Extending</a> - Adding skills, MCP servers, and models</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
+  <Callout type="info" title="Documentation">
+    <ul>
+      <li><a href="/docs/architecture/system-design">System Design</a>  -  PocketFlow engine and SharedStore architecture</li>
+      <li><a href="/docs/concepts/coder-integration">Coder Integration</a>  -  Version compatibility and runtime contract</li>
+      <li><a href="/docs/guides/multi-tenancy">Multi-Tenancy</a>  -  Tenant model and Redis namespacing</li>
+      <li><a href="/docs/concepts/security-model">Security Model</a>  -  AI governance controls and network policy</li>
+      <li><a href="/docs/guides/extending">Extending</a>  -  Adding skills, MCP servers, and models</li>
+      <li><a href="/docs/reference/api">API Reference</a>  -  OpenFlows control-plane endpoints</li>
+      <li><a href="/docs/guides/troubleshooting">Troubleshooting</a>  -  Common failures and diagnostics</li>
+    </ul>
+  </Callout>
 
+  <FeedbackFooter />
 
-
-  <div class="feedbackFooter">
-    <p>Was this guide helpful? <a href="https://github.com/The-AgenticFlow/openflows/discussions" target="_blank" rel="noopener noreferrer">Discuss on GitHub ↗</a></p>
-  </div>
-  
   <style>
+    .prereqGrid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 1.5rem;
+      margin: 2rem 0;
+    }
     .extension-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1.5rem;
       margin: 2rem 0;
     }
-    
     .extension-item {
       background: var(--color-bone);
       border: 1px solid var(--color-driftwood);
@@ -376,12 +290,10 @@ You create a GitHub issue → NEXUS picks it up → FORGE writes code → SENTIN
       padding: 1.5rem;
       transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     }
-    
     .extension-item:hover {
       border-color: var(--color-fog);
       box-shadow: var(--shadow-card);
     }
-    
     .extension-item h4 {
       margin-top: 0;
       margin-bottom: 0.75rem;
@@ -389,40 +301,11 @@ You create a GitHub issue → NEXUS picks it up → FORGE writes code → SENTIN
       font-weight: var(--font-weight-semibold);
       color: var(--color-ink);
     }
-    
     .extension-item p {
       margin: 0;
       font-size: var(--font-size-sm);
       color: var(--color-graphite);
       line-height: 1.5;
     }
-    
-    /* Update for config tabs removal */
-    .tabTabs, .tabContent {
-      display: none;
-    }
-    
-    .stepHeading[data-step="3"] {
-      margin-top: 2rem;
-    }
   </style>
-  
-  <script>
-    // Remove deprecated tab functionality since we simplified the page
-    document.addEventListener('DOMContentLoaded', function() {
-      // Hide any remaining tab elements
-      const tabElements = document.querySelectorAll('.tabTabs, .tabContent, .tabTab');
-      tabElements.forEach(el => {
-        if (el.parentElement) {
-          el.parentElement.removeChild(el);
-        }
-      });
-      
-      // Update step numbers if needed
-      const steps = document.querySelectorAll('.stepNumber');
-      if (steps.length > 0) {
-        // Already updated to 5 steps
-      }
-    });
-  </script>
 </DocsLayout>

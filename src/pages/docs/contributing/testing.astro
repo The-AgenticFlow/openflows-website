@@ -1,0 +1,258 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const LAYER_ROWS = [
+  ['Unit', 'Individual Rust functions, flow nodes, and SharedStore operations.', 'Fast, deterministic, no network or Coder.', 'Developers iterate on core logic.'],
+  ['Integration', 'Crate boundaries and contract surfaces: transport, GitHub client, registry loader.', 'May hit a local Redis or mocked Coder API.', 'Validates interfaces between components.'],
+  ['End-to-end', 'Full issue-to-merge cycle against a real or fixture repository in Coder mode.', 'Requires Docker Compose, Coder, and Redis.', 'Validates the entire orchestration flow.'],
+  ['Registry validation', 'Schema checks on <code>registry.json</code> and skill directory references.', 'No runtime required.', 'Catches skill registration errors before deployment.'],
+];
+
+const UNIT_ROWS = [
+  ['<code>cargo test -p openflows-core</code>', 'Run all unit tests in the core orchestration crate.'],
+  ['<code>cargo test --workspace</code>', 'Run unit tests across the entire Cargo workspace.'],
+  ['<code>cargo test --lib</code>', 'Run only library tests, excluding integration tests and doc tests.'],
+  ['<code>cargo test --doc</code>', 'Run doctests in Rust documentation comments.'],
+];
+
+const INTEGRATION_ROWS = [
+  ["<code>cargo test --test '*'</code>", 'Run all integration tests in the <code>tests/</code> directories.'],
+  ['<code>cargo test --test transport</code>', 'Run the transport integration test suite.'],
+  ['<code>cargo test --test github_client</code>', 'Run tests against the GitHub client with a mock server.'],
+  ['<code>cargo test --test registry</code>', 'Validate registry loading and skill resolution.'],
+];
+
+const E2E_ROWS = [
+  ['1. Start Compose', '<code>docker compose -f docker-compose.dev.yml up -d</code>'],
+  ['2. Build binaries', '<code>./update-binaries.sh</code>'],
+  ['3. Bootstrap tenant', '<code>cargo run -p openflows --bin openflows -- bootstrap</code>'],
+  ['4. Add fixture repo', '<code>cargo run -p openflows --bin openflows -- tenant add org/scratch --name e2e</code>'],
+  ['5. Open an issue', 'Create a small, scoped issue in the fixture repository.'],
+  ['6. Run NEXUS loop', '<code>cargo run -p openflows --bin openflows -- run --once</code> or let it poll.'],
+  ['7. Assert outcomes', 'Verify PLAN.md, PR creation, CI status, merge, and workspace teardown.'],
+];
+
+const FIXTURE_ROWS = [
+  ['<code>tests/fixtures/repo/</code>', 'Minimal Git repository used for local flow tests without a real GitHub remote.'],
+  ['<code>tests/fixtures/coder-template/</code>', 'Coder template fixture used by the integration test harness.'],
+  ['<code>tests/fixtures/registry/*.json</code>', 'Registry variants used to test valid and invalid configurations.'],
+  ['<code>tests/fixtures/skills/</code>', 'Skill directory fixtures used to validate skill discovery without touching real skills.'],
+];
+
+const CI_ROWS = [
+  ['Unit tests', 'Run on every PR and push to default branch.', 'Must pass.'],
+  ['Clippy', 'Lint the entire workspace with <code>cargo clippy --workspace</code>.', 'Must pass with no warnings.'],
+  ['Format check', 'Verify with <code>cargo fmt --check</code>.', 'Must pass.'],
+  ['Registry validation', 'Run <code>openflows registry validate</code> against the checked-in registry.', 'Must pass.'],
+  ['Integration tests', 'Run against a local Coder and Redis stack in CI.', 'Must pass.'],
+  ['End-to-end smoke test', 'One full issue-to-merge cycle on a fixture repository.', 'Must pass for release-bound PRs.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Contributing', href: '/docs/contributing' }, { label: 'Testing' }]}>
+  <h1>Testing</h1>
+  <p>
+    OpenFlows is a system that delegates critical work to non-deterministic agents and expects
+    to recover cleanly. That means testing is not a gate at the end of development; it is a
+    design constraint that shapes every change. This page describes the four layers of testing
+    in the project, the commands to run them, the fixtures that support them, and the expectations
+    enforced in CI.
+  </p>
+  <p>
+    The runtime is Coder. Therefore, the most honest test is one that provisions a real Coder
+    workspace, exercises a complete ticket lifecycle, and confirms that the workspace is torn down
+    without leaving state behind. We do not skip that layer for changes that touch the workspace
+    transport, the registry, or the reconcile loop.
+  </p>
+
+  <Callout type="info" title="Development vs Production commands">
+    This guide uses <code>cargo run -p openflows --bin openflows -- &lt;command&gt;</code> for
+    local development and testing. In production, the same commands are invoked as
+    <code>openflows &lt;command&gt;</code> inside the NEXUS workspace, or via the
+    <code>./scripts/prod.sh</code> convenience wrapper (Docker Compose). The behavior is
+    identical; only the invocation differs.
+  </Callout>
+
+  <h2>Testing Layers</h2>
+  <p>
+    Tests are organized by how much of the system they exercise and how expensive they are to
+    run. The rule is simple: push as much validation as possible into the fast layers, but never
+    pretend that a unit test validates the Coder integration.
+  </p>
+  <DocsTable headers={['Layer', 'What it covers', 'Dependencies', 'Why it matters']} rows={LAYER_ROWS} />
+
+  <h2>Unit Tests</h2>
+  <p>
+    Unit tests live next to the code they test. They cover pure functions, flow node logic,
+    SharedStore operations, and the parsing and decision extraction layers. A good unit test is
+    fast, deterministic, and isolated from the network, the filesystem, and Coder.
+  </p>
+
+  <CodeBlock lang="bash">{`# Core crate unit tests
+cargo test -p openflows-core
+
+# Full workspace unit tests
+cargo test --workspace
+
+# Run a specific test by name
+cargo test -p openflows-core -- decision_extraction::recovers_truncated_json`}</CodeBlock>
+
+  <DocsTable headers={['Command', 'Purpose']} rows={UNIT_ROWS} />
+
+  <Callout type="info" title="Use property-based testing for data-heavy logic">
+    The decision extraction and registry parsing paths benefit from property-based tests. The
+    project uses <code>proptest</code> for this. If you add a new parser or contract, add a
+    property test that generates edge-case inputs and asserts the parser never panics.
+  </Callout>
+
+  <h2>Integration Tests</h2>
+  <p>
+    Integration tests live in the <code>tests/</code> directories of each crate. They validate
+    the boundaries between components: the transport layer, the GitHub client, the registry
+    loader, and the Redis-backed SharedStore. These tests may use a local Redis or a mocked
+    Coder API, but they do not run the full flow graph.
+  </p>
+
+  <CodeBlock lang="bash">{`# Run all integration tests in the workspace
+cargo test --test '*'
+
+# Run a specific integration test suite
+cargo test --test transport
+cargo test --test github_client
+cargo test --test registry
+
+# Run integration tests with Redis backed
+docker compose -f docker-compose.dev.yml up -d redis
+cargo test --test redis_store`}</CodeBlock>
+
+  <DocsTable headers={['Command', 'Purpose']} rows={INTEGRATION_ROWS} />
+
+  <p>
+    Integration tests should focus on contracts, not implementation details. If you change the
+    internal structure of a module and an integration test breaks, the test was probably too
+    tightly coupled. Rewrite it to assert the observable behavior of the boundary.
+  </p>
+
+  <h2>End-to-End Validation</h2>
+  <p>
+    End-to-end tests are the only way to verify that NEXUS, FORGE, SENTINEL, VESSEL, and LORE
+    cooperate correctly across a real issue lifecycle. They run in Coder mode against a fixture
+    or scratch repository. They are slow, expensive, and non-negotiable for core changes.
+  </p>
+
+  <CodeBlock lang="bash">{`# Start the full stack and run one NEXUS cycle
+docker compose -f docker-compose.dev.yml up -d
+./update-binaries.sh
+cargo run -p openflows --bin openflows -- bootstrap
+cargo run -p openflows --bin openflows -- tenant add org/scratch --name e2e
+
+# Create an issue in org/scratch, then run the orchestration loop
+cargo run -p openflows --bin openflows -- run --once`}</CodeBlock>
+
+  <DocsTable headers={['Step', 'Action']} rows={E2E_ROWS} />
+
+  <Callout type="warning" title="E2E tests must clean up after themselves">
+    The test harness must tear down any Coder workspaces and delete any branches or PRs it
+    creates. If you add an E2E test, use a unique tenant prefix and include a cleanup step in the
+    test teardown. CI will fail if orphaned workspaces accumulate.
+  </Callout>
+
+  <h2>Testing Registry Changes</h2>
+  <p>
+    The registry is the single source of truth for agent configuration and skills. A malformed
+    registry can silently disable an agent or cause NEXUS to skip an entire phase. Registry
+    changes must be validated with the dedicated command and, when skills are added, with a manual
+    or automated skill run.
+  </p>
+
+  <CodeBlock lang="bash">{`# Validate the registry schema and skill references
+cargo run -p openflows --bin openflows -- registry validate
+
+# Test a specific skill manually
+cargo run -p openflows --bin openflows -- skill run run-cargo-test \
+  --input orchestration/plugin/skills/run-cargo-test/examples/input.json`}</CodeBlock>
+
+  <p>
+    The validation command checks that every agent role has a valid provider and model, that
+    every skill entry resolves to a directory containing a <code>SKILL.md</code>, and that the
+    registry version matches the schema expected by the runtime. Run it before every commit that
+    touches <code>registry.json</code>.
+  </p>
+
+  <h2>Testing Against Coder</h2>
+  <p>
+    Coder is the only runtime. Local mode is a useful shortcut for developers, but it does not
+    exercise the Coder API, the workspace lifecycle, or the Coder AI Gateway. Any change that
+    touches the following areas must be tested against a real Coder deployment:
+  </p>
+  <ul>
+    <li><code>WorkspaceTransport</code> implementations or trait changes.</li>
+    <li>Workspace provisioning or teardown logic.</li>
+    <li>Coder module installation or CLI agent setup.</li>
+    <li>External auth or GitHub identity propagation.</li>
+    <li>AI Gateway routing or fallback behavior.</li>
+    <li>SharedStore persistence when using Redis.</li>
+  </ul>
+
+  <p>
+    To test against Coder, ensure the Docker Compose stack is running, the Coder template is
+    created, and the binaries are current. Then run the integration or E2E test suite that
+    exercises Coder workspaces. The test harness will create fixture workspaces, run the agent
+    CLI inside them, and assert on the results.
+  </p>
+
+  <CodeBlock lang="bash">{`# Verify Coder is reachable before running tests
+curl -s http://localhost:3000/healthz
+
+# Run the Coder integration suite
+cargo test --test coder_workspace
+
+# Run the full E2E suite against Coder
+cargo test --test e2e`}</CodeBlock>
+
+  <h2>Test Fixtures</h2>
+  <p>
+    Fixtures keep tests deterministic and isolated. The repository maintains a set of fixture
+    directories under <code>tests/fixtures/</code>. Add to them when you introduce a new test that
+    needs a specific repository state, registry variant, or skill directory.
+  </p>
+  <DocsTable headers={['Fixture', 'Purpose']} rows={FIXTURE_ROWS} />
+
+  <Callout type="tip" title="Keep fixtures minimal">
+    A fixture should contain the smallest possible state that reproduces the behavior. Large
+    fixtures slow down CI and make failures harder to diagnose. Prefer generated fixtures over
+    copied repositories when possible.
+  </Callout>
+
+  <h2>CI Expectations</h2>
+  <p>
+    CI enforces the same checks that you should run locally. A PR is not eligible for merge until
+    all required checks pass. The required checks are:
+  </p>
+  <DocsTable headers={['Check', 'When it runs', 'Required?']} rows={CI_ROWS} />
+
+  <p>
+    The CI pipeline is defined in <code>.github/workflows/ci.yml</code>. It uses the same Docker
+    Compose file as local development, so any test that passes locally should pass in CI. If it
+    does not, the difference is usually timing, environment secrets, or a fixture that assumes a
+    specific host path.
+  </p>
+
+  <h2>Writing Good Tests</h2>
+  <ul>
+    <li><strong>Arrange, act, assert</strong>  -  structure every test so the reader can identify the setup, the operation, and the expected outcome.</li>
+    <li><strong>Test behavior, not code</strong>  -  a test should still pass if the implementation is refactored.</li>
+    <li><strong>One concern per test</strong>  -  avoid giant tests that assert multiple unrelated things.</li>
+    <li><strong>Name tests after the scenario</strong>  -  <code>recovers_decision_on_truncated_json</code> is better than <code>test_parse</code>.</li>
+    <li><strong>Clean up</strong>  -  integration and E2E tests must leave the environment as they found it.</li>
+    <li><strong>Document skipped tests</strong>  -  if a test is ignored, explain why in a comment next to <code>#[ignore]</code>.</li>
+  </ul>
+
+  <Callout type="warning" title="Tests must pass before STATUS.json is written">
+    A contributor must run <code>orchestration/agent/tooling/run-tests.sh</code> before marking a
+    ticket complete. If the test suite fails, the contributor either fixes the code or sets the
+    ticket status to <code>BLOCKED</code> with a specific reason. Shipping code with a failing test
+    is not acceptable.
+  </Callout>
+</DocsLayout>

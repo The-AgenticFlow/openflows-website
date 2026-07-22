@@ -1,0 +1,269 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const TOP_LEVEL_ROWS = [
+  ['<code>workspace_provider</code>', 'string', '<code>"coder"</code>  -  tells OpenFlows to provision ephemeral Coder workspaces rather than local Git worktrees.'],
+  ['<code>coder_module</code>', 'string', 'Default Coder Registry module that installs the code agent CLI into every workspace (e.g. <code>"claude-code"</code>, <code>"codex"</code>, <code>"aider"</code>). Overridden per-agent.'],
+  ['<code>ai_gateway</code>', 'object', 'Routing configuration for LLM calls. See the AI Gateway table below.'],
+];
+
+const GATEWAY_ROWS = [
+  ['<code>primary</code>', 'string', '<code>"coder"</code>  -  route all LLM calls through the Coder AI Gateway. API keys are managed centrally and never exposed inside workspaces.'],
+  ['<code>fallback</code>', 'string', '<code>"litellm"</code>  -  fall back to a LiteLLM proxy when the Gateway is unavailable.'],
+  ['<code>litellm_url</code>', 'string', 'Optional base URL of the LiteLLM proxy (e.g. <code>http://litellm.internal:4000</code>). If unset, the orchestrator reads <code>LITELLM_URL</code> from the environment.'],
+  ['<code>timeout_ms</code>', 'int', 'Request timeout for LLM calls. Default <code>120000</code> (2 minutes).'],
+];
+
+const AGENT_ROWS = [
+  ['<code>provider</code>', 'string', 'LLM provider slug for this agent: <code>anthropic</code>, <code>openai</code>, <code>google</code>, <code>fireworks</code>, <code>groq</code>, etc. Must match a provider configured in the Coder AI Gateway.'],
+  ['<code>model</code>', 'string', 'Model identifier passed to the provider via the AI Gateway (e.g. <code>claude-sonnet-4-20250514</code>).'],
+  ['<code>coder_module</code>', 'string', 'Per-agent override of the top-level <code>coder_module</code>. Lets FORGE run <code>claude-code</code> while LORE uses <code>aider</code>.'],
+  ['<code>active</code>', 'bool', 'Set <code>false</code> to exclude the agent from orchestration entirely.'],
+  ['<code>instances</code>', 'int', 'Number of parallel worker slots. FORGE with <code>instances: 2</code> → <code>forge-1</code>, <code>forge-2</code>, each in its own Coder workspace.'],
+  ['<code>skills</code>', 'array&lt;string&gt;', 'Skill directories under <code>orchestration/plugin/skills/</code> that this agent should load. Optional.'],
+  ['<code>mcp</code>', 'object', 'Per-agent MCP server registrations. Keys are server names; values are server definitions or references to central Coder MCP servers.'],
+];
+
+const SKILL_ROWS = [
+  ['<code>name</code>', 'string', 'Directory name of the skill under <code>orchestration/plugin/skills/</code>.'],
+  ['<code>enabled</code>', 'bool', 'Whether the skill is active. Default <code>true</code>.'],
+  ['<code>path</code>', 'string', 'Optional override path. Defaults to <code>orchestration/plugin/skills/{name}/</code>.'],
+];
+
+const MCP_ROWS = [
+  ['<code>name</code>', 'string', 'Human-readable server name referenced by prompts and skills.'],
+  ['<code>source</code>', 'string', '<code>"local"</code> for a command-based server, or <code>"coder"</code> to reference a server registered in the Coder dashboard.'],
+  ['<code>command</code>', 'string', 'For local servers, the executable to run (e.g. <code>"npx"</code> or <code>"uvx"</code>).'],
+  ['<code>args</code>', 'array&lt;string&gt;', 'Arguments passed to the command.'],
+  ['<code>env</code>', 'object', 'Environment variables passed to the MCP server process.'],
+  ['<code>coder_server_name</code>', 'string', 'For Coder-registered servers, the exact name shown in AI Settings → MCP Servers.'],
+];
+
+const VALIDATION_ROWS = [
+  ['<code>workspace_provider</code>', 'Must be <code>"coder"</code> in the current version. Local worktree mode is deprecated.'],
+  ['<code>coder_module</code>', 'Must be a published Coder Registry module in your deployment.'],
+  ['<code>agents.{{role}}.provider</code>', 'Must match a provider slug configured in the Coder AI Gateway or LiteLLM proxy.'],
+  ['<code>agents.{{role}}.instances</code>', 'Must be an integer between 1 and 32. Set to 0 or <code>active: false</code> to disable.'],
+  ['<code>agents.{{role}}.active</code>', 'Must be a boolean. Inactive agents are skipped by NEXUS.'],
+  ['<code>skills</code>', 'Each entry must resolve to a directory containing a <code>SKILL.md</code> manifest.'],
+  ['<code>mcp</code>', 'Either <code>source: "coder"</code> with a valid <code>coder_server_name</code>, or a command that exists in the workspace.'],
+];
+
+const MODEL_ROWS = [
+  ['<code style="color:var(--color-agent-forge)">FORGE</code>', 'anthropic / claude-sonnet-4-20250514', 'claude-code', 'Primary coding agent  -  needs deep reasoning and long context.'],
+  ['<code style="color:var(--color-agent-nexus)">NEXUS</code>', 'anthropic / claude-sonnet-4-20250514', 'claude-code', 'Orchestrator  -  needs reliable decision-making and reconcile logic.'],
+  ['<code style="color:var(--color-agent-sentinel)">SENTINEL</code>', 'openai / gpt-4.1', 'codex', 'Adversarial review  -  different provider from FORGE to catch correlated failures.'],
+  ['<code style="color:var(--color-agent-vessel)">VESSEL</code>', 'openai / gpt-4o', 'codex', 'CI/CD scripting and merge decisions  -  fast and cost-effective.'],
+  ['<code style="color:var(--color-agent-lore)">LORE</code>', 'anthropic / claude-haiku-4-20250514', 'aider', 'Documentation and changelog  -  lightweight task, lightweight model.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }, { label: 'registry.json Schema' }]}>
+  <h1>registry.json Schema</h1>
+  <p>
+    <code>orchestration/agent/registry.json</code> is the single source of truth for the OpenFlows agent team. Version 2
+    of the schema separates runtime provisioning from model routing and makes every agent role independently configurable.
+    This page documents every top-level field, every per-agent field, and the nested <code>skills</code> and <code>mcp</code>
+    structures.
+  </p>
+  <p>
+    The registry is read on every NEXUS poll cycle. You can change models, scale instances, swap CLI modules, add skills,
+    or disable agents without restarting the orchestrator. The extension point is intentionally simple: edit JSON, and the
+    next cycle picks up the new configuration.
+  </p>
+
+  <h2>Default registry.json</h2>
+  <p>
+    The following file is the recommended starting point. It uses the Coder workspace provider, the Claude Code CLI module
+    by default, the Coder AI Gateway as the primary LLM path, and LiteLLM as an air-gapped fallback. The five agent roles
+    are NEXUS, FORGE, SENTINEL, VESSEL, and LORE.
+  </p>
+  <CodeBlock lang="json">{`{
+  "workspace_provider": "coder",
+  "coder_module": "claude-code",
+  "ai_gateway": {
+    "primary": "coder",
+    "fallback": "litellm",
+    "litellm_url": "http://litellm.internal:4000",
+    "timeout_ms": 120000
+  },
+  "agents": {
+    "nexus": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514",
+      "coder_module": "claude-code",
+      "active": true,
+      "instances": 1,
+      "skills": ["nexus-orchestration"],
+      "mcp": {}
+    },
+    "forge": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514",
+      "coder_module": "claude-code",
+      "active": true,
+      "instances": 2,
+      "skills": ["forge-coding", "git-workflow"],
+      "mcp": {
+        "github": { "source": "coder", "coder_server_name": "github" }
+      }
+    },
+    "sentinel": {
+      "provider": "openai",
+      "model": "gpt-4.1",
+      "coder_module": "codex",
+      "active": true,
+      "instances": 1,
+      "skills": ["sentinel-review"],
+      "mcp": {}
+    },
+    "vessel": {
+      "provider": "openai",
+      "model": "gpt-4o",
+      "coder_module": "codex",
+      "active": true,
+      "instances": 1,
+      "skills": ["vessel-ci"],
+      "mcp": {
+        "github": { "source": "coder", "coder_server_name": "github" }
+      }
+    },
+    "lore": {
+      "provider": "anthropic",
+      "model": "claude-haiku-4-20250514",
+      "coder_module": "aider",
+      "active": true,
+      "instances": 1,
+      "skills": ["lore-docs"],
+      "mcp": {}
+    }
+  }
+}`}</CodeBlock>
+  <Callout type="info" title="Where the file lives">
+    The default path is <code>orchestration/agent/registry.json</code> relative to the OpenFlows repository root. You can
+    override it with the <code>OPENFLOWS_REGISTRY_PATH</code> environment variable or the <code>--registry-path</code> CLI flag.
+  </Callout>
+
+  <h2>Top-Level Fields</h2>
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={TOP_LEVEL_ROWS} />
+
+  <h2>AI Gateway Fields</h2>
+  <p>
+    The <code>ai_gateway</code> object controls where LLM calls go. OpenFlows does not hold provider credentials; it passes
+    the per-agent <code>provider</code> and <code>model</code> values to the gateway, which handles authentication and audit.
+  </p>
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={GATEWAY_ROWS} />
+
+  <h2>Per-Agent Fields</h2>
+  <p>
+    Every key under <code>agents</code> is a role name. The five built-in roles are <code>nexus</code>, <code>forge</code>,
+    <code>sentinel</code>, <code>vessel</code>, and <code>lore</code>. You can add new roles if the Coder modules and skills
+    exist, but the built-in flow expects these five.
+  </p>
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={AGENT_ROWS} />
+  <Callout type="info" title="Per-agent overrides">
+    The top-level <code>coder_module</code> acts as a default. The per-agent <code>coder_module</code> overrides it. This
+    lets you mix CLIs across roles: FORGE can run Claude Code, SENTINEL can run Codex, and LORE can run Aider, all in the
+    same deployment.
+  </Callout>
+
+  <h2>Skills Array</h2>
+  <p>
+    Skills are plug-and-play knowledge packs. Each entry is a directory under <code>orchestration/plugin/skills/</code> that
+    contains a <code>SKILL.md</code> manifest and any supporting files. Adding a skill to an agent does not require any code
+    change; the skill is symlinked into the workspace at provisioning time.
+  </p>
+  <CodeBlock lang="json">{`{
+  "agents": {
+    "forge": {
+      "skills": [
+        "forge-coding",
+        "git-workflow",
+        { "name": "rust-patterns", "enabled": true }
+      ]
+    }
+  }
+}`}</CodeBlock>
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={SKILL_ROWS} />
+  <p>
+    A skill entry can be a simple string (the directory name, enabled by default) or an object with an explicit
+    <code>enabled</code> flag. Disabled skills are still loaded into the skill registry but are not injected into the
+    agent's workspace.
+  </p>
+
+  <h2>MCP Object</h2>
+  <p>
+    The <code>mcp</code> object registers Model Context Protocol servers for an agent. MCP servers can be defined locally
+    (command-based) or referenced from the Coder dashboard (central registration). Central servers are preferred for secrets
+    and versioning; local servers are useful for development and one-off tools.
+  </p>
+  <CodeBlock lang="json">{`{
+  "agents": {
+    "forge": {
+      "mcp": {
+        "github": {
+          "source": "coder",
+          "coder_server_name": "github"
+        },
+        "local-docs": {
+          "source": "local",
+          "command": "npx",
+          "args": ["-y", "@modelcontextprotocol/server-docs"],
+          "env": { "DOCS_ROOT": "/docs" }
+        }
+      }
+    }
+  }
+}`}</CodeBlock>
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={MCP_ROWS} />
+  <Callout type="warning" title="Local MCP server security">
+    Local command-based MCP servers run inside the workspace. Use them only for read-only or low-risk tools. High-privilege
+    tools like GitHub should be registered centrally in the Coder dashboard so that credentials and access control are
+    managed by Coder, not embedded in the workspace.
+  </Callout>
+
+  <h2>Validation Rules</h2>
+  <p>
+    The orchestrator validates the registry at load time and on every hot reload. Invalid configurations are logged and
+    the previous valid configuration is retained. This prevents a typo from stopping the entire team.
+  </p>
+  <DocsTable headers={['Field', 'Constraint']} rows={VALIDATION_ROWS} />
+  <CodeBlock lang="bash">{`# Validate the registry without starting the orchestrator
+openflows doctor registry`}</CodeBlock>
+
+  <h2>Common Configuration Changes</h2>
+  <p><strong>Scale FORGE workers:</strong></p>
+  <CodeBlock lang="json">{`"forge": { "instances": 4 }
+// → forge-1, forge-2, forge-3, forge-4
+// Each gets its own ephemeral Coder workspace.`}</CodeBlock>
+
+  <p><strong>Disable an agent:</strong></p>
+  <CodeBlock lang="json">{`"lore": { "active": false }
+// LORE will not be invoked`}</CodeBlock>
+
+  <p><strong>Switch an agent to a different model:</strong></p>
+  <CodeBlock lang="json">{`"sentinel": { "provider": "google", "model": "gemini-2.5-pro" }
+// SENTINEL now uses Gemini via the Coder AI Gateway`}</CodeBlock>
+
+  <p><strong>Use a different CLI for one agent:</strong></p>
+  <CodeBlock lang="json">{`"forge": { "coder_module": "aider" }
+// FORGE now uses Aider instead of Claude Code`}</CodeBlock>
+
+  <p><strong>Register a new skill:</strong></p>
+  <CodeBlock lang="json">{`"forge": { "skills": ["forge-coding", "rust-patterns"] }
+// The rust-patterns skill is loaded into every FORGE workspace`}</CodeBlock>
+
+  <h2>Recommended Model Assignments</h2>
+  <p>
+    These defaults balance reasoning quality, cost, and adversarial review. Mixing providers (Anthropic for FORGE, OpenAI
+    for SENTINEL) creates natural adversarial review  -  the reviewer uses a different model family than the code writer.
+  </p>
+  <DocsTable headers={['Agent', 'Provider / Model', 'CLI Module', 'Why']} rows={MODEL_ROWS} />
+  <Callout type="tip" title="Hot reload behavior">
+    <code>registry.json</code> is re-read on every NEXUS poll cycle. Changes to <code>instances</code>, <code>model</code>,
+    <code>coder_module</code>, <code>active</code>, <code>skills</code>, and <code>mcp</code> take effect without a restart.
+    Changes that are already in-flight (e.g. a FORGE worker running on the old model) finish their current task using the
+    previous configuration; new tasks use the updated configuration.
+  </Callout>
+</DocsLayout>

@@ -1,0 +1,630 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin  -  New Blog Post  -  Openflows</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+    <style>
+        .admin-page { min-height: 100vh; background: var(--bg-primary); }
+
+        /* ── Login Gate ── */
+        .login-gate {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        .login-card {
+            width: 100%;
+            max-width: 380px;
+            padding: 2.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            box-shadow: var(--shadow-lg);
+        }
+        .login-card h2 {
+            font-family: var(--font-display);
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .login-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1.5rem;
+        }
+        .login-card input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 1rem;
+            margin-bottom: 1rem;
+            outline: none;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .login-card input:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+        .login-card button {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--accent);
+            color: #fff;
+            border: none;
+            border-radius: 8px;
+            font-family: var(--font-display);
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: opacity 0.2s;
+        }
+        .login-card button:hover { opacity: 0.9; }
+        .login-error {
+            color: var(--vessel);
+            font-size: 0.85rem;
+            margin-top: 0.75rem;
+            display: none;
+        }
+        .login-error.visible { display: block; }
+
+        /* ── Admin Form ── */
+        .admin-container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 10rem 1.5rem 5rem;
+            display: none;
+        }
+        .admin-container.visible { display: block; }
+        .admin-container h1 {
+            font-family: var(--font-display);
+            font-size: clamp(1.8rem, 4vw, 2.2rem);
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+        .admin-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2.5rem;
+            font-size: 1rem;
+            line-height: 1.6;
+        }
+        .admin-form label {
+            display: block;
+            font-family: var(--font-display);
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.06em;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+        .admin-form input,
+        .admin-form textarea,
+        .admin-form select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            color: var(--text-primary);
+            font-family: var(--font-body);
+            font-size: 0.95rem;
+            margin-bottom: 1.5rem;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            outline: none;
+        }
+        .admin-form input:focus,
+        .admin-form textarea:focus,
+        .admin-form select:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px var(--accent-dim);
+        }
+        .admin-form textarea {
+            min-height: 140px;
+            line-height: 1.6;
+            resize: vertical;
+            font-family: var(--font-mono);
+            font-size: 0.88rem;
+        }
+        .admin-form textarea#bodyInput {
+            min-height: 360px;
+        }
+        .admin-form .field-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+        }
+        .admin-form .field-row input,
+        .admin-form .field-row select {
+            margin-bottom: 0;
+        }
+        .admin-form .field-group {
+            margin-bottom: 1.5rem;
+        }
+        .help-text {
+            font-size: 0.82rem;
+            color: var(--text-muted);
+            margin-top: -1.25rem;
+            margin-bottom: 1.5rem;
+            font-family: var(--font-mono);
+        }
+        .admin-actions {
+            display: flex;
+            gap: 1rem;
+            flex-wrap: wrap;
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid var(--border-color);
+        }
+        .admin-actions button {
+            padding: 0.75rem 1.5rem;
+            font-family: var(--font-display);
+            font-size: 0.85rem;
+            font-weight: 600;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: opacity 0.2s, transform 0.15s;
+            border: none;
+        }
+        .admin-actions button:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+        }
+        .admin-actions button:active { transform: translateY(0); }
+        .btn-generate {
+            background: var(--accent);
+            color: #fff;
+        }
+        .btn-preview {
+            background: var(--bg-elevated);
+            color: var(--text-primary);
+            border: 1px solid var(--border-color) !important;
+        }
+
+        /* ── Output Area ── */
+        .output-area {
+            margin-top: 2.5rem;
+            display: none;
+        }
+        .output-area.visible { display: block; }
+        .output-area h2 {
+            font-family: var(--font-display);
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+        .output-area pre {
+            background: var(--bg-code);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            overflow-x: auto;
+            font-family: var(--font-mono);
+            font-size: 0.8rem;
+            line-height: 1.55;
+            color: var(--text-secondary);
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        .output-actions {
+            display: flex;
+            gap: 0.75rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+        .output-actions button {
+            padding: 0.5rem 1rem;
+            font-family: var(--font-mono);
+            font-size: 0.78rem;
+            border-radius: 6px;
+            cursor: pointer;
+            border: 1px solid var(--border-color);
+            background: var(--bg-surface);
+            color: var(--text-primary);
+            transition: border-color 0.2s, background 0.2s;
+        }
+        .output-actions button:hover {
+            border-color: var(--accent);
+            background: var(--bg-elevated);
+        }
+
+        /* ── Instructions ── */
+        .admin-instructions {
+            background: var(--bg-surface);
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 1.25rem;
+            margin-bottom: 2rem;
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            line-height: 1.65;
+        }
+        .admin-instructions code {
+            font-family: var(--font-mono);
+            font-size: 0.82em;
+            background: var(--bg-code);
+            padding: 0.15em 0.4em;
+            border-radius: 4px;
+            border: 1px solid var(--border-dim);
+        }
+        .admin-instructions strong {
+            color: var(--text-primary);
+        }
+
+        @media (max-width: 640px) {
+            .admin-form .field-row { grid-template-columns: 1fr; }
+            .admin-container { padding-top: 8rem; }
+            .login-card { padding: 1.75rem; }
+        }
+    </style>
+</head>
+<body class="admin-page">
+    <div class="noise-overlay"></div>
+    <div class="bg-grid"></div>
+
+    <!-- Login Gate -->
+    <div class="login-gate" id="loginGate">
+        <div class="login-card">
+            <h2>Admin Access</h2>
+            <p>Enter the admin password to create blog posts.</p>
+            <input type="password" id="passwordInput" placeholder="Password" autofocus>
+            <button id="loginBtn">Unlock</button>
+            <p class="login-error" id="loginError">Incorrect password.</p>
+        </div>
+    </div>
+
+    <!-- Admin Form -->
+    <main class="admin-container" id="adminContainer">
+        <nav style="margin-bottom: 1.5rem;">
+            <a href="../blog/" style="color: var(--text-muted); text-decoration: none; font-size: 0.85rem; font-family: var(--font-mono);">← Back to Blog</a>
+        </nav>
+        <h1>New Blog Post</h1>
+        <p class="admin-subtitle">Paste clean HTML body content below. The generator wraps it in the site template with navigation, theme toggle, and footer.</p>
+
+        <div class="admin-instructions">
+            <strong>How to use:</strong> Write your article in any editor, then paste the raw HTML body here.
+            The generator will wrap it in the full page template with nav, theme toggle, breadcrumbs, meta tags, and footer.
+            <br><br>
+            <strong>Supported tags:</strong> <code>&lt;p&gt;</code>, <code>&lt;h2&gt;</code>, <code>&lt;h3&gt;</code>, <code>&lt;ul&gt;</code>, <code>&lt;li&gt;</code>, <code>&lt;a&gt;</code>, <code>&lt;strong&gt;</code>, <code>&lt;em&gt;</code>, <code>&lt;code&gt;</code>, <code>&lt;pre&gt;</code>, <code>&lt;blockquote&gt;</code>, <code>&lt;img&gt;</code>, <code>&lt;div class="callout callout-info"&gt;</code>, etc.
+        </div>
+
+        <form class="admin-form" id="postForm">
+            <label for="title">Article Title</label>
+            <input type="text" id="title" placeholder="Introducing Openflows 2.0" required>
+
+            <div class="field-row">
+                <div class="field-group">
+                    <label for="slug">URL Slug</label>
+                    <input type="text" id="slug" placeholder="introducing-openflows-2" required>
+                    <p class="help-text">Filename: <span id="slugPreview">article.html</span></p>
+                </div>
+                <div class="field-group">
+                    <label for="date">Publish Date</label>
+                    <input type="date" id="date" required>
+                </div>
+            </div>
+
+            <label for="tags">Tags</label>
+            <input type="text" id="tags" placeholder="Announcement, Release, Engineering">
+            <p class="help-text">Comma-separated. Shown as chips on the article card.</p>
+
+            <label for="description">Meta Description</label>
+            <input type="text" id="description" placeholder="One or two sentences for search engines and social cards.">
+            <p class="help-text">Used in &lt;meta name="description"&gt; and blog card excerpt.</p>
+
+            <label for="bodyInput">Article Body (HTML)</label>
+            <textarea id="bodyInput" placeholder="&lt;h2&gt;Introduction&lt;/h2&gt;
+&lt;p&gt;Your article content here...&lt;/p&gt;
+&lt;p&gt;Use any HTML you need.&lt;/p&gt;
+&lt;div class=&quot;callout callout-info&quot;&gt;
+    &lt;strong&gt;Tip&lt;/strong&gt;  -  This is an info callout.
+&lt;/div&gt;" rows="20" required></textarea>
+            <p class="help-text">Paste raw HTML. No markdown conversion  -  you have full control.</p>
+
+            <div class="admin-actions">
+                <button type="button" class="btn-generate" id="btnGenerate">Generate HTML Page</button>
+                <button type="button" class="btn-preview" id="btnPreview">Preview in New Tab</button>
+            </div>
+        </form>
+
+        <div class="output-area" id="outputArea">
+            <h2>Generated HTML</h2>
+            <pre id="outputCode"></pre>
+            <div class="output-actions">
+                <button id="btnCopy">Copy to Clipboard</button>
+                <button id="btnDownload">Download .html</button>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+                <p>An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="../#team">The Team</a></li>
+                    <li><a href="../#how-it-works">How It Works</a></li>
+                    <li><a href="../#architecture">Architecture</a></li>
+                    <li><a href="../#features">Features</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="../docs/getting-started/">Getting Started</a></li>
+                    <li><a href="../docs/">Documentation</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>MIT License · <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
+            <p>Built by The AgenticFlow Team</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/shared.js"></script>
+    <script>
+    (function(){
+        const PASSWORD_HASH = '5e884898da28047151d0e56f8dc6292773603d0d6aabbdd62a11ef721d1542d8'; // "password"  -  CHANGE THIS
+        const slugInput = document.getElementById('slug');
+        const slugPreview = document.getElementById('slugPreview');
+        const dateInput = document.getElementById('date');
+        const outputArea = document.getElementById('outputArea');
+        const outputCode = document.getElementById('outputCode');
+        const loginGate = document.getElementById('loginGate');
+        const adminContainer = document.getElementById('adminContainer');
+        const loginError = document.getElementById('loginError');
+        let lastHtml = '';
+
+        // Default date to today
+        dateInput.valueAsDate = new Date();
+
+        slugInput.addEventListener('input', () => {
+            slugPreview.textContent = (slugInput.value || 'article') + '.html';
+        });
+
+        async function sha256(str) {
+            const buf = await crypto.subtle.digest('SHA-256', new TextEncoder().encode(str));
+            return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('');
+        }
+
+        async function checkLogin() {
+            const pw = document.getElementById('passwordInput').value;
+            const hash = await sha256(pw);
+            if (hash === PASSWORD_HASH) {
+                loginGate.style.display = 'none';
+                adminContainer.classList.add('visible');
+                localStorage.setItem('admin_auth', hash);
+            } else {
+                loginError.classList.add('visible');
+                document.getElementById('passwordInput').value = '';
+                document.getElementById('passwordInput').focus();
+            }
+        }
+
+        // Auto-login if already authenticated
+        (async function autoLogin() {
+            const stored = localStorage.getItem('admin_auth');
+            if (stored && stored === PASSWORD_HASH) {
+                loginGate.style.display = 'none';
+                adminContainer.classList.add('visible');
+            }
+        })();
+
+        document.getElementById('loginBtn').addEventListener('click', checkLogin);
+        document.getElementById('passwordInput').addEventListener('keydown', e => {
+            if (e.key === 'Enter') checkLogin();
+        });
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
+        function formatDate(d) {
+            const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+            const date = new Date(d + 'T00:00:00');
+            return months[date.getMonth()] + ' ' + date.getDate() + ', ' + date.getFullYear();
+        }
+
+        function generateHtml() {
+            const title = document.getElementById('title').value.trim();
+            const slug = document.getElementById('slug').value.trim() || title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            const date = document.getElementById('date').value;
+            const tags = document.getElementById('tags').value.split(',').map(t => t.trim()).filter(Boolean);
+            const description = document.getElementById('description').value.trim();
+            const body = document.getElementById('bodyInput').value.trim();
+
+            if (!title || !body || !date) {
+                alert('Please fill in Title, Date, and Article Body.');
+                return null;
+            }
+
+            const tagHtml = tags.map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('\n                ');
+            const formattedDate = formatDate(date);
+            const escTitle = escapeHtml(title);
+            const escDesc = escapeHtml(description || title);
+
+            return `<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>${escTitle}  -  Openflows</title>
+    <meta name="description" content="${escDesc}">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;450;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="../assets/css/variables.css">
+    <link rel="stylesheet" href="../assets/css/base.css">
+    <link rel="stylesheet" href="../assets/css/blog.css">
+</head>
+<body class="article-page">
+    <div class="noise-overlay"></div>
+    <div class="bg-grid"></div>
+
+    <nav>
+        <div class="nav-container">
+            <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+            <button class="nav-hamburger" aria-label="Open menu" aria-expanded="false">☰</button>
+            <div class="nav-links">
+                <a href="../#team">The Team</a>
+                <a href="../#how-it-works">How It Works</a>
+                <a href="../docs/">Docs</a>
+                <a href="../demos/">Demos</a>
+                <a href="../use-cases/">Use Cases</a>
+                <a href="./">Blog</a>
+                <a href="../developers/">Developers</a>
+                <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a>
+                <button class="theme-toggle" data-theme-toggle aria-label="Toggle theme" title="Toggle theme">
+                    <span class="sun">☀️</span>
+                    <span class="moon">🌙</span>
+                </button>
+                <a href="../#get-started" class="nav-cta">Get Started</a>
+            </div>
+        </div>
+    </nav>
+
+    <article>
+        <header class="article-hero">
+            <nav class="breadcrumbs-article">
+                <a href="../">Home</a>
+                <span class="sep">›</span>
+                <a href="./">Blog</a>
+                <span class="sep">›</span>
+                <span>${escTitle}</span>
+            </nav>
+            <h1>${escTitle}</h1>
+            <div class="article-meta-bar">
+                <time datetime="${date}">${formattedDate}</time>
+                ${tagHtml ? '\n                ' + tagHtml : ''}
+            </div>
+        </header>
+
+        <div class="article-body">
+${body.split('\n').map(l => '            ' + l).join('\n')}
+        </div>
+
+        <footer class="article-footer">
+            <div class="article-footer-cta">
+                <p>Ready to ship code with zero human intervention?</p>
+                <a href="../docs/getting-started/">Get Started →</a>
+            </div>
+        </footer>
+    </article>
+
+    <footer>
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="../" class="logo"><div class="logo-icon">🌊</div><span class="logo-text">Openflows</span></a>
+                <p>An open-source Rust framework that orchestrates AI agents to discover GitHub issues, write code, review it, and merge pull requests autonomously.</p>
+            </div>
+            <div class="footer-links">
+                <h4>Product</h4>
+                <ul>
+                    <li><a href="../#team">The Team</a></li>
+                    <li><a href="../#how-it-works">How It Works</a></li>
+                    <li><a href="../#architecture">Architecture</a></li>
+                    <li><a href="../#features">Features</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Resources</h4>
+                <ul>
+                    <li><a href="../docs/getting-started/">Getting Started</a></li>
+                    <li><a href="../docs/">Documentation</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/TUTORIAL.md" target="_blank" rel="noopener noreferrer">Tutorial</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/blob/main/BUILD.md" target="_blank" rel="noopener noreferrer">Build Guide</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h4>Community</h4>
+                <ul>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/discussions" target="_blank" rel="noopener noreferrer">Discussions</a></li>
+                    <li><a href="https://github.com/The-AgenticFlow/Openflows/issues" target="_blank" rel="noopener noreferrer">Report Issue</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>MIT License · <a href="https://github.com/The-AgenticFlow/Openflows" target="_blank" rel="noopener noreferrer">Star on GitHub</a></p>
+            <p>Built by The AgenticFlow Team</p>
+        </div>
+    </footer>
+
+    <script src="../assets/js/shared.js"></script>
+</body>
+</html>`;
+        }
+
+        document.getElementById('btnGenerate').addEventListener('click', () => {
+            const html = generateHtml();
+            if (!html) return;
+            lastHtml = html;
+            outputCode.textContent = html;
+            outputArea.classList.add('visible');
+            outputArea.scrollIntoView({ behavior: 'smooth' });
+        });
+
+        document.getElementById('btnPreview').addEventListener('click', () => {
+            const html = generateHtml();
+            if (!html) return;
+            const blob = new Blob([html], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            window.open(url, '_blank');
+        });
+
+        document.getElementById('btnCopy').addEventListener('click', async () => {
+            if (!lastHtml) return;
+            await navigator.clipboard.writeText(lastHtml);
+            const btn = document.getElementById('btnCopy');
+            const prev = btn.textContent;
+            btn.textContent = 'Copied!';
+            setTimeout(() => btn.textContent = prev, 1500);
+        });
+
+        document.getElementById('btnDownload').addEventListener('click', () => {
+            if (!lastHtml) return;
+            const slug = document.getElementById('slug').value.trim() || document.getElementById('title').value.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '');
+            const blob = new Blob([lastHtml], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = slug + '.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        });
+    })();
+    </script>
+</body>
+</html>

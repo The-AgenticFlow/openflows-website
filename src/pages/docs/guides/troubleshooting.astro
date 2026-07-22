@@ -1,0 +1,75 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const FAILURE_ROWS = [
+  ['Coder unreachable', 'NEXUS cannot provision or destroy workspaces. Check <code>CODER_URL</code> and <code>CODER_NEXUS_TOKEN</code>.'],
+  ['GitHub external auth expired', 'Workers lose git push/pull access. Re-authenticate in Coder admin or user settings.'],
+  ['Worker timeout', 'A FORGE or SENTINEL workspace exceeded its step timeout. Check workspace logs and LLM gateway health.'],
+  ['SENTINEL rejection loop', 'SENTINEL rejects every segment repeatedly. Escalate to AwaitingHuman and review the plan.'],
+  ['Merge conflict', 'PR is no longer mergeable. VESSEL retries; if unresolved, escalate to AwaitingHuman.'],
+  ['Redis connection lost', 'All state operations fail. Controller enters degraded mode and retries.'],
+  ['AI Gateway 429', 'Rate limit hit. Back off and scale gateway capacity if sustained.'],
+  ['STATUS.json blocked', 'Agent wrote a blocked status. Read the <code>blocker</code> object for the exact question.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Troubleshooting' }]}>
+  <h1>Troubleshooting</h1>
+
+  <p>
+    OpenFlows is a distributed system: a Coder control plane, a Redis state store, a Coder AI
+    Gateway, an orchestrator process running in a NEXUS workspace, and a fleet of ephemeral
+    worker workspaces. When something fails, the failure can appear anywhere in that chain.
+    This guide walks through common failures, diagnostics, and how to read the artifacts the
+    system leaves behind, especially <code>STATUS.json</code>.
+  </p>
+
+  <p>
+    The first rule of troubleshooting is to check the controller log. The NEXUS workspace
+    writes to <code>/tmp/openflows-controller.log</code>, and that log contains structured
+    events from the controller and every worker. The second rule is to check Redis, which is
+    the source of truth for ticket and worker state. The third rule is to read
+    <code>STATUS.json</code> when a worker writes one; it is the worker's own statement of
+    what went wrong.
+  </p>
+
+  <h2>Common Failures</h2>
+
+  <DocsTable headers={['Failure', 'Symptom / Cause']} rows={FAILURE_ROWS} />
+
+  <h2>Diagnostics</h2>
+
+  <p>
+    The <code>openflows doctor</code> command runs a battery of health checks against the
+    orchestrator, Coder, Redis, and the AI Gateway. Run it from the NEXUS workspace before
+    digging into manual logs.
+  </p>
+
+  <CodeBlock lang="bash">{`openflows doctor --tenant my-team
+`}</CodeBlock>
+
+  <p>
+    The doctor command checks:
+  </p>
+
+  <ul>
+    <li>Redis connectivity and keyspace prefix integrity.</li>
+    <li>Coder API reachability and token validity.</li>
+    <li>AI Gateway reachability and model availability.</li>
+    <li>GitHub external auth status for the tenant.</li>
+    <li>Stale workers and orphaned tickets.</li>
+    <li>Disk space and workspace quota on the NEXUS workspace.</li>
+  </ul>
+
+  <p>
+    If doctor reports a failure, it prints a remediation hint. If it reports all green but the
+    system still misbehaves, the issue is likely in the LLM-driven agent logic, not the
+    infrastructure.
+  </p>
+
+  <Callout type="info" title="Continue reading">
+    See <a href="/docs/guides/troubleshooting-connectivity">Connectivity &amp; Auth</a> for Coder, token, and GitHub external auth issues.
+    See <a href="/docs/guides/troubleshooting-workers">Worker &amp; Pipeline Issues</a> for worker timeouts, SENTINEL loops, merge conflicts, and STATUS.json.
+  </Callout>
+</DocsLayout>

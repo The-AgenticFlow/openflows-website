@@ -29,7 +29,7 @@
   gap: var(--space-6);
 }
 
-/* Desktop Nav — centered */
+/* Desktop Nav  -  centered */
 .desktopNav {
   display: flex;
   align-items: center;
@@ -45,7 +45,7 @@
   align-items: center;
 }
 
-/* Nav links — IZHUB exact: opacity .86 → 1 on hover, font-weight 460 */
+/* Nav links  -  IZHUB exact: opacity .86 → 1 on hover, font-weight 460 */
 .navLink {
   display: inline-flex;
   align-items: center;
@@ -104,7 +104,7 @@
   font-variant-numeric: tabular-nums;
 }
 
-/* Mega Panel — IZHUB: white bg, fog border */
+/* Mega Panel  -  IZHUB: white bg, fog border */
 .megaPanel {
   position: absolute;
   top: var(--nav-height);
@@ -238,7 +238,7 @@
   transform: translateY(-7px) rotate(-45deg);
 }
 
-/* Mobile Drawer — IZHUB: white bg */
+/* Mobile Drawer  -  IZHUB: white bg */
 .mobileMenu {
   position: fixed;
   top: var(--nav-height);

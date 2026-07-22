@@ -1,0 +1,97 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Multi-Tenancy' }, { label: 'CLI Reference' }]}>
+  <h1>Multi-Tenancy CLI Reference</h1>
+  <p>
+    Commands for managing tenants in a multi-tenant OpenFlows deployment. For an overview
+    of the tenant model, see the <a href="/docs/guides/multi-tenancy">main multi-tenancy guide</a>.
+  </p>
+
+  <h2>Adding a Tenant</h2>
+  <p>
+    Use the CLI to create a tenant. The command creates the Coder group, provisions the tenant
+    NEXUS workspace, and registers the Redis namespace. After creation, the tenant can start
+    polling GitHub issues immediately.
+  </p>
+  <CodeBlock lang="bash">{`./scripts/prod.sh tenant owner/repo --name my-team
+`}</CodeBlock>
+  <p>
+    The command performs the following steps:
+  </p>
+  <ol>
+    <li>Validates that the Coder deployment is reachable and that the caller has permission to create groups.</li>
+    <li>Creates the Coder group <code>my-team</code> if it does not exist.</li>
+    <li>Creates the NEXUS service account and provisions the workspace <code>openflows-nexus-my-team</code>.</li>
+    <li>Registers the namespace <code>ns:my-team:</code> in Redis.</li>
+    <li>Binds the repository <code>owner/repo</code> to the tenant.</li>
+    <li>Writes the tenant configuration to <code>orchestration/tenants/my-team.json</code>.</li>
+  </ol>
+
+  <h2>Removing a Tenant</h2>
+  <p>
+    Removing a tenant is destructive. It stops all workers, tears down the NEXUS workspace,
+    and optionally archives or deletes the Redis keyspace. The CLI asks for confirmation
+    unless the <code>--force</code> flag is provided.
+  </p>
+  <CodeBlock lang="bash">{`# Archive data and remove the tenant
+./scripts/prod.sh tenant remove my-team --archive
+
+# Delete data immediately without confirmation
+./scripts/prod.sh tenant remove my-team --force
+`}</CodeBlock>
+
+  <Callout type="warning" title="Removing a tenant does not close open PRs">
+    The tenant removal command stops new work and tears down the controller. It does not
+    close or merge in-flight PRs. Review any pending PRs before removing a tenant, or
+    transfer them to another tenant manually.
+  </Callout>
+
+  <h2>Isolating a Tenant</h2>
+  <p>
+    Isolation is a soft pause. It suspends all worker slots, stops NEXUS from polling GitHub,
+    and prevents new workspace provisioning. Existing workspaces are not destroyed, but they
+    are marked as suspended and will not receive new tasks. Isolation is useful for maintenance,
+    incident response, or compliance holds.
+  </p>
+  <CodeBlock lang="bash">{`# Isolate a tenant
+./scripts/prod.sh tenant isolate my-team
+
+# Resume normal operation
+./scripts/prod.sh tenant resume my-team
+`}</CodeBlock>
+  <p>
+    Isolation sets the <code>ns:&#123;tenant&#125;:isolated</code> flag in Redis. NEXUS checks this flag
+    on every poll cycle. If it is set, NEXUS skips discovery and assignment for that tenant.
+    Worker slots already assigned to a ticket are allowed to finish their current segment, but
+    they are not given new work.
+  </p>
+
+  <h2>CLI Commands Summary</h2>
+  <CodeBlock lang="bash">{`# Create a tenant
+./scripts/prod.sh tenant owner/repo --name my-team
+
+# Remove a tenant (with confirmation)
+./scripts/prod.sh tenant remove my-team
+
+# Remove a tenant without confirmation
+./scripts/prod.sh tenant remove my-team --force
+
+# Isolate a tenant (suspends all workers)
+./scripts/prod.sh tenant isolate my-team
+
+# Resume a previously isolated tenant
+./scripts/prod.sh tenant resume my-team
+
+# List all tenants
+./scripts/prod.sh tenant list
+`}</CodeBlock>
+
+  <Callout type="info" title="Tenant configuration is hot-reloaded">
+    Adding or removing a tenant does not require a global controller restart. The NEXUS
+    workspace for the tenant starts immediately; the Redis namespace is created on first
+    write. Existing tenants continue to operate unchanged.
+  </Callout>
+</DocsLayout>

@@ -210,7 +210,7 @@ export default function FlowDiagram() {
 
                                 {/* LORE → NEXUS: docs committed (curved back to start) */}
                                 <path d="M 620 340 Q 700 400 400 400 Q 100 400 100 300 Q 100 200 130 140" stroke="var(--color-graphite)" strokeWidth="1.5" fill="none" strokeDasharray="6 3" markerEnd="url(#arrowhead-muted)" />
-                                <text x="100" y="385" textAnchor="middle" className={styles.flowLabelSvgMuted}>docs committed — cycle repeats</text>
+                                <text x="100" y="385" textAnchor="middle" className={styles.flowLabelSvgMuted}>docs committed  -  cycle repeats</text>
 
                                 {/* Agent Nodes */}
                                 {/* NEXUS */}

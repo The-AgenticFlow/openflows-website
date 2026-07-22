@@ -24,7 +24,7 @@ const FOOTER_LINKS = [
     heading: 'Company',
     links: [
       { label: 'About', href: '/about' },
-      { label: 'Use Cases', href: '/use-cases' },
+      { label: 'Use Cases', href: '/docs' },
       { label: 'Research', href: '/research' },
       { label: 'Developer', href: '/developer' },
     ],
@@ -68,13 +68,13 @@ export default function Footer() {
     <footer className={styles.footer}>
       <div className={styles.container}>
 
-        {/* ── Brand + Link columns — IZHUB layout ── */}
+        {/* ── Brand + Link columns  -  IZHUB layout ── */}
         <div className={styles.columns}>
           {/* Brand column */}
           <div className={styles.brandColumn}>
             <Logo />
             <p className={styles.brandHeading}>Orchestration on top of your Coder environment.</p>
-            <p className={styles.brandDesc}>OpenFlows sits on top of Coder so engineering teams can focus on architecture. A flow-agnostic agentic dev team runs safely, securely, and with full governance — every agent action auditable from issue to merge.</p>
+            <p className={styles.brandDesc}>OpenFlows sits on top of Coder so engineering teams can focus on architecture. A flow-agnostic agentic dev team runs safely, securely, and with full governance  -  every agent action auditable from issue to merge.</p>
           </div>
 
           {/* Link columns */}
@@ -138,7 +138,7 @@ export default function Footer() {
 
       </div>
 
-      {/* Giant background text — IZHUB style */}
+      {/* Giant background text  -  IZHUB style */}
       <div className={styles.bgText} aria-hidden="true">OpenFlows</div>
     </footer>
   )

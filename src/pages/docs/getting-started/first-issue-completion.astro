@@ -1,0 +1,157 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const WATCH_TABLE = [
+  ['OpenFlows orchestrator logs', 'Follow the main orchestrator process.', '<code>docker logs -f openflows</code>'],
+  ['Coder workspace events', 'Logs workspace provisioning and tunnel connections.', '<code>docker logs -f coder</code>'],
+  ['GitHub issue timeline', 'NEXUS posts progress comments and PR reference.', 'Open the issue on GitHub.'],
+  ['GitHub PR checks', 'VESSEL waits here before merging.', 'Open PR → Checks tab.'],
+  ['Redis SharedStore', 'Raw state machine keys and event ring.', '<code>redis-cli MONITOR</code>'],
+  ['OpenFlows TUI', 'Real-time dashboard showing tickets, workers, and PRs.', '<code>cargo run -p openflows-tui</code>'],
+];
+
+const PHASE_LOGS = [
+  ['NEXUS detection', '<code>[nexus] discovered issue #42</code>', 'Issue is now a ticket in SharedStore.'],
+  ['FORGE planning', '<code>[forge] writing PLAN.md for ticket-42</code>', 'PLAN.md is being written.'],
+  ['SENTINEL plan review', '<code>[sentinel] CONTRACT.md: AGREED for ticket-42</code>', 'FORGE can begin implementation.'],
+  ['FORGE implementation', '<code>[forge] committed segment-1</code>', 'One segment is complete.'],
+  ['SENTINEL segment eval', '<code>[sentinel] segment-1-eval.md: APPROVED</code>', 'Implementation advances.'],
+  ['Final review', '<code>[sentinel] final-review.md: APPROVED</code>', 'FORGE will now open the PR.'],
+  ['PR created', '<code>[forge] PR #123 opened for ticket-42</code>', 'VESSEL takes over.'],
+  ['VESSEL merge', '<code>[vessel] PR #123 mergeable=true, checks=passed</code>', 'PR is about to be merged.'],
+  ['Teardown', '<code>[nexus] tearing down workspace ws-forge-42</code>', 'Workspace destroyed.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'First Issue Walkthrough' }, { label: 'Completion' }]}>
+  <h1>First Issue Walkthrough: Completion</h1>
+  <p>
+    This page covers the review, PR creation, merge, and teardown phases. For the overview,
+    see the <a href="/docs/getting-started/first-issue">main walkthrough page</a>.
+  </p>
+
+  <h2>Step 6: SENTINEL reviews every segment</h2>
+
+  <p>
+    After each segment commit, SENTINEL is provisioned in its own fresh Coder workspace and evaluates the segment.
+    SENTINEL writes <code>segment-N-eval.md</code> with either <code>APPROVED</code> or <code>REJECTED</code>.
+  </p>
+
+  <p>
+    SENTINEL checks the same things a human reviewer would: correctness, security, test coverage, edge cases,
+    naming consistency, and whether the segment satisfies the contract.
+  </p>
+
+  <CodeBlock lang="text">{`[sentinel] evaluating segment-1 for ticket-42
+[sentinel] segment-1-eval.md: APPROVED
+[forge] starting segment-2 for ticket-42
+[sentinel] evaluating segment-2 for ticket-42
+[sentinel] segment-2-eval.md: REJECTED - missing concurrent-request test
+[forge] revising segment-2 for ticket-42
+[sentinel] segment-2-eval.md: APPROVED`}</CodeBlock>
+
+  <h2>Step 7: SENTINEL final review and FORGE opens the PR</h2>
+
+  <p>
+    When all segments are approved, SENTINEL performs a final review of the whole branch. It writes
+    <code>final-review.md</code>, which must be <code>APPROVED</code> before the pull request can be opened.
+  </p>
+
+  <p>
+    Once approved, FORGE pushes the branch to GitHub and opens a pull request. It also writes
+    <code>STATUS.json</code> with status <code>PR_OPENED</code>.
+  </p>
+
+  <CodeBlock lang="text">{`[sentinel] final-review.md: APPROVED for ticket-42
+[forge] pushing branch forge/ticket-42
+[forge] PR #123 opened for ticket-42
+[forge] STATUS.json -> PR_OPENED { pr_number: 123 }`}</CodeBlock>
+
+  <Callout type="tip" title="PRs are always linked to the issue">
+    FORGE includes <code>Closes #42</code> in the PR description, so the issue closes automatically when VESSEL merges.
+  </Callout>
+
+  <h2>Step 8: VESSEL polls CI and merges</h2>
+
+  <p>
+    VESSEL polls the GitHub API for the pull request status, checks the <code>mergeable</code> field,
+    and watches CI checks. The default polling interval is 10 seconds.
+  </p>
+
+  <p>
+    VESSEL handles merge conflicts, CI failures, required reviews, and branch protection rules. When the PR is
+    mergeable and all checks pass, VESSEL performs a squash merge.
+  </p>
+
+  <CodeBlock lang="text">{`[vessel] monitoring PR #123 for ticket-42
+[vessel] PR #123 mergeable=true, checks=passed
+[vessel] squash-merged PR #123, ticket-42 merged`}</CodeBlock>
+
+  <h2>Step 9: LORE documents the change</h2>
+
+  <p>
+    After the merge, LORE writes the required documentation:
+  </p>
+
+  <ul>
+    <li>An <strong>ADR</strong> in <code>docs/adr/</code> for architectural changes.</li>
+    <li>An updated <code>CHANGELOG.md</code> entry.</li>
+    <li>Optional README or inline documentation updates.</li>
+  </ul>
+
+  <CodeBlock lang="text">{`[lore] documenting ticket-42
+[lore] wrote docs/adr/0042-rate-limiting-middleware.md
+[lore] updated CHANGELOG.md
+[lore] committed documentation to main`}</CodeBlock>
+
+  <h2>Step 10: NEXUS tears down the workspace</h2>
+
+  <p>
+    After the PR is merged and documentation is committed, NEXUS destroys the FORGE workspace. No lingering
+    source trees, cached build artifacts, stale tokens, or disk bloat.
+  </p>
+
+  <CodeBlock lang="text">{`[nexus] ticket-42 complete, scheduling teardown
+[nexus] tearing down workspace ws-forge-7a3f
+[nexus] worker forge-7a3f returned to idle pool
+[nexus] next poll in 60s`}</CodeBlock>
+
+  <Callout type="info" title="No credentials survive teardown">
+    The GitHub session and LLM access live in the Coder control plane, not in the workspace.
+    Even if a workspace were inspected before teardown, an attacker would find only repository code.
+  </Callout>
+
+  <h2>How to watch the whole flow</h2>
+
+  <DocsTable headers={['Source', 'What it shows', 'Command']} rows={WATCH_TABLE} />
+
+  <h3>Sample log sequence</h3>
+
+  <DocsTable headers={['Phase', 'Log line', 'Meaning']} rows={PHASE_LOGS} />
+
+  <CodeBlock lang="bash">{`# Start the real-time dashboard
+cargo run -p openflows-tui`}</CodeBlock>
+
+  <h2>Common questions</h2>
+
+  <p>
+    <strong>How long does the full cycle take?</strong> A simple documentation fix can complete in minutes.
+    A multi-segment feature with long CI can take an hour or more.
+  </p>
+
+  <p>
+    <strong>What if SENTINEL rejects the plan?</strong> FORGE revises and SENTINEL reviews again.
+    If agents cannot agree, NEXUS marks the ticket <code>AwaitingHuman</code>.
+  </p>
+
+  <p>
+    <strong>Can I watch the workspace like a human developer?</strong> Yes. You can open the workspace in Coder's
+    web IDE or use <code>coder ssh</code>. However, do not edit files manually unless you intend to take over the ticket.
+  </p>
+
+  <p>
+    <strong>What happens if CI is flaky?</strong> VESSEL is patient and will retry the mergeable check.
+    If CI fails consistently, VESSEL escalates to <code>AwaitingHuman</code> after the configured timeout.
+  </p>
+</DocsLayout>

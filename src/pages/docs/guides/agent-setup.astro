@@ -3,10 +3,10 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
 const TOP_LEVEL_ROWS = [
-  ['<code>workspace_provider</code>', 'string', '<code>"coder"</code> — tells OpenFlows to provision ephemeral Coder workspaces instead of local Git worktrees.'],
+  ['<code>workspace_provider</code>', 'string', '<code>"coder"</code>  -  tells OpenFlows to provision ephemeral Coder workspaces instead of local Git worktrees.'],
   ['<code>coder_module</code>', 'string', 'Default Coder Registry module that installs the code agent CLI into every workspace (e.g. <code>"claude-code"</code>, <code>"codex"</code>, <code>"aider"</code>). Overridden per-agent.'],
-  ['<code>ai_gateway.primary</code>', 'string', '<code>"coder"</code> — route all LLM calls through the Coder AI Gateway. API keys are managed centrally and never exposed inside workspaces.'],
-  ['<code>ai_gateway.fallback</code>', 'string', '<code>"litellm"</code> — fall back to a LiteLLM proxy when the Gateway is unavailable (air-gapped or self-hosted providers).'],
+  ['<code>ai_gateway.primary</code>', 'string', '<code>"coder"</code>  -  route all LLM calls through the Coder AI Gateway. API keys are managed centrally and never exposed inside workspaces.'],
+  ['<code>ai_gateway.fallback</code>', 'string', '<code>"litellm"</code>  -  fall back to a LiteLLM proxy when the Gateway is unavailable (air-gapped or self-hosted providers).'],
 ];
 
 const AGENT_ROWS = [
@@ -18,7 +18,7 @@ const AGENT_ROWS = [
 ];
 
 const MODEL_ROWS = [
-  ['<code style="color:var(--color-agent-forge)">FORGE</code>', 'anthropic / claude-sonnet-4-20250514', 'claude-code', 'Primary coding agent — needs top-tier reasoning'],
+  ['<code style="color:var(--color-agent-forge)">FORGE</code>', 'anthropic / claude-sonnet-4-20250514', 'claude-code', 'Primary coding agent  -  needs top-tier reasoning'],
   ['<code style="color:var(--color-agent-nexus)">NEXUS</code>', 'anthropic / claude-sonnet-4-20250514', 'claude-code', 'Orchestrator – needs reliable decision-making'],
   ['<code style="color:var(--color-agent-sentinel)">SENTINEL</code>', 'openai / gpt-4.1', 'codex', 'Code review – strong reasoning, different provider for adversarial review'],
   ['<code style="color:var(--color-agent-vessel)">VESSEL</code>', 'openai / gpt-4o', 'codex', 'CI/CD scripting – fast and cost-effective'],
@@ -41,7 +41,7 @@ const MODEL_ROWS = [
     code agent CLI, and how many parallel worker instances to run.
   </p>
 
-  <h2>registry.json — The Single Source of Truth</h2>
+  <h2>registry.json  -  The Single Source of Truth</h2>
   <CodeBlock lang="json">{`{
   "workspace_provider": "coder",
   "coder_module": "claude-code",
@@ -98,7 +98,7 @@ const MODEL_ROWS = [
   <Callout type="info" title="Mixing CLI modules across agents">
     The <code>coder_module</code> field is set per-agent, so you can mix CLIs across roles.
     FORGE can run <code>claude-code</code> while SENTINEL uses <code>codex</code> and LORE uses
-    <code>aider</code> — each gets the right tool for the job. The top-level
+    <code>aider</code>  -  each gets the right tool for the job. The top-level
     <code>coder_module</code> acts as a default; per-agent values override it.
   </Callout>
 
@@ -124,26 +124,26 @@ const MODEL_ROWS = [
   <p><strong>GitHub identity</strong> (handled by Coder):</p>
   <CodeBlock lang="bash">{`# In Coder mode, GitHub identity is handled by Coder external auth.
 # Each agent inherits its GitHub identity from the logged-in Coder
-# user via the git-config module — nothing to configure in registry.json.
+# user via the git-config module  -  nothing to configure in registry.json.
 # Configure a GitHub external auth provider in your Coder deployment.`}</CodeBlock>
 
   <h2>Recommended Model Assignments</h2>
   <p>
     These defaults balance reasoning quality, cost, and adversarial review. Mixing providers
-    (Anthropic for FORGE, OpenAI for SENTINEL) creates natural adversarial review — the code
+    (Anthropic for FORGE, OpenAI for SENTINEL) creates natural adversarial review  -  the code
     reviewer uses a different model family than the code writer.
   </p>
   <DocsTable headers={['Agent', 'Provider / Model', 'CLI Module', 'Why']} rows={MODEL_ROWS} />
 
   <Callout type="info" title="Hot Reload">
-    <code>registry.json</code> is re-read on every NEXUS poll cycle — no restart required when
+    <code>registry.json</code> is re-read on every NEXUS poll cycle  -  no restart required when
     you change instances, models, CLI modules, or active flags.
   </Callout>
 
   <Callout type="tip" title="Ephemeral workspace lifecycle">
     When NEXUS assigns a ticket to a FORGE worker, it provisions a fresh Coder workspace from
     your template. The <code>coder_module</code> installs the CLI code agent into that workspace.
-    After the PR is merged, the workspace is torn down — no lingering state, no stale
+    After the PR is merged, the workspace is torn down  -  no lingering state, no stale
     credentials, no disk bloat. Each parallel FORGE instance gets its own workspace.
   </Callout>
 </DocsLayout>

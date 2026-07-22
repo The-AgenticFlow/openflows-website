@@ -26,20 +26,21 @@ Openflows is an autonomous software development team that runs itself. A squad o
 
 ## Local Development
 
-Simply open `index.html` in your browser:
+The site is built with Astro. Install dependencies and start the dev server:
 
 ```bash
-# Using Python's built-in server
-python -m http.server 8000
-
-# Or using Node.js
-npx serve .
-
-# Or using PHP
-php -S localhost:8000
+npm install
+npm run dev
 ```
 
-Then visit `http://localhost:8000`
+Then visit `http://localhost:4321`.
+
+To build for production:
+
+```bash
+npm run build
+npm run preview
+```
 
 ## Deployment
 
@@ -49,48 +50,63 @@ The site is automatically deployed to GitHub Pages via GitHub Actions when chang
 
 ```
 .
-├── index.html                # Main landing page
-├── assets/
-│   ├── css/
-│   │   ├── variables.css     # CSS custom properties (design tokens)
-│   │   ├── base.css          # Reset, layout, components (from inline styles)
-│   │   └── docs.css          # Documentation-specific styles
-│   └── js/
-│       ├── shared.js         # Smooth scroll, nav, reveal animations
-│       └── docs.js           # Accordion, copy, search, terminal, tabs, API explorer
-├── docs/
-│   ├── index.html            # Documentation hub landing
-│   ├── getting-started/
-│   │   ├── index.html        # Quick start guide (accordion sections)
-│   │   └── installation.html # Platform-specific install (tab switcher)
-│   ├── guides/
-│   │   ├── index.html        # Guides landing
-│   │   ├── agent-setup.html  # Agent configuration guide
-│   │   └── workflow-integration.html # CI/CD integration guide
-│   ├── api/
-│   │   ├── index.html        # API reference landing
-│   │   ├── endpoints.html    # REST API endpoint table
-│   │   └── authentication.html # API key management
-│   ├── architecture/
-│   │   ├── index.html        # Architecture landing
-│   │   ├── system-design.html # System design overview
-│   │   └── agent-roles.html  # NEXUS, FORGE, SENTINEL, LORE, VESSEL
-│   └── faq.html              # Accordion-based FAQ
-├── demos/
-│   ├── index.html            # Demos landing
-│   ├── terminal.html         # Terminal simulation (typewriter animation)
-│   └── walkthrough.html      # Step-by-step workflow walkthrough
-├── use-cases/
-│   ├── index.html            # Use cases landing
-│   ├── web-development.html  # Web dev before/after comparison
-│   └── devops.html           # DevOps before/after comparison
-├── blog/
-│   ├── index.html            # Blog landing
-│   └── introducing-demos.html # Launch announcement article
-├── developers/
-│   ├── index.html            # Developer resources landing
-│   ├── api-explorer.html     # Interactive API endpoint tester
-│   └── integrations.html     # Integration guides (GitHub, Slack, Docker)
+├── astro.config.mjs          # Astro site configuration
+├── src/
+│   ├── layouts/              # Astro layouts (BaseLayout, DocsLayout)
+│   ├── pages/                # Site routes
+│   │   ├── index.astro       # Main landing page
+│   │   ├── docs/             # Documentation (Astro + shared React components)
+│   │   │   ├── index.astro
+│   │   │   ├── getting-started/
+│   │   │   │   ├── index.astro
+│   │   │   │   ├── installation.astro
+│   │   │   │   ├── token-guide.astro
+│   │   │   │   └── first-issue.astro
+│   │   │   ├── concepts/     # Core concepts
+│   │   │   │   ├── index.astro
+│   │   │   │   ├── architecture-first.astro
+│   │   │   │   ├── agent-team.astro
+│   │   │   │   ├── pocketflow-sharedstore.astro
+│   │   │   │   ├── coder-integration.astro
+│   │   │   │   └── security-model.astro
+│   │   │   ├── architecture/ # Deep-dive architecture docs
+│   │   │   │   ├── index.astro
+│   │   │   │   ├── system-design.astro
+│   │   │   │   ├── agent-roles.astro
+│   │   │   │   ├── workspace-lifecycle.astro
+│   │   │   │   ├── state-recovery.astro
+│   │   │   │   └── decision-routing.astro
+│   │   │   ├── guides/       # Practical guides
+│   │   │   │   ├── index.astro
+│   │   │   │   ├── agent-setup.astro
+│   │   │   │   ├── model-routing.astro
+│   │   │   │   ├── multi-tenancy.astro
+│   │   │   │   ├── extending.astro
+│   │   │   │   ├── operations.astro
+│   │   │   │   └── troubleshooting.astro
+│   │   │   ├── reference/    # Reference docs
+│   │   │   │   ├── api.astro
+│   │   │   │   ├── registry-schema.astro
+│   │   │   │   ├── environment-variables.astro
+│   │   │   │   └── cli.astro
+│   │   │   ├── contributing/ # Contributor docs
+│   │   │   │   ├── index.astro
+│   │   │   │   ├── development-setup.astro
+│   │   │   │   ├── adding-skills.astro
+│   │   │   │   └── testing.astro
+│   │   │   └── faq.astro
+│   │   ├── demos/            # Demo pages
+│   │   ├── use-cases/        # Use case pages
+│   │   ├── blog/             # Blog pages
+│   │   ├── developers/       # Developer resources
+│   │   └── about.astro
+│   ├── organisms/            # Page-level React components
+│   ├── molecules/            # Shared React components (DocComponents, etc.)
+│   ├── components/           # UI components
+│   ├── styles/               # Global styles
+│   ├── react-pages/          # Admin React pages
+│   └── main.jsx              # React admin entry point
+├── public/                   # Static assets
 ├── .github/
 │   └── workflows/
 │       └── deploy.yml        # GitHub Actions deployment
@@ -100,6 +116,8 @@ The site is automatically deployed to GitHub Pages via GitHub Actions when chang
 
 ## Tech Stack
 
+- **Astro** — Static site generation with React islands for interactive components
+- **React** — Interactive components (docs components, admin UI, accordions, tab switchers, terminal simulations)
 - **HTML5** — Semantic markup
 - **CSS3** — Custom properties, Grid, Flexbox, clip-path, animations, Intersection Observer API
 - **Vanilla JS** — Smooth scroll, scroll-triggered animations, accordion, code copy, search, terminal simulation, tab switcher, API explorer

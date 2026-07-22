@@ -1,0 +1,202 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const THREAT_ROWS = [
+  ['LLM keys leaking from worker workspaces', 'No LLM keys in workspaces. All calls route through Coder AI Gateway.'],
+  ['GitHub PATs stored in agent config', 'No PATs anywhere. GitHub identity is inherited via Coder external auth.'],
+  ['Long-lived workspace with stale credentials', 'Workspaces are ephemeral. Destroyed after merge.'],
+  ['Compromised agent merges malicious code', 'FORGE cannot merge. VESSEL merges only after SENTINEL APPROVED + CI green.'],
+  ['Untraceable agent actions', 'Every action is logged by Coder and recorded in the SharedStore event ring.'],
+  ['Agent runs unreviewed dangerous command', 'CommandGate intercepts destructive commands and requires human approval.'],
+  ['Stale model context or bias', 'Workers are stateless and per-ticket. No persistent context beyond the plan.'],
+  ['External identity provider bypass', 'Coder enforces SSO and RBAC. OpenFlows inherits that identity for all Git operations.'],
+];
+
+const IDENTITY_ROWS = [
+  ['Coder user', 'Human operator with SSO login. Coder manages authentication and group membership.'],
+  ['Coder workspace', 'Created under a Coder user or service account. Inherits Git identity via Coder external auth.'],
+  ['OpenFlows worker', 'A (role, ticket) slot mapped to a Coder workspace. No separate identity store.'],
+  ['GitHub', 'Git operations use the Coder user's GitHub OAuth token, scoped by the Coder external auth provider.'],
+];
+
+const AUDIT_ROWS = [
+  ['Coder audit logs', 'Workspace creation, deletion, agent chat sessions, admin changes.'],
+  ['SharedStore event ring', 'Every state transition: ticket assigned, plan written, segment evaluated, PR merged.'],
+  ['Git history', 'Every commit, PR, and merge is signed by the Coder-associated git identity.'],
+  ['STATUS.json', 'Per-ticket machine-readable outcome with status, blockers, and next actions.'],
+  ['CommandGate log', 'Record of every dangerous command proposed and approved or rejected.'],
+];
+
+const SECRET_ROWS = [
+  ['LLM API keys', 'Coder AI Gateway', 'Never in registry.json, never in a workspace, never in a prompt.'],
+  ['GitHub tokens', 'Coder external auth provider', 'Inherited from the Coder user at workspace creation. Not stored by OpenFlows.'],
+  ['Database / Redis credentials', 'Orchestrator host environment', 'Accessible only to the control-plane orchestrator, not to workers.'],
+  ['Application secrets', 'Existing secret store (Vault, 1Password, etc.)', 'Workers access them only through approved, auditable mechanisms.'],
+];
+
+const GATE_ROWS = [
+  ['Delete files outside the working directory', 'Always blocked. Agents cannot escape the ticket workspace.'],
+  ['Force push, rebase, or reset history', 'Blocked. Git mutations must follow the issue-to-merge pipeline.'],
+  ['Modify system-wide configuration', 'Blocked unless explicitly allowed by the workspace template.'],
+  ['Install new packages or dependencies', 'Allowed, but logged. Large or unusual installs may be flagged.'],
+  ['Run arbitrary network commands', 'Blocked by default. Required network calls are proxied through Coder.'],
+  ['Access secrets or credentials files', 'Blocked. Workers have no access to /home or /etc credential paths.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'Security Model' }]}>
+  <h1>Security Model</h1>
+  <p>
+    OpenFlows is designed for organisations that want autonomous agents but refuse to trade security for
+    convenience. The model is simple: <strong>workers start empty and are destroyed after use.</strong> No
+    LLM keys, no GitHub tokens, and no persistent state live inside a worker workspace. Identity, audit,
+    secrets, and access control are delegated to Coder, the only runtime. OpenFlows adds explicit gates
+     -  the review pipeline and CommandGate  -  to ensure that autonomy does not become unaccountability.
+  </p>
+  <p>
+    This is not security through obscurity. It is security through isolation, separation of duties, and
+    durable audit. Every action that matters is either logged by Coder, recorded in the SharedStore event
+    ring, or captured in Git history. A human operator can reconstruct exactly what happened, why it
+    happened, and which identity was responsible.
+  </p>
+
+  <h2>Identity</h2>
+  <p>
+    OpenFlows has no user database of its own. Identity is managed entirely by Coder. A human operator logs
+    into Coder through the organisation's SSO provider. Coder provisions the workspace under that identity or
+    a service account, and the workspace inherits a GitHub identity from the Coder external auth provider.
+    When an agent commits code or opens a PR, it does so as the Coder user.
+  </p>
+  <p>
+    This is a deliberate design choice. It means that OpenFlows does not need to store passwords, issue
+    tokens, or synchronise users. It also means that standard security controls  -  MFA, session expiry, group
+    membership, offboarding  -  apply to OpenFlows users automatically through Coder.
+  </p>
+  <DocsTable headers={['Entity', 'How identity is established']} rows={IDENTITY_ROWS} />
+
+  <Callout type="warning" title="No PATs anywhere">
+    OpenFlows does not accept GitHub Personal Access Tokens. There is no field in registry.json, no
+    environment variable, and no command-line flag for a PAT. GitHub identity is inherited from Coder
+    external auth only. If a deployment is found using a PAT, it is out of policy.
+  </Callout>
+
+  <h2>Audit</h2>
+  <p>
+    Audit in OpenFlows is layered. The Coder control plane logs workspace lifecycle events and agent chat
+    sessions. The SharedStore event ring records state transitions. Git itself records every commit, PR, and
+    merge. STATUS.json and CommandGate logs capture the machine-readable outcome of each ticket. Together
+    these layers make it possible to answer the three questions that matter after an incident: who did it,
+    what was done, and what was the intended outcome?
+  </p>
+  <DocsTable headers={['Audit layer', 'What it captures']} rows={AUDIT_ROWS} />
+
+  <p>
+    Because workers are ephemeral, the audit trail must be durable. All documents written by agents  - 
+    PLAN.md, CONTRACT.md, segment evaluations, final reviews, and STATUS.json  -  are committed to the
+    repository or recorded in the SharedStore. When a workspace is torn down, the audit trail remains.
+  </p>
+
+  <h2>Secrets</h2>
+  <p>
+    The no-secrets-in-workspaces rule is absolute. A worker workspace is created with the repository code,
+    the CLI module, and nothing else. It cannot access LLM keys, GitHub tokens, or orchestrator credentials.
+    If an attacker or a rogue agent compromises a workspace, the only things they can see are the files in
+    that ticket's working directory and the data that Coder has explicitly mounted.
+  </p>
+  <DocsTable headers={['Secret', 'Stored by', 'Policy']} rows={SECRET_ROWS} />
+
+  <Callout type="info" title="LLM keys live in the Coder AI Gateway">
+    The Coder AI Gateway owns the LLM API keys. It routes calls, enforces rate limits, and tracks costs.
+    OpenFlows passes a model identifier and a request to the gateway; the gateway attaches the real key.
+    Workers never see the key, and the orchestrator only knows the gateway URL.
+  </Callout>
+
+  <h2>Ephemeral Workspaces</h2>
+  <p>
+    Every worker runs in a fresh Coder workspace. The workspace is created when NEXUS assigns a ticket and
+    destroyed when the ticket reaches a terminal state. This eliminates a long list of security problems:
+    stale credentials, accumulated secrets, disk bloat, persistent malware, and cross-ticket context leakage.
+  </p>
+  <p>
+    Ephemeral workspaces also make audit simpler. Because each workspace has a single purpose, every action
+    in the Coder logs can be tied to a specific ticket and worker. There is no shared home directory, no
+    reused SSH key, and no leftover Docker container from a previous job.
+  </p>
+  <ol>
+    <li><strong>Create:</strong> NEXUS provisions a workspace from the configured Coder template.</li>
+    <li><strong>Bind:</strong> a worker identity is bound to the workspace via the Coder Chats API.</li>
+    <li><strong>Work:</strong> the agent implements, reviews, or merges within the workspace.</li>
+    <li><strong>Release:</strong> NEXUS marks the worker slot idle and the workspace for teardown.</li>
+    <li><strong>Destroy:</strong> Coder deletes the workspace, including all local files and caches.</li>
+  </ol>
+
+  <h2>Coder External Auth</h2>
+  <p>
+    GitHub authentication is handled by Coder external auth. An administrator configures a GitHub OAuth
+    provider in Coder, and users authorise Coder to act on their behalf. When a workspace is created, Coder
+    injects the authenticated Git configuration into the workspace. The agent then uses that identity for
+    git fetch, push, and PR operations.
+  </p>
+  <p>
+    This means that OpenFlows never stores or refreshes a GitHub token. Token expiry, refresh, and
+    revocation are handled by Coder. If a user leaves the organisation, their Coder access can be revoked
+    and their active workspaces can be terminated from the Coder admin panel.
+  </p>
+  <CodeBlock lang="json">{`{
+  "external-auth-providers": [
+    {
+      "id": "github",
+      "type": "github",
+      "client_id": "\${GITHUB_OAUTH_CLIENT_ID}",
+      "client_secret": "\${GITHUB_OAUTH_CLIENT_SECRET}",
+      "display_name": "GitHub",
+      "scopes": ["repo", "user:email"]
+    }
+  ]
+}`}</CodeBlock>
+  <p>
+    The example above is a Coder configuration snippet, not an OpenFlows file. OpenFlows consumes the result
+    of this configuration through the Coder workspace it provisions.
+  </p>
+
+  <h2>CommandGate and Human Escalation</h2>
+  <p>
+    Autonomy does not mean unchecked power. <strong>CommandGate</strong> is a safety layer that intercepts
+    dangerous commands before they are executed in a worker workspace. It is a policy engine, not a prompt
+    instruction: it evaluates the command, the workspace context, and the current ticket phase, then decides
+    whether to allow, block, or escalate to a human.
+  </p>
+  <p>
+    When a command is escalated, the worker pauses and writes a <code>STATUS.json</code> with
+    <code>AwaitingHuman</code>. The human can approve, deny, or modify the command through the TUI or the
+    Coder dashboard. The decision is recorded in the CommandGate log. Once approved, the command runs; once
+    denied, the worker is marked failed and NEXUS handles the ticket accordingly.
+  </p>
+  <DocsTable headers={['Command pattern', 'Policy']} rows={GATE_ROWS} />
+
+  <Callout type="tip" title="Escalation is a feature, not a failure">
+    OpenFlows escalates when it is uncertain, not when it is broken. A ticket marked
+    <code>AwaitingHuman</code> is a controlled stop, not a crash. The operator can inspect the plan, the
+    workspace, and the proposed command before deciding. After the decision, NEXUS resumes the pipeline
+    from the correct phase.
+  </Callout>
+
+  <h2>Threats and Mitigations</h2>
+  <DocsTable headers={['Threat', 'Mitigation']} rows={THREAT_ROWS} />
+
+  <h2>Security Checklist for Operators</h2>
+  <p>
+    Before running OpenFlows in production, confirm the following. They are properties of the Coder
+    deployment and the OpenFlows configuration together.
+  </p>
+  <ul>
+    <li>GitHub authentication is configured as a Coder external auth provider. No PATs exist in any config file.</li>
+    <li>The Coder AI Gateway is the only LLM provider known to OpenFlows; registry.json points to <code>"coder"</code>.</li>
+    <li>Worker workspaces are created from a template that does not include secrets, dotfiles with tokens, or pre-installed PATs.</li>
+    <li>CommandGate is enabled and dangerous-command policies are reviewed by the security team.</li>
+    <li>The orchestrator host is separate from the Coder server and only accessible to authorised operators.</li>
+    <li>Redis is configured with authentication and TLS, and the orchestrator is the only client writing to the <code>openflows:*</code> keyspace.</li>
+    <li>Audit logs are exported to a central SIEM from both Coder and the OpenFlows event ring.</li>
+  </ul>
+</DocsLayout>

@@ -1,0 +1,87 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const LIFECYCLE_ROWS = [
+  ['1', 'Trigger', 'You', 'Create a GitHub issue describing the change, bug, or feature.', 'GitHub issue #N opened.'],
+  ['2', 'Detection', 'NEXUS', 'Polls the GitHub Issues API or receives a webhook event.', 'Ticket created in SharedStore with status <code>open</code>.'],
+  ['3', 'Assignment', 'NEXUS', 'Selects an idle FORGE worker and binds the ticket.', 'SharedStore <code>worker_slots</code> updated; ticket status becomes <code>assigned</code>.'],
+  ['4', 'Workspace provisioning', 'NEXUS + Coder', 'Provisions an ephemeral Coder workspace from the <code>openflows-forge</code> template.', 'Workspace URL reported; harness installed; no AI keys or GitHub tokens inside.'],
+  ['5', 'Planning', 'FORGE', 'Reads the repository, issue, and context; writes <code>PLAN.md</code>.', 'STATUS.json reports <code>planning</code>; PLAN.md contains segments and acceptance criteria.'],
+  ['6', 'Plan review', 'SENTINEL', 'Reviews PLAN.md and writes <code>CONTRACT.md</code> (AGREED or CHANGES_REQUESTED).', 'If changes requested, FORGE revises plan.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'First Issue Walkthrough' }]}>
+  <h1>First Issue Walkthrough</h1>
+
+  <p>
+    This page is a frame-by-frame walkthrough of what happens when you create a GitHub issue in a repository that
+    OpenFlows is watching. It follows the architecture-first flow from the first line of the issue body to the final
+    workspace teardown, with the expected logs at each step and the exact commands you can run to watch the process in
+    real time.
+  </p>
+
+  <p>
+    By the end of this guide you will understand how NEXUS detects work, how FORGE plans and implements it, how
+    SENTINEL reviews every segment adversarially, how VESSEL merges green pull requests, and how LORE documents the
+    outcome.
+  </p>
+
+  <Callout type="info" title="Architecture-first means plan before code">
+    FORGE does not write a single line of implementation until SENTINEL has agreed to the plan in
+    <code>CONTRACT.md</code>. The plan is the product. The code is the consequence.
+  </Callout>
+
+  <h2>Prerequisites</h2>
+
+  <p>
+    Before you create an issue, ensure the OpenFlows stack is running and the tenant is linked to the target repository.
+  </p>
+
+  <ul>
+    <li>Coder, Redis, and the OpenFlows orchestrator are running.</li>
+    <li>The orchestrator has a valid <code>CODER_SESSION_TOKEN</code> and GitHub OAuth App configured.</li>
+    <li>You have run the bootstrap command and added the tenant:
+      <CodeBlock lang="bash">{`./scripts/prod.sh bootstrap
+./scripts/prod.sh tenant owner/repo --name my-team`}</CodeBlock>
+    </li>
+    <li>The <code>orchestration/agent/registry.json</code> v2 file defines roles, skills, and model routing.</li>
+  </ul>
+
+  <h2>Lifecycle overview</h2>
+
+  <p>
+    The lifecycle of a single issue is a deterministic sequence of phases. Each phase is owned by a specific agent, and
+    each phase writes a well-known artifact into the workspace or the SharedStore.
+  </p>
+
+  <DocsTable
+    headers={['Step', 'Phase', 'Owner', 'What happens', 'Artifact / state change']}
+    rows={LIFECYCLE_ROWS}
+  />
+
+  <h2>A good issue contains</h2>
+
+  <ul>
+    <li><strong>Context</strong>  -  why the change is needed, links to related issues or ADRs.</li>
+    <li><strong>Goal</strong>  -  a single sentence describing what success looks like.</li>
+    <li><strong>Constraints</strong>  -  non-functional requirements such as performance or security.</li>
+    <li><strong>Acceptance criteria</strong>  -  a checklist that the reviewer can verify against.</li>
+  </ul>
+
+  <p>
+    You do not need to write a plan. FORGE will write <code>PLAN.md</code>. You do not need to write tests.
+    SENTINEL will insist on them. You do not need to assign the issue. NEXUS does that automatically.
+  </p>
+
+  <Callout type="tip" title="Labels and milestones are optional hints">
+    NEXUS does not require labels, but it can use them. A <code>good first issue</code> or <code>bug</code> label may
+    influence routing decisions, especially if the registry.json routing table maps labels to specialized worker templates.
+  </Callout>
+
+  <Callout type="tip" title="Continue reading">
+    See <a href="/docs/getting-started/first-issue-lifecycle">Lifecycle Steps</a> for the detailed walkthrough
+    from detection through implementation.
+  </Callout>
+</DocsLayout>

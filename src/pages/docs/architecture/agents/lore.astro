@@ -1,0 +1,123 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'LORE (Documentation)' }]}>
+  <h1>LORE  -  Documentation Agent</h1>
+
+  <p>
+    LORE is the technical writer. It activates after every successful merge and never
+    interrupts active development. LORE generates Architecture Decision Records, updates
+    <code>CHANGELOG.md</code>, and maintains project history. <strong>Disabled by default</strong>  - 
+    enable in <code>registry.json</code>.
+  </p>
+
+  <h2>Trigger</h2>
+
+  <p>
+    LORE is triggered by the <code>ticket_merged</code> event emitted by VESSEL. This event
+    contains the ticket ID, PR number, and repository. LORE never runs during active
+    development  -  only post-merge.
+  </p>
+
+  <CodeBlock lang="bash">{`# LORE reads the event
+openflows-harness event listen ticket_merged
+
+# Output: { ticketId, prNumber, repo, mergedAt }`}</CodeBlock>
+
+  <h2>Artifacts Produced</h2>
+
+  <DocsTable headers={['Artifact', 'Location', 'Description']} rows={[
+    ['ADR', '<code>docs/adr/NNNN-title.md</code>', 'Architecture Decision Record for significant changes'],
+    ['CHANGELOG.md', 'Repository root', 'User-visible changes with PR references'],
+    ['README updates', 'As needed', 'Public API changes, new configuration options'],
+    ['Workflow docs', '<code>docs/workflows/</code>', 'Updated process documentation'],
+  ]} />
+
+  <h2>ADR Template</h2>
+
+  <CodeBlock lang="markdown">{`# docs/adr/0042-rate-limiting.md
+
+---
+title: Rate Limiting Middleware
+date: 2026-07-20
+status: Accepted
+ticket: ISSUE-42
+pr: #123
+---
+
+## Context
+The PocketFlow executor needed resilient retries for transient failures (network blips, rate limits).
+Previous implementation had no retry logic, causing cascading failures.
+
+## Decision
+Add exponential backoff with jitter to Node::run(). Persist retry count in SharedStore
+so restarts resume from correct count. Emit node_retry / node_failed events for observability.
+
+## Consequences
+- Positive: Transient failures self-heal; operators see retry events in TUI
+- Negative: Slightly increased latency for failing nodes; additional state in SharedStore
+- Neutral: Max retries default 3; configurable via registry.json
+
+## Alternatives Considered
+- Circuit breaker pattern (too complex for v1)
+- Fixed retry delay (doesn't handle throttling well)
+- No retries (status quo  -  operator burden)
+`}</CodeBlock>
+
+  <h2>CHANGELOG.md Format</h2>
+
+  <CodeBlock lang="markdown">{`## [Unreleased]
+
+### Added
+- Rate limiting middleware with exponential backoff (ISSUE-42, #123)
+
+### Changed
+- NodeState now includes retry_count field
+
+### Fixed
+- Workspace teardown now waits for heartbeat daemon to stop`}</CodeBlock>
+
+  <h2>Configuration</h2>
+
+  <CodeBlock lang="json">{{
+  "agents": {
+    "lore": {
+      "provider": "anthropic",
+      "model": "claude-haiku-4-20250514",
+      "coder_module": "aider",
+      "active": false,
+      "instances": 1
+    }
+  }
+}}</CodeBlock>
+
+  <Callout type="tip" title="Enable LORE">
+    Set <code>"lore": { "active": true }</code> in <code>registry.json</code>. LORE is lightweight
+    and runs on <code>claude-haiku</code>, making it cost-effective.
+  </Callout>
+
+  <h2>Harness Integration</h2>
+
+  <CodeBlock lang="bash">{`# Write documentation
+openflows-harness doc write --adr 0042 --content "..."
+
+# Commit to default branch via GitHub MCP
+openflows-harness git commit --branch main --message "docs: ADR 0042 rate limiting"
+
+# LORE does NOT open PRs  -  commits directly to main`}</CodeBlock>
+
+  <Callout type="info" title="Direct commit to main">
+    LORE commits documentation directly to the default branch via GitHub MCP. It does not
+    open a separate PR unless the registry policy is configured to require one.
+  </Callout>
+
+  <h2>Read-Only Access</h2>
+
+  <p>
+    LORE has <strong>read-only access to application code</strong>. It cannot modify
+    source files, only documentation files. This prevents accidental code changes
+    by the documentation agent.
+  </p>
+</DocsLayout>

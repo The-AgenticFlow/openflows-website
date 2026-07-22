@@ -1,0 +1,165 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const ENV_VARS = [
+  ['<code>GITHUB_OAUTH_CLIENT_ID</code>', 'The client ID of the GitHub OAuth App that Coder uses for external authentication. Found on the OAuth App settings page.'],
+  ['<code>GITHUB_OAUTH_CLIENT_SECRET</code>', 'The client secret of the GitHub OAuth App. Treat it as a high-value credential; rotate it immediately if it is exposed.'],
+  ['<code>GITHUB_OAUTH_REDIRECT_URL</code>', 'The callback URL for Coder external auth. Must match the value registered in the OAuth App. Example: <code>https://coder.example.com/external-auth/callback</code>.'],
+  ['<code>CODER_URL</code>', 'The root URL of your self-hosted Coder deployment. Example: <code>https://coder.example.com</code>.'],
+  ['<code>CODER_SESSION_TOKEN</code>', 'A Coder API token issued to the OpenFlows orchestrator. It grants the orchestrator permission to call the Coder control plane, provision workspaces, and invoke the Chats API.'],
+  ['<code>GITHUB_TOKEN</code>', '(Test and development only) A file path, conventionally <code>/tmp/github_token</code>, that holds a GitHub personal access token. Not used in production.'],
+  ['<code>OPENFLOWS_REDIS_URL</code>', 'Connection string for the Redis SharedStore. Example: <code>redis://redis:6379</code>.'],
+];
+
+const ROTATION_SCHEDULE = [
+  ['OAuth App client secret', 'On exposure, or annually as policy dictates', 'Generate a new secret in the GitHub OAuth App settings, update <code>GITHUB_OAUTH_CLIENT_SECRET</code>, restart the OpenFlows orchestrator, and revoke the old secret.'],
+  ['<code>CODER_SESSION_TOKEN</code>', 'Every 90 days, or immediately after personnel changes', 'Create a new token in the Coder dashboard, update <code>CODER_SESSION_TOKEN</code>, restart the orchestrator, then revoke the old token.'],
+  ['Test GitHub PAT', 'Per CI run or every 30 days in long-lived test beds', 'Delete <code>/tmp/github_token</code>, create a new PAT, write it to <code>/tmp/github_token</code> with mode <code>600</code>, and re-run the test suite.'],
+];
+
+const TROUBLESHOOTING = [
+  ['<code>401 Bad credentials</code> when OpenFlows calls GitHub', 'OAuth App token expired, PAT revoked, or <code>/tmp/github_token</code> missing.', 'Verify the Coder external auth session is current, re-authenticate the tenant in the Coder dashboard, or confirm the test PAT file exists and is readable.'],
+  ['<code>403 Resource not accessible by integration</code>', 'OAuth App scopes are insufficient or the app is not installed on the target repository/organization.', 'Check the OAuth App scopes, confirm the app is authorized for the organization, and re-run the tenant authorization flow.'],
+  ['<code>401 Unauthorized</code> from Coder API', 'The <code>CODER_SESSION_TOKEN</code> is missing, expired, or lacks the required scopes.', 'Verify the token in the Coder dashboard, ensure it has workspace and template permissions, and restart the orchestrator.'],
+  ['OAuth callback mismatch', 'The <code>GITHUB_OAUTH_REDIRECT_URL</code> does not match the authorization callback URL in the GitHub OAuth App.', 'Compare the two values exactly, including the scheme and trailing slash, and update both sides to match.'],
+  ['Tenant authorization prompts repeatedly', 'The Coder external auth session has a short lifetime and is not being refreshed automatically.', 'Check the Coder external auth provider configuration, confirm the refresh token is being stored, and review the Coder server logs.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Token Guide' }, { label: 'Security & Rotation' }]}>
+  <h1>Scopes, Rotation &amp; Security</h1>
+
+  <p>
+    This page covers least-privilege scopes, credential rotation, and security best practices. For OAuth App creation,
+    Coder integration, and test PAT setup, see the other <a href="/docs/getting-started/token-guide">Token Guide</a> pages.
+  </p>
+
+  <h2>Token scopes and least privilege</h2>
+
+  <p>
+    Least privilege is not a one-time decision; it is a continuous constraint. Review the scope set every time you add
+    a new skill, model, or integration that might require additional GitHub access. Ask the same question for every new
+    permission: can the agent accomplish the task with a narrower scope?
+  </p>
+
+  <h3>Minimum viable scopes</h3>
+
+  <p>
+    For a standard repository that contains application code and documentation, the minimum production scope set is
+    <code>repo</code> plus <code>read:org</code> and <code>user:email</code>. Add <code>workflow</code> only if the agents
+    must modify GitHub Actions. Avoid <code>admin:repo_hook</code>, <code>delete_repo</code>, and any org-admin scopes
+    unless a specific, reviewed operation requires them.
+  </p>
+
+  <h3>Audit the OAuth App regularly</h3>
+
+  <p>
+    GitHub records every OAuth authorization in the organization audit log. Review the log monthly for unexpected users,
+    unexpected scopes, or authorizations from unknown IP addresses. Revoke any authorization that does not match a known
+    tenant or user.
+  </p>
+
+  <h3>Restrict the Coder API token</h3>
+
+  <p>
+    The orchestrator does not need to create users, modify organizations, or change deployment settings. Create a custom
+    Coder role with only the permissions listed in the Coder Integration guide and assign that role to the orchestrator
+    user. If Coder supports token-level scope restrictions, apply them.
+  </p>
+
+  <h2>Rotation</h2>
+
+  <p>
+    All long-lived credentials should be rotated on a schedule and immediately after any suspected exposure. Rotation is
+    a safety mechanism, not an emergency-only procedure. The schedule below is a starting point; adjust it to your own
+    security policy.
+  </p>
+
+  <DocsTable headers={['Credential', 'Rotation trigger', 'Procedure']} rows={ROTATION_SCHEDULE} />
+
+  <h3>Rotation checklist</h3>
+
+  <ol>
+    <li>
+      Generate the replacement credential in the upstream system (GitHub OAuth App or Coder dashboard).
+    </li>
+    <li>
+      Update the secret in your secret manager or orchestrator environment.
+    </li>
+    <li>
+      Restart the OpenFlows orchestrator to pick up the new value.
+    </li>
+    <li>
+      Verify that the next tenant command or poll cycle succeeds.
+    </li>
+    <li>
+      Revoke the old credential only after the new one is confirmed working.
+    </li>
+  </ol>
+
+  <Callout type="tip" title="Rotate before you have to">
+    Set a calendar reminder for credential rotation 30 days before expiry. Rotating under pressure increases the risk of
+    mistakes, such as leaving the old secret in a backup or environment variable. A documented rotation runbook is part
+    of a secure deployment.
+  </Callout>
+
+  <h2>Security best practices</h2>
+
+  <p>
+    Tokens are the keys to the kingdom. Protect them with the same rigor you would apply to a production database
+    credential.
+  </p>
+
+  <ul>
+    <li>
+      <strong>Never commit <code>.env</code></strong>. The <code>.env.example</code> file contains placeholders only. Add
+      <code>.env</code> to <code>.gitignore</code> and scan for it in pre-commit hooks.
+    </li>
+    <li>
+      <strong>Use a secret manager</strong>. Store <code>CODER_SESSION_TOKEN</code> and
+      <code>GITHUB_OAUTH_CLIENT_SECRET</code> in a secret manager, Kubernetes secret, or Docker secret. Mount them as
+      files or environment variables at runtime, not at build time.
+    </li>
+    <li>
+      <strong>Restrict network access</strong>. Limit Coder and OpenFlows orchestrator traffic to trusted networks. Use
+      TLS for every endpoint. Do not expose the Coder dashboard or the orchestrator API to the public internet without an
+      authenticated reverse proxy.
+    </li>
+    <li>
+      <strong>Enable audit logging</strong>. GitHub organization audit logs and Coder audit logs should be forwarded to
+      a SIEM. Alert on token regeneration, scope changes, failed authorization callbacks, and unusual workspace
+      provisioning rates.
+    </li>
+    <li>
+      <strong>Run the orchestrator as a dedicated user</strong>. The Linux account that runs <code>openflows</code> should
+      have no shell access, no sudo rights, and no access to other production systems. The only files it needs to read are
+      <code>.env</code> and the OpenFlows binary.
+    </li>
+    <li>
+      <strong>Keep test credentials isolated</strong>. Test PATs should be stored in a separate secret namespace and never
+      referenced in a production <code>.env</code> file.
+    </li>
+  </ul>
+
+  <h2>Troubleshooting</h2>
+
+  <p>
+    Most authentication failures fall into a small number of patterns. The table below maps common errors to their causes
+    and fixes.
+  </p>
+
+  <DocsTable headers={['Symptom', 'Cause', 'Fix']} rows={TROUBLESHOOTING} />
+
+  <p>
+    If the issue persists after checking the items above, inspect the Coder server logs and the OpenFlows orchestrator
+    logs together. The most useful signals are the exact HTTP status code from the Coder API, the GitHub API response
+    headers, and whether the failure happens during tenant provisioning or during a GitHub operation.
+  </p>
+
+  <Callout type="info" title="Still stuck?">
+    Check the <a href="/docs/faq">FAQ</a> for repository-specific issues, the
+    <a href="/docs/reference/environment-variables">Environment Variables</a> reference for the full variable list, and
+    the <a href="/docs/guides/troubleshooting">Troubleshooting Guide</a> for deeper diagnostic steps.
+  </Callout>
+</DocsLayout>

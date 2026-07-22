@@ -70,11 +70,83 @@
   color: var(--color-ink);
 }
 
-.sidebarLinkActive {
+.sidebarLink.active {
   color: var(--color-aubergine);
   background-color: var(--color-lavender-chip);
   font-weight: var(--font-weight-medium);
   border-left-color: var(--color-aubergine);
+}
+
+/* Collapsible parent items */
+.sidebarParent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0.35rem 0.6rem;
+  font-size: 0.875rem;
+  color: var(--color-graphite);
+  text-decoration: none;
+  border-radius: var(--radius-md);
+  border-left: 2px solid transparent;
+  transition: color var(--transition-fast), background-color var(--transition-fast), border-color var(--transition-fast);
+  cursor: pointer;
+  background: transparent;
+  border-right: none;
+  text-align: left;
+  font-family: inherit;
+}
+
+.sidebarParent:hover {
+  background-color: var(--color-bone);
+  color: var(--color-ink);
+}
+
+.sidebarParentLabel {
+  flex: 1;
+}
+
+.sidebarChevron {
+  width: 16px;
+  height: 16px;
+  transition: transform var(--transition-fast);
+  opacity: 0.5;
+}
+
+.sidebarParent[data-expanded="false"] .sidebarChevron {
+  transform: rotate(-90deg);
+}
+
+.sidebarChildren {
+  display: none;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  margin-left: 1.25rem;
+  margin-top: 0.1rem;
+  border-left: 1px solid var(--color-driftwood);
+  padding-left: 0.75rem;
+}
+
+.sidebarChildren.open {
+  display: block;
+}
+
+.sidebarChildren .sidebarLink {
+  font-size: 0.85rem;
+  padding: 0.3rem 0.5rem;
+}
+
+.sidebarNav.nested {
+  margin-left: 1rem;
+  margin-top: 0.1rem;
+  border-left: 1px solid var(--color-driftwood);
+  padding-left: 0.5rem;
+}
+
+.sidebarNav.nested .sidebarLink {
+  font-size: 0.8rem;
+  padding: 0.3rem 0.5rem;
 }
 
 /* Main content outer wrapper - fills the right column */
@@ -187,20 +259,20 @@
 
 /* Typography - Coder.com style */
 .content h1 {
-  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-size: clamp(2.25rem, 4vw, 3rem);
   font-weight: var(--font-weight-bold);
   letter-spacing: -0.03em;
   color: var(--color-ink);
-  margin-bottom: 1.25rem;
+  margin-bottom: 1.5rem;
   line-height: 1.15;
 }
 
 .content h2 {
-  font-size: 1.5rem;
+  font-size: 1.75rem;
   font-weight: var(--font-weight-semibold);
   color: var(--color-ink);
   margin-top: 3.5rem;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
   border-bottom: 1px solid var(--color-driftwood);
   letter-spacing: var(--tracking-tight);
@@ -208,20 +280,20 @@
 }
 
 .content h3 {
-  font-size: 1.2rem;
+  font-size: 1.375rem;
   font-weight: var(--font-weight-semibold);
   color: var(--color-ink);
-  margin-top: 2rem;
-  margin-bottom: 0.75rem;
+  margin-top: 2.5rem;
+  margin-bottom: 1rem;
   letter-spacing: -0.01em;
   scroll-margin-top: calc(var(--nav-height) + 1.5rem);
 }
 
 .content p {
-  font-size: 1.05rem;
+  font-size: 1.125rem;
   color: var(--color-graphite);
-  line-height: 1.8;
-  margin-bottom: 1.25rem;
+  line-height: 1.85;
+  margin-bottom: 1.5rem;
 }
 
 .content ul,

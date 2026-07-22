@@ -1,0 +1,134 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const TENANT_ROWS = [
+  ['Coder user', 'A normal Coder user account that belongs to the team. The tenant acts as that user for workspace and GitHub operations.'],
+  ['Repository binding', 'A GitHub repository (e.g. <code>owner/repo</code>) the tenant is authorized to work on. Multiple repos per tenant are allowed.'],
+  ['NEXUS workspace', 'A dedicated Coder workspace named <code>openflows-nexus-{{tenant}}</code> that hosts the orchestrator controller for that tenant.'],
+  ['Redis keyspace prefix', 'All SharedStore keys are prefixed with <code>ns:{{tenant}}:</code> to isolate state, queues, and worker slots from other tenants.'],
+  ['Coder RBAC', 'Role-based access controls inside Coder determine which tenant users can create workspaces, view the tenant, or manage external auth.'],
+];
+
+const RBAC_ROWS = [
+  ['Owner', 'Tenant admin. Can add/remove repos, manage Coder external auth, and operate the NEXUS workspace.'],
+  ['Member', 'Team member. Can view tenant status, create worker workspaces, and open tickets.'],
+  ['Viewer', 'Read-only. Can view the TUI dashboard and logs but cannot trigger or modify work.'],
+  ['NEXUS service account', 'A non-human Coder user that owns the <code>openflows-nexus-{{tenant}}</code> workspace and has limited, scoped permissions.'],
+];
+
+const REDIS_ROWS = [
+  ['<code>ns:{{tenant}}:tickets</code>', 'Map of ticket IDs to ticket status for the tenant.'],
+  ['<code>ns:{{tenant}}:worker_slots</code>', 'Map of worker IDs to worker status for the tenant.'],
+  ['<code>ns:{{tenant}}:pending_prs</code>', 'List of PRs waiting for VESSEL to merge.'],
+  ['<code>ns:{{tenant}}:flow_recovery</code>', 'Recovery state and inconsistencies detected by NEXUS.'],
+  ['<code>ns:{{tenant}}:event_ring</code>', 'Ring buffer of the last 1000 events for the tenant TUI.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Multi-Tenancy' }]}>
+  <h1>Multi-Tenancy</h1>
+  <p>
+    OpenFlows supports multiple independent teams on a single Coder deployment. Each tenant
+    is a logical boundary composed of a Coder user, a repository binding, a dedicated NEXUS
+    workspace, and a namespaced Redis keyspace. Multi-tenancy is not achieved by running
+    separate Coder servers; it is achieved by isolating identity, state, and workspaces
+    within one shared Coder runtime. This guide explains the tenant model, how to use Coder
+    RBAC, and how Redis keyspace prefixes enforce isolation.
+  </p>
+  <p>
+    Coder is the only runtime. OpenFlows is a thin orchestration brain that provisions
+    ephemeral Coder workspaces and stores state in Redis. In a multi-tenant deployment, every
+    tenant gets its own brain (NEXUS workspace) and its own memory slice (Redis keyspace), but
+    they all share the same underlying Coder control plane. The security boundary is therefore
+    Coder's RBAC plus Redis keyspace prefixes, not physical separation.
+  </p>
+
+  <Callout type="tip" title="Manage tenants with the CLI">
+    See the <a href="/docs/guides/multi-tenancy-cli">CLI reference guide</a> for commands to add, remove, and isolate tenants.
+  </Callout>
+
+  <h2>Tenant Model</h2>
+  <p>A tenant is a five-tuple. All five pieces must be in place for a tenant to operate:</p>
+  <DocsTable headers={['Component', 'Description']} rows={TENANT_ROWS} />
+
+  <Callout type="info" title="One Coder server, many teams">
+    Multi-tenancy in OpenFlows is strictly one Coder server hosting many tenants. Running a
+    separate Coder server per tenant is not supported and would defeat the purpose of the
+    model. If you need physical isolation, run separate OpenFlows deployments instead.
+  </Callout>
+
+  <h2>Coder RBAC</h2>
+  <p>
+    Coder provides the identity layer. Each tenant maps to a Coder user (or a service account
+    for NEXUS) and a Coder group for the team. Coder's built-in RBAC controls who can:
+  </p>
+  <ul>
+    <li>Provision workspaces under the tenant's namespace.</li>
+    <li>Access the tenant's NEXUS workspace and view its logs.</li>
+    <li>Configure GitHub external auth on behalf of the tenant.</li>
+    <li>See cost and audit logs for the tenant's workspaces.</li>
+  </ul>
+  <p>
+    OpenFlows does not implement its own user management. It relies on Coder groups, roles,
+    and template permissions. Assign tenant membership by adding Coder users to the tenant's
+    group, and assign admin rights by granting the Owner role on that group.
+  </p>
+  <DocsTable headers={['Role', 'Permissions']} rows={RBAC_ROWS} />
+
+  <CodeBlock lang="bash">{`# Create a Coder group for the tenant
+coder groups create my-team --name "My Team"
+
+# Add users to the group
+coder groups add-members my-team alice bob charlie
+
+# Grant the group access to the OpenFlows workspace template
+coder template update --acl-group my-team:use openflows-nexus
+`}</CodeBlock>
+
+  <Callout type="warning" title="NEXUS is a service account, not a human user">
+    The NEXUS workspace for a tenant must be owned by a dedicated Coder service account, not
+    by a human engineer. If a human user leaves the organization, their workspaces are
+    typically decommissioned. A service account ensures the orchestrator keeps running.
+    Create a service account with a long-lived API token and store it in the orchestrator's
+    environment under <code>CODER_NEXUS_TOKEN</code>.
+  </Callout>
+
+  <h2>Redis Keyspace Prefixes</h2>
+  <p>
+    SharedStore is the central state machine. In production, it runs on Redis. Without
+    namespacing, all tenants would share the same keys and collide on ticket IDs, worker IDs,
+    and event rings. OpenFlows enforces a mandatory prefix of <code>ns:{{tenant}}:</code> on
+    every Redis key. The tenant slug is the canonical namespace identifier.
+  </p>
+  <p>
+    The prefix is applied automatically by the SharedStore implementation. Application code
+    and operators do not need to remember to include it. However, when you inspect Redis
+    directly with <code>redis-cli</code>, you must include the prefix to see the tenant's data.
+  </p>
+  <DocsTable headers={['Key Pattern', 'Purpose']} rows={REDIS_ROWS} />
+
+  <CodeBlock lang="bash">{`# Inspect all keys for a tenant
+redis-cli --scan --pattern 'ns:my-team:*'
+
+# Look at a specific ticket
+redis-cli HGET ns:my-team:tickets ISSUE-123
+
+# Count the tenant's worker slots
+redis-cli HLEN ns:my-team:worker_slots
+`}</CodeBlock>
+
+  <Callout type="tip" title="Keyspace isolation is not authorization">
+    Redis key prefixes prevent accidental key collisions, but they do not encrypt or hide
+    data. Use Redis ACLs or separate Redis databases if your compliance requirements demand
+    stricter isolation. OpenFlows supports Redis password authentication and TLS, but it does
+    not implement row-level encryption.
+  </Callout>
+
+  <h2>Per-Tenant NEXUS Workspace</h2>
+  <p>
+    Each tenant runs its own NEXUS controller inside a dedicated Coder workspace. See the
+    <a href="/docs/guides/multi-tenancy-nexus">NEXUS workspace guide</a> for details on startup,
+    fault isolation, and cost attribution.
+  </p>
+</DocsLayout>

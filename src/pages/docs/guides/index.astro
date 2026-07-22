@@ -4,6 +4,19 @@ import { DocCards } from '@/molecules/DocComponents/DocComponents';
 
 const CARDS = [
   { icon: '🤖', title: 'Agent Setup', desc: 'Configure NEXUS, FORGE, SENTINEL, LORE, and VESSEL - registry.json, model routing, Coder modules, and worker scaling.', href: '/docs/guides/agent-setup' },
+  { icon: '🔀', title: 'Model Routing', desc: 'Per-agent provider selection, cost optimization, adversarial review across model families, and AI Gateway fallback.', href: '/docs/guides/model-routing' },
+  { icon: '💰', title: 'Cost Optimization', desc: 'Shrink FORGE context, reduce SENTINEL rounds, downgrade VESSEL/LORE models, scale instances deliberately.', href: '/docs/guides/model-routing-cost' },
+  { icon: '🔄', title: 'LiteLLM Fallback', desc: 'Air-gapped deployments: configure LiteLLM proxy for local models when Coder AI Gateway is unavailable.', href: '/docs/guides/model-routing-fallback' },
+  { icon: '🏢', title: 'Multi-Tenancy', desc: 'Tenant model, Coder RBAC, Redis keyspace isolation, and per-tenant NEXUS workspaces.', href: '/docs/guides/multi-tenancy' },
+  { icon: '🛠️', title: 'Multi-Tenancy CLI', desc: 'Commands to add, remove, isolate, and resume tenants.', href: '/docs/guides/multi-tenancy-cli' },
+  { icon: '☸️', title: 'NEXUS Workspaces', desc: 'Per-tenant NEXUS workspace setup, fault isolation, and service accounts.', href: '/docs/guides/multi-tenancy-nexus' },
+  { icon: '🔧', title: 'Extending: Skills', desc: 'Add skills via SKILL.md, register in registry.json v2.', href: '/docs/guides/extending' },
+  { icon: '🔌', title: 'Extending: MCP', desc: 'Register MCP servers globally or per-agent in registry.json.', href: '/docs/guides/extending-mcp' },
+  { icon: '🤖', title: 'Extending: Models', desc: 'Custom model definitions, aliases, cost tiers in registry.json.', href: '/docs/guides/extending-models' },
+  { icon: '📊', title: 'Operations & Monitoring', desc: 'Production runbooks, TUI usage, log inspection, Redis monitoring, and scaling workers.', href: '/docs/guides/operations' },
+  { icon: '🔍', title: 'Troubleshooting', desc: 'Common failures, diagnostics, Coder connectivity, token issues, and how to read STATUS.json.', href: '/docs/guides/troubleshooting' },
+  { icon: '🔗', title: 'Connectivity & Auth', desc: 'Coder API reachability, token rotation, GitHub external auth issues.', href: '/docs/guides/troubleshooting-connectivity' },
+  { icon: '👷', title: 'Worker & Pipeline', desc: 'Worker timeouts, SENTINEL rejection loops, merge conflicts, STATUS.json deep-dive.', href: '/docs/guides/troubleshooting-workers' },
 ];
 ---
 

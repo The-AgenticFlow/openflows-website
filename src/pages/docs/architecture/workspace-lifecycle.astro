@@ -1,0 +1,282 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DocsTable, Callout, CodeBlock } from '@/molecules/DocComponents/DocComponents';
+
+const TEMPLATE_ROWS = [
+  ['nexus', 'control-plane', 'Long-running controller; no Coder workspace needed', 'N/A  -  runs as a service'],
+  ['forge', 'development', 'Isolated Git worktree, build toolchain, GitHub MCP auth via Coder external auth', 'claude-code, codex, aider'],
+  ['sentinel', 'evaluation', 'Read-only workspace with identical source snapshot; no commit privileges', 'claude-code, codex, aider'],
+  ['vessel', 'merge-ops', 'Privileged workspace authorized to push to main; CI polling tools', 'aider, codex'],
+  ['lore', 'documentation', 'Read-only source access; GitHub MCP for ADR and CHANGELOG commits', 'aider, codex'],
+];
+
+const PHASE_ROWS = [
+  ['1. Detect', 'NEXUS polls GitHub issues and SharedStore <code>tickets</code> for work ready to assign', 'No workspace'],
+  ['2. Assign', 'NEXUS reserves an idle <code>worker_slots</code> entry and binds a ticket ID', 'No workspace'],
+  ['3. Template', 'NEXUS selects per-role template and optional coder_module from <code>registry.json</code>', 'Control plane'],
+  ['4. Provision', 'Coder API creates workspace; Coder Agent chat is bound to the workspace ID', 'Coder API'],
+  ['5. Install', 'coder_module installs CLI code agent and injects orchestration harness into the workspace', 'Workspace startup'],
+  ['6. Execute', 'Agent runs PLAN → CONTRACT → segments → evals → final-review → PR', 'Workspace runtime'],
+  ['7. Teardown', 'Workspace destroyed on merge, failure, or timeout; all credentials and state removed', 'Coder API'],
+];
+
+const TEARDOWN_ROWS = [
+  ['merge', 'VESSEL emits <code>ticket_merged</code>; NEXUS schedules workspace deletion within the same cycle', 'Immediate'],
+  ['failure', 'Node error or unrecoverable decision failure reaches <code>max_retries=3</code>; NEXUS marks ticket and tears down', 'Immediate'],
+  ['timeout', 'Per-workspace TTL expires (default 30 min, configurable); Coder auto-stops, NEXUS detects stale worker', 'TTL + poll interval'],
+  ['manual', 'Operator invokes teardown via CLI or TUI; NEXUS writes <code>workspace_decommissioned</code> event', 'Immediate'],
+  ['abandon', 'Ticket reassigned to a different worker; old workspace is destroyed to prevent split-brain', '< 10s'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Workspace Lifecycle' }]}>
+  <h1>Workspace Lifecycle</h1>
+  <p>
+    OpenFlows does not run agents itself. <strong>Coder is the only runtime.</strong> OpenFlows is a thin
+    orchestration brain that sits on top of a self-hosted Coder deployment, calling the Coder API to create,
+    control, and destroy the ephemeral workspaces where agents actually work. Every FORGE implementation,
+    every SENTINEL evaluation, every VESSEL merge operation, and every LORE documentation pass happens inside
+    a Coder workspace that was provisioned for exactly one job and is destroyed as soon as that job is done.
+  </p>
+  <p>
+    This page is a deep dive into that lifecycle: how NEXUS chooses a template, how the CLI code agent is
+    installed, how the Coder Agent chat is bound to the workspace, how per-evaluation SENTINEL workspaces are
+    created and destroyed, and the precise teardown rules that apply when a ticket merges, fails, or times out.
+  </p>
+
+  <h2>The Coder-First Runtime Model</h2>
+  <p>
+    Coder is more than a container scheduler. It provides the entire execution envelope: ephemeral workspaces,
+    control-plane AI agents, model governance, identity, audit logging, and cost tracking. OpenFlows adds the
+    coordination layer on top: a PocketFlow graph that routes work between specialized agents, a typed Redis
+    SharedStore that holds the global state machine, and NEXUS <code>reconcile()</code> to heal broken pipelines.
+  </p>
+  <p>
+    Worker workspaces contain <strong>zero AI software, zero LLM keys, and zero GitHub tokens</strong>. The agent
+    CLI (e.g. <code>claude-code</code>, <code>codex</code>, <code>aider</code>) is installed as a Coder Registry
+    module, and LLM calls are routed through the Coder AI Gateway. GitHub identity is provided by Coder external
+    auth. When the workspace is destroyed, the credentials and model access disappear with it. There is no
+    persistent agent state on the worker disk that could leak between tickets.
+  </p>
+
+  <Callout type="info" title="Worker = (role, ticket) × ephemeral Coder workspace">
+    A worker is not a long-lived process. It is the tuple of a role, a ticket ID, and a Coder workspace that was
+    just created for that ticket. The worker's lifecycle is tied to the workspace's lifecycle; when the workspace
+    dies, the worker dies. This is the core isolation primitive that makes OpenFlows safe to run in production.
+  </Callout>
+
+  <h2>Per-Role Workspace Templates</h2>
+  <p>
+    Templates are the first decision NEXUS makes when assigning a ticket. Each role needs a different Coder
+    template because each role needs a different filesystem, toolchain, network posture, and GitHub permission
+    set. NEXUS reads the role's template from the agent registry and passes it to the Coder API when creating the
+    workspace.
+  </p>
+  <DocsTable headers={['Role', 'Template Type', 'Why it differs', 'Typical coder_module']} rows={TEMPLATE_ROWS} />
+  <p>
+    The NEXUS role does not have a workspace template because NEXUS is not a worker. It is the control-plane
+    orchestrator that runs as a service outside the Coder workspace model. All other roles receive a dedicated
+    workspace per task. Even when multiple FORGE workers are configured in parallel, each gets its own Coder
+    workspace, its own Git worktree, and its own isolated branch.
+  </p>
+
+  <h2>The Lifecycle Phases</h2>
+  <p>
+    The lifecycle of a Coder workspace in OpenFlows is deterministic and observable. Every phase writes at least
+    one event to the SharedStore <code>event_ring</code>, so the TUI can show live progress and NEXUS can resume
+    from any phase after a crash.
+  </p>
+  <DocsTable headers={['Phase', 'What happens', 'Where it runs']} rows={PHASE_ROWS} />
+
+  <h2 id="coder-module">coder_module Installation</h2>
+  <p>
+    The CLI code agent is not baked into the Coder template. It is installed dynamically by the
+    <code>coder_module</code> extension mechanism. This is important because it lets you change the agent CLI
+    without rebuilding the template image. The module is declared in <code>orchestration/agent/registry.json</code>
+    under each agent's <code>coder_module</code> field.
+  </p>
+  <p>
+    When a workspace starts, Coder runs the module startup script. The script downloads the chosen CLI, installs
+    it in the workspace path, and then installs the OpenFlows agent harness. The harness is the thin wrapper that
+    turns the CLI into an OpenFlows agent: it reads the assigned ticket from the SharedStore, loads the agent's
+    skills and standards, and enters the PocketFlow node loop.
+  </p>
+
+  <CodeBlock lang="json">
+{`{
+  "agents": {
+    "forge": {
+      "coder_module": "claude-code",
+      "model": "claude-sonnet-4",
+      "template": "development",
+      "max_workers": 3
+    },
+    "sentinel": {
+      "coder_module": "codex",
+      "model": "gpt-5",
+      "template": "evaluation",
+      "max_workers": 2
+    }
+  }
+}`}
+  </CodeBlock>
+
+  <Callout type="tip" title="Extension point: registry.json v2">
+    The registry schema is versioned and is the official extension point for new agent CLIs and templates. If you
+    want to add a new CLI or a new role template, you add it to <code>registry.json</code> and the Coder module
+    installer handles the rest. No orchestration code changes are required for module-level swaps.
+  </Callout>
+
+  <h2 id="chat-binding">Coder Agent Chat Binding</h2>
+  <p>
+    OpenFlows uses the <strong>Coder Chats API</strong>, not the in-workspace AgentAPI. This is a deliberate
+    architectural choice. By binding the agent conversation to the Coder control plane instead of the workspace
+    process, OpenFlows can move orchestration state out of the workspace, survive workspace restarts, and keep the
+    worker's local environment free of LLM keys and orchestration logic.
+  </p>
+  <p>
+    When NEXUS provisions a workspace, it also creates a Coder Agent chat bound to that workspace ID. The chat
+    object lives in the Coder control plane. The OpenFlows harness inside the workspace connects to the chat
+    stream, receives instructions, and sends back structured results. If the workspace is restarted by Coder's
+    auto-stop mechanism, the chat persists and the harness reconnects. If the workspace is destroyed, the chat
+    is closed and the ticket is surfaced in NEXUS reconcile.
+  </p>
+  <p>
+    The chat binding is what makes the worker a "zero AI software" environment. The LLM provider, model
+    governance, rate limits, and audit logging all live in Coder. The workspace only sees the orchestration harness
+    and the codebase.
+  </p>
+
+  <CodeBlock lang="rust">
+{`// Pseudocode of the binding flow inside NEXUS
+let workspace = coder_api.create_workspace(
+    template: agent.template,
+    params: WorkspaceParams {
+        coder_module: agent.coder_module,
+        ticket_id: ticket.id,
+        branch: format!("forge-{slot}/{ticket_id}"),
+    },
+).await?;
+
+let chat = coder_api.create_agent_chat(
+    workspace_id: workspace.id,
+    model: agent.model,
+).await?;
+
+shared_store.set_worker_slot(slot, WorkerStatus::Working {
+    ticket_id: ticket.id,
+    workspace_id: workspace.id,
+    chat_id: chat.id,
+}).await?;`}
+  </CodeBlock>
+
+  <h2>Execution Phase</h2>
+  <p>
+    Once the workspace is running and the chat is bound, the agent enters the architecture-first flow. The harness
+    reads its role from the registry, loads the ticket, and runs the PocketFlow nodes in order. The workspace is
+    the execution sandbox; the brain is the harness plus the Coder control plane.
+  </p>
+  <ol>
+    <li><strong>PLAN.md</strong>  -  FORGE writes a segment breakdown before writing code.</li>
+    <li><strong>CONTRACT.md</strong>  -  SENTINEL reviews the plan and either agrees or requests changes.</li>
+    <li><strong>Segment implementation</strong>  -  FORGE implements one segment at a time, commits, and awaits SENTINEL.</li>
+    <li><strong>Per-segment evaluation</strong>  -  SENTINEL writes <code>segment-N-eval.md</code> for each commit.</li>
+    <li><strong>Final review</strong>  -  SENTINEL writes <code>final-review.md</code> with APPROVED or CHANGES_REQUESTED.</li>
+    <li><strong>PR creation</strong>  -  FORGE opens the pull request via GitHub MCP after final approval.</li>
+    <li><strong>Merge</strong>  -  VESSEL polls CI and squash-merges the PR.</li>
+    <li><strong>Documentation</strong>  -  LORE writes ADRs and CHANGELOG entries after the merge event.</li>
+  </ol>
+  <p>
+    Every step that writes a file also writes a state update to the SharedStore. This is what makes NEXUS able to
+    resume the flow after a crash. If the workspace is destroyed in the middle of segment 3, NEXUS will detect the
+    orphaned ticket, provision a new workspace, and re-enter the flow at the segment-3 checkpoint.
+  </p>
+
+  <h2>Per-Evaluation SENTINEL Workspaces</h2>
+  <p>
+    SENTINEL is special because it is <strong>ephemeral per evaluation</strong>, not per ticket. Every time a
+    segment needs review, NEXUS creates a fresh SENTINEL workspace from the evaluation template. The workspace is
+    read-only: it receives the same source snapshot that FORGE has, but it cannot write to the worktree or push to
+    GitHub. Its only output is review files.
+  </p>
+  <p>
+    This design eliminates reviewer bias. A SENTINEL workspace that just reviewed segment 1 is destroyed before
+    segment 2 is reviewed. The next SENTINEL workspace starts with no memory of the previous review, forcing it
+    to evaluate the current code on its own merits. It also means that a compromised review workspace cannot
+    persist: it lives for minutes, not hours, and has no write access to anything that matters.
+  </p>
+  <p>
+    SENTINEL workspaces also support adversarial review. The registry can assign FORGE and SENTINEL different
+    providers or models (for example, Anthropic for FORGE and OpenAI for SENTINEL). Because each SENTINEL
+    workspace is created fresh from a potentially different module, the reviewer does not inherit the writer's
+    model family or latent biases.
+  </p>
+
+  <Callout type="warning" title="SENTINEL has no commit rights">
+    The evaluation template explicitly removes write access to the Git remote and the worktree. SENTINEL can only
+    write its own review files. If a SENTINEL workspace is somehow compromised, the blast radius is limited to the
+    review files it can write in its own ephemeral directory.
+  </Callout>
+
+  <h2>Teardown Rules</h2>
+  <p>
+    Workspace teardown is not optional. It is an automatic enforcement of the ephemeral security model. NEXUS
+    watches for teardown triggers on every reconcile cycle and issues Coder API delete calls when any of them fire.
+  </p>
+  <DocsTable headers={['Trigger', 'Condition', 'Teardown timing']} rows={TEARDOWN_ROWS} />
+  <p>
+    Teardown is idempotent. If Coder has already stopped the workspace, the delete call returns success and NEXUS
+    marks the worker slot idle. If the delete fails, the event is written to <code>flow_recovery</code> and NEXUS
+    retries on the next cycle. A workspace that cannot be torn down is a security incident; NEXUS will not leave
+    it in the worker slot indefinitely.
+  </p>
+
+  <h2>Timeout Handling</h2>
+  <p>
+    Every workspace has a TTL. When the TTL expires, Coder auto-stops the workspace. NEXUS detects this as a stale
+    worker because the worker slot still shows <code>working</code> but the workspace status is no longer
+    <code>running</code>. At that point NEXUS has two options:
+  </p>
+  <ul>
+    <li><strong>Resume</strong>  -  if the ticket is recoverable and the flow state is intact, NEXUS can restart the workspace and continue from the last checkpoint.</li>
+    <li><strong>Escalate</strong>  -  if the ticket is blocked or the state is inconsistent, NEXUS marks the ticket <code>AwaitingHuman</code> and tears down the workspace.</li>
+  </ul>
+  <p>
+    The default TTL is 30 minutes, but it is configurable per role and per ticket. Long-running refactor tickets
+    can be granted a longer TTL; trivial documentation tickets may use a shorter one. The TTL is not a
+    guess about how long the work takes; it is a safety bound on how long a stale workspace is allowed to exist.
+  </p>
+
+  <h2>Failure Handling</h2>
+  <p>
+    When a worker hits an unrecoverable failure, the teardown sequence is similar to timeout, but with additional
+    state preservation. NEXUS writes the failure reason into the ticket's <code>flow_recovery</code> record, sets
+    the worker status to <code>suspended</code>, and then destroys the workspace. The ticket is not deleted; it is
+    either retried with a new workspace or escalated to <code>AwaitingHuman</code> depending on whether the failure
+    is recoverable.
+  </p>
+  <p>
+    Failure teardown preserves the work done so far because the work is in Git, not in the workspace. FORGE commits
+    after each segment, and SENTINEL reviews are committed as files. When a new workspace is provisioned for the
+    same ticket, it clones the branch and resumes from the latest commit. The only thing lost is the ephemeral
+    process state, which is intentionally not preserved.
+  </p>
+
+  <Callout type="info" title="No persistent state inside the workspace">
+    The workspace is a scratchpad. The only durable artifacts are the files that have been committed to Git or
+    written to the SharedStore. This is why teardown is safe: nothing of value lives on the workspace disk once
+    the flow state is synced.
+  </Callout>
+
+  <h2>Operational Visibility</h2>
+  <p>
+    Every lifecycle event is recorded in the <code>event_ring</code> and surfaced in the TUI. Operators can see:
+    which workspaces are running, which tickets they belong to, how long they have been alive, and which teardown
+    trigger fired when they stopped. The TUI also exposes manual teardown controls for emergencies.
+  </p>
+  <p>
+    For audit purposes, Coder itself records workspace creation, start, stop, and delete events along with the
+    Coder user identity. OpenFlows correlates these with the SharedStore ticket history, giving a complete
+    trace from GitHub issue to merged PR to destroyed workspace.
+  </p>
+</DocsLayout>

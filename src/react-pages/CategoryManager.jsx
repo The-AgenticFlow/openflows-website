@@ -324,7 +324,7 @@ export default function CategoryManager() {
                                         <tr key={cat.id}>
                                             <td><strong>{cat.name}</strong></td>
                                             <td><code>{cat.slug}</code></td>
-                                            <td>{cat.description || '—'}</td>
+                                            <td>{cat.description || ' - '}</td>
                                             <td>
                                                 <div style={{ display: 'flex', gap: '0.5rem' }}>
                                                     <button

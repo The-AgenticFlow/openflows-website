@@ -1,0 +1,117 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'VESSEL (DevOps)' }]}>
+  <h1>VESSEL  -  DevOps &amp; Merge</h1>
+
+  <p>
+    VESSEL is the DevOps agent. It is the <strong>only agent authorized to push to the main branch</strong>.
+    VESSEL monitors CI, detects merge conflicts early, attempts automated resolution, and squash-merges
+    green PRs. It runs in an ephemeral workspace and coordinates entirely through the harness and GitHub MCP.
+  </p>
+
+  <h2>Responsibilities</h2>
+
+  <ul>
+    <li>Monitors CI status on PRs (10-second poll interval, 30-minute timeout)</li>
+    <li>Detects merge conflicts via GitHub's <code>mergeable</code> field</li>
+    <li>Attempts automated resolution (rebase, GitHub update-branch)</li>
+    <li>Squash-merges approved PRs with ticket references</li>
+    <li>Emits <code>ticket_merged</code> event for LORE</li>
+    <li>Tears down workspace after merge</li>
+  </ul>
+
+  <h2>Workflow</h2>
+
+  <ol>
+    <li><strong>Watch</strong>  -  Poll GitHub for PRs labeled <code>approved</code> by SENTINEL</li>
+    <li><strong>Verify CI</strong>  -  Wait for all checks to pass (success / skipped)</li>
+    <li><strong>Check mergeable</strong>  -  GitHub <code>mergeable: true</code> required</li>
+    <li><strong>Resolve conflicts</strong>  -  If <code>mergeable: false</code>, attempt rebase; on failure, re-route to same FORGE worker</li>
+    <li><strong>Merge</strong>  -  Squash-merge with <code>Closes #N</code> reference</li>
+    <li><strong>Cleanup</strong>  -  Archive ticket, destroy workspace, emit <code>ticket_merged</code></li>
+  </ol>
+
+  <h2>Merge Conflict Handling</h2>
+
+  <p>
+    When GitHub reports <code>mergeable: false</code>:
+  </p>
+
+  <ol>
+    <li>VESSEL writes <code>CONFLICT_RESOLUTION.md</code> documenting the conflict</li>
+    <li>Attempts <code>git rebase main</code> inside the FORGE workspace</li>
+    <li>If successful, pushes updated branch and restarts CI wait</li>
+    <li>If failed, re-routes ticket to the <strong>same FORGE worker</strong>  -  no new branch, no context loss</li>
+  </ol>
+
+  <Callout type="info" title="Same worker re-routing">
+    Re-routing to the same FORGE worker preserves the workspace, branch, and implementation context.
+    The worker picks up from the conflict resolution and continues.
+  </Callout>
+
+  <h2>CI Polling Configuration</h2>
+
+  <CodeBlock lang="json">{{
+  "agents": {
+    "vessel": {
+      "provider": "openai",
+      "model": "gpt-4o",
+      "coder_module": "codex",
+      "active": true,
+      "instances": 1,
+      "mcps": ["github-mcp"],
+      "timeout_ms": 1800000
+    }
+  }
+}}</CodeBlock>
+
+  <DocsTable headers={['Setting', 'Default', 'Description']} rows={[
+    ['Poll interval', '10s', 'How often to check PR checks'],
+    ['CI timeout', '30min', 'Max wait for CI to complete'],
+    ['Rebase attempts', '3', 'Max automated rebase retries'],
+    ['Merge method', 'squash', 'Squash-merge preserves clean history'],
+  ]} />
+
+  <h2>Harness Integration</h2>
+
+  <CodeBlock lang="bash">{`# Monitor PR (via GitHub MCP in workspace)
+# VESSEL uses GitHub MCP to poll checks
+
+# Record merge
+openflows-harness pr merged --pr 123
+
+# Emit ticket_merged for LORE
+openflows-harness event emit ticket_merged --ticket 42 --pr 123
+
+# Trigger workspace teardown
+openflows-harness workspace teardown --worker forge-1}`}</CodeBlock>
+
+  <h2>Branch Protection</h2>
+
+  <p>
+    VESSEL respects GitHub branch protection rules:
+  </p>
+
+  <ul>
+    <li>Required status checks must pass</li>
+    <li>Required reviews satisfied (SENTINEL approval = review)</li>
+    <li>Linear history enforced by squash-merge</li>
+    <li>Admin bypass not needed  -  VESSEL uses the PR author's credentials via Coder external auth</li>
+  </ul>
+
+  <h2>Workspace Teardown</h2>
+
+  <p>
+    After merge, VESSEL coordinates cleanup:
+  </p>
+
+  <ol>
+    <li>Mark ticket <code>merged</code> in Redis</li>
+    <li>Destroy FORGE workspace via Coder API</li>
+    <li>Destroy own workspace</li>
+    <li>Release worker slot back to pool</li>
+  </ol>
+</DocsLayout>

@@ -19,6 +19,23 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" as="script" crossorigin="anonymous" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" as="script" crossorigin="anonymous" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js" as="script" crossorigin="anonymous" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js" as="script" crossorigin="anonymous" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" as="script" crossorigin="anonymous" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js" as="script" crossorigin="anonymous" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js" as="script" crossorigin="anonymous" />
+    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js" as="script" crossorigin="anonymous" />
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" integrity="sha512-eSwD2HTaT2/2nJqjgGgZ9/XR4gFqkGQ3Q/rcE/0Bd5BENch+S1/6NQ5T3yLaJ5gq701JbnP+TqfZF9R4a7s3Wg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" integrity="sha512-ku4wx2ZbQPY4aqO9DQ5Hv+uabx7o+jIVcXeC5QezG1t+SEe0qEeQq4 bokWrR8eVybBIQ7U2c7K0lQ7pAr3w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js" integrity="sha512-zVCFOctytVhLJNb5lN6/iN5sDW4m+4uN1Q1W68R4EuYIE02Rklsf7NHW7fU58jFXY99Z8NvV21CEJ6tE8jw==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js" integrity="sha512-hQ85M/Pd8tU2zxD8ZYa1tQ+sccl3FkTHL8XKM5LiPBVF8kmQnF3NpME2FQ4Z3ihh5nqx7nSJvP9543k6qyA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" integrity="sha512-QxAi9eUjKGgQ+T//0TmwJt2F6Oi3k4eZ0QxUl2Mz4mt+a7c+S6L3RYbO6A4/7SgB7W6rxBSg5B6Te4+dp0w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js" integrity="sha512-dfJYyC4LveMAdE4j72NZV4gSS/AV2vV1YB8bVNubK0U8KCDg3lO+QwVw6gXSoFxLV3v4EwiTmFvgdUR6oE3g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js" integrity="sha512-nVWyz0+ThxrH3ZfCjLak9KShGJ3wMfm+g8zOqVfWqxQCTEpV6++8X4wT5U/OumW8veY1zT8IDZfbSOSjOQeA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js" integrity="sha512-W5pe34KesqYjIRQMPNojEKJLGgdi+6LOg0DSDe/Elyc4F2bXHlbxTrcA7RuPfSMK4V0azNkkZQg/l7S+Zs8w==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
     
     <title>{title}</title>
     <meta name="description" content={description} />
@@ -40,6 +57,11 @@ const canonicalURL = new URL(Astro.url.pathname, Astro.site);
   <body>
     <Navbar />
     <slot />
+    <script is:inline>
+      if (typeof Prism !== 'undefined') {
+        Prism.highlightAll();
+      }
+    </script>
   </body>
 </html>
 

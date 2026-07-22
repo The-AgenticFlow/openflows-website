@@ -1,0 +1,213 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const REGISTRY_V2_ROWS = [
+  ['<code>schema_version</code>', 'string', '<code>"2"</code>  -  must be present for the orchestrator to interpret v2 fields.'],
+  ['<code>workspace_provider</code>', 'string', '<code>"coder"</code> or <code>"local"</code>. Coder is the only production runtime.'],
+  ['<code>coder_module</code>', 'string', 'Default Coder Registry module for installing a CLI agent into workspaces.'],
+  ['<code>ai_gateway</code>', 'object', 'Primary and fallback AI Gateway configuration.'],
+  ['<code>agents</code>', 'object', 'Map of role names to agent definitions.'],
+  ['<code>skills</code>', 'array', 'List of registered skill plugins. Each entry points to a directory and a registry entry.'],
+  ['<code>mcps</code>', 'array', 'List of MCP servers available to all agents. Per-agent MCP lists override this.'],
+  ['<code>models</code>', 'array', 'Optional registry of custom model definitions and aliases.'],
+];
+
+const AGENT_V2_ROWS = [
+  ['<code>provider</code>', 'string', 'LLM provider slug known to the Coder AI Gateway.'],
+  ['<code>model</code>', 'string', 'Model identifier or alias.'],
+  ['<code>coder_module</code>', 'string', 'Per-agent CLI module override.'],
+  ['<code>active</code>', 'bool', 'Whether the agent is enabled.'],
+  ['<code>instances</code>', 'int', 'Number of parallel worker slots.'],
+  ['<code>mcps</code>', 'array', 'Optional list of MCP servers available to this agent only.'],
+  ['<code>skills</code>', 'array', 'Optional list of skill names this agent can invoke.'],
+  ['<code>max_retries</code>', 'int', 'Override the default flow-level retry count for this agent.'],
+  ['<code>timeout_ms</code>', 'int', 'Override the default LLM timeout for this agent.'],
+];
+
+const SKILL_FILE_ROWS = [
+  ['<code>name</code>', 'string', 'Unique skill name used in <code>registry.json</code> and agent prompts.'],
+  ['<code>description</code>', 'string', 'What the skill does, when to use it, and what input it expects.'],
+  ['<code>entry</code>', 'string', 'Path to the skill\'s executable or handler script relative to the skill directory.'],
+  ['<code>inputs</code>', 'array', 'JSON Schema of accepted parameters.'],
+  ['<code>outputs</code>', 'array', 'JSON Schema of returned values.'],
+  ['<code>examples</code>', 'array', 'One or more example invocations showing expected input and output.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Extending OpenFlows' }]}>
+  <h1>Extending OpenFlows: Skills</h1>
+
+  <p>
+    OpenFlows is built around a small, stable core: a PocketFlow graph, typed Redis
+    SharedStore contracts, and a NEXUS reconcile loop. Extensions are added through three
+    primary mechanisms: skills, MCP servers, and custom model definitions. All three are
+    declared in <code>orchestration/agent/registry.json</code> v2, which is the single
+    extension point for agent behavior.
+  </p>
+
+  <p>
+    The extension philosophy is intentional: the orchestrator does not need to be rebuilt to
+    support a new capability. A skill is a directory with a <code>SKILL.md</code> manifest and
+    a handler. An MCP server is an external process exposing a standard tool interface. A model
+    is an alias and metadata entry. By keeping the registry as the source of truth, operators
+    can turn capabilities on and off without redeploying the controller.
+  </p>
+
+  <h2>registry.json v2 Structure</h2>
+
+  <p>
+    Version 2 of the registry adds top-level arrays for skills, MCPs, and models while
+    keeping the agent map from v1. The orchestrator refuses to load a v2 registry unless
+    <code>schema_version</code> is set to <code>"2"</code>.
+  </p>
+
+  <CodeBlock lang="json">{`{
+  "schema_version": "2",
+  "workspace_provider": "coder",
+  "coder_module": "claude-code",
+  "ai_gateway": {
+    "primary": "coder",
+    "fallback": "litellm"
+  },
+  "agents": {
+    "nexus": { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "active": true, "instances": 1 },
+    "forge": { "provider": "anthropic", "model": "claude-sonnet-4-20250514", "active": true, "instances": 2, "skills": ["terraform", "openapi"] },
+    "sentinel": { "provider": "openai", "model": "gpt-4.1", "active": true, "instances": 1 },
+    "vessel": { "provider": "openai", "model": "gpt-4o", "active": true, "instances": 1, "mcps": ["coder-mcp"] },
+    "lore": { "provider": "anthropic", "model": "claude-haiku-4-20250514", "active": true, "instances": 1 }
+  },
+  "skills": [
+    { "name": "terraform", "path": "orchestration/plugin/skills/terraform", "entry": "terraform-skill" },
+    { "name": "openapi", "path": "orchestration/plugin/skills/openapi", "entry": "openapi-skill" }
+  ],
+  "mcps": [
+    {
+      "name": "coder-mcp",
+      "command": "npx",
+      "args": ["-y", "@coder/mcp-server"],
+      "env": { "CODER_URL": "https://coder.example.com" },
+      "timeout_ms": 30000
+    }
+  ],
+  "models": [
+    {
+      "id": "claude-sonnet-4-20250514",
+      "provider": "anthropic",
+      "aliases": ["claude-sonnet", "sonnet"],
+      "context_window": 200000,
+      "cost_tier": "high"
+    }
+  ]
+}`}</CodeBlock>
+
+  <DocsTable headers={['Top-Level Field', 'Type', 'Description']} rows={REGISTRY_V2_ROWS} />
+  <DocsTable headers={['Agent Field', 'Type', 'Description']} rows={AGENT_V2_ROWS} />
+
+  <Callout type="info" title="Schema version is mandatory">
+    If <code>schema_version</code> is missing, the orchestrator interprets the registry as v1
+    and ignores the <code>skills</code>, <code>mcps</code>, and <code>models</code> arrays. The
+    registry will still load, but none of your extensions will be available.
+  </Callout>
+
+  <h2>Adding Skills</h2>
+
+  <p>
+    A skill is a discrete capability an agent can invoke during a task. Examples include
+    generating Terraform plans, validating OpenAPI schemas, running a custom linter, or
+    fetching data from an internal API. Skills live in
+    <code>orchestration/plugin/skills/{'{'}skill-name{'}'}/</code> and consist of a
+    <code>SKILL.md</code> manifest plus an executable handler.
+  </p>
+
+  <p>
+    The agent does not import the skill at compile time. Instead, the orchestrator reads the
+    skill manifest at runtime, registers the skill name, and makes it available to agents that
+    list it in their <code>skills</code> array. When an agent decides to use a skill, it emits
+    a structured skill invocation; the orchestrator spawns the handler in a fresh subprocess
+    (or a sandboxed Coder workspace for untrusted handlers) and returns the result to the
+    agent.
+  </p>
+
+  <h3>Skill Directory Layout</h3>
+
+  <CodeBlock lang="bash">{`orchestration/plugin/skills/
+└── terraform/
+    ├── SKILL.md
+    ├── terraform-skill         # entry executable (can be a script or compiled binary)
+    └── fixtures/
+        └── example.tf
+`}</CodeBlock>
+
+  <h3>SKILL.md Manifest</h3>
+
+  <p>
+    <code>SKILL.md</code> is a machine-readable manifest at the top of the skill directory. It
+    describes the skill's contract so the orchestrator can validate invocations and present
+    the skill to the agent in its prompt context. The manifest must be valid YAML front matter
+    followed by Markdown documentation.
+  </p>
+
+  <CodeBlock lang="yaml">{`---
+name: terraform
+version: 1.0.0
+description: Generate, validate, and plan Terraform changes for an AWS repository.
+entry: terraform-skill
+inputs:
+  - name: action
+    type: string
+    enum: [plan, validate, fmt]
+    required: true
+  - name: directory
+    type: string
+    default: "."
+outputs:
+  - name: plan_path
+    type: string
+  - name: exit_code
+    type: integer
+examples:
+  - input: { action: plan, directory: "infra" }
+    output: { plan_path: "infra/tfplan", exit_code: 0 }
+---
+
+# Terraform Skill
+
+Use this skill when the ticket involves AWS infrastructure defined in Terraform. The skill
+runs \`terraform init\`, \`terraform validate\`, and \`terraform plan\` in the target
+directory and returns the plan output. Do not use this skill for ad-hoc shell commands.
+`}</CodeBlock>
+
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={SKILL_FILE_ROWS} />
+
+  <h3>Registering a Skill</h3>
+
+  <p>
+    After creating the skill directory and manifest, register the skill in
+    <code>orchestration/agent/registry.json</code>. Add it to the top-level <code>skills</code>
+    array and list it in the <code>skills</code> array of any agent that should be able to use
+    it.
+  </p>
+
+  <CodeBlock lang="json">{`{
+  "skills": [
+    { "name": "terraform", "path": "orchestration/plugin/skills/terraform", "entry": "terraform-skill" }
+  ],
+  "agents": {
+    "forge": { "skills": ["terraform"] },
+    "vessel": { "skills": ["terraform"] }
+  }
+}`}</CodeBlock>
+
+  <Callout type="tip" title="Skills are hot-reloaded">
+    The orchestrator re-reads <code>registry.json</code> on every NEXUS poll cycle. Adding a new
+    skill or changing an existing skill does not require a controller restart. However, the
+    handler binary must be executable and must be present in the skill directory before the
+    orchestrator attempts to invoke it.
+  </Callout>
+
+  <Callout type="info" title="Continue reading">
+    See <a href="/docs/guides/extending-mcp">MCP Servers</a> for adding external tool servers,
+    and <a href="/docs/guides/extending-models">Models &amp; Security</a> for custom model definitions.
+  </Callout>
+</DocsLayout>

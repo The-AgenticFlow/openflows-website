@@ -1,0 +1,128 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const STRATEGY_ROWS = [
+  ['Per-agent provider', 'Each agent entry in <code>agents.{{role}}.provider</code> maps to a Coder AI Gateway provider slug. No global override.'],
+  ['Per-agent model', '<code>agents.{{role}}.model</code> selects the exact model identifier. FORGE and NEXUS can share the same model, SENTINEL should differ.'],
+  ['Cost tier routing', 'Lightweight agents (LORE, VESSEL) use smaller / cheaper models; reasoning-heavy agents (FORGE, NEXUS) use frontier models.'],
+  ['Adversarial routing', 'FORGE and SENTINEL must be configured with different providers or model families to avoid correlated reasoning failures.'],
+  ['Fallback routing', 'If the Coder AI Gateway is unavailable, the orchestrator switches to <code>ai_gateway.fallback</code> (LiteLLM) for all providers.'],
+];
+
+const GATEWAY_ROWS = [
+  ['<code>ai_gateway.primary</code>', 'string', '<code>"coder"</code>  -  route all LLM calls through the Coder AI Gateway. Centralized keys, audit logging, and model governance.'],
+  ['<code>ai_gateway.fallback</code>', 'string', '<code>"litellm"</code>  -  LiteLLM proxy endpoint for air-gapped or self-hosted model providers.'],
+  ['<code>ai_gateway.litellm_url</code>', 'string', 'Optional URL of the LiteLLM fallback (e.g. <code>http://litellm.internal:4000</code>). If unset, the orchestrator reads <code>LITELLM_URL</code> from the environment.'],
+  ['<code>ai_gateway.timeout_ms</code>', 'int', 'Request timeout for LLM calls. Default <code>120000</code> (2 minutes). SENTINEL and NEXUS may override per-call.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Model Routing' }]}>
+  <h1>Model Routing</h1>
+
+  <p>
+    OpenFlows does not embed LLM API keys inside worker workspaces. Instead, every LLM call
+    routes through the <strong>Coder AI Gateway</strong>, which centralizes provider
+    credentials, model governance, audit logging, and cost tracking. The orchestrator
+    (NEXUS) decides <em>which agent</em> runs, but <code>registry.json</code> decides
+    <em>which model and provider</em> each agent uses. This guide explains how to configure
+    per-agent routing, optimize costs, set up adversarial review across model families, and
+    configure an air-gapped LiteLLM fallback.
+  </p>
+
+  <p>
+    The routing model is intentionally simple: each agent role has a single
+    <code>provider</code> and <code>model</code> field. There is no prompt-level routing,
+    no dynamic model selection, and no A/B testing framework. The goal is predictability and
+    operator control. If you want a different model for a specific task, create a different
+    agent role or adjust the agent's configuration in <code>registry.json</code>.
+  </p>
+
+  <h2>Routing Strategy</h2>
+
+  <DocsTable headers={['Strategy', 'Description']} rows={STRATEGY_ROWS} />
+
+  <h2>registry.json Routing Configuration</h2>
+
+  <p>
+    The top-level <code>ai_gateway</code> block controls where LLM calls go. The per-agent
+    <code>provider</code> and <code>model</code> fields are passed through to that gateway as
+    the model identifier. The Coder AI Gateway translates these into the provider-specific
+    API calls and handles authentication centrally.
+  </p>
+
+  <CodeBlock lang="json">{`{
+  "workspace_provider": "coder",
+  "coder_module": "claude-code",
+  "ai_gateway": {
+    "primary": "coder",
+    "fallback": "litellm",
+    "litellm_url": "http://litellm.internal:4000",
+    "timeout_ms": 120000
+  },
+  "agents": {
+    "nexus": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514",
+      "coder_module": "claude-code",
+      "active": true,
+      "instances": 1
+    },
+    "forge": {
+      "provider": "anthropic",
+      "model": "claude-sonnet-4-20250514",
+      "coder_module": "claude-code",
+      "active": true,
+      "instances": 2
+    },
+    "sentinel": {
+      "provider": "openai",
+      "model": "gpt-4.1",
+      "coder_module": "codex",
+      "active": true,
+      "instances": 1
+    },
+    "vessel": {
+      "provider": "openai",
+      "model": "gpt-4o",
+      "coder_module": "codex",
+      "active": true,
+      "instances": 1
+    },
+    "lore": {
+      "provider": "anthropic",
+      "model": "claude-haiku-4-20250514",
+      "coder_module": "aider",
+      "active": true,
+      "instances": 1
+    }
+  }
+}`}</CodeBlock>
+
+  <h2>AI Gateway Fields</h2>
+
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={GATEWAY_ROWS} />
+
+  <Callout type="info" title="No provider credentials in workspaces">
+    Worker workspaces contain zero AI software, zero LLM keys, and zero GitHub tokens by
+    design. The Coder AI Gateway holds the provider credentials and makes the upstream calls.
+    If a worker workspace is compromised, the attacker gains access to the current repository
+    clone but not to any LLM or GitHub credentials.
+  </Callout>
+
+  <h2>Per-Agent Model Selection</h2>
+
+  <p>
+    Model selection is a cost-quality trade-off. FORGE and NEXUS need frontier reasoning
+    models because they drive planning, implementation, and reconcile decisions. SENTINEL
+    needs a model strong enough to catch implementation mistakes but should be a different
+    family than FORGE to create adversarial pressure. VESSEL and LORE are lightweight tasks
+    and can run on smaller, cheaper models.
+  </p>
+
+  <Callout type="info" title="Continue reading">
+    See <a href="/docs/guides/model-routing-cost">Cost Optimization &amp; Adversarial Review</a> for cost tuning and cross-provider review strategies.
+    See <a href="/docs/guides/model-routing-fallback">LiteLLM Fallback &amp; Gateway Config</a> for air-gapped deployments and Coder AI Gateway setup.
+  </Callout>
+</DocsLayout>

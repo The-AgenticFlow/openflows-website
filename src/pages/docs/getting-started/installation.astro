@@ -1,259 +1,201 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Installation' }]}>
   <h1>Installation</h1>
-  
-  <div class="callout warning">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">⚠️ Content Update in Progress</p>
-        <div class="calloutText">This page is being updated to reflect the current OpenFlows installation workflow. The information below may be partially outdated while updates are in progress.</div>
-      </div>
-    </div>
-  </div>
-  
+
   <p>
-    OpenFlows is an autonomous software development team orchestrator that runs on your self-hosted Coder deployment. 
-    The recommended setup uses Docker Compose to bring up the entire stack including Coder, Redis, and OpenFlows.
+    OpenFlows is a thin orchestration brain that runs on top of a self-hosted Coder deployment. Coder is
+    the only runtime: it provides ephemeral workspaces, control-plane AI agents, model governance,
+    identity, audit logging, and cost tracking. Worker workspaces contain zero AI software, zero LLM
+    keys, and zero GitHub tokens.
   </p>
 
-  <div class="tabTabs">
-    <button class="tabTab active" onclick="showInstallTab(0)">Docker Compose (Recommended)</button>
-    <button class="tabTab" onclick="showInstallTab(1)">Legacy Methods</button>
-  </div>
+  <p>
+    The only supported installation path is Docker Compose. It brings up the entire stack  -  Coder,
+    Redis, and the OpenFlows engine  -  with consistent networking and a single configuration surface.
+    Other legacy methods (npm, one-liner scripts, and <code>cargo install</code>) are no longer supported
+    and have been removed from the documentation.
+  </p>
 
-  <div class="tabContent active" id="install-tab-0">
-    <h3>Complete Docker Compose Stack</h3>
-    <p>The recommended approach brings up the entire OpenFlows infrastructure with a single command:</p>
-    
-    <div class="codeBlock">
-      <div class="codeHeader">
-        <span class="codeLang">bash</span>
-        <button class="copyBtn">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-          </svg>
-          Copy
-        </button>
-      </div>
-      <pre><code>git clone https://github.com/The-AgenticFlow/openflows.git
+  <h2 id="prerequisites">Prerequisites</h2>
+  <ul>
+    <li><strong>Docker 24+</strong> and Docker Compose</li>
+    <li><strong>Git 2.x+</strong></li>
+    <li>A <strong>GitHub OAuth App</strong> for Coder external authentication</li>
+    <li>At least one LLM provider configured in the Coder dashboard (AI Settings → Coder Agents → Models)</li>
+  </ul>
+
+  <Callout type="tip" title="Token scopes">
+    For a complete breakdown of GitHub OAuth scopes, Coder external auth configuration, and the
+    minimum viable credential setup, see the <a href="/docs/getting-started/token-guide">Token Guide</a>.
+  </Callout>
+
+  <h2 id="docker-compose">Docker Compose Stack</h2>
+  <p>Clone the repository, copy the environment template, and start the stack:</p>
+
+  <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/openflows.git
 cd openflows
-cp .env.example .env   # edit .env with your GitHub OAuth app credentials
+cp .env.example .env   # edit with your GitHub OAuth app credentials
 
-# 1. Start the infrastructure stack
-docker compose up -d</code></pre>
-    </div>
-    
-    <div class="callout info">
-      <div class="calloutBody">
-        <div class="calloutContent">
-          <p class="calloutTitle">What This Starts</p>
-          <div class="calloutText">
-            <ul>
-              <li><strong>Coder</strong>: Governed execution environment on port 7080</li>
-              <li><strong>Redis</strong>: SharedStore for agent coordination on port 6379</li>
-              <li><strong>OpenFlows engine</strong>: Orchestration layer</li>
-              <li>All wired together with secure networking</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-    
-    <h4>Bootstrap OpenFlows</h4>
-    <p>After the infrastructure is running, bootstrap OpenFlows:</p>
-    
-    <div class="codeBlock">
-      <div class="codeHeader"><span class="codeLang">bash</span></div>
-      <pre><code># 2. Bootstrap OpenFlows (creates admin, pushes templates, verifies config)
-cargo run -p openflows --bin openflows -- bootstrap</code></pre>
-    </div>
-    
-    <h4>Add Your First Tenant</h4>
-    <p>A tenant represents a team working on a specific repository:</p>
-    
-    <div class="codeBlock">
-      <div class="codeHeader"><span class="codeLang">bash</span></div>
-      <pre><code># 3. Add a tenant (links GitHub via Coder external auth, creates nexus workspace)
-cargo run -p openflows --bin openflows -- tenant add owner/repo --name my-team</code></pre>
-    </div>
-    
-    <h4>Create Your First Issue</h4>
-    <p>OpenFlows will now monitor your repository:</p>
-    
-    <div class="codeBlock">
-      <div class="codeHeader"><span class="codeLang">bash</span></div>
-      <pre><code># 4. Create a GitHub issue in your repo — OpenFlows picks it up automatically</code></pre>
-    </div>
-    
-    <div class="callout tip">
-      <div class="calloutBody">
-        <div class="calloutContent">
-          <p class="calloutTitle">Prerequisites</p>
-          <div class="calloutText">
-            <ul>
-              <li>Docker 24+ and Docker Compose</li>
-              <li>Git 2.x+</li>
-              <li>A GitHub OAuth App for external auth</li>
-              <li>At least one LLM provider configured in the Coder dashboard (AI Settings → Coder Agents → Models)</li>
-            </ul>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
+# Start the infrastructure stack
+docker compose up -d`}</CodeBlock>
 
-  <div class="tabContent" id="install-tab-1">
-    <h3>Legacy Installation Methods</h3>
-    <p>The following methods are deprecated and may not work with the current OpenFlows architecture. Use the Docker Compose method above for the best experience.</p>
-    
-    <h4>npm (Deprecated)</h4>
-    <div class="codeBlock">
-      <div class="codeHeader"><span class="codeLang">bash</span></div>
-      <pre><code>npm install -g @the-agenticflow/openflows
-openflows --version
-openflows-setup
-openflows</code></pre>
-    </div>
-    
-    <h4>One-line installer (Deprecated)</h4>
-    <div class="codeBlock">
-      <div class="codeHeader"><span class="codeLang">bash</span></div>
-      <pre><code>curl -fsSL https://raw.githubusercontent.com/The-AgenticFlow/OpenFlows/main/scripts/install.sh | bash</code></pre>
-    </div>
-    
-    <h4>Cargo (For Development)</h4>
-    <p>This method is primarily for developers contributing to OpenFlows:</p>
-    <div class="codeBlock">
-      <div class="codeHeader"><span class="codeLang">bash</span></div>
-      <pre><code>cargo install openflows
-openflows --version</code></pre>
-    </div>
-    
-    <div class="callout warning">
-      <div class="calloutBody">
-        <div class="calloutContent">
-          <p class="calloutTitle">Binary Changes</p>
-          <div class="calloutText">The current OpenFlows architecture uses a single <code>openflows</code> binary with subcommands (<code>bootstrap</code>, <code>tenant add</code>) rather than separate binaries like <code>openflows-setup</code>, <code>openflows-dashboard</code>, and <code>openflows-doctor</code>.</div>
-        </div>
-      </div>
-    </div>
-  </div>
+  <Callout type="info" title="What this starts">
+    <ul>
+      <li><strong>Coder</strong>  -  governed execution environment on port 7080</li>
+      <li><strong>Redis</strong>  -  SharedStore for agent coordination on port 6379</li>
+      <li><strong>OpenFlows engine</strong>  -  orchestration layer and NEXUS reconcile loop</li>
+      <li>All services wired together with internal Docker networking</li>
+    </ul>
+  </Callout>
 
-  <script>
-    function showInstallTab(index) {
-      document.querySelectorAll('#install-tab-0').forEach((el, i) => {
-        el.parentElement.querySelectorAll('.tabTab').forEach((btn, j) => {
-          btn.classList.toggle('active', j === index);
-        });
-        el.parentElement.querySelectorAll('.tabContent').forEach((content, j) => {
-          content.classList.toggle('active', j === index);
-        });
-      });
-    }
-  </script>
-
-  <h2>Environment Configuration</h2>
+  <h2 id="bootstrap">Bootstrap OpenFlows</h2>
   <p>
-    The <code>.env.example</code> file contains all necessary configuration. Copy it to <code>.env</code> and edit with your specific settings:
+    After the infrastructure is healthy, run the bootstrap command. It creates the OpenFlows admin
+    user, pushes Coder templates for each role (nexus, forge, sentinel, vessel, lore), and verifies
+    that the orchestration layer can reach Coder and Redis.
   </p>
 
-  <div class="codeBlock">
-    <div class="codeHeader"><span class="codeLang">bash</span></div>
-    <pre><code># Copy the example environment file
-cp .env.example .env
+  <CodeBlock lang="bash">{`./scripts/prod.sh bootstrap`}</CodeBlock>
 
-# Edit .env with your GitHub OAuth app credentials and other settings</code></pre>
-  </div>
+  <p>
+    If bootstrap fails, the CLI prints a specific diagnostic and exits non-zero. Common causes are
+    missing GitHub OAuth credentials, an unreachable Coder server, or a Redis connection failure. See
+    <a href="/docs/guides/troubleshooting">Troubleshooting</a> for resolution steps.
+  </p>
 
-  <h3>Key Configuration Points</h3>
-  
+  <h2 id="run">Run the Controller</h2>
+  <p>
+    Start the Orchestrator. This command <strong>always resets Redis to a clean slate</strong> before
+    starting the controller. It runs in the foreground  -  keep this terminal open or run it in a
+    service manager.
+  </p>
+
+  <CodeBlock lang="bash">{`./scripts/prod.sh run`}</CodeBlock>
+
+  <p>
+    Monitor the controller logs in another terminal:
+  </p>
+
+  <CodeBlock lang="bash">{`tail -f /tmp/openflows-controller.log`}</CodeBlock>
+
+  <h2 id="tenant">Add Your First Tenant</h2>
+  <p>
+    A tenant represents a team bound to a specific repository. The <code>tenant add</code> command creates a
+    Coder user for the team, links the repository through Coder external auth, and provisions the
+    <code>openflows-nexus</code> workspace that polls the repo for issues.
+  </p>
+
+  <CodeBlock lang="bash">{`./scripts/prod.sh tenant owner/repo --name my-team`}</CodeBlock>
+
+  <p>
+    The first time a tenant is added, the owning user must complete the Coder external-auth flow to
+    grant GitHub access. After that, NEXUS can clone, create branches, open PRs, and merge on behalf of
+    the tenant. Tenant state is isolated by Redis keyspace prefixes (<code>ns:&#123;tenant&#125;:...</code>).
+  </p>
+
+  <h2 id="health-check">Health Check</h2>
+  <p>
+    Verify the full stack is functional:
+  </p>
+
+  <CodeBlock lang="bash">{`./scripts/prod.sh doctor`}</CodeBlock>
+
+  <h2 id="first-issue">Create Your First Issue</h2>
+  <p>
+    With the tenant active, create a GitHub issue in the bound repository. NEXUS detects it on the next
+    poll cycle, assigns it to an available FORGE worker, and the autonomous cycle begins. No further
+    CLI commands are required for normal operation.
+  </p>
+
+  <CodeBlock lang="bash">{`# Create a GitHub issue in owner/repo  -  OpenFlows picks it up automatically`}</CodeBlock>
+
+  <h2 id="environment">Environment Configuration</h2>
+  <p>
+    The <code>.env.example</code> file contains every required and optional variable. Copy it to
+    <code>.env</code> and edit at minimum:
+  </p>
+
+  <ul>
+    <li><strong>GitHub OAuth App</strong>  -  client ID and secret for Coder external auth</li>
+    <li><strong>Coder deployment</strong>  -  external URL and internal API endpoint</li>
+    <li><strong>Redis</strong>  -  connection string for the SharedStore</li>
+    <li><strong>LLM routing</strong>  -  configured in the Coder dashboard, referenced by <code>orchestration/agent/registry.json</code></li>
+  </ul>
+
   <div class="config-grid">
     <div class="config-item">
       <h4>GitHub OAuth App</h4>
       <p>Required for Coder external authentication. Create a GitHub OAuth App and add the client ID and secret to your <code>.env</code> file.</p>
     </div>
-    
     <div class="config-item">
       <h4>LLM Provider</h4>
-      <p>Configure at least one LLM provider in the Coder dashboard (AI Settings → Coder Agents → Models). OpenFlows routes all LLM calls through the Coder AI Gateway.</p>
+      <p>Configure at least one model in the Coder dashboard (AI Settings → Coder Agents → Models). OpenFlows routes all LLM calls through the Coder AI Gateway.</p>
     </div>
-    
     <div class="config-item">
       <h4>Multi-Tenancy</h4>
-      <p>Each team is a "tenant" with its own repository binding. The <code>tenant add</code> command links a GitHub repository to an OpenFlows team.</p>
+      <p>Each team is a tenant with its own repository binding. The <code>tenant add</code> command links a GitHub repository to an OpenFlows team.</p>
     </div>
-    
     <div class="config-item">
       <h4>Coder Templates</h4>
-      <p>The bootstrap process automatically pushes the <code>openflows-{'{'}role{'}'}</code> templates to your Coder deployment for ephemeral workspace provisioning.</p>
+      <p>Bootstrap pushes the <code>openflows-{'{'}role{'}'}</code> templates to your Coder deployment for ephemeral workspace provisioning.</p>
     </div>
   </div>
 
-  <div class="callout info">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">Architecture-First Approach</p>
-        <div class="calloutText">
-          OpenFlows encodes architectural discipline through:
-          <ul>
-            <li><strong>PocketFlow engine</strong>: Declared flow graph for agent coordination</li>
-            <li><strong>SharedStore contracts</strong>: Typed Redis schemas for state management</li>
-            <li><strong>Node trait pattern</strong>: <code>prep → exec → post</code> separation for each agent</li>
-            <li><strong>Explicit routing table</strong>: Recovery built into every step</li>
-          </ul>
-        </div>
-      </div>
-    </div>
-  </div>
+  <Callout type="info" title="Architecture-first approach">
+    OpenFlows encodes architectural discipline through:
+    <ul>
+      <li><strong>PocketFlow engine</strong>  -  declared flow graph for agent coordination</li>
+      <li><strong>SharedStore contracts</strong>  -  typed Redis schemas for state management</li>
+      <li><strong>Node trait pattern</strong>  -  <code>prep → exec → post</code> separation for each agent</li>
+      <li><strong>Explicit routing table</strong>  -  recovery built into every step</li>
+    </ul>
+  </Callout>
 
-  <h2>Verification</h2>
+  <h2 id="verification">Verification</h2>
   <p>After running <code>docker compose up -d</code>, verify all services are running:</p>
-  
-  <div class="codeBlock">
-    <div class="codeHeader"><span class="codeLang">bash</span></div>
-    <pre><code># Check Docker containers
+
+  <CodeBlock lang="bash">{`# Check Docker containers
 docker ps
 
 # Expected output should show:
 # - coder (port 7080)
-# - redis (port 6379)  
-# - openflows engine
-# - Other infrastructure services</code></pre>
-  </div>
+# - redis (port 6379)
+# - openflows engine`}</CodeBlock>
 
-  <h2>Development Workflow</h2>
-  <p>For developers contributing to OpenFlows:</p>
-  
-  <div class="codeBlock">
-    <div class="codeHeader"><span class="codeLang">bash</span></div>
-    <pre><code># After code changes, rebuild and update binaries
-./update-binaries.sh
+  <h2 id="development">Development Workflow</h2>
+  <p>
+    For operators and contributors iterating on OpenFlows itself, rebuild and redeploy binaries after
+    code changes:
+  </p>
 
-# See DEV_BINARY_UPDATE_GUIDE.md for details</code></pre>
-  </div>
+  <CodeBlock lang="bash">{`# After code changes, rebuild and update binaries
+./update-binaries.sh`}</CodeBlock>
 
-  <div class="callout tip">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">Next Steps</p>
-        <div class="calloutText">
-          After installation and tenant setup:
-          <ol>
-            <li>OpenFlows will automatically monitor your repository for issues</li>
-            <li>Create a GitHub issue to trigger the autonomous team</li>
-            <li>Watch as NEXUS picks it up, FORGE writes code, SENTINEL reviews, and VESSEL ships the PR</li>
-            <li>LORE documents the changes automatically</li>
-          </ol>
-          See the <a href="/docs/getting-started">Getting Started</a> guide for a complete walkthrough.
-        </div>
-      </div>
-    </div>
-  </div>
-  
+  <Callout type="tip" title="Next steps">
+    After installation and tenant setup:
+    <ol>
+      <li>OpenFlows automatically monitors the bound repository for issues.</li>
+      <li>Create a GitHub issue to trigger the autonomous team.</li>
+      <li>Watch NEXUS pick it up, FORGE write code, SENTINEL review, and VESSEL ship the PR.</li>
+      <li>LORE documents the changes automatically.</li>
+    </ol>
+    See the <a href="/docs/getting-started">Getting Started</a> guide for the full walkthrough and
+    the <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a> for a
+    step-by-step example.
+  </Callout>
+
+  <h2 id="reference-links">Reference</h2>
+  <DocCards cards={[
+    { icon: '🔑', title: 'Token Guide', desc: 'GitHub OAuth scopes and Coder external auth setup.', href: '/docs/getting-started/token-guide' },
+    { icon: '🏢', title: 'Multi-Tenancy', desc: 'Tenant model, Redis namespacing, and team isolation.', href: '/docs/guides/multi-tenancy' },
+    { icon: '🔧', title: 'Troubleshooting', desc: 'Common bootstrap and runtime failures.', href: '/docs/guides/troubleshooting' },
+    { icon: '🏗️', title: 'System Design', desc: 'PocketFlow, SharedStore, and NEXUS reconcile.', href: '/docs/architecture/system-design' },
+  ]} />
+
   <style>
     .config-grid {
       display: grid;
@@ -261,7 +203,6 @@ docker ps
       gap: 1.5rem;
       margin: 2rem 0;
     }
-    
     .config-item {
       background: var(--color-bone);
       border: 1px solid var(--color-driftwood);
@@ -269,12 +210,10 @@ docker ps
       padding: 1.5rem;
       transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
     }
-    
     .config-item:hover {
       border-color: var(--color-fog);
       box-shadow: var(--shadow-card);
     }
-    
     .config-item h4 {
       margin-top: 0;
       margin-bottom: 0.75rem;
@@ -282,7 +221,6 @@ docker ps
       font-weight: var(--font-weight-semibold);
       color: var(--color-ink);
     }
-    
     .config-item p {
       margin: 0;
       font-size: var(--font-size-sm);

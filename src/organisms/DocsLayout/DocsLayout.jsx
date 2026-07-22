@@ -60,7 +60,7 @@ export default function DocsLayout({ children, breadcrumbs }) {
           ))}
         </aside>
 
-        {/* Main content — centered within the right column */}
+        {/* Main content  -  centered within the right column */}
         <div className="contentOuter">
           <main className="content">
             {breadcrumbs && (

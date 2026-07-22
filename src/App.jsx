@@ -52,9 +52,9 @@ import Terminal from '@/pages/Demos/Terminal'
 import Walkthrough from '@/pages/Demos/Walkthrough'
 
 // Use Cases
-import UseCasesIndex from '@/pages/UseCases/UseCasesIndex'
-import WebDevelopment from '@/pages/UseCases/WebDevelopment'
-import DevOps from '@/pages/UseCases/DevOps'
+import NotFound from '@/pages/UseCases/NotFound'
+import NotFound from '@/pages/UseCases/NotFound'
+import NotFound from '@/pages/UseCases/NotFound'
 
 // 404
 import NotFound from '@/pages/NotFound/NotFound'
@@ -186,9 +186,9 @@ export default function App() {
           <Route path="/demos/walkthrough" element={<Walkthrough />} />
 
           {/* Use Cases */}
-          <Route path="/use-cases" element={<UseCasesIndex />} />
-          <Route path="/use-cases/web-development" element={<WebDevelopment />} />
-          <Route path="/use-cases/devops" element={<DevOps />} />
+          <Route path="/use-cases" element={<NotFound />} />
+          <Route path="/use-cases/web-development" element={<NotFound />} />
+          <Route path="/use-cases/devops" element={<NotFound />} />
 
           {/* 404 */}
           <Route path="*" element={<NotFound />} />

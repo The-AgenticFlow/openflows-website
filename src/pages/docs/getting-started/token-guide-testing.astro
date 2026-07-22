@@ -1,0 +1,111 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const ENV_VARS = [
+  ['<code>GITHUB_OAUTH_CLIENT_ID</code>', 'The client ID of the GitHub OAuth App that Coder uses for external authentication. Found on the OAuth App settings page.'],
+  ['<code>GITHUB_OAUTH_CLIENT_SECRET</code>', 'The client secret of the GitHub OAuth App. Treat it as a high-value credential; rotate it immediately if it is exposed.'],
+  ['<code>GITHUB_OAUTH_REDIRECT_URL</code>', 'The callback URL for Coder external auth. Must match the value registered in the OAuth App. Example: <code>https://coder.example.com/external-auth/callback</code>.'],
+  ['<code>CODER_URL</code>', 'The root URL of your self-hosted Coder deployment. Example: <code>https://coder.example.com</code>.'],
+  ['<code>CODER_SESSION_TOKEN</code>', 'A Coder API token issued to the OpenFlows orchestrator. It grants the orchestrator permission to call the Coder control plane, provision workspaces, and invoke the Chats API.'],
+  ['<code>GITHUB_TOKEN</code>', '(Test and development only) A file path, conventionally <code>/tmp/github_token</code>, that holds a GitHub personal access token. Not used in production.'],
+  ['<code>OPENFLOWS_REDIS_URL</code>', 'Connection string for the Redis SharedStore. Example: <code>redis://redis:6379</code>.'],
+];
+
+const TOKEN_SCOPES = [
+  ['OAuth App token', '<code>repo</code>, <code>workflow</code>, <code>read:org</code>, <code>user:email</code>', 'Short-lived, per-user, obtained by Coder external auth. Used by the Coder control plane to act on GitHub on behalf of the tenant.'],
+  ['Coder API token', 'Workspaces, templates, users, and organizations as required by the orchestrator', 'Long-lived service token issued to the OpenFlows orchestrator. Stored in <code>CODER_SESSION_TOKEN</code>.'],
+  ['GitHub PAT (test only)', '<code>repo</code>, <code>workflow</code> if needed', 'Loaded from <code>/tmp/github_token</code> in isolated test environments. Must never be placed inside a Coder workspace.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Token Guide' }, { label: 'Test PAT & Config' }]}>
+  <h1>Test PAT &amp; Environment Configuration</h1>
+
+  <p>
+    This page covers GitHub PAT usage in test environments and .env configuration. For OAuth App creation,
+    Coder integration, and production security, see the other <a href="/docs/getting-started/token-guide">Token Guide</a> pages.
+  </p>
+
+  <h2>GitHub PAT in test environments only</h2>
+
+  <p>
+    In production, OpenFlows forbids personal access tokens. In isolated test and CI environments, however, a PAT can be
+    used as a stand-in for Coder external auth so that integration tests can run without an interactive OAuth flow.
+  </p>
+
+  <h3>When a PAT is acceptable</h3>
+
+  <ul>
+    <li>The environment is ephemeral, short-lived, and not connected to production repositories.</li>
+    <li>The PAT is issued from a dedicated test bot account with minimal repository access.</li>
+    <li>The PAT file is deleted when the test environment is torn down.</li>
+    <li>The PAT is never committed to source control or baked into an image.</li>
+  </ul>
+
+  <p>
+    If any of these conditions is not true, use Coder external auth instead.
+  </p>
+
+  <h3>Place the PAT file</h3>
+
+  <p>
+    OpenFlows looks for the test PAT at the file path specified by <code>GITHUB_TOKEN</code>. The conventional location is
+    <code>/tmp/github_token</code>. The orchestrator reads the file at startup and uses the PAT only for GitHub operations
+    in test mode. The file should be written before the orchestrator starts and removed after the test run.
+  </p>
+
+  <CodeBlock lang="bash">{`# Create a test PAT with only repo access
+echo "ghp_..." > /tmp/github_token
+chmod 600 /tmp/github_token
+
+# Verify the orchestrator can read it
+ls -l /tmp/github_token
+# -rw------- 1 openflows openflows 45 Jul 20 12:34 /tmp/github_token`}</CodeBlock>
+
+  <h3>Recommended PAT scopes</h3>
+
+  <p>
+    Use a classic PAT with the smallest scope set that exercises the code paths you need. For most integration tests,
+    <code>repo</code> is sufficient. If the agents test workflow modifications, add <code>workflow</code>. Do not grant
+    admin, delete_repo, or organization-wide permissions.
+  </p>
+
+  <DocsTable headers={['Token type', 'Typical scopes', 'Use case']} rows={TOKEN_SCOPES} />
+
+  <Callout type="warning" title="Never mount /tmp/github_token into a production workspace">
+    The test PAT path is a convenience for CI. If you deploy a production OpenFlows instance, leave
+    <code>GITHUB_TOKEN</code> unset or empty and rely entirely on Coder external auth. A production workspace that
+    contains a GitHub PAT is a deployment failure, not a supported configuration.
+  </Callout>
+
+  <h2>Environment configuration</h2>
+
+  <p>
+    Copy <code>.env.example</code> to <code>.env</code> and fill in the values. The orchestrator reads the file at startup
+    and uses it to locate Coder, identify the GitHub OAuth App, and configure the Redis SharedStore.
+  </p>
+
+  <CodeBlock lang="bash">{`cp .env.example .env
+# edit .env with your values`}</CodeBlock>
+
+  <p>The variables that govern token and authentication behavior are:</p>
+
+  <DocsTable headers={['Variable', 'Meaning']} rows={ENV_VARS} />
+
+  <p>
+    After editing <code>.env</code>, run the bootstrap command to validate the connection to Coder and push the required
+    templates:
+  </p>
+
+  <CodeBlock lang="bash">{`./scripts/prod.sh bootstrap`}</CodeBlock>
+
+  <p>
+    The bootstrap command checks that the Coder token is valid and that the GitHub external auth provider is reachable. If
+    either check fails, it prints an actionable error and exits before any tenant is created.
+  </p>
+
+  <Callout type="info" title="Continue reading">
+    See <a href="/docs/getting-started/token-guide-security">Scopes, Rotation &amp; Security</a> for least-privilege scopes, rotation procedures, and security best practices.
+  </Callout>
+</DocsLayout>

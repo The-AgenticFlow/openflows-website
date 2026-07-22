@@ -1,0 +1,260 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const DIRECTORY_ROWS = [
+  ['<code>SKILL.md</code>', 'Required. The skill specification: what it does, when it runs, inputs, outputs, and examples.'],
+  ['<code>examples/</code>', 'Optional but strongly recommended. Sample inputs and expected outputs for manual and automated validation.'],
+  ['<code>tests/</code>', 'Optional. Custom test fixtures that exercise the skill through the CLI or a flow node.'],
+  ['<code>assets/</code>', 'Optional. Diagrams, reference tables, or other files referenced by SKILL.md.'],
+];
+
+const SKILLMD_ROWS = [
+  ['<code># Skill Name</code>', 'Short, verb-first title. Example: <code>Run cargo test</code>.'],
+  ['<code>## Purpose</code>', 'One paragraph explaining the outcome and why it matters.'],
+  ['<code>## When to Use</code>', 'Trigger conditions: which flow phase, which agent role, and what decision criteria.'],
+  ['<code>## Inputs</code>', 'Typed inputs with required vs optional, defaults, and validation rules.'],
+  ['<code>## Outputs</code>', 'What the skill returns or writes. Include file paths and SharedStore keys if applicable.'],
+  ['<code>## Procedure</code>', 'Step-by-step instructions for the agent. Be precise enough to reproduce deterministically.'],
+  ['<code>## Examples</code>', 'One or more worked examples showing input, execution, and output.'],
+  ['<code>## Failure Modes</code>', 'What can go wrong, how to detect it, and what the agent should do next.'],
+  ['<code>## Registry Entry</code>', 'The exact JSON snippet to add to <code>registry.json</code> under the role’s skills array.'],
+];
+
+const REGISTRY_ROWS = [
+  ['<code>name</code>', 'string', 'Unique identifier, matching the directory name.'],
+  ['<code>description</code>', 'string', 'One-line summary shown in the TUI and CLI help.'],
+  ['<code>role</code>', 'string', 'Agent role that owns the skill: <code>nexus</code>, <code>forge</code>, <code>sentinel</code>, <code>vessel</code>, or <code>lore</code>.'],
+  ['<code>path</code>', 'string', 'Relative path to the skill directory under <code>orchestration/plugin/skills/</code>.'],
+  ['<code>required</code>', 'bool', 'If <code>true</code>, the role must be able to execute this skill; the setup doctor checks it.'],
+];
+
+const CONVENTION_ROWS = [
+  ['Verb-first names', 'Skills are actions. Use <code>run-tests</code>, not <code>test-runner</code>.'],
+  ['Single responsibility', 'One skill does one thing. Compose complex behavior through the flow graph, not by piling steps into a single skill.'],
+  ['Deterministic inputs', 'Every input must have a schema or contract. No free-form string parsing unless explicitly documented.'],
+  ['Typed outputs', 'Output must be a JSON value, a file path, or a SharedStore key. The flow node must know what to expect.'],
+  ['Documented failure', 'Every skill must list its failure modes and the recommended escalation.'],
+  ['No core code changes', 'Adding a skill should never require editing Rust source. If it does, it is not a skill; it is a core feature.'],
+];
+
+const TESTING_ROWS = [
+  ['Manual validation', 'Run the skill via the CLI or a scratch workspace and compare output to the <code>examples/</code> directory.'],
+  ['Unit test of the flow node', 'If the skill is invoked by a flow node, add a test that mocks the skill directory and verifies the node dispatch.'],
+  ['Registry schema test', 'Run the registry validation command after editing <code>registry.json</code>.'],
+  ['Coder mode smoke test', 'Provision a Coder workspace, ensure the skill directory is mounted, and run the skill through the agent CLI.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Contributing', href: '/docs/contributing' }, { label: 'Adding Skills' }]}>
+  <h1>Adding Skills</h1>
+  <p>
+    Skills are the primary extension point in OpenFlows. A skill is a declarative unit of
+    capability: a directory, a specification document, and a registry entry. It does not
+    require a code change, a recompilation, or a restart. NEXUS discovers skills by reading
+    <code>orchestration/agent/registry.json</code> v2, and agent roles execute them according to
+    their own flow phases.
+  </p>
+  <p>
+    This page explains how to design a new skill, where to place it, how to write the
+    <code>SKILL.md</code> specification, how to register it under the correct role’s skills
+    array, and how to test it before submitting. The process is intentionally lightweight so
+    that domain experts can contribute capabilities without learning the entire Rust codebase.
+  </p>
+
+  <h2>What a Skill Is</h2>
+  <p>
+    A skill is a contract between a human contributor and an agent role. It answers three
+    questions: what problem does this solve, what inputs and outputs are expected, and what
+    procedure should the agent follow. The skill is not a script; it is a specification that an
+    LLM-driven agent interprets in context. Good skills are precise, composable, and
+    failure-aware.
+  </p>
+  <p>
+    Because Coder is the only runtime, a skill never manages infrastructure directly. It operates
+    inside an ephemeral Coder workspace via the agent CLI or through the Coder API. The
+    orchestration layer decides when to invoke a skill; the skill tells the agent how to
+    execute it.
+  </p>
+
+  <Callout type="info" title="No code change required">
+    Adding a skill means dropping a directory into <code>orchestration/plugin/skills/</code> and
+    listing it in <code>registry.json</code>. If your proposal requires changing the flow engine,
+    SharedStore contracts, or the Coder transport, open an architecture issue instead. Those are
+    core features, not skills.
+  </Callout>
+
+  <h2>Directory Structure</h2>
+  <p>
+    Every skill lives in its own directory under <code>orchestration/plugin/skills/</code>. The
+    directory name becomes the skill identifier, so choose it carefully and match the
+    <code>name</code> field in the registry entry.
+  </p>
+
+  <CodeBlock lang="text">{`orchestration/plugin/skills/
+├── run-cargo-test/
+│   ├── SKILL.md
+│   ├── examples/
+│   │   ├── input.json
+│   │   └── output.txt
+│   └── tests/
+│       └── validation.json
+└── write-adr/
+    ├── SKILL.md
+    └── examples/
+        └── sample-adr.md`}</CodeBlock>
+
+  <DocsTable headers={['File / Directory', 'Purpose']} rows={DIRECTORY_ROWS} />
+
+  <h2>SKILL.md Format</h2>
+  <p>
+    <code>SKILL.md</code> is the specification. It must be complete enough that another agent
+    can execute the skill without asking for clarification. The following sections are required
+    unless explicitly marked optional.
+  </p>
+  <DocsTable headers={['Section', 'What to include']} rows={SKILLMD_ROWS} />
+
+  <CodeBlock lang="markdown">{`# Run cargo test
+
+## Purpose
+Execute the Rust test suite for a given crate or workspace and report the
+result in a structured format that NEXUS can act on.
+
+## When to Use
+- VESSEL runs this skill after FORGE opens a pull request to verify CI status.
+- FORGE runs it before opening a PR when the issue includes a test requirement.
+- The skill is triggered by the "/test" command in a PR comment.
+
+## Inputs
+| Name | Type | Required | Default | Description |
+|------|------|----------|---------|-------------|
+| crate | string | no | "workspace" | Crate to test, or "workspace" for all crates |
+| target | string | no | "x86_64-unknown-linux-gnu" | Build target |
+| extra_args | array[string] | no | [] | Extra arguments passed to cargo test |
+
+## Outputs
+- stdout: raw cargo test output.
+- exit_code: 0 for pass, non-zero for fail.
+- summary_file: path to a JSON file with counts for passed, failed, and ignored tests.
+
+## Procedure
+1. Navigate to the repository root in the workspace.
+2. Run \`cargo test -p {crate}\` if crate is not "workspace", otherwise run \`cargo test --workspace\`.
+3. Append any extra_args to the command.
+4. Capture stdout, stderr, and exit code.
+5. Parse the output and write summary_file to the workspace.
+6. If the exit code is non-zero, stop and report failure.
+
+## Examples
+### Input
+\`\`\`json
+{
+  "crate": "openflows-core",
+  "extra_args": ["--no-fail-fast"]
+}
+\`\`\`
+
+### Output
+\`\`\`json
+{
+  "exit_code": 0,
+  "summary_file": "/workspace/.openflows/test-summary.json"
+}
+\`\`\`
+
+## Failure Modes
+- Missing crate: return exit_code 1 and set summary_file to null.
+- Compile failure: include the first compiler error in stderr.
+- Timeout: if the test run exceeds 10 minutes, kill the process and report TIMEOUT.
+
+## Registry Entry
+\`\`\`json
+{
+  "name": "run-cargo-test",
+  "description": "Run the Rust test suite and return a structured summary",
+  "role": "vessel",
+  "path": "orchestration/plugin/skills/run-cargo-test",
+  "required": true
+}
+\`\`\``}</CodeBlock>
+
+  <h2>Registering the Skill in registry.json</h2>
+  <p>
+    The registry entry lives under the <code>skills</code> array of the relevant agent role. Each
+    role can have its own skills, and the same skill can be listed under multiple roles if the
+    context differs. NEXUS uses the role to decide when the skill is available.
+  </p>
+
+  <CodeBlock lang="json">{`{
+  "agents": {
+    "vessel": {
+      "provider": "openai",
+      "model": "gpt-4o",
+      "coder_module": "codex",
+      "active": true,
+      "instances": 1,
+      "skills": [
+        {
+          "name": "run-cargo-test",
+          "description": "Run the Rust test suite and return a structured summary",
+          "path": "orchestration/plugin/skills/run-cargo-test",
+          "required": true
+        }
+      ]
+    }
+  }
+}`}</CodeBlock>
+
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={REGISTRY_ROWS} />
+
+  <Callout type="warning" title="Path must be relative to the workspace root">
+    The <code>path</code> field is resolved from the repository root inside the Coder workspace.
+    Do not use absolute paths or paths that depend on the host machine layout. The same registry
+    must work in local mode, Coder mode, and CI.
+  </Callout>
+
+  <h2>Design Conventions</h2>
+  <p>
+    A skill is a contract, not a black box. The following conventions keep the registry
+    consistent and make it possible for NEXUS to reason about skill availability without
+    executing the skill itself.
+  </p>
+  <DocsTable headers={['Convention', 'Rule']} rows={CONVENTION_ROWS} />
+
+  <h2>Testing a Skill</h2>
+  <p>
+    A skill without tests is a skill that will drift. Every skill contribution must include at
+    least one of the following validation layers, and ideally all four.
+  </p>
+  <DocsTable headers={['Layer', 'How']} rows={TESTING_ROWS} />
+
+  <CodeBlock lang="bash">{`# Validate the registry schema after adding a skill
+cargo run -p openflows --bin openflows -- registry validate
+
+# Run a single skill manually in a local workspace
+cargo run -p openflows --bin openflows -- skill run run-cargo-test \
+  --input orchestration/plugin/skills/run-cargo-test/examples/input.json`}</CodeBlock>
+
+  <p>
+    The schema validation command checks that every skill entry has a valid path, a declared
+    role, and a matching directory. The manual run command executes the skill with the provided
+    input and prints the output. Both should pass before you open a PR.
+  </p>
+
+  <h2>Review Checklist</h2>
+  <ul>
+    <li>Directory name matches the <code>name</code> field in the registry.</li>
+    <li><code>SKILL.md</code> includes all required sections.</li>
+    <li>Inputs and outputs are typed and documented.</li>
+    <li>Failure modes are listed with escalation guidance.</li>
+    <li>At least one example is provided.</li>
+    <li>Registry schema validation passes.</li>
+    <li>Skill runs successfully in local or Coder mode.</li>
+  </ul>
+
+  <Callout type="tip" title="Start with a narrowly scoped skill">
+    The best first contribution is a skill that automates one repetitive task, such as running a
+    linter, generating a changelog entry, or validating a schema. Avoid skills that require new
+    flow phases or SharedStore keys until you are familiar with the core architecture.
+  </Callout>
+</DocsLayout>

@@ -30,7 +30,7 @@ export default function Hero() {
           <p className={styles.sub}>
             OpenFlows sits on top of Coder so engineering teams can focus on
             architecture. A flow-agnostic dev team runs safely, securely, and
-            with full governance — every agent action auditable from issue to
+            with full governance  -  every agent action auditable from issue to
             merge.
           </p>
 

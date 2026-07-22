@@ -1,0 +1,63 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Extending' }, { label: 'MCP Servers' }]}>
+  <h1>Extending: MCP Servers</h1>
+
+  <p>
+    Model Context Protocol (MCP) servers are external tools that expose a standard interface
+    for agents to invoke. They are ideal for capabilities already packaged as services:
+    GitHub API, file operations, database queries, or custom internal APIs.
+  </p>
+
+  <h2>MCP Server Configuration</h2>
+
+  <CodeBlock lang="json">{`{
+  "mcps": [
+    {
+      "name": "github-mcp",
+      "command": "npx",
+      "args": ["-y", "@anthropic-ai/mcp-server-github"],
+      "env": { "GITHUB_PERSONAL_ACCESS_TOKEN": "{{env.GITHUB_PAT}}" },
+      "timeout_ms": 30000,
+      "permissions": ["search_issues", "get_issue", "create_pull_request"]
+    }
+  ],
+  "agents": {
+    "forge": { "mcps": ["github-mcp"] },
+    "nexus": { "mcps": ["github-mcp"] }
+  }
+}`}</CodeBlock>
+
+  <DocsTable headers={['Field', 'Type', 'Description']} rows={[
+    ['<code>name</code>', 'string', 'Human-readable name referenced in agent prompts and registry entries.'],
+    ['<code>command</code>', 'string', 'Command to start the MCP server (e.g. <code>npx -y @anthropic-ai/mcp-server-fetch</code>).'],
+    ['<code>args</code>', 'array', 'Arguments passed to the command.'],
+    ['<code>env</code>', 'object', 'Environment variables for the MCP server process.'],
+    ['<code>timeout_ms</code>', 'int', 'How long to wait for the MCP server to respond before failing.'],
+    ['<code>permissions</code>', 'array', 'Optional allow-list of tools the agent may invoke.'],
+  ]} />
+
+  <Callout type="warning" title="MCP credentials live in the environment">
+    MCP server configuration can reference environment variables with the
+    <code class="language-text">{env.VAR_NAME}</code> syntax. The orchestrator substitutes these values when
+    starting the MCP server. The values are not written to <code>registry.json</code>. Worker
+    workspaces still never see the credentials; MCP servers run in the orchestrator or in a
+    dedicated sidecar workspace, not inside the worker.
+  </Callout>
+
+  <h2>Per-Agent MCP Override</h2>
+
+  <p>
+    The top-level <code>mcps</code> array defines globally available servers. Each agent can
+    override with its own <code>mcps</code> array under <code>agents.[role]</code>. If both
+    are present, the agent-specific list takes precedence  -  it does not merge.
+  </p>
+
+  <Callout type="info" title="Coder Dashboard MCP registration">
+    You can also register MCP servers centrally in the Coder dashboard (AI Settings → MCP Servers).
+    Both methods coexist; registry.json takes precedence per-agent.
+  </Callout>
+</DocsLayout>

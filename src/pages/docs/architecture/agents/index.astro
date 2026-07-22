@@ -1,0 +1,146 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents' }]}>
+  <h1>Agent Architecture</h1>
+
+  <p>
+    OpenFlows uses five specialized agents, each with a distinct role, isolated permissions, and its
+    own lifecycle. They communicate through the Redis-backed SharedStore and are coordinated by
+    NEXUS on every cycle.
+  </p>
+
+  <h2>Agent Overview</h2>
+
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Agent</th>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Role</th>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Plan mode</th>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">CLI Module</th>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Workspace Type</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>NEXUS</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Orchestrator</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">yes</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">claude-code</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Permanent (nexus workspace)</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>FORGE</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Builder</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">no</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">claude-code / aider</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Ephemeral per ticket</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>SENTINEL</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Reviewer</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">yes</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">codex</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Ephemeral per review</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>VESSEL</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">DevOps</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">no</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">codex</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Ephemeral per merge</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>LORE</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Documentation</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">no</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">aider</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Ephemeral per merge</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>Core Principles</h2>
+
+  <ul>
+    <li><strong>Agent = CLI + Harness</strong>  -  The CLI module (claude-code, codex, aider) executes code; the harness provides state coordination via Redis.</li>
+    <li><strong>Adversarial by Default</strong>  -  FORGE and SENTINEL use different LLM providers to create natural adversarial review.</li>
+    <li><strong>Ephemeral Workspaces</strong>  -  Every worker gets a fresh Coder workspace. SENTINEL gets a new workspace per review to eliminate bias.</li>
+    <li><strong>Control-Plane Coordination</strong>  -  NEXUS runs in the control plane; workers run in workspaces. All LLM calls route through Coder AI Gateway.</li>
+    <li><strong>GitHub via External Auth</strong>  -  No PATs in workspaces. GitHub identity comes from Coder external auth.</li>
+  </ul>
+
+  <h2>Coordination Protocol</h2>
+
+  <p>
+    All agents coordinate through the <code>openflows-harness</code> CLI in their workspace.
+    The harness is the <strong>only</strong> Redis client in a workspace  -  agents never run
+    <code>redis-cli</code> directly.
+  </p>
+
+  <CodeBlock lang="bash">{`# Core harness commands
+openflows-harness dispatch read       # Get assigned task
+openflows-harness dispatch status     # Show current phase
+openflows-harness status get          # Read STATUS.json
+openflows-harness status set phase    # Update phase (planning/building/testing/review_ready)
+openflows-harness pr opened --pr N --branch B --title "X"
+openflows-harness pr merged --pr N
+openflows-harness handoff write --contract changes.md --notes "Summary"
+openflows-harness heartbeat start     # 30s heartbeat daemon
+openflows-harness event emit ticket_merged --ticket 42 --pr 123`}</CodeBlock>
+
+  <h2>Agent Directory</h2>
+
+  <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 1.5rem; margin-top: 1rem;">
+    <a href="/docs/architecture/agents/nexus" style="text-decoration: none; color: inherit;">
+      <div style="background: var(--color-bone); border: 1px solid var(--color-driftwood); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <h3 style="margin-top: 0; color: var(--color-agent-nexus);">NEXUS  -  Orchestrator</h3>
+        <p style="margin: 0.5rem 0; color: var(--color-graphite);">Rule-based coordinator. Runs the <code>reconcile()</code> loop. Assigns tickets, provisions workspaces, handles recovery.</p>
+      </div>
+    </a>
+    <a href="/docs/architecture/agents/forge" style="text-decoration: none; color: inherit;">
+      <div style="background: var(--color-bone); border: 1px solid var(--color-driftwood); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <h3 style="margin-top: 0; color: var(--color-agent-forge);">FORGE  -  Builder</h3>
+        <p style="margin: 0.5rem 0; color: var(--color-graphite);">Implements code against CONTRACT.md. Runs in ephemeral workspace. Hooks enforce policy.</p>
+      </div>
+    </a>
+    <a href="/docs/architecture/agents/sentinel" style="text-decoration: none; color: inherit;">
+      <div style="background: var(--color-bone); border: 1px solid var(--color-driftwood); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <h3 style="margin-top: 0; color: var(--color-agent-sentinel);">SENTINEL  -  Reviewer</h3>
+        <p style="margin: 0.5rem 0; color: var(--color-graphite);">Adversarial review. Fresh workspace per evaluation. Posts blocking comments on PR.</p>
+      </div>
+    </a>
+    <a href="/docs/architecture/agents/vessel" style="text-decoration: none; color: inherit;">
+      <div style="background: var(--color-bone); border: 1px solid var(--color-driftwood); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <h3 style="margin-top: 0; color: var(--color-agent-vessel);">VESSEL  -  DevOps</h3>
+        <p style="margin: 0.5rem 0; color: var(--color-graphite);">CI monitoring, conflict resolution, squash-merge, workspace teardown.</p>
+      </div>
+    </a>
+    <a href="/docs/architecture/agents/lore" style="text-decoration: none; color: inherit;">
+      <div style="background: var(--color-bone); border: 1px solid var(--color-driftwood); border-radius: var(--radius-lg); padding: 1.5rem;">
+        <h3 style="margin-top: 0; color: var(--color-agent-lore);">LORE  -  Documentation</h3>
+        <p style="margin: 0.5rem 0; color: var(--color-graphite);">ADRs, CHANGELOG, post-merge docs. Disabled by default.</p>
+      </div>
+    </a>
+  </div>
+
+  <h2>Per-Agent Configuration</h2>
+
+  <p>
+    Each agent's LLM provider, model, Coder Registry module (CLI), and worker count
+    are configured in <code>orchestration/agent/registry.json</code>. Different agents
+    can use different CLI modules  -  FORGE on <code>claude-code</code> while LORE uses
+    <code>aider</code>. See the <a href="/docs/guides/agent-setup">Agent Setup Guide</a>
+    for details.
+  </p>
+
+  <Callout type="info" title="Agent = CLI (muscle) + Harness (brain)">
+    FORGE and NEXUS can use the same CLI but are different agents because they have
+    different architectures  -  different personas, skills, hooks, and permissions.
+    The system is extensible in two independent dimensions: swap the CLI module to
+    change the code agent, or swap the harness to change the agent's behavior.
+  </Callout>
+</DocsLayout>

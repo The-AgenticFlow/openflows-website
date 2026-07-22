@@ -234,7 +234,7 @@ export default function StoriesEditor({ storyId }) {
                                     alt={form.title}
                                 />
                                 {!form.image && (
-                                    <span className={styles.hint}>Optional — leave blank for a placeholder. You can also paste an image URL below.</span>
+                                    <span className={styles.hint}>Optional  -  leave blank for a placeholder. You can also paste an image URL below.</span>
                                 )}
                                 <input
                                     id="image"

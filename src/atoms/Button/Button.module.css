@@ -41,7 +41,7 @@
 
 /* --- Variants */
 
-/* Primary: dark teal gradient — IZHUB hero CTA text */
+/* Primary: dark teal gradient  -  IZHUB hero CTA text */
 .primary {
   background: linear-gradient(#0d4943 0%, #0b3c37 100%);
   color: #ffffff;
@@ -59,7 +59,7 @@
   box-shadow: 0 0 0 1px #09363359, 0 2px 6px rgba(13, 73, 67, 0.3);
 }
 
-/* Secondary: IZHUB glass outline — white blur bg, ink border, pill radius */
+/* Secondary: IZHUB glass outline  -  white blur bg, ink border, pill radius */
 .secondary {
   background-color: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(2px);

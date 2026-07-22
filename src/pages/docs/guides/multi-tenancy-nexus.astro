@@ -1,0 +1,72 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Multi-Tenancy' }, { label: 'NEXUS Workspace' }]}>
+  <h1>Per-Tenant NEXUS Workspace</h1>
+  <p>
+    Each tenant runs its own NEXUS controller inside a dedicated Coder workspace. For an overview
+    of the tenant model, see the <a href="/docs/guides/multi-tenancy">main multi-tenancy guide</a>.
+  </p>
+
+  <h2>Workspace Naming</h2>
+  <p>
+    The workspace name is <code>openflows-nexus-&#123;tenant&#125;</code>. Inside that workspace, the
+    controller holds the Coder API token for the tenant's service account, the Redis connection,
+    and the orchestration loop. It is the only long-lived workspace OpenFlows creates; all other
+    workspaces are ephemeral.
+  </p>
+
+  <CodeBlock lang="bash">{`# Open a shell on the tenant's NEXUS workspace to inspect logs
+coder ssh openflows-nexus-my-team
+
+tail -f /tmp/openflows-controller.log
+`}</CodeBlock>
+
+  <h2>Fault Isolation</h2>
+  <p>
+    The per-tenant NEXUS workspace is important for fault isolation. If one tenant's
+    controller crashes or runs away with a runaway loop, it does not affect other tenants'
+    controllers. It also makes cost attribution straightforward: the NEXUS workspace appears on
+    the tenant's Coder usage report, and its LLM calls carry the tenant tag in the Coder AI
+    Gateway.
+  </p>
+
+  <h2>Service Account Requirements</h2>
+  <p>
+    The NEXUS workspace for a tenant must be owned by a dedicated Coder service account, not
+    by a human engineer. If a human user leaves the organization, their workspaces are
+    typically decommissioned. A service account ensures the orchestrator keeps running.
+  </p>
+  <p>
+    Create a service account with a long-lived API token and store it in the orchestrator's
+    environment under <code>CODER_NEXUS_TOKEN</code>.
+  </p>
+
+  <Callout type="warning" title="Human users should not own NEXUS workspaces">
+    If a human user leaves the organization, their workspaces are typically decommissioned.
+    A service account ensures the orchestrator keeps running even when team members leave.
+  </Callout>
+
+  <h2>Startup Behavior</h2>
+  <p>
+    Tenant configuration is hot-reloaded. Adding or removing a tenant does not require a global
+    controller restart. The NEXUS workspace for the tenant starts immediately; the Redis namespace
+    is created on first write. Existing tenants continue to operate unchanged.
+  </p>
+
+  <h2>Inspecting Logs</h2>
+  <p>
+    To debug tenant operations, SSH into the tenant's NEXUS workspace and check the controller logs:
+  </p>
+  <CodeBlock lang="bash">{`# Connect to the tenant's NEXUS workspace
+coder ssh openflows-nexus-{{tenant}}
+
+# Watch the controller log file
+tail -f /tmp/openflows-controller.log
+
+# Or run the controller directly with verbose output
+openflows --nexus --verbose
+`}</CodeBlock>
+</DocsLayout>

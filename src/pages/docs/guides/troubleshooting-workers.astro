@@ -1,0 +1,144 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Troubleshooting' }, { label: 'Worker & Pipeline' }]}>
+  <h1>Worker &amp; Pipeline Issues</h1>
+
+  <p>
+    For connectivity and auth issues, see <a href="/docs/guides/troubleshooting-connectivity">Connectivity &amp; Auth</a>.
+    For common failures and diagnostics overview, see the <a href="/docs/guides/troubleshooting">Troubleshooting</a> page.
+  </p>
+
+  <h2>Worker Timeouts</h2>
+
+  <p>
+    A worker timeout means a FORGE, SENTINEL, or VESSEL workspace did not finish its assigned
+    step within the configured timeout. Timeouts are usually caused by one of three things:
+    a long LLM call, a hung MCP server, or a workspace that failed to provision.
+  </p>
+
+  <CodeBlock lang="bash">{`# Find worker workspace for a ticket
+coder ws ls | rg 'forge-1-my-team'
+
+# SSH into it and inspect processes
+coder ssh forge-1-my-team
+ps aux | rg -i 'claude|codex|aider'
+
+tail -f /tmp/openflows-worker.log`}</CodeBlock>
+
+  <Callout type="warning" title="Do not manually kill a healthy worker">
+    A worker may be slow because the LLM is genuinely reasoning through a complex problem.
+    Killing it loses the in-progress context and triggers NEXUS reconcile. Only terminate a
+    worker if it is clearly hung or if the LLM call has exceeded the gateway timeout.
+  </Callout>
+
+  <h2>SENTINEL Rejection Loops</h2>
+
+  <p>
+    A SENTINEL rejection loop occurs when SENTINEL repeatedly rejects a plan or segment and
+    FORGE cannot satisfy the requested changes. This is the most common failure mode in the
+    review phase. It is not a bug in SENTINEL; it is a sign that the specification is
+    ambiguous or the implementation is hitting a genuine quality issue.
+  </p>
+
+  <p>
+    NEXUS tracks consecutive rejections for the same segment. After <code>SENTINEL_REJECTION_LIMIT</code>
+    (default 3), the ticket is escalated to <code>AwaitingHuman</code> with a <code>STATUS.json</code> blocker.
+  </p>
+
+  <CodeBlock lang="bash">{`# Count rejections for a ticket in the log
+rg 'SENTINEL.*REJECTED' /tmp/openflows-controller.log | rg 'ISSUE-123' | wc -l
+
+# Read worker status to see rejection reason
+cat /tmp/workspaces/forge-1-my-team/STATUS.json | jq .errors`}</CodeBlock>
+
+  <h2>Merge Conflicts</h2>
+
+  <p>
+    VESSEL monitors the <code>mergeable</code> field of the PR. If it becomes false, VESSEL
+    retries after a backoff. If it remains false after several retries, the ticket is escalated.
+  </p>
+
+  <DocsTable headers={['Cause', 'What to check']} rows={[
+    ['CI failing', 'VESSEL waits for CI to pass. Check PR checks on GitHub and CI provider logs.'],
+    ['Branch protection', 'GitHub branch protection rules may require reviews or status checks VESSEL cannot satisfy.'],
+    ['Merge conflict', 'Base branch has moved forward. NEXUS will reassign ticket or escalate.'],
+    ['Draft PR', 'VESSEL only merges non-draft PRs. FORGE may have opened PR as draft for manual review.'],
+    ['Unauthorized merge', 'Coder external auth identity lacks merge permission. Check repository settings.'],
+  ]} />
+
+  <CodeBlock lang="bash">{`# Check PR mergeable state via GitHub CLI
+gh pr view 123 --repo owner/repo --json mergeable,state,reviewDecision,statusCheckRollup`}</CodeBlock>
+
+  <h2>How to Read STATUS.json</h2>
+
+  <p>
+    <code>STATUS.json</code> is a worker-written artifact that declares the current state of a
+    ticket. It is written at the end of every significant phase and whenever a worker
+    encounters a blocker. Operators should read it as the worker's own explanation of what
+    happened, not as a system-generated log.
+  </p>
+
+  <CodeBlock lang="json">{`{
+  "outcome": "blocked",
+  "phase": "review",
+  "ticket": "ISSUE-123",
+  "pr_url": null,
+  "blocker": {
+    "kind": "AmbiguousRequirement",
+    "description": "The ticket asks to 'refactor the parser' but does not specify which parsing rules must be preserved.",
+    "files_written": ["PLAN.md", "CONTRACT.md"],
+    "question_for_human": "Which edge cases in the current parser must remain unchanged?"
+  },
+  "errors": ["SENTINEL rejected segment 2: missing error handling for malformed input"],
+  "last_updated": "2026-07-20T15:43:21Z"
+}`}</CodeBlock>
+
+  <DocsTable headers={['Field', 'Meaning']} rows={[
+    ['<code>outcome</code>', 'One of <code>in_progress</code>, <code>completed</code>, <code>failed</code>, <code>blocked</code>, or <code>awaiting_human</code>.'],
+    ['<code>phase</code>', 'Current pipeline phase: <code>planning</code>, <code>implementing</code>, <code>review</code>, <code>pr_opened</code>, <code>merged</code>.'],
+    ['<code>ticket</code>', 'The issue or ticket ID associated with this status.'],
+    ['<code>pr_url</code>', 'URL of the opened pull request, if any.'],
+    ['<code>blocker</code>', 'When <code>outcome</code> is <code>blocked</code>, object describing blocker kind and question.'],
+    ['<code>errors</code>', 'Array of recent error messages. Empty when healthy.'],
+    ['<code>last_updated</code>', 'ISO timestamp of the last status write.'],
+  ]} />
+
+  <DocsTable headers={['Blocker Kind', 'Meaning']} rows={[
+    ['<code>AmbiguousRequirement</code>', 'Ticket description is unclear; NEXUS needs human to refine spec.'],
+    ['<code>DependencyNotMerged</code>', 'Code dependency missing because prerequisite PR not yet merged.'],
+    ['<code>FileLockConflict</code>', 'Another worker/process is holding a required file or resource.'],
+    ['<code>Other</code>', 'Catch-all for blockers that do not fit above. Read <code>description</code>.'],
+  ]} />
+
+  <Callout type="tip" title="Blocked is better than wrong">
+    A <code>blocked</code> status is a deliberate human escalation. It means the system
+    recognized it could not safely proceed and stopped. When you see a blocked status, answer
+    the <code>question_for_human</code> in the ticket, update the spec, and resume the tenant.
+    Do not bypass the blocker by editing Redis manually unless you understand the risk.
+  </Callout>
+
+  <h2>Escalation Checklist</h2>
+
+  <p>
+    If the above steps do not resolve the issue, gather the following information before
+    escalating to NEXUS or another team:
+  </p>
+
+  <ul>
+    <li>The exact tenant and ticket ID.</li>
+    <li>The relevant <code>STATUS.json</code> from the worker workspace.</li>
+    <li>The last 100 lines of <code>/tmp/openflows-controller.log</code> for the tenant.</li>
+    <li>The output of <code>openflows doctor --tenant {{tenant}}</code>.</li>
+    <li>Whether the Coder AI Gateway and Redis are healthy.</li>
+    <li>Whether the GitHub external auth link is active for the tenant user.</li>
+  </ul>
+
+  <Callout type="info" title="Preserve worker workspaces during incidents">
+    By default, worker workspaces are torn down after a ticket is merged. During an incident,
+    set the tenant to isolated mode to prevent teardown, then inspect the workspaces. Once you
+    have the diagnostics you need, resume the tenant and let the normal lifecycle continue.
+  </Callout>
+</DocsLayout>

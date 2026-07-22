@@ -1,22 +1,71 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
 
-const QUICK_START = [
-  { icon: '🚀', title: 'Getting Started', desc: 'Install OpenFlows and run your first autonomous workflow in minutes.', href: '/docs/getting-started' },
-  { icon: '⚙️', title: 'Installation', desc: 'All install methods: npm, one-liner, cargo, Docker, and source builds.', href: '/docs/getting-started/installation' },
-  { icon: '🤖', title: 'Agent Setup', desc: 'Configure agents, model routing, and Coder modules.', href: '/docs/guides/agent-setup' },
-];
-
-const ARCHITECTURE = [
-  { icon: '🏗️', title: 'System Design', desc: 'PocketFlow engine, SharedStore state machine, and data flow.', href: '/docs/architecture/system-design' },
-  { icon: '👥', title: 'Agent Roles', desc: 'Deep dive into each agent - permissions, workflows, and interactions.', href: '/docs/architecture/agent-roles' },
-  { icon: '🔐', title: 'Security', desc: 'Governance, audit trails, and security best practices.', href: '/docs/architecture/security' },
-];
-
-const RESOURCES = [
-  { icon: '❓', title: 'FAQ', desc: 'Answers to common questions about setup, LLM providers, and troubleshooting.', href: '/docs/faq' },
-  { icon: '📚', title: 'API Reference', desc: 'REST API endpoints and configuration options.', href: '/docs/api' },
-  { icon: '🔧', title: 'Troubleshooting', desc: 'Common issues and solutions.', href: '/docs/troubleshooting' },
+const SECTIONS = [
+  {
+    title: 'Getting Started',
+    desc: 'Install OpenFlows, obtain tokens, and run your first autonomous issue-to-merge cycle.',
+    cards: [
+      { icon: '🚀', title: 'Quick Start', desc: 'The 10-minute path from clone to a working OpenFlows stack.', href: '/docs/getting-started' },
+      { icon: '⚙️', title: 'Installation', desc: 'Docker Compose, bootstrap, tenant creation, and verification.', href: '/docs/getting-started/installation' },
+      { icon: '🔑', title: 'Token Guide', desc: 'GitHub OAuth, Coder external auth, and session tokens.', href: '/docs/getting-started/token-guide' },
+      { icon: '🎯', title: 'First Issue Walkthrough', desc: 'What happens when you create a GitHub issue and the agents take over.', href: '/docs/getting-started/first-issue' },
+    ],
+  },
+  {
+    title: 'Core Concepts',
+    desc: 'The ideas that make OpenFlows work: architecture-first orchestration, the agent team, and the Coder integration model.',
+    cards: [
+      { icon: '🏛️', title: 'Architecture-First Development', desc: 'Why OpenFlows plans before it executes and why that matters.', href: '/docs/concepts/architecture-first' },
+      { icon: '👥', title: 'The Agent Team', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, and LORE  -  roles, boundaries, and handoffs.', href: '/docs/concepts/agent-team' },
+      { icon: '🧠', title: 'PocketFlow & SharedStore', desc: 'The flow graph, typed state contracts, and the Node lifecycle.', href: '/docs/concepts/pocketflow-sharedstore' },
+      { icon: '🔗', title: 'Coder Integration', desc: 'How OpenFlows runs on top of Coder and why the split is intentional.', href: '/docs/concepts/coder-integration' },
+      { icon: '🛡️', title: 'Security Model', desc: 'Identity, audit, secrets, and workspace isolation.', href: '/docs/concepts/security-model' },
+    ],
+  },
+  {
+    title: 'Architecture',
+    desc: 'Detailed design of the orchestration engine, state machine, recovery systems, and agent lifecycle.',
+    cards: [
+      { icon: '🏗️', title: 'System Design', desc: 'Components, data flow, SharedStore schema, and crash recovery.', href: '/docs/architecture/system-design' },
+      { icon: '🎭', title: 'Agent Roles', desc: 'Per-agent responsibilities, permissions, and workspace behavior.', href: '/docs/architecture/agent-roles' },
+      { icon: '⚡', title: 'Workspace Lifecycle', desc: 'Provisioning, execution, teardown, and per-evaluation isolation.', href: '/docs/architecture/workspace-lifecycle' },
+      { icon: '🔄', title: 'State Machine & Recovery', desc: 'NEXUS reconcile, failure detection, and self-healing.', href: '/docs/architecture/state-recovery' },
+      { icon: '🧭', title: 'Decision & Routing', desc: 'How agents make decisions and how work is routed between them.', href: '/docs/architecture/decision-routing' },
+    ],
+  },
+  {
+    title: 'Guides',
+    desc: 'Practical instructions for configuring, extending, and operating OpenFlows in production.',
+    cards: [
+      { icon: '🤖', title: 'Agent Setup', desc: 'registry.json, model routing, CLI modules, and worker scaling.', href: '/docs/guides/agent-setup' },
+      { icon: '🧪', title: 'Model Routing', desc: 'Provider selection, cost optimization, and adversarial review.', href: '/docs/guides/model-routing' },
+      { icon: '🏢', title: 'Multi-Tenancy', desc: 'Running multiple teams on a single Coder deployment.', href: '/docs/guides/multi-tenancy' },
+      { icon: '🔌', title: 'Extending OpenFlows', desc: 'Skills, MCP servers, and custom models without code changes.', href: '/docs/guides/extending' },
+      { icon: '📈', title: 'Operations & Monitoring', desc: 'Logs, TUI, metrics, and production runbooks.', href: '/docs/guides/operations' },
+      { icon: '🔧', title: 'Troubleshooting', desc: 'Common failures, diagnostics, and fixes.', href: '/docs/guides/troubleshooting' },
+    ],
+  },
+  {
+    title: 'Reference',
+    desc: 'Exact specifications for configuration, APIs, and command-line usage.',
+    cards: [
+      { icon: '📚', title: 'API Reference', desc: 'REST endpoints, control-plane APIs, and integration points.', href: '/docs/reference/api' },
+      { icon: '📋', title: 'registry.json Schema', desc: 'Complete field reference for agent configuration.', href: '/docs/reference/registry-schema' },
+      { icon: '🌐', title: 'Environment Variables', desc: 'Every env variable OpenFlows reads at runtime.', href: '/docs/reference/environment-variables' },
+      { icon: '💻', title: 'CLI Commands', desc: 'openflows bootstrap, tenant, and development commands.', href: '/docs/reference/cli' },
+    ],
+  },
+  {
+    title: 'Contributing',
+    desc: 'How to build, extend, and test OpenFlows as a contributor.',
+    cards: [
+      { icon: '🤝', title: 'Contributor Guide', desc: 'Project norms, issue triage, and how to submit changes.', href: '/docs/contributing' },
+      { icon: '🛠️', title: 'Development Setup', desc: 'Build from source, run tests, and iterate locally.', href: '/docs/contributing/development-setup' },
+      { icon: '📝', title: 'Adding Skills', desc: 'Design and register a new skill for agents.', href: '/docs/contributing/adding-skills' },
+      { icon: '✅', title: 'Testing', desc: 'Unit tests, integration tests, and end-to-end validation.', href: '/docs/contributing/testing' },
+    ],
+  },
 ];
 ---
 
@@ -24,88 +73,51 @@ const RESOURCES = [
   <div class="docsHero">
     <h1 class="docsTitle">OpenFlows Documentation</h1>
     <p class="docsLead">
-      OpenFlows is a self-hosted orchestration layer for running autonomous AI development teams on top of your Coder environment. 
-      Five agents, one pipeline, zero manual steps — all governed and auditable.
+      OpenFlows is a self-hosted orchestration layer for running autonomous AI development teams on top of Coder.
+      Read these docs to install, operate, extend, and contribute to the system.
     </p>
     <div class="docsCta">
       <a href="/docs/getting-started" class="docsCtaPrimary">Get Started →</a>
-      <a href="/docs/getting-started/installation" class="docsCtaSecondary">Installation Guide</a>
+      <a href="/docs/concepts/architecture-first" class="docsCtaSecondary">How it works</a>
     </div>
   </div>
 
-  <section class="docsSection">
-    <h2 class="docsSectionTitle">Quick Start</h2>
-    <p class="docsSectionDesc">Get up and running in minutes with these essential guides.</p>
-    <div class="docsGrid">
-      {QUICK_START.map(({ icon, title, desc, href }) => (
-        <a href={href} class="docsCard">
-          <div class="docsCardIcon">{icon}</div>
-          <h3 class="docsCardTitle">{title}</h3>
-          <p class="docsCardDesc">{desc}</p>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <section class="docsSection">
-    <h2 class="docsSectionTitle">Architecture & Design</h2>
-    <p class="docsSectionDesc">Understand how OpenFlows works under the hood.</p>
-    <div class="docsGrid">
-      {ARCHITECTURE.map(({ icon, title, desc, href }) => (
-        <a href={href} class="docsCard">
-          <div class="docsCardIcon">{icon}</div>
-          <h3 class="docsCardTitle">{title}</h3>
-          <p class="docsCardDesc">{desc}</p>
-        </a>
-      ))}
-    </div>
-  </section>
-
-  <section class="docsSection">
-    <h2 class="docsSectionTitle">Resources</h2>
-    <p class="docsSectionDesc">Additional documentation and reference materials.</p>
-    <div class="docsGrid">
-      {RESOURCES.map(({ icon, title, desc, href }) => (
-        <a href={href} class="docsCard">
-          <div class="docsCardIcon">{icon}</div>
-          <h3 class="docsCardTitle">{title}</h3>
-          <p class="docsCardDesc">{desc}</p>
-        </a>
-      ))}
-    </div>
-  </section>
+  {SECTIONS.map(({ title, desc, cards }) => (
+    <section class="docsSection">
+      <h2 class="docsSectionTitle">{title}</h2>
+      <p class="docsSectionDesc">{desc}</p>
+      <div class="docsGrid">
+        {cards.map(({ icon, title, desc, href }) => (
+          <a href={href} class="docsCard">
+            <div class="docsCardIcon">{icon}</div>
+            <h3 class="docsCardTitle">{title}</h3>
+            <p class="docsCardDesc">{desc}</p>
+          </a>
+        ))}
+      </div>
+    </section>
+  ))}
 
   <section class="docsSection docsWhatIsNot">
     <h2 class="docsSectionTitle">What OpenFlows is not</h2>
     <div class="docsWhatGrid">
       <div class="docsWhatItem">
         <h3>Not a CI/CD platform</h3>
-        <p>OpenFlows orchestrates agents but doesn't replace your CI/CD pipeline. It integrates with existing workflows.</p>
+        <p>It orchestrates agents and integrates with your existing CI/CD pipeline; it does not replace it.</p>
       </div>
       <div class="docsWhatItem">
         <h3>Not a SaaS offering</h3>
-        <p>OpenFlows is self-hosted on your infrastructure. You control the data, the models, and the execution environment.</p>
+        <p>It is self-hosted on your infrastructure. You retain full control over data, models, and execution.</p>
       </div>
       <div class="docsWhatItem">
         <h3>Not an IDE</h3>
-        <p>OpenFlows works with any IDE through Coder workspaces. It orchestrates agents, not your editor.</p>
+        <p>It works with any editor through Coder workspaces. It orchestrates agents, not your editor.</p>
       </div>
       <div class="docsWhatItem">
-        <h3>Not a code generation tool</h3>
-        <p>OpenFlows orchestrates AI agents that write code. The agents use LLMs, but OpenFlows itself doesn't generate code.</p>
+        <h3>Not a code generator</h3>
+        <p>It coordinates agents that write code. The value is in the architecture, contracts, and review gates.</p>
       </div>
     </div>
-  </section>
-
-  <section class="docsSection docsLearnMore">
-    <h2 class="docsSectionTitle">Learn more</h2>
-    <ul class="docsLearnList">
-      <li><a href="/docs/getting-started">Getting Started Guide</a> — Install and run your first autonomous workflow</li>
-      <li><a href="/docs/architecture/agent-roles">Agent Roles</a> — Understand each agent's responsibilities</li>
-      <li><a href="/docs/guides/agent-setup">Agent Setup</a> — Configure model routing and Coder modules</li>
-      <li><a href="/docs/faq">FAQ</a> — Common questions and troubleshooting</li>
-      <li><a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer">GitHub Repository</a> — Source code and issue tracker</li>
-    </ul>
   </section>
 </DocsLayout>
 

@@ -8,61 +8,106 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <p>
     OpenFlows uses five specialized agents, each with a distinct role, isolated
     permissions, and its own Coder workspace. They communicate through the
-    SharedStore — a Redis-backed state machine — and are coordinated by NEXUS on
+    SharedStore  -  a Redis-backed state machine  -  and are coordinated by NEXUS on
     every cycle. Each agent's CLI code agent is installed by a
     <strong>Coder Registry module</strong> (e.g. <code>claude-code</code>,
     <code>codex</code>, <code>aider</code>), and GitHub identity comes from
-    <strong>Coder external auth</strong> — no personal access tokens.
+    <strong>Coder external auth</strong>  -  no personal access tokens.
   </p>
+
+  <h2>Quick Reference</h2>
+
+  <table style="width: 100%; border-collapse: collapse;">
+    <thead>
+      <tr>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Agent</th>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Role</th>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Plan mode</th>
+        <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">What it does</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>NEXUS</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Orchestrator</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">yes</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Assigns issues, coordinates the team, owns <code>reconcile()</code> failure recovery, notifies you when needed</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>FORGE</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Builder</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">no</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Writes code against an agreed <code>CONTRACT.md</code>, creates branches, opens PRs</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>SENTINEL</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Reviewer</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">yes</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Adversarially reviews code for security, quality, and test coverage against the contract</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>VESSEL</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">DevOps</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">no</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Monitors CI, handles merge conflicts, squash-merges green PRs, tears down workspaces on merge</td>
+      </tr>
+      <tr>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>LORE</strong></td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Writer</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">no</td>
+        <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Documents decisions, updates changelogs, maintains project history (disabled by default  -  enable in registry)</td>
+      </tr>
+    </tbody>
+  </table>
 
   <Callout type="info" title="Agent = CLI (muscle) + Harness (brain)">
     FORGE and NEXUS can use the same CLI but are different agents because they have
-    different architectures — different personas, skills, hooks, and permissions.
+    different architectures  -  different personas, skills, hooks, and permissions.
     The system is extensible in two independent dimensions: swap the CLI module to
     change the code agent, or swap the harness to change the agent's behavior.
   </Callout>
 
-  <h2 style={{ color: 'var(--color-agent-nexus)' }}>NEXUS — Orchestrator</h2>
+  <h2 style={{ color: 'var(--color-agent-nexus)' }}>NEXUS  -  Orchestrator</h2>
   <p>
     The brain of the pipeline. NEXUS supervises every phase of the flow and recovers
     broken states automatically via <code>reconcile()</code>. It runs on every cycle
     and halts gracefully when there is no more work. NEXUS does not run inside a
-    Coder workspace — it is the control plane that provisions and manages them.
+    Coder workspace  -  it is the control plane that provisions and manages them.
   </p>
   <ul>
     <li>Polls GitHub for open issues and syncs them as typed tickets (T-001, T-002…)</li>
     <li>Assigns tickets to idle FORGE workers, respecting CI readiness and flow recovery state</li>
     <li>Provisions an ephemeral Coder workspace for each FORGE worker via the Coder API</li>
-    <li>Detects orphaned tickets, unmerged PRs, and stale workers — resumes at the correct phase</li>
+    <li>Detects orphaned tickets, unmerged PRs, and stale workers  -  resumes at the correct phase</li>
     <li>Manages the CommandGate: approves or rejects dangerous bash commands from FORGE</li>
     <li>Enforces CI-first rule: ensures CI setup tickets are completed before feature work begins</li>
-    <li>Escalates unrecoverable states to <code>AwaitingHuman</code> — suspends the worker and stores the reason in SharedStore for TUI visibility</li>
+    <li>Escalates unrecoverable states to <code>AwaitingHuman</code>  -  suspends the worker and stores the reason in SharedStore for TUI visibility</li>
   </ul>
 
-  <h2 style={{ color: 'var(--color-agent-forge)' }}>FORGE — Builder</h2>
+  <h2 style={{ color: 'var(--color-agent-forge)' }}>FORGE  -  Builder</h2>
   <p>
     The senior engineer. FORGE runs inside an ephemeral Coder workspace with its own
     isolated Git worktree and branch. A Coder Registry module (<code>claude-code</code>,
     <code>codex</code>, or <code>aider</code>) installs the CLI code agent into the
-    workspace. FORGE implements code segment by segment and never pushes directly —
+    workspace. FORGE implements code segment by segment and never pushes directly  - 
     all PRs go through GitHub MCP under the Coder user's identity.
   </p>
   <ul>
     <li>Runs inside an ephemeral Coder workspace (branch: <code>forge-1/T-001</code>)</li>
-    <li>Writes <code>PLAN.md</code> with a segment breakdown — SENTINEL reviews it before any code is written</li>
+    <li>Writes <code>PLAN.md</code> with a segment breakdown  -  SENTINEL reviews it before any code is written</li>
     <li>Implements each segment, commits, updates <code>WORKLOG.md</code>, and waits for SENTINEL eval</li>
     <li>Scans and redacts secrets before every push</li>
     <li>Opens pull requests via GitHub MCP after SENTINEL's <code>final-review.md</code> is APPROVED</li>
     <li>Writes <code>STATUS.json</code> with <code>status: "BLOCKED"</code> and a specific question when blocked</li>
   </ul>
 
-  <h2 style={{ color: 'var(--color-agent-sentinel)' }}>SENTINEL — Reviewer</h2>
+  <h2 style={{ color: 'var(--color-agent-sentinel)' }}>SENTINEL  -  Reviewer</h2>
   <p>
-    The security auditor. SENTINEL is ephemeral — spawned fresh in its own Coder
+    The security auditor. SENTINEL is ephemeral  -  spawned fresh in its own Coder
     workspace for each evaluation, which eliminates accumulated bias. It is read-only
     and cannot modify code. It evaluates against 5 criteria: correctness, security,
     test coverage, standards compliance, and no regressions. Using a different LLM
-    provider than FORGE creates <strong>adversarial review</strong> — the reviewer's
+    provider than FORGE creates <strong>adversarial review</strong>  -  the reviewer's
     blind spots differ from the writer's.
   </p>
   <ul>
@@ -70,16 +115,16 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
     <li>Evaluates each committed segment → writes <code>segment-N-eval.md</code></li>
     <li>Performs final holistic review → writes <code>final-review.md</code></li>
     <li>Only after APPROVED does FORGE proceed to open the pull request</li>
-    <li>Read-only permissions — cannot write or commit to the worktree</li>
-    <li>Workspace torn down after each evaluation — fresh slate every time</li>
+    <li>Read-only permissions  -  cannot write or commit to the worktree</li>
+    <li>Workspace torn down after each evaluation  -  fresh slate every time</li>
   </ul>
 
-  <h2 style={{ color: 'var(--color-agent-vessel)' }}>VESSEL — DevOps Engineer</h2>
+  <h2 style={{ color: 'var(--color-agent-vessel)' }}>VESSEL  -  DevOps Engineer</h2>
   <p>
     The merge gatekeeper. VESSEL is the only agent authorized to push to the main
     branch. It polls CI, detects conflicts early, attempts automated resolution, and
     squash-merges green PRs. If a conflict can't be resolved automatically, VESSEL
-    re-routes the ticket back to the same FORGE worker — no new branch, no context loss.
+    re-routes the ticket back to the same FORGE worker  -  no new branch, no context loss.
   </p>
   <ul>
     <li>Polls GitHub check runs at 10-second intervals (configurable timeout, default 30 min)</li>
@@ -89,7 +134,7 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
     <li>Squash-merges approved PRs with ticket references; emits <code>ticket_merged</code> for LORE</li>
   </ul>
 
-  <h2 style={{ color: 'var(--color-agent-lore)' }}>LORE — Documenter</h2>
+  <h2 style={{ color: 'var(--color-agent-lore)' }}>LORE  -  Documenter</h2>
   <p>
     The technical writer. LORE activates after every successful merge and never
     interrupts active development. It generates Architecture Decision Records, updates
@@ -97,17 +142,17 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
     the Coder user's identity.
   </p>
   <ul>
-    <li>Triggered by VESSEL's <code>ticket_merged</code> event — never blocks the development pipeline</li>
+    <li>Triggered by VESSEL's <code>ticket_merged</code> event  -  never blocks the development pipeline</li>
     <li>Generates structured ADRs from the merged work's technical decisions</li>
     <li>Appends deployment summaries to <code>CHANGELOG.md</code> with PR references and ticket IDs</li>
     <li>Commits and pushes documentation changes via GitHub MCP</li>
-    <li>Read-only access to application code — cannot modify source files</li>
+    <li>Read-only access to application code  -  cannot modify source files</li>
   </ul>
 
   <Callout type="info" title="Per-Agent Configuration">
     Each agent's LLM provider, model, Coder Registry module (CLI), and worker count
     are configured in <code>orchestration/agent/registry.json</code>. Different agents
-    can use different CLI modules — FORGE on <code>claude-code</code> while LORE uses
+    can use different CLI modules  -  FORGE on <code>claude-code</code> while LORE uses
     <code>aider</code>. See the <a href="/docs/guides/agent-setup">Agent Setup Guide</a>
     for details.
   </Callout>
@@ -115,7 +160,7 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <Callout type="tip" title="Ephemeral workspace lifecycle">
     When NEXUS assigns a ticket to a FORGE worker, it provisions a fresh Coder workspace
     from your template. The <code>coder_module</code> installs the CLI code agent into
-    that workspace. After the PR is merged, the workspace is torn down — no lingering
+    that workspace. After the PR is merged, the workspace is torn down  -  no lingering
     state, no stale credentials. SENTINEL gets its own workspace per evaluation, also
     torn down after use. Each parallel FORGE instance gets its own workspace.
   </Callout>
