@@ -29,15 +29,19 @@ jobs:
           VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
           VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
 
+      - name: Check build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Error: Build failed - dist directory not found"
+            exit 1
+          fi
+          echo "Build completed successfully!"
+          echo "Generated files:"
+          ls -lh dist/ | head -20
+
       - name: Upload build artifacts
         uses: actions/upload-artifact@v4
         with:
           name: dist
           path: dist/
           retention-days: 7
-
-      - name: Check build output
-        run: |
-          echo "Build completed successfully!"
-          echo "Generated files:"
-          ls -lh dist/
