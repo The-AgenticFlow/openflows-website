@@ -50,7 +50,12 @@ const NAV_DATA = [
 const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
 ---
 
-<header class={styles.navbar} id="navbar">
+<header
+  class={styles.navbar}
+  id="navbar"
+  data-scrolled-class={styles.scrolled}
+  data-dropdown-active-class={styles.dropdownActive}
+>
   <div class={styles.inner}>
     <Logo />
 
@@ -86,20 +91,33 @@ const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
       </Button>
     </div>
 
-    <button class={styles.hamburger} id="hamburgerBtn" aria-label="Toggle menu">
+    <button
+      class={styles.hamburger}
+      id="hamburgerBtn"
+      aria-label="Toggle menu"
+      data-open-class={styles.hamburgerOpen}
+    >
       <span class={styles.bar}></span>
       <span class={styles.bar}></span>
       <span class={styles.bar}></span>
     </button>
   </div>
 
-  <div class={styles.megaPanel} id="megaPanel">
+  <div
+    class={styles.megaPanel}
+    id="megaPanel"
+    data-visible-class={styles.panelVisible}
+  >
     <div class={styles.panelContent} id="panelContent">
     </div>
   </div>
 </header>
 
-<div class={styles.mobileMenu} id="mobileMenu">
+<div
+  class={styles.mobileMenu}
+  id="mobileMenu"
+  data-open-class={styles.mobileMenuOpen}
+>
   <nav class={styles.mobileNav}>
     {NAV_DATA.map((item) => (
       <div>
@@ -214,11 +232,12 @@ const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
   let scrolled = false;
   window.addEventListener('scroll', () => {
     const navbar = document.getElementById('navbar');
+    if (!navbar) return;
     if (window.scrollY > 8 && !scrolled) {
-      navbar?.classList.add('scrolled');
+      navbar.classList.add(navbar.dataset.scrolledClass);
       scrolled = true;
     } else if (window.scrollY <= 8 && scrolled) {
-      navbar?.classList.remove('scrolled');
+      navbar.classList.remove(navbar.dataset.scrolledClass);
       scrolled = false;
     }
   }, { passive: true });
@@ -227,9 +246,11 @@ const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
   const hamburger = document.getElementById('hamburgerBtn');
   const mobileMenu = document.getElementById('mobileMenu');
   hamburger?.addEventListener('click', () => {
-    mobileMenu?.classList.toggle('mobileMenuOpen');
-    hamburger.classList.toggle('hamburgerOpen');
-    document.body.style.overflow = mobileMenu?.classList.contains('mobileMenuOpen') ? 'hidden' : '';
+    const menuOpenClass = mobileMenu?.dataset.openClass;
+    const btnOpenClass = hamburger?.dataset.openClass;
+    if (menuOpenClass) mobileMenu?.classList.toggle(menuOpenClass);
+    if (btnOpenClass) hamburger.classList.toggle(btnOpenClass);
+    document.body.style.overflow = mobileMenu?.classList.contains(menuOpenClass) ? 'hidden' : '';
   });
 
   // Dropdown hover (desktop)
@@ -258,16 +279,26 @@ const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
             </div>
           </div>
         `;
-        megaPanel?.classList.add('panelVisible');
-        document.getElementById('navbar')?.classList.add('dropdownActive');
+        if (megaPanel && megaPanel.dataset.visibleClass) {
+          megaPanel.classList.add(megaPanel.dataset.visibleClass);
+        }
+        const navbar = document.getElementById('navbar');
+        if (navbar && navbar.dataset.dropdownActiveClass) {
+          navbar.classList.add(navbar.dataset.dropdownActiveClass);
+        }
       }
     });
   });
 
   document.getElementById('navbar')?.addEventListener('mouseleave', () => {
     dropdownTimer = setTimeout(() => {
-      megaPanel?.classList.remove('panelVisible');
-      document.getElementById('navbar')?.classList.remove('dropdownActive');
+      if (megaPanel && megaPanel.dataset.visibleClass) {
+        megaPanel.classList.remove(megaPanel.dataset.visibleClass);
+      }
+      const navbar = document.getElementById('navbar');
+      if (navbar && navbar.dataset.dropdownActiveClass) {
+        navbar.classList.remove(navbar.dataset.dropdownActiveClass);
+      }
     }, 150);
   });
 

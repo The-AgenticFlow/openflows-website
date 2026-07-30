@@ -106,7 +106,6 @@
 
 .line {
   display: block;
-  white-space: nowrap;
 }
 
 .highlight {
@@ -206,11 +205,21 @@
 
 @media (max-width: 768px) {
   .hero {
-    padding: calc(var(--nav-height) + 40px) 0 60px;
+    padding: calc(var(--nav-height) + 40px) 0 120px;
     min-height: auto;
   }
 
   .container {
     padding-inline: var(--space-4);
+  }
+
+  .ctaGroup {
+    flex-direction: column;
+    align-items: stretch;
+    width: 100%;
+  }
+
+  .ctaGroup > * {
+    width: 100%;
   }
 }
