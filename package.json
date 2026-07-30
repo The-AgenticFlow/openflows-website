@@ -4,18 +4,20 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "dev": "astro dev",
-    "build": "astro build",
+    "dev": "tinacms dev -c 'astro dev'",
+    "build": "tinacms build && astro build",
     "preview": "astro preview"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.43.0",
+    "@tinacms/cli": "^2.5.6",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-markdown": "^10.1.0",
     "react-router-dom": "^6.23.1",
     "react-syntax-highlighter": "^16.1.1",
-    "remark-gfm": "^4.0.1"
+    "remark-gfm": "^4.0.1",
+    "tinacms": "^3.11.0"
   },
   "devDependencies": {
     "@astrojs/prism": "^4.0.2",
