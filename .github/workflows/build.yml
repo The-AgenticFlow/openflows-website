@@ -26,8 +26,8 @@ jobs:
       - name: Build Astro site
         run: npm run build
         env:
-          VITE_SUPABASE_URL: ${{ secrets.VITE_SUPABASE_URL }}
-          VITE_SUPABASE_ANON_KEY: ${{ secrets.VITE_SUPABASE_ANON_KEY }}
+          TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
+          PUBLIC_TINA_CLIENT_ID: ${{ secrets.PUBLIC_TINA_CLIENT_ID }}
 
       - name: Check build output
         run: |
