@@ -6,7 +6,22 @@ const AuthContext = createContext(null)
 export function useAuth() {
     const context = useContext(AuthContext)
     if (!context) {
-        throw new Error('useAuth must be used within an AuthProvider')
+        return {
+            user: null,
+            adminUser: null,
+            loading: true,
+            error: null,
+            isConfigured: false,
+            isAuthenticated: false,
+            isAdmin: false,
+            isEditor: false,
+            isViewer: false,
+            signIn: async () => ({ success: false, error: 'Auth not configured' }),
+            signOut: async () => {},
+            hasRole: () => false,
+            canEditBlogs: () => false,
+            canDeleteBlogs: () => false,
+        }
     }
     return context
 }
