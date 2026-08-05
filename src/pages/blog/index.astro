@@ -2,7 +2,17 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getCollection } from 'astro:content';
 
-const blogs = await getCollection('blogs');
+const allBlogs = await getCollection('blogs');
+
+// Filter to only published, non-draft blogs and sort by date
+const blogs = allBlogs
+  .filter((blog) => !blog.data.is_draft && blog.data.status === 'published')
+  .sort((a, b) => {
+    const dateA = a.data.published_at ? new Date(a.data.published_at).getTime() : 0;
+    const dateB = b.data.published_at ? new Date(b.data.published_at).getTime() : 0;
+    return dateB - dateA;
+  });
+
 const featured = blogs.find(b => b.data.is_featured) || blogs[0];
 const rest = blogs.filter(b => b.id !== featured?.id);
 

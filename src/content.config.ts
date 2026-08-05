@@ -1,13 +1,11 @@
 import { defineCollection, z } from 'astro:content';
-import { supabaseLoader } from './lib/supabase-loader.js';
 
 const blogs = defineCollection({
-  loader: supabaseLoader('blogs'),
+  type: 'content',
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
+    slug: z.string().optional(),
     excerpt: z.string(),
-    content: z.string(),
     cover_image_url: z.string().optional(),
     cover_image_alt: z.string().optional(),
     author_name: z.string(),
@@ -22,26 +20,23 @@ const blogs = defineCollection({
       website: z.string().optional(),
     })).optional(),
     category_id: z.string().optional(),
-    status: z.enum(['draft', 'published', 'archived']),
+    status: z.enum(['draft', 'published', 'archived']).default('published'),
     published_at: z.date().optional(),
     meta_title: z.string().optional(),
     meta_description: z.string().optional(),
     view_count: z.number().optional(),
     read_time_minutes: z.number().optional(),
     is_featured: z.boolean().optional(),
-    created_at: z.date().optional(),
-    updated_at: z.date().optional(),
-    deleted_at: z.date().optional().nullable(),
+    is_draft: z.boolean().optional().default(false),
   }),
 });
 
 const research = defineCollection({
-  loader: supabaseLoader('research'),
+  type: 'content',
   schema: z.object({
     title: z.string(),
-    slug: z.string(),
+    slug: z.string().optional(),
     abstract: z.string(),
-    content: z.string(),
     category: z.string(),
     venue: z.string().optional(),
     publish_date: z.date().optional(),
@@ -52,22 +47,19 @@ const research = defineCollection({
       name: z.string(),
       affiliation: z.string().optional(),
     })).optional(),
-    status: z.enum(['draft', 'published', 'archived']),
-    created_at: z.date().optional(),
-    updated_at: z.date().optional(),
+    status: z.enum(['draft', 'published', 'archived']).default('published'),
+    is_draft: z.boolean().optional().default(false),
   }),
 });
 
 const stories = defineCollection({
-  loader: supabaseLoader('stories'),
+  type: 'data',
   schema: z.object({
     title: z.string(),
     category: z.string(),
     date: z.string(),
     href: z.string(),
     image: z.string().optional(),
-    created_at: z.date().optional(),
-    updated_at: z.date().optional(),
   }),
 });
 

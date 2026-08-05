@@ -6,8 +6,8 @@ import FeatureSteps from '@/organisms/FeatureSteps/FeatureSteps';
 import FlowVisual from '@/organisms/FlowVisual/FlowVisual';
 import UseCaseTabs from '@/organisms/UseCaseTabs/UseCaseTabs';
 import IndustryCards from '@/organisms/IndustryCards/IndustryCards';
-import RecentNews from '@/organisms/RecentNews/RecentNews';
-import Stories from '@/organisms/Stories/Stories';
+import RecentNews from '@/organisms/RecentNews/RecentNews.astro';
+import Stories from '@/organisms/Stories/Stories.astro';
 import GetStartedBanner from '@/organisms/GetStartedBanner/GetStartedBanner';
 ---
 
@@ -18,7 +18,7 @@ import GetStartedBanner from '@/organisms/GetStartedBanner/GetStartedBanner';
   <FlowVisual client:visible />
   <UseCaseTabs client:visible />
   <IndustryCards client:visible />
-  <RecentNews client:visible />
-  <Stories client:visible />
+  <RecentNews />
+  <Stories />
   <GetStartedBanner client:visible />
 </BaseLayout>

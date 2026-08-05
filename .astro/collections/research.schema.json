@@ -13,9 +13,6 @@
         "abstract": {
           "type": "string"
         },
-        "content": {
-          "type": "string"
-        },
         "category": {
           "type": "string"
         },
@@ -74,39 +71,12 @@
             "draft",
             "published",
             "archived"
-          ]
+          ],
+          "default": "published"
         },
-        "created_at": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "string",
-              "format": "date"
-            },
-            {
-              "type": "integer",
-              "format": "unix-time"
-            }
-          ]
-        },
-        "updated_at": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "string",
-              "format": "date"
-            },
-            {
-              "type": "integer",
-              "format": "unix-time"
-            }
-          ]
+        "is_draft": {
+          "type": "boolean",
+          "default": false
         },
         "$schema": {
           "type": "string"
@@ -114,11 +84,8 @@
       },
       "required": [
         "title",
-        "slug",
         "abstract",
-        "content",
-        "category",
-        "status"
+        "category"
       ],
       "additionalProperties": false
     }

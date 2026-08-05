@@ -1,0 +1,20 @@
+---
+import { getCollection } from 'astro:content';
+import Stories from '@/organisms/Stories/Stories.jsx';
+
+const allStories = await getCollection('stories');
+
+// Sort and filter stories
+const stories = allStories
+  .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
+  .map((story) => ({
+    id: story.id,
+    category: story.data.category,
+    date: story.data.date,
+    title: story.data.title,
+    href: story.data.href,
+    image: story.data.image,
+  }));
+---
+
+<Stories stories={stories} client:visible />

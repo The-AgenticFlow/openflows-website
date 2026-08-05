@@ -13,9 +13,6 @@
         "excerpt": {
           "type": "string"
         },
-        "content": {
-          "type": "string"
-        },
         "cover_image_url": {
           "type": "string"
         },
@@ -70,7 +67,8 @@
             "draft",
             "published",
             "archived"
-          ]
+          ],
+          "default": "published"
         },
         "published_at": {
           "anyOf": [
@@ -103,67 +101,9 @@
         "is_featured": {
           "type": "boolean"
         },
-        "created_at": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "string",
-              "format": "date"
-            },
-            {
-              "type": "integer",
-              "format": "unix-time"
-            }
-          ]
-        },
-        "updated_at": {
-          "anyOf": [
-            {
-              "type": "string",
-              "format": "date-time"
-            },
-            {
-              "type": "string",
-              "format": "date"
-            },
-            {
-              "type": "integer",
-              "format": "unix-time"
-            }
-          ]
-        },
-        "deleted_at": {
-          "anyOf": [
-            {
-              "anyOf": [
-                {
-                  "not": {}
-                },
-                {
-                  "anyOf": [
-                    {
-                      "type": "string",
-                      "format": "date-time"
-                    },
-                    {
-                      "type": "string",
-                      "format": "date"
-                    },
-                    {
-                      "type": "integer",
-                      "format": "unix-time"
-                    }
-                  ]
-                }
-              ]
-            },
-            {
-              "type": "null"
-            }
-          ]
+        "is_draft": {
+          "type": "boolean",
+          "default": false
         },
         "$schema": {
           "type": "string"
@@ -171,11 +111,8 @@
       },
       "required": [
         "title",
-        "slug",
         "excerpt",
-        "content",
-        "author_name",
-        "status"
+        "author_name"
       ],
       "additionalProperties": false
     }
