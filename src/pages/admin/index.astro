@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import AdminWrapper from '@/components/AdminWrapper';
 import AdminDashboard from '@/react-pages/AdminDashboard';
 import styles from './Admin.module.css';
 ---
 
 <BaseLayout title="Admin Dashboard">
-  <div class={styles.dashboard}>
-    <AdminDashboard client:only="react" />
-  </div>
+  <AdminWrapper client:only="react">
+    <AdminDashboard />
+  </AdminWrapper>
 </BaseLayout>
