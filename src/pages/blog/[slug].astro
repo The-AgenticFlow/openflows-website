@@ -62,7 +62,47 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil(blog.data.
     <div class="blog-content">
       <Content />
     </div>
+    
+    <!-- Giscus Comments -->
+    <div id="comments" style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-fog);">
+      <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Comments</h2>
+      <div style="background: var(--color-bone); padding: 1.5rem; border-radius: var(--radius-md);">
+        <p style="color: var(--color-graphite); margin-bottom: 1rem; font-size: 0.875rem;">
+          Questions, feedback, or thoughts? Comment below and join the discussion on GitHub.
+        </p>
+        <div id="giscus-container" style="min-height: 200px;"></div>
+      </div>
+    </div>
   </article>
+  
+  <script>
+    // Initialize Giscus
+    const loadGiscus = () => {
+      const script = document.createElement('script');
+      script.src = 'https://giscus.app/client.js';
+      script.setAttribute('data-repo', 'The-AgenticFlow/openflows-website');
+      script.setAttribute('data-repo-id', 'R_kgDOLeDF8A');
+      script.setAttribute('data-category', 'Announcements');
+      script.setAttribute('data-category-id', 'DIC_kwDOLeDF8M4CZJAl');
+      script.setAttribute('data-mapping', 'pathname');
+      script.setAttribute('data-strict', '0');
+      script.setAttribute('data-reactions-enabled', '1');
+      script.setAttribute('data-emit-metadata', '0');
+      script.setAttribute('data-input-position', 'bottom');
+      script.setAttribute('data-theme', 'light');
+      script.setAttribute('data-lang', 'en');
+      script.setAttribute('crossorigin', 'anonymous');
+      script.async = true;
+      document.getElementById('giscus-container')?.appendChild(script);
+    };
+    
+    // Load Giscus after page is ready
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', loadGiscus);
+    } else {
+      loadGiscus();
+    }
+  </script>
 </BaseLayout>
 
 <style>
