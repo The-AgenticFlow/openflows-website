@@ -95,19 +95,30 @@ const publishedStories = stories.length;
       {isProduction ? (
         <div>
           <p style="opacity: 0.9; margin-bottom: 1.5rem;">
-            Access the visual content editor directly from app.tina.io. Create and edit blog posts, research papers, and case studies.
+            Access Tina Cloud Studio from app.tina.io. Create and edit blog posts, research papers, and case studies right in your browser.
           </p>
-          <a href={`https://app.tina.io/studio/${tinaBranch}`} 
-             target="_blank"
-             rel="noopener"
-             style="display: inline-flex; align-items: center; gap: 0.5rem; background: white; color: var(--color-aubergine); padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; text-decoration: none;">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
-              <polyline points="15 3 21 3 21 9" />
-              <line x1="10" y1="14" x2="21" y2="3" />
-            </svg>
-            Open Tina Studio
-          </a>
+          <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+            <a href={`https://app.tina.io/studio/${tinaBranch}`} 
+               target="_blank"
+               rel="noopener"
+               style="display: inline-flex; align-items: center; gap: 0.5rem; background: white; color: var(--color-aubergine); padding: 0.75rem 1.5rem; border-radius: var(--radius-md); font-weight: 600; text-decoration: none;">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6" />
+                <polyline points="15 3 21 3 21 9" />
+                <line x1="10" y1="14" x2="21" y2="3" />
+              </svg>
+              Open Tina Cloud Studio
+            </a>
+            <a href="https://app.tina.io" 
+               target="_blank"
+               rel="noopener"
+               style="display: inline-flex; align-items: center; gap: 0.5rem; padding: 0.75rem 1.5rem; background: rgba(255,255,255,0.2); color: white; border-radius: var(--radius-md); text-decoration: none; font-weight: 500;">
+              Go to app.tina.io
+            </a>
+          </div>
+          <p style="margin-top: 1rem; font-size: 0.75rem; opacity: 0.7;">
+            Note: The visual editor works from app.tina.io, not from this site's /admin route (GitHub Pages CSP blocks it).
+          </p>
         </div>
       ) : (
         <div style="background: rgba(255,255,255,0.1); padding: 1rem; border-radius: var(--radius-md);">
