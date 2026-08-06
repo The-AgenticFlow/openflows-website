@@ -1,0 +1,409 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import { getCollection } from 'astro:content';
+
+// Fetch all collections
+const allBlogs = await getCollection('blogs');
+const allResearch = await getCollection('research');
+const allStories = await getCollection('stories');
+
+// Filter to published content only and sort by date
+const blogs = allBlogs
+  .filter(blog => blog.data.status === 'published' && !blog.data.is_draft)
+  .sort((a, b) => {
+    const dateA = a.data.published_at ? new Date(a.data.published_at).getTime() : 0;
+    const dateB = b.data.published_at ? new Date(b.data.published_at).getTime() : 0;
+    return dateB - dateA;
+  })
+  .slice(0, 6);
+
+const research = allResearch
+  .filter(item => item.data.status === 'published' && !item.data.is_draft)
+  .sort((a, b) => {
+    const dateA = a.data.publish_date ? new Date(a.data.publish_date).getTime() : 0;
+    const dateB = b.data.publish_date ? new Date(b.data.publish_date).getTime() : 0;
+    return dateB - dateA;
+  })
+  .slice(0, 6);
+
+const stories = allStories
+  .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
+  .slice(0, 6);
+
+const formatDate = (d) => {
+  if (!d) return '';
+  return new Date(d).toLocaleDateString('en-US', {
+    year: 'numeric',
+    month: 'short',
+    day: 'numeric',
+  });
+};
+---
+
+<BaseLayout title="Resources - OpenFlows" description="Latest blog posts, research papers, and success stories from the OpenFlows team.">
+  <style>
+    .resources-page {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 4rem 2rem;
+    }
+    
+    .page-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+    
+    .page-header h1 {
+      font-size: 3rem;
+      font-weight: 700;
+      margin-bottom: 1rem;
+      color: var(--color-ink);
+    }
+    
+    .page-header p {
+      font-size: 1.25rem;
+      color: var(--color-graphite);
+      max-width: 600px;
+      margin: 0 auto;
+    }
+    
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      margin-bottom: 3rem;
+      border-bottom: 2px solid var(--color-fog);
+      padding-bottom: 0;
+    }
+    
+    .tab {
+      padding: 1rem 2rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--color-graphite);
+      background: none;
+      border: none;
+      cursor: pointer;
+      transition: all 0.2s;
+      position: relative;
+      bottom: -2px;
+    }
+    
+    .tab:hover {
+      color: var(--color-aubergine);
+    }
+    
+    .tab.active {
+      color: var(--color-aubergine);
+      border-bottom: 2px solid var(--color-aubergine);
+    }
+    
+    .tab-content {
+      display: none;
+    }
+    
+    .tab-content.active {
+      display: block;
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 2rem;
+      color: var(--color-ink);
+    }
+    
+    .resources-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+      gap: 2rem;
+    }
+    
+    .resource-card {
+      background: var(--color-bone);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      transition: all 0.2s;
+      border: 1px solid var(--color-fog);
+    }
+    
+    .resource-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-card);
+    }
+    
+    .resource-card h3 {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 0.75rem;
+      line-height: 1.3;
+    }
+    
+    .resource-card h3 a {
+      color: var(--color-ink);
+      text-decoration: none;
+    }
+    
+    .resource-card h3 a:hover {
+      color: var(--color-aubergine);
+    }
+    
+    .resource-meta {
+      display: flex;
+      gap: 0.75rem;
+      font-size: 0.875rem;
+      color: var(--color-graphite);
+      margin-bottom: 0.75rem;
+      flex-wrap: wrap;
+    }
+    
+    .resource-meta span {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .resource-excerpt {
+      font-size: 0.9375rem;
+      color: var(--color-graphite);
+      line-height: 1.6;
+      margin-bottom: 1rem;
+    }
+    
+    .resource-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      font-weight: 600;
+      color: var(--color-aubergine);
+      text-decoration: none;
+    }
+    
+    .resource-link:hover {
+      text-decoration: underline;
+    }
+    
+    .category-badge {
+      display: inline-block;
+      padding: 0.25rem 0.75rem;
+      background: var(--color-aubergine);
+      color: white;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 99px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      background: var(--color-bone);
+      border-radius: var(--radius-lg);
+    }
+    
+    .empty-state svg {
+      width: 64px;
+      height: 64px;
+      color: var(--color-graphite);
+      margin-bottom: 1rem;
+    }
+    
+    .empty-state h3 {
+      font-size: 1.25rem;
+      margin-bottom: 0.5rem;
+    }
+    
+    .empty-state p {
+      color: var(--color-graphite);
+      margin-bottom: 1rem;
+    }
+    
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.75rem 1.5rem;
+      background: var(--color-aubergine);
+      color: white;
+      border-radius: var(--radius-md);
+      text-decoration: none;
+      font-weight: 600;
+    }
+    
+    .cta-button:hover {
+      background: var(--color-aubergine-deep);
+    }
+    
+    @media (max-width: 768px) {
+      .page-header h1 {
+        font-size: 2rem;
+      }
+      
+      .tabs {
+        overflow-x: auto;
+        justify-content: flex-start;
+        -webkit-overflow-scrolling: touch;
+      }
+      
+      .tab {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+        white-space: nowrap;
+      }
+      
+      .resources-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
+  
+  <div class="resources-page">
+    <header class="page-header">
+      <h1>Resources</h1>
+      <p>Stay updated with the latest blog posts, research papers, and success stories from the OpenFlows team and community.</p>
+    </header>
+    
+    <div class="tabs">
+      <button class="tab active" onclick="switchTab('blog')">Blog Posts</button>
+      <button class="tab" onclick="switchTab('research')">Research</button>
+      <button class="tab" onclick="switchTab('stories')">Case Studies</button>
+    </div>
+    
+    <!-- Blog Posts Section -->
+    <div id="blog" class="tab-content active">
+      {blogs.length > 0 ? (
+        <>
+          <h2 class="section-title">Latest Articles</h2>
+          <div class="resources-grid">
+            {blogs.map(blog => (
+              <article class="resource-card">
+                {blog.data.category_id && (
+                  <span class="category-badge">{blog.data.category_id}</span>
+                )}
+                <h3><a href={`/blog/${blog.data.slug || blog.slug}`}>{blog.data.title}</a></h3>
+                <div class="resource-meta">
+                  <span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    {formatDate(blog.data.published_at)}
+                  </span>
+                  {blog.data.read_time_minutes && (
+                    <span>{blog.data.read_time_minutes} min read</span>
+                  )}
+                </div>
+                <p class="resource-excerpt">{blog.data.excerpt}</p>
+                <a href={`/blog/${blog.data.slug || blog.slug}`} class="resource-link">
+                  Read article →
+                </a>
+              </article>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V9a2 2 0 012-2h2a2 2 0 012 2v9a2 2 0 01-2 2h-2z"/>
+          </svg>
+          <h3>No blog posts yet</h3>
+          <p>Check back soon for the latest articles.</p>
+        </div>
+      )}
+    </div>
+    
+    <!-- Research Section -->
+    <div id="research" class="tab-content">
+      {research.length > 0 ? (
+        <>
+          <h2 class="section-title">Research Papers & Publications</h2>
+          <div class="resources-grid">
+            {research.map(item => (
+              <article class="resource-card">
+                <span class="category-badge">{item.data.category}</span>
+                <h3><a href={`/research/${item.data.slug || item.slug}`}>{item.data.title}</a></h3>
+                <div class="resource-meta">
+                  <span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    {formatDate(item.data.publish_date)}
+                  </span>
+                  {item.data.venue && <span>{item.data.venue}</span>}
+                </div>
+                <p class="resource-excerpt">{item.data.abstract}</p>
+                <a href={`/research/${item.data.slug || item.slug}`} class="resource-link">
+                  Read paper →
+                </a>
+              </article>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/>
+          </svg>
+          <h3>No research papers yet</h3>
+          <p>Our research publications will appear here.</p>
+        </div>
+      )}
+    </div>
+    
+    <!-- Case Studies Section -->
+    <div id="stories" class="tab-content">
+      {stories.length > 0 ? (
+        <>
+          <h2 class="section-title">Success Stories & Case Studies</h2>
+          <div class="resources-grid">
+            {stories.map(story => (
+              <article class="resource-card">
+                <span class="category-badge">{story.data.category}</span>
+                <h3><a href={story.data.href}>{story.data.title}</a></h3>
+                <div class="resource-meta">
+                  <span>
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+                    </svg>
+                    {formatDate(story.data.date)}
+                  </span>
+                </div>
+                <a href={story.data.href} class="resource-link">
+                  Read story →
+                </a>
+              </article>
+            ))}
+          </div>
+        </>
+      ) : (
+        <div class="empty-state">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <h3>No case studies yet</h3>
+          <p>Success stories from our community will appear here.</p>
+        </div>
+      )}
+    </div>
+  </div>
+  
+  <script>
+    function switchTab(tabName) {
+      // Hide all tab contents
+      document.querySelectorAll('.tab-content').forEach(content => {
+        content.classList.remove('active');
+      });
+      
+      // Remove active from all tabs
+      document.querySelectorAll('.tab').forEach(tab => {
+        tab.classList.remove('active');
+      });
+      
+      // Show selected tab content
+      document.getElementById(tabName).classList.add('active');
+      
+      // Activate selected tab
+      event.target.classList.add('active');
+    }
+  </script>
+</BaseLayout>
