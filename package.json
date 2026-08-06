@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "tinacms dev -c 'astro dev'",
-    "build": "astro build",
+    "build": "astro build && rm -rf dist/admin",
     "build:full": "tinacms build && astro build",
     "preview": "astro preview"
   },
