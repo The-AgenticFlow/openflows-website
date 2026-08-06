@@ -26,17 +26,8 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Debug branch
-        run: |
-          echo "GITHUB_REF_NAME: $GITHUB_REF_NAME"
-          echo "GITHUB_BRANCH: $GITHUB_BRANCH"
-          echo "GITHUB_REF: $GITHUB_REF"
-
       - name: Build
-        env:
-          TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
-          PUBLIC_TINA_CLIENT_ID: ${{ secrets.PUBLIC_TINA_CLIENT_ID }}
-        run: npm run build:full
+        run: npm run build
 
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
