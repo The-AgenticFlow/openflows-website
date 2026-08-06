@@ -30,7 +30,7 @@ jobs:
         env:
           TINA_TOKEN: ${{ secrets.TINA_TOKEN }}
           PUBLIC_TINA_CLIENT_ID: ${{ secrets.PUBLIC_TINA_CLIENT_ID }}
-        run: npm run build
+        run: npm run build:full
 
       - name: Deploy to gh-pages
         uses: JamesIves/github-pages-deploy-action@v4
