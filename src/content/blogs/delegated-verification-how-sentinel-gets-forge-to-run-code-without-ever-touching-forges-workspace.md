@@ -7,7 +7,7 @@ excerpt: "\tA design for cross-workspace command execution that lets a reviewer
   it's reviewing."
 author_name: Christian Yemele
 category_id: Architecture
-status: draft
+status: published
 published_at: 2026-08-07T17:35:00.000+01:00
 is_featured: false
 read_time_minutes: 8
