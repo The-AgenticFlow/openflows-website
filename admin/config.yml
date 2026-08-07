@@ -2,7 +2,7 @@ backend:
   name: github
   repo: The-AgenticFlow/openflows-website
   branch: master
-  base_url: https://your-oauth-proxy.example.workers.dev
+  base_url: https://openflows-oauth-proxy.yemelechristian2.workers.dev
   auth_endpoint: auth
 
 publish_mode: editorial_workflow
