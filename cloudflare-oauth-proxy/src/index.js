@@ -1,81 +1,98 @@
 /**
- * Cloudflare Worker OAuth proxy for Decap CMS (Netlify-hosted proxy pattern).
+ * Cloudflare Worker OAuth proxy for Decap CMS.
  *
- * This worker exchanges the OAuth `code` returned by GitHub for an access
- * token, using the GitHub App client ID + secret. The secret is stored as a
- * Cloudflare Worker secret (never in the repo or config).
+ * Adapted from the official Decap Cloudflare Worker template
+ * (https://github.com/sterlingwes/decap-proxy). The callback returns an HTML
+ * page that hands the access token back to the Decap popup via
+ * window.opener.postMessage, which is how Decap completes its login flow.
  */
 
-// GitHub endpoints
-const TOKEN_URL = "https://github.com/login/oauth/access_token";
-const CALLBACK_URL_PATTERN = /\/callback\/?/;
+const provider = "github";
 
 export default {
-  async fetch(request, env, ctx) {
+  async fetch(request, env) {
     const url = new URL(request.url);
+    const pathname = url.pathname;
 
-    // CORS preflight
-    if (request.method === "OPTIONS") {
-      return new Response(null, {
-        status: 204,
-        headers: corsHeaders(),
-      });
+    if (pathname === "/auth") {
+      return handleAuth(url, env);
     }
 
-    // Health/root route
-    if (request.method === "GET" && (url.pathname === "/" || url.pathname === "")) {
-      return new Response("OpenFlows OAuth proxy is running.", {
-        status: 200,
-      });
+    if (pathname === "/callback") {
+      return handleCallback(url, env);
     }
 
-    // Auth route: redirect user to GitHub to authorize
-    if (url.pathname === "/auth" || url.pathname === "/auth/") {
-      const authorizeUrl = new URL("https://github.com/login/oauth/authorize");
-      authorizeUrl.searchParams.set("client_id", env.GITHUB_CLIENT_ID);
-      authorizeUrl.searchParams.set("scope", "repo,user");
-      authorizeUrl.searchParams.set("state", url.searchParams.get("state") || "");
-      authorizeUrl.searchParams.set(
-        "redirect_uri",
-        `${url.origin}/callback`
-      );
-      return Response.redirect(authorizeUrl.toString(), 302);
-    }
-
-    // Callback route: exchange code for token
-    if (CALLBACK_URL_PATTERN.test(url.pathname)) {
-      const code = url.searchParams.get("code");
-      if (!code) {
-        return new Response("Missing code parameter", { status: 400 });
-      }
-
-      try {
-        const token = await exchangeCode(code, url.origin, env);
-        return new Response(token, {
-          status: 200,
-          headers: corsHeaders(),
-        });
-      } catch (err) {
-        return new Response(`OAuth token exchange failed: ${err.message}`, {
-          status: 500,
-          headers: corsHeaders(),
-        });
-      }
-    }
-
-    return new Response("Not found", { status: 404 });
+    return new Response("Hello 👋", { status: 200 });
   },
 };
 
-async function exchangeCode(code, origin, env) {
+function randomHex(bytes) {
+  const buf = new Uint8Array(bytes);
+  crypto.getRandomValues(buf);
+  return Array.from(buf)
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
+
+function handleAuth(url, env) {
+  if (url.searchParams.get("provider") !== provider) {
+    return new Response("Invalid provider", { status: 400 });
+  }
+
+  const redirectUri = `${url.origin}/callback?provider=${provider}`;
+  const authorizationUri = [
+    "https://github.com/login/oauth/authorize",
+    "?client_id=" + encodeURIComponent(env.GITHUB_CLIENT_ID),
+    "&redirect_uri=" + encodeURIComponent(redirectUri),
+    "&scope=" + encodeURIComponent("repo,user"),
+    "&state=" + randomHex(4),
+  ].join("");
+
+  return new Response(null, {
+    status: 301,
+    headers: { location: authorizationUri },
+  });
+}
+
+async function handleCallback(url, env) {
+  if (url.searchParams.get("provider") !== provider) {
+    return new Response("Invalid provider", { status: 400 });
+  }
+
+  const githubError = url.searchParams.get("error");
+  if (githubError) {
+    return callbackScriptResponse(
+      "error",
+      `${githubError}: ${url.searchParams.get("error_description") || ""}`
+    );
+  }
+
+  const code = url.searchParams.get("code");
+  if (!code) {
+    return new Response(
+      "Missing code. Full query: " + url.search + " path: " + url.pathname,
+      { status: 400 }
+    );
+  }
+
+  const redirectUri = `${url.origin}/callback?provider=${provider}`;
+  try {
+    const token = await exchangeCode(code, redirectUri, env);
+    return callbackScriptResponse("success", token);
+  } catch (err) {
+    return callbackScriptResponse("error", err.message);
+  }
+}
+
+async function exchangeCode(code, redirectUri, env) {
   const body = new URLSearchParams({
     client_id: env.GITHUB_CLIENT_ID,
     client_secret: env.GITHUB_CLIENT_SECRET,
     code,
-    redirect_uri: `${origin}/callback`,
+    redirect_uri: redirectUri,
   });
 
-  const res = await fetch(TOKEN_URL, {
+  const res = await fetch("https://github.com/login/oauth/access_token", {
     method: "POST",
     headers: {
       "Content-Type": "application/x-www-form-urlencoded",
@@ -96,11 +113,25 @@ async function exchangeCode(code, origin, env) {
   return json.access_token;
 }
 
-function corsHeaders() {
-  return {
-    "Access-Control-Allow-Origin": "*",
-    "Access-Control-Allow-Methods": "GET, POST, OPTIONS",
-    "Access-Control-Allow-Headers": "Content-Type, Authorization",
-    "Access-Control-Max-Age": "86400",
-  };
+function callbackScriptResponse(status, token) {
+  return new Response(
+    `<html>
+<head>
+  <script>
+    const receiveMessage = (message) => {
+      window.opener.postMessage(
+        'authorization:github:${status}:${JSON.stringify({ token })}',
+        '*'
+      );
+      window.removeEventListener("message", receiveMessage, false);
+    }
+    window.addEventListener("message", receiveMessage, false);
+    window.opener.postMessage("authorizing:github", "*");
+  </script>
+  <body>
+    <p>Authorizing Decap...</p>
+  </body>
+</html>`,
+    { headers: { "Content-Type": "text/html" } }
+  );
 }
