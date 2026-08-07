@@ -135,49 +135,7 @@ Get Started
 </ul>
 <h2 id="where-this-fits-in-the-bigger-picture">Where this fits in the bigger picture</h2>
 <p>Nothing about this changes the shape of the existing gated-phase state machine in <code>openflows-harness</code> (<code>planning</code> → <code>building</code> → <code>testing</code> → <code>review_ready</code>, with SENTINEL’s <code>gate approve</code> consuming a single-use approval token via Redis <code>GETDEL</code>). Delegated verification is additive: one more thing SENTINEL can <em>ask for</em> before it decides whether to call <code>gate approve</code>. The gate itself still lives entirely in Redis, still requires the SENTINEL role, and still can’t be bypassed by FORGE approving its own plan.</p>
-<p>What changes is what “evidence” can mean. Before this, a SENTINEL review was necessarily an act of reading — a plan, a diff — and reasoning from prose. Now it can also be an act of <em>asking the code to speak for itself</em>, through a narrow, audited, allowlisted channel that never requires SENTINEL to leave the boundary of its own workspace.</p>
-<hr>
-<h2 id="implementation-status-issue-143">Implementation Status (Issue #143)</h2>
-<p>This feature is being implemented across 8 tasks tracked in <code>.kilo/plans/1785948146715-sentinel-forge-a2a-verify.md</code>:</p>
-<h3 id="-completed">✅ Completed</h3>
-<ol>
-<li><strong>Task 1: a2a-protocol crate</strong> — Serde types, Redis key helpers, command allowlist validation (9 tests passing)</li>
-<li><strong>Task 2: Nexus A2A relay server</strong> — JSON-RPC HTTP server with Axum, pair-scoped routing, idempotency dedup, result mirroring</li>
-<li><strong>Task 3: Harness verify subcommands</strong> — CLI skeleton for <code>verify request</code>, <code>verify serve</code>, <code>verify list</code></li>
-<li><strong>Task 4: Sentinel gate refusal</strong> — Hard-fail when <code>pair:{id}:plan</code> is missing, preventing blind approvals (issue #143 root cause fix)</li>
-<li><strong>Task 5.1: A2A client</strong> — HTTP client library for harness workers (health check, submit_verify_request, polling)</li>
-</ol>
-<h3 id="-in-progress--deferred">🚧 In Progress / Deferred</h3>
-<ol start="6">
-<li><strong>Task 5.2-5.3: Executor sandbox + mirroring</strong> — Full sandbox execution (process group + timeout), stdout/stderr streaming, result persistence</li>
-<li><strong>Task 6: Worker template wiring</strong> — Updated Forge template to spawn <code>verify serve</code> daemon on startup</li>
-<li><strong>Task 7: Documentation updates</strong> — This document; pending updates to orchestration protocol docs</li>
-<li><strong>Task 8: Integration &#x26; E2E tests</strong> — Comprehensive test suite for A2A relay, sandbox isolation, failure modes</li>
-</ol>
-<h3 id="next-steps">Next Steps</h3>
-<ul>
-<li><strong>Phase 2a:</strong> Complete executor sandbox implementation with proper stdout/stderr capture and streaming via SSE</li>
-<li><strong>Phase 2b:</strong> Full integration testing covering: relay routing, executor availability checks, timeouts, disconnection/reconnection, idempotency validation</li>
-<li><strong>Phase 3:</strong> Extend support to additional executor roles (dedicated <code>verifier</code> workspace) based on usage data</li>
-</ul>
-<h3 id="how-to-use-v1">How to Use (v1)</h3>
-<pre class="astro-code github-dark" style="background-color:#24292e;color:#e1e4e8; overflow-x: auto;" tabindex="0" data-language="bash"><code><span class="line"><span style="color:#6A737D"># Sentinel workspace: submit a verify request</span></span>
-<span class="line"><span style="color:#B392F0">openflows-harness</span><span style="color:#9ECBFF"> verify</span><span style="color:#9ECBFF"> request</span><span style="color:#79B8FF"> \</span></span>
-<span class="line"><span style="color:#79B8FF">  --argv</span><span style="color:#9ECBFF"> cargo</span><span style="color:#9ECBFF"> test</span><span style="color:#79B8FF"> --package</span><span style="color:#9ECBFF"> mylib</span><span style="color:#79B8FF"> \</span></span>
-<span class="line"><span style="color:#79B8FF">  --timeout-secs</span><span style="color:#79B8FF"> 300</span><span style="color:#79B8FF"> \</span></span>
-<span class="line"><span style="color:#79B8FF">  --expect-exit</span><span style="color:#79B8FF"> 0</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#6A737D"># Forge workspace: automatically started via worker template</span></span>
-<span class="line"><span style="color:#6A737D"># (the `verify serve` daemon subscribes to tasks from nexus relay)</span></span>
-<span class="line"></span>
-<span class="line"><span style="color:#6A737D"># Human audit: view recent verification results</span></span>
-<span class="line"><span style="color:#B392F0">openflows-harness</span><span style="color:#9ECBFF"> verify</span><span style="color:#9ECBFF"> list</span><span style="color:#79B8FF"> --pair-id</span><span style="color:#9ECBFF"> T-048</span></span></code></pre>
-<h3 id="references">References</h3>
-<ul>
-<li><strong>Main tracking issue:</strong> <a href="https://github.com/The-AgenticFlow/openflows/issues/143">The-AgenticFlow/openflows#143</a></li>
-<li><strong>Plan document:</strong> <code>.kilo/plans/1785948146715-sentinel-forge-a2a-verify.md</code></li>
-<li><strong>Implementation branches:</strong> <code>feat/a2a-verify-v2</code> (current)</li>
-</ul> </div> <!-- Giscus Comments --> <div id="comments" style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-fog);" data-astro-cid-4sn4zg3r> <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;" data-astro-cid-4sn4zg3r>Comments</h2> <div style="background: var(--color-bone); padding: 1.5rem; border-radius: var(--radius-md);" data-astro-cid-4sn4zg3r> <p style="color: var(--color-graphite); margin-bottom: 1rem; font-size: 0.875rem;" data-astro-cid-4sn4zg3r>
+<p>What changes is what “evidence” can mean. Before this, a SENTINEL review was necessarily an act of reading — a plan, a diff — and reasoning from prose. Now it can also be an act of <em>asking the code to speak for itself</em>, through a narrow, audited, allowlisted channel that never requires SENTINEL to leave the boundary of its own workspace.</p> </div> <!-- Giscus Comments --> <div id="comments" style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-fog);" data-astro-cid-4sn4zg3r> <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;" data-astro-cid-4sn4zg3r>Comments</h2> <div style="background: var(--color-bone); padding: 1.5rem; border-radius: var(--radius-md);" data-astro-cid-4sn4zg3r> <p style="color: var(--color-graphite); margin-bottom: 1rem; font-size: 0.875rem;" data-astro-cid-4sn4zg3r>
 Questions, feedback, or thoughts? Comment below and join the discussion on GitHub.
 </p> <div id="giscus-container" style="min-height: 200px;" data-astro-cid-4sn4zg3r></div> </div> </div> </article> <script type="module">const e=()=>{const t=document.createElement("script");t.src="https://giscus.app/client.js",t.setAttribute("data-repo","The-AgenticFlow/openflows-website"),t.setAttribute("data-repo-id","R_kgDOLeDF8A"),t.setAttribute("data-category","Announcements"),t.setAttribute("data-category-id","DIC_kwDOLeDF8M4CZJAl"),t.setAttribute("data-mapping","pathname"),t.setAttribute("data-strict","0"),t.setAttribute("data-reactions-enabled","1"),t.setAttribute("data-emit-metadata","0"),t.setAttribute("data-input-position","bottom"),t.setAttribute("data-theme","light"),t.setAttribute("data-lang","en"),t.setAttribute("crossorigin","anonymous"),t.async=!0,document.getElementById("giscus-container")?.appendChild(t)};document.readyState==="loading"?document.addEventListener("DOMContentLoaded",e):e();</script>  <script>
       if (typeof Prism !== 'undefined') {
