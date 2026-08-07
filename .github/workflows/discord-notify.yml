@@ -20,85 +20,82 @@ jobs:
       - name: Detect new and updated content
         id: content
         run: |
-          # Find all .md files changed in this push
-          CHANGED=$(git diff --name-only --diff-filter=ACMRT HEAD~1 HEAD -- 'src/content/blogs/*.md' 'src/content/research/*.md' 'src/content/stories/*.md' || true)
-          echo "changed<<EOF" >> $GITHUB_OUTPUT
-          echo "$CHANGED" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          CHANGED=$(git diff --name-only --diff-filter=ACMRT HEAD~1 HEAD \
+            -- 'src/content/blogs/*.md' 'src/content/research/*.md' 'src/content/stories/*.md' || true)
+          echo "changed<<EOF" >> "$GITHUB_OUTPUT"
+          echo "$CHANGED" >> "$GITHUB_OUTPUT"
+          echo "EOF" >> "$GITHUB_OUTPUT"
 
       - name: Send Discord notifications
         if: steps.content.outputs.changed != ''
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_CONTENT_WEBHOOK }}
         run: |
-          shopt -s nocasematch
-
           while IFS= read -r file; do
             [ -z "$file" ] && continue
             echo "Processing: $file"
 
-            # Determine content type from path
+            # Determine content type, category, and color
             case "$file" in
-              src/content/blogs/*)   TYPE="Blog Post";   CATEGORY="blog" ;;
-              src/content/research/*) TYPE="Research Paper"; CATEGORY="research" ;;
-              src/content/stories/*) TYPE="Success Story"; CATEGORY="stories" ;;
+              src/content/blogs/*)   TYPE="Blog Post";      CAT="blog";     COLOR=11146497  ;;
+              src/content/research/*) TYPE="Research Paper"; CAT="research"; COLOR=6513505   ;;
+              src/content/stories/*) TYPE="Success Story";  CAT="stories";  COLOR=16098827  ;;
               *) continue ;;
             esac
 
-            # Parse frontmatter using awk
-            TITLE=$(awk 'BEGIN{FS=": ";RS="\n"} /^title:/{gsub(/^"/,"",$2); gsub(/"$/,"",$2); print $2; exit}' "$file")
-            SLUG=$(awk 'BEGIN{FS=": ";RS="\n"} /^slug:/{gsub(/^"/,"",$2); gsub(/"$/,"",$2); print $2; exit}' "$file")
-            EXCERPT=$(awk 'BEGIN{FS=": ";RS="\n"} /^excerpt:|^abstract:/{gsub(/^"/,"",$2); gsub(/"$/,"",$2); print $2; exit}' "$file" | cut -c1-300)
-            AUTHOR=$(awk 'BEGIN{FS=": ";RS="\n"} /^author_name:/{gsub(/^"/,"",$2); gsub(/"$/,"",$2); print $2; exit}' "$file")
+            # Parse frontmatter (flat key: value)
+            read_title()    { awk 'BEGIN{FS=": "}/^title:/    {gsub(/^[" \t]+|[" \t]+$/,"",$2); print $2; exit}' "$1"; }
+            read_slug()     { awk 'BEGIN{FS=": "}/^slug:/     {gsub(/^[" \t]+|[" \t]+$/,"",$2); print $2; exit}' "$1"; }
+            read_author()   { awk 'BEGIN{FS=": "}/^author_name:/{gsub(/^[" \t]+|[" \t]+$/,"",$2); print $2; exit}' "$1"; }
+            read_excerpt()  { awk 'BEGIN{FS=": "}/^excerpt:|^abstract:/{gsub(/^[" \t]+|[" \t]+$/,"",$2); print $2; exit}' "$1"; }
 
-            if [ -z "$TITLE" ]; then
-              # Try reading second line of frontmatter format
-              TITLE=$(head -20 "$file" | grep -i "^title:" | head -1 | sed 's/^title:[[:space:]]*//; s/^"//; s/"$//')
-            fi
-            if [ -z "$TITLE" ]; then
-              TITLE=$(basename "$file" .md)
-            fi
+            TITLE=$(read_title "$file")
+            SLUG=$(read_slug "$file")
+            AUTHOR=$(read_author "$file")
+            EXCERPT=$(read_excerpt "$file")
 
-            # Build URL
-            URL="https://openflows.dev/${CATEGORY}/${SLUG:-$(basename "$file" .md)}"
+            [ -z "$TITLE" ] && TITLE="$(basename "$file" .md)"
+            [ -z "$SLUG" ]  && SLUG="$(basename "$file" .md)"
+            [ -z "$EXCERPT" ] && EXCERPT="New content published on OpenFlows."
 
-            # Build JSON payload for Discord
-            if [ -z "$EXCERPT" ]; then
-              DESCRIPTION="New content published on OpenFlows."
-            else
-              DESCRIPTION="$EXCERPT"
-            fi
+            URL="https://openflows.dev/${CAT}/${SLUG}"
 
-            COLOR=0x10b981
-            if [ "$TYPE" = "Research Paper" ]; then COLOR=0x6366f1; fi
-            if [ "$TYPE" = "Success Story" ]; then COLOR=0xf59e0b; fi
-
-            PAYLOAD=$(cat << PAYLOAD_END
-            {
-              "username": "OpenFlows Publisher",
-              "avatar_url": "https://openflows.dev/openlogo.png",
-              "embeds": [{
-                "title": "$TITLE",
-                "url": "$URL",
-                "description": "$DESCRIPTION",
-                "color": $COLOR,
-                "fields": [
-                  {"name": "Type", "value": "$TYPE", "inline": true}
-                  $( [ -n "$AUTHOR" ] && echo ',{"name": "Author", "value": "'$AUTHOR'", "inline": true}' )
-                ],
-                "footer": {"text": "OpenFlows Content Published"},
-                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
-              }]
-            }
-            PAYLOAD_END
-            )
-
-            # Sanitize - remove newlines inside JSON
-            PAYLOAD=$(echo "$PAYLOAD" | tr '\n' ' ' | sed 's/  */ /g')
+            # Build JSON payload with jq (handles special chars properly)
+            PAYLOAD=$(jq -cn \
+              --arg title "$TITLE" \
+              --arg url "$URL" \
+              --arg desc "$EXCERPT" \
+              --argjson color "$COLOR" \
+              --arg type "$TYPE" \
+              --arg author "$AUTHOR" \
+              --arg ts "$(date -u +%Y-%m-%dT%H:%M:%SZ)" \
+              '{
+                username: "OpenFlows Publisher",
+                avatar_url: "https://openflows.dev/openlogo.png",
+                embeds: [{
+                  title: $title,
+                  url: $url,
+                  description: $desc,
+                  color: $color,
+                  fields: ([
+                    {name: "Type", value: $type, inline: true},
+                    (if $author != "" then {name: "Author", value: $author, inline: true} else empty end)
+                  ]),
+                  footer: {text: "OpenFlows Content Published"},
+                  timestamp: $ts
+                }]
+              }')
 
             # Send to Discord
-            curl -s -X POST "$DISCORD_WEBHOOK" \
+            HTTP_CODE=$(curl -s -o /dev/null -w "%{http_code}" \
+              -X POST "$DISCORD_WEBHOOK" \
               -H "Content-Type: application/json" \
-              -d "$PAYLOAD" && echo "  ✓ Notification sent for $TITLE" || echo "  ✗ Failed to send notification"
+              -d "$PAYLOAD")
+
+            if [ "$HTTP_CODE" -ge 200 ] && [ "$HTTP_CODE" -lt 300 ]; then
+              echo "  ✓ Sent ($HTTP_CODE): $TITLE"
+            else
+              echo "  ✗ Discord returned $HTTP_CODE"
+            fi
 
           done <<< "${{ steps.content.outputs.changed }}"
