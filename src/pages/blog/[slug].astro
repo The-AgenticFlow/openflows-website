@@ -34,7 +34,7 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil(blog.data.
   description={blog.data.meta_description || blog.data.excerpt}
   ogImage={blog.data.cover_image_url}
 >
-  <article style="max-width: 800px; margin: 0 auto; padding: 3rem 2rem;">
+  <article style="max-width: 900px; margin: 0 auto; padding: calc(3rem + var(--nav-height)) 2rem 3rem;">
     <header style="margin-bottom: 2rem;">
       <a href="/blog" style="font-size: 0.875rem; color: var(--color-graphite); display: inline-block; margin-bottom: 1rem;">← Back to Blog</a>
       <h1 style="font-size: 2.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem;">{blog.data.title}</h1>
@@ -59,7 +59,7 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil(blog.data.
       </div>
     )}
 
-    <div class="blog-content">
+    <div class="blog-content" style="font-size: 1.125rem; line-height: 1.8; color: var(--color-ink);">
       <Content />
     </div>
     
