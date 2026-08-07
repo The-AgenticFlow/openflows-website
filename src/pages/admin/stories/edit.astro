@@ -1,9 +1,0 @@
----
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import StoriesEditor from '@/react-pages/StoriesEditor';
-const id = Astro.url.searchParams.get('id');
----
-
-<BaseLayout title="Edit Story">
-  <StoriesEditor client:only="react" storyId={id} />
-</BaseLayout>
