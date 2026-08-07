@@ -1,8 +1,8 @@
 ---
-title: "\tDelegated Verification: How SENTINEL Gets FORGE to Run Code, Without
+title: "Delegated Verification: How SENTINEL Gets FORGE to Run Code, Without
   Ever Touching FORGE's Workspace"
-slug: "\tdelegated-verification-sentinel-forge-a2a"
-excerpt: "\tA design for cross-workspace command execution that lets a reviewer
+slug: "delegated-verification-sentinel-forge-a2a"
+excerpt: "A design for cross-workspace command execution that lets a reviewer
   agent verify code by asking for evidence — never by entering the workspace
   it's reviewing."
 author_name: Christian Yemele

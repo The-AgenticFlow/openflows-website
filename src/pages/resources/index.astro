@@ -281,7 +281,7 @@ const formatDate = (d) => {
                 {blog.data.category_id && (
                   <span class="category-badge">{blog.data.category_id}</span>
                 )}
-                <h3><a href={`/blog/${blog.data.slug || blog.slug}`}>{blog.data.title}</a></h3>
+                <h3><a href={`/blog/${(blog.data.slug || blog.slug).trim()}`}>{blog.data.title}</a></h3>
                 <div class="resource-meta">
                   <span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -294,7 +294,7 @@ const formatDate = (d) => {
                   )}
                 </div>
                 <p class="resource-excerpt">{blog.data.excerpt}</p>
-                <a href={`/blog/${blog.data.slug || blog.slug}`} class="resource-link">
+                <a href={`/blog/${(blog.data.slug || blog.slug).trim()}`} class="resource-link">
                   Read article →
                 </a>
               </article>
@@ -321,7 +321,7 @@ const formatDate = (d) => {
             {research.map(item => (
               <article class="resource-card">
                 <span class="category-badge">{item.data.category}</span>
-                <h3><a href={`/research/${item.data.slug || item.slug}`}>{item.data.title}</a></h3>
+                <h3><a href={`/research/${(item.data.slug || item.slug).trim()}`}>{item.data.title}</a></h3>
                 <div class="resource-meta">
                   <span>
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -332,7 +332,7 @@ const formatDate = (d) => {
                   {item.data.venue && <span>{item.data.venue}</span>}
                 </div>
                 <p class="resource-excerpt">{item.data.abstract}</p>
-                <a href={`/research/${item.data.slug || item.slug}`} class="resource-link">
+                <a href={`/research/${(item.data.slug || item.slug).trim()}`} class="resource-link">
                   Read paper →
                 </a>
               </article>
