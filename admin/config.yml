@@ -1,0 +1,77 @@
+backend:
+  name: github
+  repo: The-AgenticFlow/openflows-website
+  branch: master
+  base_url: https://your-oauth-proxy.example.workers.dev
+  auth_endpoint: auth
+
+publish_mode: editorial_workflow
+
+media_folder: "public/uploads"
+public_folder: "/uploads"
+
+collections:
+  - name: "blogs"
+    label: "Blog Posts"
+    folder: "src/content/blogs"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Slug", name: "slug", widget: "string" }
+      - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
+      - { label: "Author Name", name: "author_name", widget: "string", required: false }
+      - { label: "Cover Image URL", name: "cover_image_url", widget: "string", required: false }
+      - { label: "Category", name: "category_id", widget: "string", required: false }
+      - label: "Status"
+        name: "status"
+        widget: "select"
+        options: ["published", "draft", "archived"]
+        default: "draft"
+      - { label: "Published At", name: "published_at", widget: "datetime", required: false }
+      - { label: "Featured", name: "is_featured", widget: "boolean", default: false }
+      - { label: "Read Time (minutes)", name: "read_time_minutes", widget: "number", required: false }
+      - { label: "Content", name: "body", widget: "markdown" }
+
+  - name: "research"
+    label: "Research Papers"
+    folder: "src/content/research"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Slug", name: "slug", widget: "string", required: false }
+      - { label: "Abstract", name: "abstract", widget: "text", required: false }
+      - { label: "Category", name: "category", widget: "string" }
+      - { label: "Publish Date", name: "publish_date", widget: "datetime" }
+      - { label: "Venue", name: "venue", widget: "string", required: false }
+      - { label: "PDF URL", name: "pdf_url", widget: "string", required: false }
+      - { label: "Cover Image URL", name: "cover_image_url", widget: "string", required: false }
+      - { label: "Tags", name: "tags", widget: "list", required: false }
+      - label: "Authors"
+        name: "authors"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "Name", name: "name", widget: "string" }
+          - { label: "Affiliation", name: "affiliation", widget: "string", required: false }
+      - { label: "Content", name: "body", widget: "markdown" }
+
+  - name: "stories"
+    label: "Success Stories"
+    folder: "src/content/stories"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    fields:
+      - { label: "Title", name: "title", widget: "string" }
+      - { label: "Category", name: "category", widget: "string" }
+      - { label: "Date", name: "date", widget: "string", required: false }
+      - { label: "URL", name: "href", widget: "string", required: false }
+      - { label: "Image URL", name: "image", widget: "string", required: false }
+      - { label: "Content", name: "body", widget: "markdown" }
