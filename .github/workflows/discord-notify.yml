@@ -1,0 +1,104 @@
+name: Discord Content Notification
+
+on:
+  push:
+    branches: [master]
+    paths:
+      - "src/content/blogs/**"
+      - "src/content/research/**"
+      - "src/content/stories/**"
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+
+      - name: Detect new and updated content
+        id: content
+        run: |
+          # Find all .md files changed in this push
+          CHANGED=$(git diff --name-only --diff-filter=ACMRT HEAD~1 HEAD -- 'src/content/blogs/*.md' 'src/content/research/*.md' 'src/content/stories/*.md' || true)
+          echo "changed<<EOF" >> $GITHUB_OUTPUT
+          echo "$CHANGED" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      - name: Send Discord notifications
+        if: steps.content.outputs.changed != ''
+        env:
+          DISCORD_WEBHOOK: ${{ secrets.DISCORD_CONTENT_WEBHOOK }}
+        run: |
+          shopt -s nocasematch
+
+          while IFS= read -r file; do
+            [ -z "$file" ] && continue
+            echo "Processing: $file"
+
+            # Determine content type from path
+            case "$file" in
+              src/content/blogs/*)   TYPE="Blog Post";   CATEGORY="blog" ;;
+              src/content/research/*) TYPE="Research Paper"; CATEGORY="research" ;;
+              src/content/stories/*) TYPE="Success Story"; CATEGORY="stories" ;;
+              *) continue ;;
+            esac
+
+            # Parse frontmatter using awk
+            TITLE=$(awk 'BEGIN{FS=": ";RS="\n"} /^title:/{gsub(/^"/,"",$2); gsub(/"$/,"",$2); print $2; exit}' "$file")
+            SLUG=$(awk 'BEGIN{FS=": ";RS="\n"} /^slug:/{gsub(/^"/,"",$2); gsub(/"$/,"",$2); print $2; exit}' "$file")
+            EXCERPT=$(awk 'BEGIN{FS=": ";RS="\n"} /^excerpt:|^abstract:/{gsub(/^"/,"",$2); gsub(/"$/,"",$2); print $2; exit}' "$file" | cut -c1-300)
+            AUTHOR=$(awk 'BEGIN{FS=": ";RS="\n"} /^author_name:/{gsub(/^"/,"",$2); gsub(/"$/,"",$2); print $2; exit}' "$file")
+
+            if [ -z "$TITLE" ]; then
+              # Try reading second line of frontmatter format
+              TITLE=$(head -20 "$file" | grep -i "^title:" | head -1 | sed 's/^title:[[:space:]]*//; s/^"//; s/"$//')
+            fi
+            if [ -z "$TITLE" ]; then
+              TITLE=$(basename "$file" .md)
+            fi
+
+            # Build URL
+            URL="https://openflows.dev/${CATEGORY}/${SLUG:-$(basename "$file" .md)}"
+
+            # Build JSON payload for Discord
+            if [ -z "$EXCERPT" ]; then
+              DESCRIPTION="New content published on OpenFlows."
+            else
+              DESCRIPTION="$EXCERPT"
+            fi
+
+            COLOR=0x10b981
+            if [ "$TYPE" = "Research Paper" ]; then COLOR=0x6366f1; fi
+            if [ "$TYPE" = "Success Story" ]; then COLOR=0xf59e0b; fi
+
+            PAYLOAD=$(cat << PAYLOAD_END
+            {
+              "username": "OpenFlows Publisher",
+              "avatar_url": "https://openflows.dev/openlogo.png",
+              "embeds": [{
+                "title": "$TITLE",
+                "url": "$URL",
+                "description": "$DESCRIPTION",
+                "color": $COLOR,
+                "fields": [
+                  {"name": "Type", "value": "$TYPE", "inline": true}
+                  $( [ -n "$AUTHOR" ] && echo ',{"name": "Author", "value": "'$AUTHOR'", "inline": true}' )
+                ],
+                "footer": {"text": "OpenFlows Content Published"},
+                "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)"
+              }]
+            }
+            PAYLOAD_END
+            )
+
+            # Sanitize - remove newlines inside JSON
+            PAYLOAD=$(echo "$PAYLOAD" | tr '\n' ' ' | sed 's/  */ /g')
+
+            # Send to Discord
+            curl -s -X POST "$DISCORD_WEBHOOK" \
+              -H "Content-Type: application/json" \
+              -d "$PAYLOAD" && echo "  ✓ Notification sent for $TITLE" || echo "  ✗ Failed to send notification"
+
+          done <<< "${{ steps.content.outputs.changed }}"
