@@ -1,0 +1,6 @@
+name = "openflows-oauth-proxy"
+main = "src/index.js"
+compatibility_date = "2024-11-01"
+
+[vars]
+GITHUB_CLIENT_ID = "Ov23liUkwfCP3VEECfrf"
