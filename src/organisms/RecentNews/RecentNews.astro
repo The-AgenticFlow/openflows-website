@@ -25,7 +25,7 @@ const posts = allBlogs
       : '',
     title: post.data.title,
     excerpt: post.data.excerpt,
-    href: `/blog/${post.data.slug}`,
+    href: `/blog/${(post.data.slug || post.slug).trim()}`,
     image: post.data.cover_image_url || '',
     featured: post.data.is_featured || false,
   }));

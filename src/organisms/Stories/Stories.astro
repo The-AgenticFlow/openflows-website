@@ -1,20 +1,22 @@
 ---
-import { getCollection } from 'astro:content';
 import Stories from '@/organisms/Stories/Stories.jsx';
 
-const allStories = await getCollection('stories');
+const storyModules = import.meta.glob('/src/content/stories/*.md', { eager: true });
 
-// Sort and filter stories
-const stories = allStories
-  .sort((a, b) => new Date(b.data.date) - new Date(a.data.date))
-  .map((story) => ({
-    id: story.id,
-    category: story.data.category,
-    date: story.data.date,
-    title: story.data.title,
-    href: story.data.href,
-    image: story.data.image,
-  }));
+const stories = Object.entries(storyModules)
+  .map(([path, mod]) => {
+    const slug = path.split('/').pop()!.replace('.md', '');
+    const { frontmatter } = mod as any;
+    return {
+      id: slug,
+      category: frontmatter.category || '',
+      date: frontmatter.date || '',
+      title: frontmatter.title || '',
+      href: frontmatter.href || `/stories/${slug}`,
+      image: frontmatter.image || '',
+    };
+  })
+  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
 ---
 
 <Stories stories={stories} client:visible />

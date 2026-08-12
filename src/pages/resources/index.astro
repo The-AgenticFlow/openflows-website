@@ -5,7 +5,23 @@ import { getCollection } from 'astro:content';
 // Fetch all collections
 const allBlogs = await getCollection('blogs');
 const allResearch = await getCollection('research');
-const allStories = await getCollection('stories');
+
+const storyModules = import.meta.glob('/src/content/stories/*.md', { eager: true });
+const allStories = Object.entries(storyModules).map(([path, mod]) => {
+  const slug = path.split('/').pop()!.replace('.md', '');
+  const { frontmatter } = mod as any;
+  return {
+    id: slug,
+    slug,
+    data: {
+      title: frontmatter.title || '',
+      category: frontmatter.category || '',
+      date: frontmatter.date || '',
+      href: frontmatter.href || `/stories/${slug}`,
+      image: frontmatter.image || '',
+    },
+  };
+});
 
 // Filter to published content only and sort by date
 const blogs = allBlogs
