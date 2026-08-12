@@ -2,7 +2,7 @@
 title: Coder Didn't Make OpenFlows Smarter. It Made It Trustworthy.
 category: Design
 date: 2026-08-11
-href: https://medium.com/@yemelechristian2/coder-didnt-make-openflows-smarter-it-made-it-trustworthy-f50e20b99fe0?sharedUserId=yemelechristian2
+href: /stories/coder-didnt-make-openflows-smarter-it-made-it-trustworthy
 image: https://miro.medium.com/v2/resize:fit:4800/format:webp/1*V9PWI_-kjm2QOJmGjz6MMg.png
 ---
 ## The Gap Between a Demo and a Platform
