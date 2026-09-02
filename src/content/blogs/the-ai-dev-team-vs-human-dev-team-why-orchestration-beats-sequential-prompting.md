@@ -2,6 +2,7 @@
 title: "The AI Dev Team vs Human Dev Team: Why Orchestration Beats Sequential
   Prompting"
 slug: The Expensive Truth About AI Development
+excerpt: "AI gets expensive when a human sits at a keyboard, prompt after prompt, wrangling a machine into production-ready code through sequential conversation. Orchestration changes the equation: humans move from doing to directing while machines handle execution with precision."
 author_name: Christian Yemele
 cover_image_url: https://miro.medium.com/v2/resize:fit:4800/format:webp/1*gsXUj42EoNMOgHgUM8HXPg.png
 category_id: Architecture
