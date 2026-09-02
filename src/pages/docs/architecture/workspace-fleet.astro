@@ -25,6 +25,12 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
 
   <h2>Inside a worker workspace</h2>
   <p>A worker workspace contains only what its one agent needs to do its one job:</p>
+
+  <figure class="docFigure">
+    <img src="/images/worker-workspace.png" alt="Diagram of a worker workspace: a thin, isolated, disposable Coder workspace holding one agent, one ticket, the repository checkout, and the role's skills — with no LLM keys and no raw credentials inside." width="1536" height="1024" loading="lazy" />
+    <figcaption>A worker workspace is thin, isolated, and disposable — one agent, one ticket, no secrets.</figcaption>
+  </figure>
+
   <ul>
     <li>The coordination command surface (how the agent reports progress and reads its task).</li>
     <li>The repository checkout, on the branch the agent is working on.</li>

@@ -46,6 +46,12 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
     <strong>delegated verification</strong>: when SENTINEL (the reviewer) needs evidence that FORGE's tests pass,
     without touching FORGE's filesystem.
   </p>
+
+  <figure class="docFigure">
+    <img src="/images/a2a-relay.png" alt="Diagram of the A2A live task relay: the reviewer's workspace dials out to the relay in the control plane, which checks an allowlist and routes a safe command to the builder's workspace, then mirrors the evidence back into the coordination store." width="1536" height="1024" loading="lazy" />
+    <figcaption>The A2A relay exchanges live evidence between workspaces and mirrors it back into the store.</figcaption>
+  </figure>
+
   <p>For that, OpenFlows uses a small internal <strong>relay</strong> inside the orchestrator workspace:</p>
   <ol>
     <li>SENTINEL submits a request: <em>"run this safe, allowlisted command; here's the timeout and what we expect."</em></li>

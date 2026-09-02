@@ -11,6 +11,11 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
     Everything else in the architecture serves that split.
   </p>
 
+  <figure class="docFigure">
+    <img src="/images/system-architecture.png" alt="Diagram of the OpenFlows system architecture: a control plane (Coder server, the Controller brain, the coordination store, and a database) supervising a work plane of disposable worker workspaces, with a coordination relay joining the two." width="1536" height="1024" loading="lazy" />
+    <figcaption>The control plane supervises the work plane; a coordination relay joins them.</figcaption>
+  </figure>
+
   <h2>The control plane</h2>
   <p>
     The control plane is where the trusted, long-lived pieces live:
