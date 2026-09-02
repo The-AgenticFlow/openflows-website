@@ -1,0 +1,105 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const TEAM_ROWS = [
+  ['Worker count', 'How many agents a role may run at once — its ceiling on concurrency.'],
+  ['Model', 'Which model the role uses.'],
+  ['Plan mode', 'Whether the role must get approval before acting.'],
+  ['Skills', 'Which packaged capabilities the role can use.'],
+  ['External tools', 'Which outside tools the role can call.'],
+];
+
+const FLEET_ROWS = [
+  ['Pause', 'Let in-flight work finish; don’t pick up new work.'],
+  ['Drain', 'Stop taking on new tickets.'],
+  ['Target', 'Focus on a specific repository, issue, or label.'],
+  ['Resume / normal', 'Return to ordinary operation.'],
+];
+
+const PLATFORM_ROWS = [
+  ['Models available', 'The catalog of models roles can reference.'],
+  ['Central tools', 'Team-wide tools with allow and deny lists and availability.'],
+  ['Identity / single sign-on', 'Who can reach the environment and its workspaces.'],
+  ['Audit', 'The platform audit log.'],
+];
+
+const NOTIFY_ROWS = [
+  ['Slack', 'A webhook URL.'],
+  ['Discord', 'A webhook URL.'],
+  ['WhatsApp', 'Credentials and sending/destination phone numbers.'],
+];
+
+const TOPOLOGY_ROWS = [
+  ['Coder server location', 'Where the control plane is.'],
+  ['Coordination store', 'The shared record of truth that tracks all team state.'],
+  ['Database', 'Coder’s own data store.'],
+  ['Repository binding', 'The repository a tenant works on.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }, { label: 'Configuration Reference' }]}>
+  <h1>Configuration Reference</h1>
+  <p>
+    OpenFlows has no public environment-variable reference — that is internal detail. What matters to you are the
+    knobs you actually set, grouped here by concern. Almost everything is changeable from the control panel without a
+    restart. Platform-level items (which models are available, centrally managed tools) are configured in the
+    Coder dashboard.
+  </p>
+
+  <h2>Team configuration</h2>
+  <p>
+    Each agent role — FORGE, SENTINEL, VESSEL, and LORE — is configured from the control panel. The same settings apply
+    regardless of role:
+  </p>
+  <DocsTable headers={['Setting', 'What it controls']} rows={TEAM_ROWS} />
+  <Callout type="info" title="A guardrail on changes">
+    A change can’t silently drive a role to zero workers. Anything that would leave a role with no available agents is
+    rejected.
+  </Callout>
+
+  <h2>Fleet steering</h2>
+  <DocsTable headers={['Setting', 'Effect']} rows={FLEET_ROWS} />
+  <p>
+    Steering changes how the fleet picks up and processes work without requiring a restart — you can pause, drain, or
+    refocus the team on the fly.
+  </p>
+
+  <h2>Platform-level settings</h2>
+  <p>
+    These live in the Coder dashboard rather than in OpenFlows itself, because they govern the shared environment all
+    teams run on:
+  </p>
+  <DocsTable headers={['Setting', 'What it controls']} rows={PLATFORM_ROWS} />
+
+  <h2>Notifications</h2>
+  <DocsTable headers={['Channel', 'What you set']} rows={NOTIFY_ROWS} />
+  <p>
+    Each channel is configured independently, and any combination can be enabled. See the
+    <a href="/docs/reference/notifications-reference">Notifications Reference</a> for how they behave.
+  </p>
+
+  <h2>Environment &amp; topology</h2>
+  <p>
+    These are decided at install time and describe how your deployment is put together:
+  </p>
+  <DocsTable headers={['Piece', 'What it provides']} rows={TOPOLOGY_ROWS} />
+
+  <h2>Core behaviors you generally don’t change</h2>
+  <p>
+    Some things are deliberate design decisions rather than toggles:
+  </p>
+  <ul>
+    <li><strong>The coordination store is the single source of truth</strong> — only the controller and the worker surface may write to it.</li>
+    <li><strong>The planning gate is structural</strong> — it can’t be turned off by a setting.</li>
+    <li><strong>“When in doubt, don’t approve”</strong> — the reviewer’s bias toward blocking over guessing.</li>
+    <li><strong>Recovery is bounded, then escalated.</strong> These are product invariants, not preferences.</li>
+  </ul>
+
+  <h2>Related</h2>
+  <ul>
+    <li><a href="/docs/reference/limits-and-defaults">Limits &amp; Defaults</a> — the meaningful numbers behind these knobs.</li>
+    <li><a href="/docs/reference/roles-reference">Roles Reference</a> — who the team configuration applies to.</li>
+    <li><a href="/docs/reference/notifications-reference">Notifications Reference</a> — how the notification channels behave.</li>
+  </ul>
+</DocsLayout>

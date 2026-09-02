@@ -1,0 +1,83 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const MANAGE_ROWS = [
+  ['Add', 'Create a tenant for a repository so its team can start working.'],
+  ['List', 'See the tenants currently running.'],
+  ['Clean', 'Reset a stuck tenant  -  clear stale or failed work back to the start so the team can take another pass.'],
+  ['Remove', 'Take down a tenant and its fleet entirely.'],
+];
+---
+
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'Tenants' }]}>
+  <h1>Tenants</h1>
+  <p>
+    OpenFlows is designed to serve <strong>many teams</strong> from a single server. Each team is called a
+    <strong>tenant</strong>, and tenants are kept strictly separate from one another.
+  </p>
+  <p>
+    If you only have one team, you still have "a tenant"  -  you just have one. Think of a tenant as "one
+    project, one team, one repository."
+  </p>
+
+  <h2>What a tenant is</h2>
+  <p>A tenant is made up of three things bound together:</p>
+  <ul>
+    <li>
+      A distinct <strong>user account</strong> on the server, with the workspace fleet that belongs to it.
+    </li>
+    <li>
+      A <strong>repository binding</strong>  -  the GitHub repository that team works on.
+    </li>
+    <li>
+      An <strong>orchestrator workspace</strong> that runs that team's pipeline.
+    </li>
+  </ul>
+
+  <h2>How isolation is enforced</h2>
+  <p>Tenants are isolated in two independent ways at the same time:</p>
+  <ol>
+    <li>
+      <strong>Identity and access.</strong> Each tenant is a separate user with its own access controls. A
+      user allowed into one tenant's control plane cannot reach another tenant's workspaces.
+    </li>
+    <li>
+      <strong>Coordination state.</strong> Every record in the coordination store is namespaced to its
+      tenant. One tenant simply cannot read or collide with another tenant's records, even on shared
+      infrastructure.
+    </li>
+  </ol>
+  <p>
+    These two layers reinforce each other: even if access control were somehow misconfigured, the data
+    itself is still partitioned.
+  </p>
+
+  <h2>What this means in practice</h2>
+  <ul>
+    <li>
+      <strong>Many teams, one server.</strong> Run several independent OpenFlows teams sharing the same
+      control plane and coordination store.
+    </li>
+    <li>
+      <strong>No cross-talk.</strong> One team's tickets, workers, and pull requests are invisible to
+      another.
+    </li>
+    <li>
+      <strong>Simple operations.</strong> Administrators manage tenants from the control panel  -  add a
+      team, list teams, clean up a stuck team, or remove one entirely.
+    </li>
+  </ul>
+
+  <h2>Managing a tenant</h2>
+  <p>
+    From the control panel, an operator can manage the tenants currently running:
+  </p>
+  <DocsTable headers={['Action', 'What it does']} rows={MANAGE_ROWS} />
+  <p>
+    <strong>Cleanup is an important operational tool.</strong> If a tenant's work is wedged and automated
+    recovery has already given up, resetting it back to a clean state is the way to get the loop moving
+    again.
+  </p>
+</DocsLayout>

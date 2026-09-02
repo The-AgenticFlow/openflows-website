@@ -1,0 +1,58 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Resources', href: '/docs/resources' }, { label: 'Further Reading' }]}>
+  <h1>Further Reading</h1>
+  <p>
+    A curated path through OpenFlows material, from gentle introduction to deep architecture.
+  </p>
+
+  <h2>Start here</h2>
+  <ul>
+    <li><a href="/docs">Documentation Home</a> — the whole set of concepts, architecture, guides, and references.</li>
+    <li><a href="/docs/concepts/architecture-first">Architecture-First Development</a> — the organizing idea behind everything.</li>
+    <li><a href="/docs/concepts/coder-integration">Coder Integration</a> — the Coder / OpenFlows split that defines the system.</li>
+  </ul>
+
+  <h2>Learn the concepts</h2>
+  <ul>
+    <li><a href="/docs/concepts/agent-team">The Agent Team</a> — the five roles.</li>
+    <li><a href="/docs/concepts/ticket-lifecycle">The Ticket Lifecycle</a> — how work progresses.</li>
+    <li><a href="/docs/concepts/architecture-first">The Planning Gate</a> — why plan-before-code is structural.</li>
+    <li><a href="/docs/concepts/human-escalation">Human Escalation</a> — how a person gets pulled in.</li>
+  </ul>
+
+  <h2>Go deep on architecture</h2>
+  <ul>
+    <li><a href="/docs/architecture">Big Picture</a> — the control plane and the work plane.</li>
+    <li><a href="/docs/architecture/orchestrator">The Controller / NEXUS</a> — the brain and its orchestration loop.</li>
+    <li><a href="/docs/architecture/workspace-lifecycle">The Workspace Fleet</a> — where work runs and why it’s safe.</li>
+    <li><a href="/docs/architecture/system-design">How the Pieces Talk</a> — the communication channels between roles.</li>
+    <li><a href="/docs/concepts/security-model">Security by Design</a> — why the architecture is safe by construction.</li>
+  </ul>
+
+  <h2>Go deeper still (technical, beyond this site)</h2>
+  <p>
+    The internals behind these pages are documented in the project’s technical architecture documentation. Look in the
+    project repository’s architecture folder for authoritative deep-dives on the full system from issue to merged pull
+    request, the controller internals and orchestration, the worker workspace and its coordination surface, the shared
+    coordination store, and the live task relay for delegated verification.
+  </p>
+  <p>
+    These are engineering references for those working on or extending the system. This site is the user-facing
+    companion to that material.
+  </p>
+
+  <Callout type="info" title="A code-free note">
+    Because this documentation is strictly user-facing, it doesn’t reproduce the technical documents’ internal
+    structure or identifiers. Follow the repository’s architecture folder to read them.
+  </Callout>
+
+  <h2>Places to look things up</h2>
+  <ul>
+    <li><a href="/docs/reference">Reference</a> — glossary, roles, lifecycle states, configuration, limits, and the command surface.</li>
+    <li><a href="/docs/guides">Guides</a> — practical walkthroughs for operating and extending a team.</li>
+  </ul>
+</DocsLayout>

@@ -1,122 +1,64 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const PHASES = [
+  ['Planning', 'FORGE', 'FORGE writes a plan for how it will implement the ticket, then halts. Nothing is written yet.'],
+  ['Plan review', 'SENTINEL', 'SENTINEL reads the plan and either approves it (unlocking the next step) or reports issues. This is the planning gate.'],
+  ['Building', 'FORGE', 'FORGE implements the approved plan, writes code, and runs tests. Changes are committed to a branch.'],
+  ['Review ready', 'FORGE', 'FORGE opens a pull request and signals that the work is ready for review.'],
+  ['Review', 'SENTINEL', 'SENTINEL reviews the pull request adversarially. It can approve, reject (sending work back to FORGE), or request evidence.'],
+  ['Merged', 'VESSEL', 'VESSEL watches CI, resolves conflicts, and merges the approved pull request. The workspace is then torn down.'],
+];
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'First Issue Walkthrough' }, { label: 'Lifecycle' }]}>
-  <h1>First Issue Walkthrough: Lifecycle</h1>
+  <h1>The Ticket Lifecycle</h1>
   <p>
-    This page covers the lifecycle steps from issue detection through implementation. For the overview
-    and prerequisites, see the <a href="/docs/getting-started/first-issue">main walkthrough page</a>.
+    Every piece of work OpenFlows handles is a <strong>ticket</strong>. A ticket is born from a GitHub
+    issue and progresses through a fixed set of phases until it is merged - or until a human is needed.
+    For the overview and prerequisites, see the
+    <a href="/docs/getting-started/first-issue">main walkthrough page</a>.
   </p>
 
-  <h2>Step 1: Create the GitHub issue</h2>
-
+  <h2>The phases</h2>
   <p>
-    The trigger is intentionally simple. Open the repository on GitHub, click <strong>New issue</strong>, and write a
-    title and description that a senior engineer could act on. The agents read the issue body as the primary source of
-    truth, so clarity matters.
+    Each phase is owned by a specific agent. The table below shows each phase, who owns it, and what it
+    accomplishes.
   </p>
 
-  <h2>Step 2: NEXUS detects the issue</h2>
+  <DocsTable headers={['Phase', 'Owner', 'What happens']} rows={PHASES} />
 
-  <p>
-    NEXUS is the orchestrator. It polls the GitHub Issues API on a regular interval and also accepts webhook events.
-    When it sees an open issue that has not yet been ingested, it creates a ticket in the SharedStore with status <code>open</code>.
-  </p>
-
-  <CodeBlock lang="text">{`[nexus] discovered issue #42: "Add rate-limiting middleware" -> ticket-42 (status: open)`}</CodeBlock>
-
-  <p>
-    NEXUS then runs <code>reconcile()</code>. This is the heart of the orchestrator's self-healing behavior: it checks
-    for orphaned tickets, stale workers, unmerged PRs, and inconsistent state, and it resumes the correct phase.
-  </p>
-
-  <h2>Step 3: NEXUS provisions a workspace</h2>
-
-  <p>
-    Once a ticket is open, NEXUS looks for an idle FORGE worker. The worker is not a long-running process; it is a Coder
-    workspace that is provisioned on demand.
-  </p>
-
-  <p>The workspace contains:</p>
-  <ul>
-    <li>The repository clone.</li>
-    <li>The <code>openflows-harness</code> binary for typed SharedStore access.</li>
-    <li>The role-specific skills and MCP servers listed in <code>registry.json</code> v2.</li>
-  </ul>
-
-  <p>The workspace does not contain:</p>
-  <ul>
-    <li>Any AI model software.</li>
-    <li>Any LLM API keys.</li>
-    <li>Any GitHub tokens or credentials.</li>
-  </ul>
-
-  <CodeBlock lang="text">{`[nexus] assigned ticket-42 to worker forge-7a3f
-[nexus] provisioning workspace ws-forge-7a3f from template openflows-forge
-[workspace] ws-forge-7a3f ready, harness installed`}</CodeBlock>
-
-  <h2>Step 4: FORGE writes PLAN.md and SENTINEL writes CONTRACT.md</h2>
-
-  <p>
-    This is the architecture-first checkpoint. FORGE enters the workspace, reads the issue, inspects the repository,
-    and writes <code>PLAN.md</code>. The plan breaks the issue into numbered segments, each with a clear objective
-    and acceptance criteria.
-  </p>
-
-  <p>
-    SENTINEL then reads <code>PLAN.md</code> and writes <code>CONTRACT.md</code>. The contract is either
-    <code>AGREED</code> or <code>CHANGES_REQUESTED</code>. This cycle repeats until agreed.
-  </p>
-
-  <CodeBlock lang="markdown">{`# PLAN.md for ticket-42
-## Segment 1: Data model
-- Add \`RateLimitConfig\` struct with burst, period, and enabled fields.
-
-## Segment 2: Middleware implementation
-- Implement \`RateLimitLayer\` in \`src/middleware/rate_limit.rs\`.
-
-## Segment 3: Tests
-- Unit tests for token-bucket logic.
-- Integration tests for HTTP middleware with mocked Redis.
-
-## Acceptance criteria
-- All existing tests pass.
-- No secrets or tokens in logs.`}</CodeBlock>
-
-  <CodeBlock lang="text">{`[forge] writing PLAN.md for ticket-42
-[sentinel] reviewing PLAN.md for ticket-42
-[sentinel] CONTRACT.md: CHANGES_REQUESTED - segment 3 needs property-based tests
-[forge] revising PLAN.md for ticket-42
-[sentinel] CONTRACT.md: AGREED for ticket-42`}</CodeBlock>
-
-  <Callout type="warning" title="Do not skip the contract">
-    If you manually edit files in the workspace before CONTRACT.md is agreed, the agents will treat the change as
-    untracked state and may reset or ignore it. Respect the boundary: plan → contract → code.
+  <Callout type="info" title="Plan before code">
+    FORGE writes a plan and then <strong>halts</strong>. SENTINEL reviews that plan and either
+    <strong>approves</strong> it or sends it back. Only an approved plan unlocks the next step. This
+    gate is structural - the system itself refuses to move a ticket forward without an approval.
   </Callout>
 
-  <h2>Step 5: FORGE implements the segments</h2>
+  <h2>Two special states</h2>
+  <ul>
+    <li><strong>Blocked.</strong> Work that is stuck - for example, it hit a wall it cannot get past. This often tunnels toward a human decision.</li>
+    <li><strong>Awaiting a human.</strong> The ticket is parked because it needs a judgment call that only a person can make (security, ambiguity, architecture, or an unresolvable merge). OpenFlows stops retrying and tells you.</li>
+  </ul>
 
+  <h2>Recovery is part of the lifecycle</h2>
   <p>
-    With the contract agreed, FORGE begins implementing the segments in order. Each segment is a small, reviewable unit
-    of work. FORGE writes code, adds tests, and commits the segment to a branch named after the ticket.
+    Things go wrong: a workspace crashes, a process stalls, a merge is blocked. OpenFlows' reconciliation
+    loop watches every ticket and repairs what it can automatically, with a bounded number of retries.
+    When retries are exhausted, the ticket escalates to a human rather than failing silently. When in
+    doubt, it would rather block than guess.
   </p>
 
-  <p>
-    After each segment, FORGE updates the ticket status in the SharedStore. The status is something like
-    <code>segment-1</code>, <code>segment-2</code>, and so on.
-  </p>
-
-  <CodeBlock lang="text">{`[forge] starting segment-1 for ticket-42
-[forge] committed segment-1: rate-limit data model
-[forge] updating STATUS.json -> segment-1
-[forge] starting segment-2 for ticket-42
-[forge] committed segment-2: rate-limit middleware layer
-[forge] updating STATUS.json -> segment-2`}</CodeBlock>
+  <h2>From the human's perspective</h2>
+  <p>You do not watch every phase. You get involved at the boundaries:</p>
+  <ul>
+    <li>When a <strong>ticket needs a decision</strong> (you are notified).</li>
+    <li>When you <strong>want to check status</strong> (control panel).</li>
+    <li>When you <strong>close or comment on the issue</strong> (the team reacts on the next cycle).</li>
+  </ul>
 
   <Callout type="tip" title="Continue reading">
-    See <a href="/docs/getting-started/first-issue-completion">Completion & Merge</a> for the review, PR creation,
-    merge, and teardown steps.
+    See <a href="/docs/getting-started/first-issue-completion">Completion & Merge</a> for how a ticket
+    is reviewed, merged, and torn down.
   </Callout>
 </DocsLayout>

@@ -1,48 +1,73 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
-
+import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Extending' }, { label: 'MCP Servers' }]}>
-  <h1>Extending: MCP Servers</h1>
+  <h1>Connecting an MCP Server</h1>
 
   <p>
-    Model Context Protocol (MCP) servers are external tools that expose a standard interface
-    for agents to invoke. They are ideal for capabilities already packaged as services:
-    GitHub API, file operations, database queries, or custom internal APIs.
+    MCP (Model Context Protocol) servers give your agents access to external tools and data —
+    a private API, an internal knowledge base, a specialized tool. OpenFlows makes this a
+    configuration change in most cases.
   </p>
 
-  <h2>MCP Server Configuration</h2>
-
-
-  <DocsTable headers={['Field', 'Type', 'Description']} rows={[
-    ['<code>name</code>', 'string', 'Human-readable name referenced in agent prompts and registry entries.'],
-    ['<code>command</code>', 'string', 'Command to start the MCP server (e.g. <code>npx -y @anthropic-ai/mcp-server-fetch</code>).'],
-    ['<code>args</code>', 'array', 'Arguments passed to the command.'],
-    ['<code>env</code>', 'object', 'Environment variables for the MCP server process.'],
-    ['<code>timeout_ms</code>', 'int', 'How long to wait for the MCP server to respond before failing.'],
-    ['<code>permissions</code>', 'array', 'Optional allow-list of tools the agent may invoke.'],
-  ]} />
-
-  <Callout type="warning" title="MCP credentials live in the environment">
-    MCP server configuration can reference environment variables with the
-    <code class="language-text">{'{'} env.VAR_NAME {'}'}</code> syntax. The orchestrator substitutes these values when
-    starting the MCP server. The values are not written to <code>registry.json</code>. Worker
-    workspaces still never see the credentials; MCP servers run in the orchestrator or in a
-    dedicated sidecar workspace, not inside the worker.
-  </Callout>
-
-  <h2>Per-Agent MCP Override</h2>
-
+  <h2>The two ways to connect a server</h2>
   <p>
-    The top-level <code>mcps</code> array defines globally available servers. Each agent can
-    override with its own <code>mcps</code> array under <code>agents.[role]</code>. If both
-    are present, the agent-specific list takes precedence  -  it does not merge.
+    OpenFlows supports both, and they <strong>coexist</strong>:
+  </p>
+  <ol>
+    <li><strong>Per-role, via the registry.</strong> Register the server on a specific role. Only that role's agents (for example, the builder) can call its tools.</li>
+    <li><strong>Centrally, via the Coder dashboard.</strong> Register the server once in the platform's MCP settings, with allow and deny lists and availability policies. This applies to all agent sessions, not just OpenFlows.</li>
+  </ol>
+  <p>
+    Both are merged, so a role ends up with its own servers plus the platform-wide ones.
   </p>
 
-  <Callout type="info" title="Coder Dashboard MCP registration">
-    You can also register MCP servers centrally in the Coder dashboard (AI Settings → MCP Servers).
-    Both methods coexist; registry.json takes precedence per-agent.
+  <h2>Which one to use?</h2>
+  <ul>
+    <li>Use <strong>per-role</strong> when only certain agents should have the tool — a coding tool for the builder, a review tool for the reviewer.</li>
+    <li>Use <strong>central</strong> when the tool should be available team-wide, or to all of Coder.</li>
+  </ul>
+
+  <h2>Connecting per-role (via the registry)</h2>
+  <ol>
+    <li><strong>Define the server.</strong> Identify the server and how it's launched.</li>
+    <li><strong>Add it to the role.</strong> In the agent registry for the role, add the MCP server entry under that role's MCP configuration.</li>
+    <li><strong>Apply.</strong> Save through the control panel. The change is validated and takes effect without a restart.</li>
+  </ol>
+  <p>
+    The role's workspace then materializes a configuration the agent reads to reach the server.
+  </p>
+
+  <h2>Connecting centrally (via the Coder dashboard)</h2>
+  <ol>
+    <li><strong>Register the server</strong> in the platform's AI settings under MCP servers.</li>
+    <li><strong>Configure policies</strong> — which tools are allowed, which denied, and when the server is available.</li>
+    <li><strong>Save.</strong> The server applies to agent sessions.</li>
+  </ol>
+  <p>
+    This path applies beyond OpenFlows — to all chat sessions in the environment.
+  </p>
+
+  <h2>What you should see</h2>
+  <ul>
+    <li>For per-role servers: the role can call the server's tools, and it's visible in the role's configured capabilities.</li>
+    <li>For central servers: tools are available to sessions, subject to your allow and deny policy.</li>
+    <li>The merged result is what the agent actually sees — its role's servers plus the platform-wide ones.</li>
+  </ul>
+
+  <h2>Practical guidance</h2>
+  <ul>
+    <li>Prefer the <strong>central</strong> path to keep one consistent catalog for the whole platform.</li>
+    <li>Use <strong>per-role</strong> for tools meant for a specific agent only.</li>
+    <li>Set <strong>allow and deny lists</strong> on any server that exposes powerful or sensitive operations.</li>
+    <li>If the tool factors into review (for example, a linter the reviewer depends on), make sure the <em>reviewer</em> role can reach it, not just the builder.</li>
+  </ul>
+
+  <Callout type="info" title="Related extensions">
+    Skills, MCP servers, and models are the three configuration-only capability extensions.
+    See <a href="/docs/guides/extending">Adding a Skill</a> for instruction-based capabilities,
+    and <a href="/docs/guides/model-routing">Enabling a Model</a> for model selection.
   </Callout>
 </DocsLayout>

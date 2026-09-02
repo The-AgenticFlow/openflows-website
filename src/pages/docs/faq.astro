@@ -6,181 +6,156 @@ const FAQ_ITEMS = [
   {
     title: 'What is OpenFlows, and how does it relate to Coder?',
     content: `
-      <p>OpenFlows is a thin orchestration brain that runs on top of a self-hosted Coder deployment.
-      <strong> Coder is the only runtime.</strong> OpenFlows provides the PocketFlow graph, typed
-      Redis SharedStore contracts, and the NEXUS reconcile loop; Coder provides ephemeral
-      workspaces, control-plane AI agents, model governance, identity, audit logging, and cost
-      tracking. Worker workspaces contain zero AI software, zero LLM keys, and zero GitHub tokens.</p>
+      <p>OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
+      production-ready pull requests, running entirely inside your own self-hosted Coder
+      environment. The founding idea: <strong>Coder governs <em>where</em> agents run; OpenFlows
+      governs <em>how</em> they coordinate.</strong> Coder provides the workspaces, identity, and
+      model gateway; OpenFlows provides the planning, review, and merge. Neither replaces the
+      other, and worker workspaces hold no keys or credentials.</p>
     `,
   },
   {
-    title: 'What LLM providers does OpenFlows support?',
+    title: 'Which models can OpenFlows use?',
     content: `
-      <p>OpenFlows routes all LLM calls through the <strong>Coder AI Gateway</strong>, which natively
-      supports Anthropic, OpenAI, Google, and Bedrock. Any OpenAI-compatible endpoint (Fireworks,
-      Groq, Together, etc.) also works through the Gateway. Each agent can use a different provider
-      and model, configured in <code>orchestration/agent/registry.json</code>. For air-gapped or
-      self-hosted deployments, point the Coder AI Gateway at local or self-hosted models. API keys
-      are managed centrally by the Gateway and never exposed inside workspaces.</p>
+      <p>Models are enabled in the platform&rsquo;s AI settings (the Coder dashboard), and you then
+      assign one to each role in the agent registry. Every AI call happens centrally through your
+      own model gateway in the control plane, so you choose the models available to your team and
+      can switch a role to a different model live, without a restart.</p>
     `,
   },
   {
-    title: 'How does the Coder AI Gateway work?',
+    title: 'Where do AI calls happen?',
     content: `
-      <p>The Coder AI Gateway is the primary LLM route. It manages API keys centrally - keys never enter
-      workspaces. When an agent makes an LLM call, it goes through the Gateway, which handles
-      authentication, rate limiting, usage tracking, and cost attribution per user. OpenFlows does not
-      maintain a separate LiteLLM fallback; all routing is configured in Coder.</p>
+      <p>All AI calls happen through the model gateway in the control plane. Worker workspaces
+      contain no LLM keys, no raw repository credentials, and no agent framework — the
+      intelligence they need is served to them from the control plane. This is a core part of the
+      security-by-design model.</p>
     `,
   },
   {
-    title: 'What is a Coder control-plane agent, and why does OpenFlows use it?',
+    title: 'How does an agent act inside a workspace?',
     content: `
-      <p>Coder Agents run in the Coder control plane, not inside workspaces. OpenFlows uses the
-      <strong>Coder Chats API</strong> to ask a control-plane agent to perform work, and the agent
-      connects to the worker workspace over the same secure tunnel used by IDEs. This keeps LLM keys,
-      model access, and long-lived credentials out of the workspace.</p>
+      <p>Each agent runs in its own isolated, disposable workspace provisioned from Coder. It
+      reports progress and coordinates with the team strictly through a small, typed command
+      surface — it never talks directly to the coordination store or the machine plane. That is
+      what keeps the whole system safe and auditable.</p>
     `,
   },
   {
     title: 'Can I run OpenFlows on a private repository?',
     content: `
-      <p>Yes. GitHub identity is handled by <strong>Coder external auth</strong> - configure a GitHub
-      external auth provider in your Coder deployment and include the <code>git-config</code> module
-      in your workspace templates. Each tenant then acts under its logged-in Coder user's GitHub
-      identity. No personal access tokens are stored in OpenFlows or inside workspaces.</p>
+      <p>Yes. OpenFlows acts on GitHub through a scoped OAuth link for each tenant — a real,
+      attributable identity rather than a shared token. No raw repository credentials ever sit in a
+      worker workspace.</p>
     `,
   },
   {
     title: 'Can I run OpenFlows air-gapped or on-premises?',
     content: `
-      <p>Yes. Coder runs in a VPC, on-prem, or fully air-gapped environment. Configure the Coder AI
-      Gateway to point to self-hosted or local model endpoints. No data leaves your infrastructure.
-      Coder provides full audit logging and SSO integration for enterprise compliance.</p>
+      <p>Yes. OpenFlows is self-hosted in your own Coder control plane, so it runs in your VPC,
+      on-premises, or fully air-gapped. All AI calls go through your own model gateway, and each
+      step is a recorded, auditable event.</p>
     `,
   },
   {
-    title: 'How does SENTINEL decide whether to approve or reject code?',
+    title: 'How does SENTINEL decide whether to approve or reject work?',
     content: `
-      <p>SENTINEL evaluates against five criteria on every segment: correctness, security
-      vulnerabilities, test coverage, standards compliance, and no regressions. It writes
-      <code>segment-N-eval.md</code> after each FORGE commit and <code>final-review.md</code> at the
-      end. SENTINEL runs in its own ephemeral Coder workspace, spawned fresh per evaluation, so it has
-      no accumulated bias. It is read-only and cannot modify code.</p>
+      <p>SENTINEL is instructed to attack the work for security holes, quality issues, and missing
+      test coverage against the agreed plan. It reviews from its own isolated workspace and never
+      touches the builder&rsquo;s files. When it needs proof, it requests a safe, allowlisted command
+      run for evidence. The posture is straightforward: when in doubt, don&rsquo;t approve.</p>
     `,
   },
   {
-    title: 'What happens if FORGE gets blocked or times out?',
+    title: 'What happens if the work gets stuck or times out?',
     content: `
-      <p>FORGE writes a <code>STATUS.json</code> with <code>status: "BLOCKED"</code> and a specific,
-      answerable question. NEXUS detects this on the next cycle and can re-assign the ticket or
-      escalate. If a worker times out (default 30 minutes), the ticket is marked failed and retried
-      up to three times before being marked exhausted. The ephemeral Coder workspace is torn down on
-      failure - no lingering state.</p>
+      <p>Recovery is built into the system. A central reconciliation loop retries failing work a
+      bounded number of times. When retries are exhausted, the ticket is parked and escalated to a
+      human — with a notification and links — rather than failing silently or spinning forever.</p>
     `,
   },
   {
     title: 'How much does OpenFlows cost to run?',
     content: `
-      <p>OpenFlows itself is MIT licensed and free to run. The cost is LLM API usage, tracked by the
-      Coder AI Gateway with per-user and per-group spend controls. A typical full cycle (NEXUS + FORGE
-      + SENTINEL + VESSEL + LORE) uses roughly 50,000-150,000 tokens depending on task complexity.
-      Per-agent model routing via <code>registry.json</code> lets you optimize cost per role.</p>
+      <p>OpenFlows itself is open-source and free to run; the cost is your own model usage through
+      your gateway. You control it by choosing a model suited to each role — for example, a more
+      careful, higher-cost model for the reviewer and a general coding model for the builder — and
+      tuning from there.</p>
     `,
   },
   {
-    title: 'Can I run multiple FORGE workers in parallel?',
+    title: 'Can I run multiple workers for a role in parallel?',
     content: `
-      <p>Yes. Set <code>"instances": 4</code> for FORGE in <code>registry.json</code> to provision
-      <code>forge-1</code> through <code>forge-4</code> running in parallel. Each gets its own isolated
-      ephemeral Coder workspace with its own Git worktree and branch. NEXUS automatically distributes
-      tickets across idle workers.</p>
+      <p>Yes. The agent registry sets how many workers a role may run at once (its concurrency
+      ceiling). OpenFlows runs a fleet of worker workspaces in parallel and assigns work to
+      whichever is free.</p>
     `,
   },
   {
     title: 'Is my code sent to third parties?',
     content: `
-      <p>Code context is sent only to the LLM provider you configure in <code>registry.json</code>, routed
-      through the Coder AI Gateway. OpenFlows itself does not send code to any third-party service. For maximum privacy, run Coder
-      air-gapped with the AI Gateway pointing to a self-hosted or local model - no data leaves your
-      infrastructure.</p>
+      <p>Code context is sent only to the model you configure, through your own model gateway in
+      the control plane. If you run fully self-hosted or air-gapped with a local or self-hosted
+      model, nothing leaves your infrastructure.</p>
     `,
   },
   {
     title: 'What happens when there are merge conflicts?',
     content: `
-      <p>VESSEL detects conflicts early via GitHub's <code>mergeable</code> field before CI completes. It
-      attempts automated resolution via GitHub's update-branch API or a local rebase inside the Coder
-      workspace. If it cannot resolve automatically, it writes <code>CONFLICT_RESOLUTION.md</code> with
-      context and re-routes the ticket back to the same FORGE worker - no new branch, no context loss.</p>
+      <p>VESSEL, the DevOps role, watches CI and resolves merge conflicts. If a merge block is
+      genuinely unresolvable, the work escalates to a human rather than being guessed at. Approved
+      pull requests are merged when green.</p>
     `,
   },
   {
     title: 'What happens to workspaces after a task completes?',
     content: `
-      <p>Each FORGE worker runs inside an ephemeral Coder workspace that is provisioned when NEXUS assigns
-      a ticket and <strong>torn down after the PR is merged</strong>. This means no lingering state, no
-      stale credentials, and no disk bloat. If a task fails or times out, the workspace is also torn
-      down. The next ticket gets a fresh workspace with the latest template and harness - a clean
-      slate every time.</p>
+      <p>Worker workspaces are short-lived and disposable. They are provisioned when work is
+      assigned and torn down when the pull request is merged — no lingering state, no stale
+      credentials, a clean slate every time.</p>
     `,
   },
   {
-    title: 'What is the SharedStore?',
+    title: 'What is the coordination store?',
     content: `
-      <p>The SharedStore is a typed Redis state layer that every agent reads and writes through the
-      <code>openflows-harness</code> CLI. It uses validated schemas for tickets, plans, segment
-      evaluations, CI status, and final reviews. By centralizing state in Redis rather than passing
-      free-form messages between agents, OpenFlows guarantees that every role sees a consistent,
-      strongly typed view of the ticket.</p>
+      <p>The coordination store is the single, durable record of truth for the whole team — every
+      ticket, worker, approval, review, and pull request. Only the orchestrator and the worker
+      command surface may write to it, and writes are validated. Because the whole team reads one
+      consistent store, no step can be skipped or forged, and the system can restart and pick up
+      exactly where it left off.</p>
     `,
   },
   {
-    title: 'How does NEXUS recover from failures?',
+    title: 'How does the system recover from failures?',
     content: `
-      <p>NEXUS is the controller. It polls the SharedStore and GitHub on a regular cadence, compares the
-      observed state to the desired state, and takes action: retry a failed worker, reassign a blocked
-      ticket, or escalate to a human. Recovery is built into the flow graph, not bolted on as an
-      afterthought. Every worker writes a <code>STATUS.json</code> so NEXUS can reason about progress
-      without guessing.</p>
+      <p>A central reconciliation loop re-reads the whole system on a steady cadence, advances
+      every piece of work, and repairs what is broken — with bounded retries. When it hits
+      something that needs a human decision, it stops and escalates to you rather than guessing.</p>
     `,
   },
   {
-    title: 'How do I update OpenFlows after a code change?',
+    title: 'How do I change the configuration or extend a role?',
     content: `
-      <p>Run <code>./update-binaries.sh</code> from the repository root. It rebuilds the Rust binaries and
-      pushes fresh harness and orchestration artifacts to all Coder workspaces. For registry-only
-      changes (skills, models, MCP servers), updating <code>orchestration/agent/registry.json</code>
-      and running <code>./update-binaries.sh</code> is usually sufficient. See the
-      <a href="/docs/guides/operations">Operations</a> guide for the full workflow.</p>
-    `,
-  },
-  {
-    title: 'How do I add a new skill or model?',
-    content: `
-      <p>Drop a skill directory into <code>orchestration/plugin/skills/</code> with a
-      <code>SKILL.md</code>, list it in <code>orchestration/agent/registry.json</code> under the
-      role's <code>skills</code> array, and run <code>./update-binaries.sh</code>. To add a model,
-      configure it in the Coder dashboard and reference it in <code>registry.json</code> via the
-      <code>model</code> field.</p>
+      <p>Add a skill, connect an MCP server, or enable a different model as a configuration-only
+      change through the control panel — no restart or redeploy. Adding a brand-new role is the one
+      extension that touches the system&rsquo;s internals. See the Guides and the Agent Registry
+      concept page.</p>
     `,
   },
   {
     title: 'Where is the API reference?',
     content: `
-      <p>OpenFlows control-plane endpoints are documented in the
-      <a href="/docs/reference/api">API Reference</a>. The primary integration surface for most
-      users is the CLI (<code>bootstrap</code>, <code>tenant</code>) and the
-      <code>orchestration/agent/registry.json</code> v2 configuration file.</p>
+      <p>OpenFlows is driven through the <a href="/docs/reference/command-surface">Command Surface</a>
+      reference, which covers the control panel and its command-line equivalent in plain language.
+      There is no separate public HTTP API documented here.</p>
     `,
   },
   {
     title: 'Where do I go if something is broken?',
     content: `
       <p>Start with the <a href="/docs/guides/troubleshooting">Troubleshooting</a> guide. It covers
-      bootstrap failures, Coder connectivity, Redis issues, stuck tickets, merge conflicts, and the
-      <code>STATUS.json</code> protocol. If you cannot resolve the issue, open a discussion on the
-      OpenFlows GitHub repository.</p>
+      bootstrap failures, Coder connectivity, stuck tickets, and merge conflicts. If you cannot
+      resolve the issue, open a report on the OpenFlows GitHub repository.</p>
     `,
   },
 ];
@@ -197,11 +172,11 @@ const FAQ_ITEMS = [
 
   <Callout type="info" title="Key architecture facts">
     <ul>
-      <li>Coder is the only runtime.</li>
-      <li>OpenFlows = PocketFlow + typed Redis SharedStore contracts + NEXUS reconcile.</li>
-      <li>Worker workspaces contain zero AI software, zero LLM keys, and zero GitHub tokens.</li>
-      <li>GitHub authentication is Coder external auth only.</li>
-      <li>Extension happens through <code>orchestration/agent/registry.json</code> v2.</li>
+      <li>Coder decides <em>where</em> work runs; OpenFlows decides <em>how</em> agents coordinate.</li>
+      <li>Every AI call happens through your own model gateway in the control plane.</li>
+      <li>Worker workspaces contain no LLM keys, no raw repository credentials, and no agent framework.</li>
+      <li>Git identity is a scoped OAuth link — no shared tokens in workspaces.</li>
+      <li>Config and extension happen through the control panel, no restart required.</li>
     </ul>
   </Callout>
 

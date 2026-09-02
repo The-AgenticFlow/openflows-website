@@ -1,6 +1,6 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, DocCards, Callout, StepHeading, PrereqCard, FeedbackFooter } from '@/molecules/DocComponents/DocComponents';
+import { DocCards, Callout, StepHeading, PrereqCard, FeedbackFooter } from '@/molecules/DocComponents/DocComponents';
 
 const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started' }];
 ---
@@ -10,11 +10,11 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
     <p class="docEyebrow">Quick Start Guide</p>
     <h1>Getting Started</h1>
     <p class="docLead">
-      OpenFlows is a thin orchestration layer that runs on top of a self-hosted Coder deployment.
-      It turns a declared PocketFlow graph, typed Redis SharedStore contracts, and a reconcile loop
-      into an autonomous engineering team: issue detection, planning, implementation, adversarial
-      review, CI verification, and merge  -  all driven by NEXUS and executed by ephemeral Coder
-      workspaces. No AI software, no LLM keys, and no GitHub tokens live inside a worker workspace.
+      OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
+      production-ready pull requests, running entirely inside your own self-hosted Coder environment.
+      It stands up a small team of specialized agents that plan, write, test, and adversarially review
+      code on your behalf. You stay in control of the important decisions; the team handles the
+      execution.
     </p>
     <div class="docMeta">
       <span class="docMetaItem">
@@ -22,249 +22,118 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
         ~10 min read
       </span>
       <span class="docMetaSep"></span>
-      <span class="docMetaItem">4 steps</span>
-      <span class="docMetaSep"></span>
       <span class="docMetaItem">Beginner</span>
     </div>
   </header>
 
-  <Callout type="tip" title="Why architecture-first">
-    AI can generate code against a spec, but it cannot write the spec. As models make boilerplate
-    cheap, the real difficulty shifts upward  -  into architectural thinking, typed contracts, and
-    security-aware execution. OpenFlows encodes that discipline: a declared PocketFlow graph, typed
-    SharedStore state contracts, an explicit routing table, and recovery built into every step.
-    <strong>Engineering goes in; software comes out.</strong>
+  <Callout type="tip" title="The one-line idea">
+    You open a GitHub issue. OpenFlows plans it, writes it, stresses it, and merges it - then tells
+    you what happened. <strong>Coder governs <em>where</em> agents run; OpenFlows governs
+    <em>how</em> they coordinate.</strong>
   </Callout>
 
-  <StepHeading step="1" id="prerequisites">Prerequisites</StepHeading>
+  <StepHeading step="1" id="who-it-is-for">Who it is for</StepHeading>
+  <p>
+    OpenFlows is for developers, companies, and stakeholders who want AI to execute end-to-end with
+    guardrails inside their existing engineering workflow:
+  </p>
+  <ul>
+    <li><strong>Developers</strong> who want the mechanics of planning, coding, testing, and review handled while they stay in charge of the important decisions.</li>
+    <li><strong>Companies</strong> that want governed, auditable AI delivery without exposing model keys or weakening security.</li>
+    <li><strong>Stakeholders</strong> who want a faster, more transparent path from "we want this feature" to "it shipped."</li>
+  </ul>
+
+  <StepHeading step="2" id="prerequisites">Prerequisites</StepHeading>
   <div class="prereqGrid">
     <PrereqCard
-      name="Docker 24+"
-      detail="Required for running the Docker Compose stack with Coder, Redis, and OpenFlows."
-      installUrl="https://docs.docker.com/get-docker/"
-      installText="Get Docker"
+      name="Self-hosted Coder"
+      detail="OpenFlows rides on your Coder server, which provides identity, model access, and the disposable workspaces where agents run."
     />
     <PrereqCard
-      name="Git 2.x+"
-      detail="Required for cloning repositories and version control operations."
-      installUrl="https://git-scm.com/downloads"
-      installText="Get Git"
+      name="GitHub repository"
+      detail="OpenFlows turns GitHub issues into pull requests, so it needs a repository and GitHub authentication for it."
     />
     <PrereqCard
-      name="GitHub OAuth App"
-      detail="Required for Coder external authentication. Create a GitHub OAuth App for your organization."
-      installUrl="https://docs.github.com/en/apps/oauth-apps/building-oauth-apps/creating-an-oauth-app"
-      installText="Create OAuth App"
+      name="A coordination store"
+      detail="A shared record of truth (Redis) that coordinates the team, plus a database for Coder itself."
     />
     <PrereqCard
-      name="LLM Provider"
-      detail="At least one model configured in the Coder dashboard (AI Settings → Coder Agents → Models)."
+      name="GitHub OAuth"
+      detail="OpenFlows acts on GitHub through a real identity linked via GitHub OAuth, not a shared token."
     />
   </div>
 
   <Callout type="info" title="Coder governs where agents run; OpenFlows governs how they coordinate">
-    The integration is deliberate and asymmetrical:
+    The two systems divide the work deliberately:
     <ul>
-      <li><strong>Coder</strong> is the only runtime. It provides ephemeral workspaces, control-plane
-      AI agents, model governance, identity, audit logging, and cost tracking. Worker workspaces
-      contain zero AI software, zero LLM keys, and zero GitHub tokens.</li>
-      <li><strong>OpenFlows</strong> is the orchestration brain. It provides the PocketFlow graph,
-      typed SharedStore contracts, the NEXUS reconcile loop, and the FORGE↔SENTINEL planning cycle.</li>
+      <li><strong>Coder</strong> decides where work runs. It provides governed, isolated, disposable
+      workspaces and a central model gateway where every AI call happens. Worker workspaces hold no
+      model keys, no raw repository credentials, and no secrets.</li>
+      <li><strong>OpenFlows</strong> decides how the work is coordinated. It provides the team, the
+      planning gate, adversarial review, self-healing, and merges.</li>
     </ul>
-    Coder Agents run in the <strong>control plane</strong>, not in workspaces. They invoke tools by
-    connecting to workspaces over the same secure tunnel used by IDEs.
+    Neither replaces the other. OpenFlows does not manage machines; Coder does not write your code.
   </Callout>
 
-  <StepHeading step="2" id="install">Quick Start Installation</StepHeading>
+  <StepHeading step="3" id="install">Install &amp; Set Up</StepHeading>
   <p>
-    The only supported path is Docker Compose. Clone the repository, copy the environment template,
-    start the stack, bootstrap OpenFlows, and add your first tenant. The entire sequence takes a few
-    minutes.
+    Setting up OpenFlows means standing up the control plane (Coder, the coordination store, and a
+    database), running the installer to bootstrap the environment, adding a tenant for your repository,
+    and linking GitHub OAuth. From there you can open an issue and watch the team turn it into a merged
+    pull request.
+  </p>
+  <p>
+    Step-by-step guidance lives on the <a href="/docs/getting-started/installation">Installation</a>
+    page and the <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a>.
   </p>
 
-  <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/openflows.git
-cd openflows
-cp .env.example .env   # Edit .env: set GITHUB_TOKEN but leave CODER_SESSION_TOKEN empty
-
-# 1. One-time Bootstrap (creates admin user, pushes templates, verifies LLM/GitHub auth)
-./scripts/prod.sh bootstrap
-
-# 2. Start the Controller (resets Redis, starts controller)
-./scripts/prod.sh run
-
-# 3. Add a tenant (links GitHub repo, creates nexus workspace)
-./scripts/prod.sh tenant owner/repo --name my-team
-
-# 4. Create a GitHub issue  -  OpenFlows picks it up automatically`}</CodeBlock>
-
-  <h2>Production Architecture</h2>
-
+  <StepHeading step="4" id="track-your-first-issue">Track Your First Issue</StepHeading>
   <p>
-    In production, the controller runs inside a <strong>Nexus workspace</strong> provisioned by Coder.
-    The workspace auto-starts the controller via its <code>startup_script</code>.
+    Once the environment is up and your tenant is configured, create a clear GitHub issue in the bound
+    repository. OpenFlows does the rest:
   </p>
-
-  <CodeBlock lang="text">{`Coder provisions nexus workspace from template
-    ↓
-Workspace startup script runs
-    ↓
-Line 1: Installs openflows-harness binary
-    ↓
-Line 2: Starts heartbeat daemon
-    ↓
-Line 3: Executes: openflows run
-    ↓
-Controller auto-starts inside workspace`}</CodeBlock>
-
-  <p>
-    The nexus workspace template is in <code>crates/coder-client/templates/openflows-nexus/</code>.
-    It receives all env vars from Coder and auto-starts the controller.
-  </p>
-
-  <div class="callout info">
-    <div class="calloutBody">
-      <div class="calloutContent">
-        <p class="calloutTitle">The openflows-harness CLI</p>
-        <div class="calloutText">
-          Each worker workspace receives a small <code>openflows-harness</code> binary. The Coder Agent
-          invokes it via shell (guided by skills) to read and write the Redis SharedStore with typed,
-          validated schemas. Agents never run <code>redis-cli</code> directly  -  the harness is the only
-          Redis client inside a workspace.
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <p>
-    See the <a href="/docs/getting-started/installation">Installation Guide</a> for a detailed
-    configuration reference, the     <a href="/docs/getting-started/token-guide">Token Guide</a> for
-    GitHub and Coder auth scopes, and the <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a> for a complete end-to-end example.
-  </p>
-
-  <StepHeading step="3" id="configure">Multi-Tenancy Model</StepHeading>
-  <p>
-    One Coder server serves many teams. Each tenant is a real Coder user, a repository binding, and an
-    <code>openflows-nexus</code> workspace. Tenants are isolated by Coder RBAC and by per-tenant
-    Redis keyspace prefixes (<code>ns:&#123;tenant&#125;:...</code>).
-  </p>
-
-  <div class="codeBlock">
-    <div class="codeHeader"><span class="codeLang">bash</span></div>
-    <pre><code class="language-bash"># Add another tenant
-./scripts/prod.sh tenant another-org/another-repo --name team-b</code></pre>
-  </div>
-
-  <Callout type="info" title="Environment Configuration">
-    Copy <code>.env.example</code> to <code>.env</code> and configure:
-    <ul>
-      <li>GitHub OAuth App credentials for Coder external auth</li>
-      <li>Coder deployment settings</li>
-      <li>LLM provider settings in the Coder dashboard</li>
-    </ul>
-    The bootstrap process handles template deployment and initial validation. For a full reference,
-    see <a href="/docs/guides/multi-tenancy">Multi-Tenancy</a>.
-  </Callout>
-
-  <h3 id="extension">3.1 Plug-and-Play Extension</h3>
-  <p>OpenFlows is designed for extension without modifying core orchestration code:</p>
-
-  <div class="extension-grid">
-    <div class="extension-item">
-      <h4>Add a skill</h4>
-      <p>Drop a directory into <code>orchestration/plugin/skills/</code> with a <code>SKILL.md</code>, list it in <code>orchestration/agent/registry.json</code> under the role's <code>skills</code> array, and run <code>./update-binaries.sh</code>. No Rust code change is required.</p>
-    </div>
-    <div class="extension-item">
-      <h4>Add an MCP server</h4>
-      <p>Add it to the role's <code>mcp</code> object in <code>registry.json</code>, or register it centrally in the Coder dashboard (AI Settings → MCP Servers). Both coexist.</p>
-    </div>
-    <div class="extension-item">
-      <h4>Enable a new model</h4>
-      <p>Configure it in the Coder dashboard (AI Settings → Coder Agents → Models), then reference it in <code>orchestration/agent/registry.json</code> via the <code>model</code> field. See <a href="/docs/guides/model-routing">Model Routing</a>.</p>
-    </div>
-    <div class="extension-item">
-      <h4>Development updates</h4>
-      <p>After code changes, run <code>./update-binaries.sh</code> to rebuild and redeploy binaries to all workspaces.</p>
-    </div>
-  </div>
-
-  <Callout type="info" title="How it works">
-    OpenFlows runs a team of AI agents that collaborate like a real engineering team:
-    <pre style="margin: 0; padding: 1rem; background: var(--color-parchment-canvas); border-radius: var(--radius-md); font-family: var(--font-mono); font-size: 0.875rem;">
-You create a GitHub issue → NEXUS picks it up → FORGE writes code → SENTINEL reviews adversarially
-→ VESSEL merges green PRs → LORE documents → you get a merged PR</pre>
-    You are escalated only for security concerns, ambiguous specifications, or major architectural decisions.
-  </Callout>
-
-  <StepHeading step="4" id="verify">Create Your First Issue</StepHeading>
-  <p>Once OpenFlows is running and your tenant is configured, create a GitHub issue in your repository. OpenFlows will automatically:</p>
   <ol>
-    <li><strong>NEXUS detects</strong> the issue on its next poll cycle.</li>
-    <li><strong>FORGE is assigned</strong> the ticket with a unique identifier.</li>
-    <li><strong>An ephemeral Coder workspace</strong> is provisioned for the FORGE worker.</li>
-    <li><strong>FORGE writes code</strong> against the agreed contract.</li>
-    <li><strong>SENTINEL reviews</strong> every segment adversarially.</li>
-    <li><strong>VESSEL handles</strong> CI, conflicts, and merge.</li>
-    <li><strong>LORE documents</strong> the changes automatically.</li>
-    <li><strong>The workspace is torn down</strong> after merge  -  no lingering state.</li>
+    <li><strong>NEXUS picks</strong> the issue up and turns it into a ticket.</li>
+    <li><strong>FORGE writes</strong> a plan, then <strong>halts</strong>.</li>
+    <li><strong>SENTINEL reviews</strong> the plan and approves it.</li>
+    <li><strong>FORGE implements</strong>, tests, and opens a pull request.</li>
+    <li><strong>SENTINEL reviews</strong> the pull request adversarially.</li>
+    <li><strong>VESSEL watches</strong> CI, resolves conflicts, and merges.</li>
+    <li><strong>LORE documents</strong> the change (where enabled).</li>
+    <li><strong>The workspace is torn down</strong> after merge - no lingering state.</li>
   </ol>
+  <p>
+    If at any point OpenFlows needs a human call - a security concern, an ambiguous spec, or an
+    unresolvable merge - you are notified and the team waits for your decision. See the
+    <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a> and the
+    <a href="/docs/getting-started/first-issue-lifecycle">Lifecycle</a> pages for the full picture.
+  </p>
 
-  <Callout type="tip" title="The team">
-    <table style="width: 100%; border-collapse: collapse;">
-      <thead>
-        <tr>
-          <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Agent</th>
-          <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Role</th>
-          <th style="text-align: left; padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">What it does</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>NEXUS</strong></td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Orchestrator / Controller</td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Assigns issues, coordinates the team, owns recovery, and notifies you when needed.</td>
-        </tr>
-        <tr>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>FORGE</strong></td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Builder</td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Writes code against an agreed contract, creates branches, and opens PRs.</td>
-        </tr>
-        <tr>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>SENTINEL</strong></td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Reviewer</td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Adversarially reviews code for security, quality, and test coverage.</td>
-        </tr>
-        <tr>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>VESSEL</strong></td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">DevOps</td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Monitors CI, handles merge conflicts, and squash-merges green PRs.</td>
-        </tr>
-        <tr>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);"><strong>LORE</strong></td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Writer</td>
-          <td style="padding: 0.5rem; border-bottom: 1px solid var(--color-driftwood);">Documents decisions, updates changelogs, and maintains project history.</td>
-        </tr>
-      </tbody>
-    </table>
-  </Callout>
+  <StepHeading step="5" id="what-openflows-is-not">What OpenFlows is not</StepHeading>
+  <ul>
+    <li><strong>Not a chat assistant.</strong> It is not a tool you prompt and babysit; it is a team that plans, reviews, and merges under its own guardrails. You decide, it executes.</li>
+    <li><strong>Not a hosted cloud coder.</strong> It runs in your own Coder control plane. Code, prompts, and outputs stay in your environment, and worker workspaces hold no keys by design.</li>
+    <li><strong>Not a bare orchestrator you maintain.</strong> The planning gate, adversarial review, recovery, and human escalation are already built - you do not write the coordination logic.</li>
+    <li><strong>Not a replacement for Coder.</strong> It is a layer on top. It needs your self-hosted Coder environment to run, and it favors governance over raw speed.</li>
+  </ul>
 
-  <StepHeading step="5" id="next-steps">Next Steps</StepHeading>
+  <StepHeading step="6" id="next-steps">Next Steps</StepHeading>
   <DocCards cards={[
-    { icon: '🔑', title: 'Token Guide', desc: 'GitHub OAuth scopes, Coder external auth, and the minimum viable credential setup.', href: '/docs/getting-started/token-guide' },
-    { icon: '🎯', title: 'First Issue Walkthrough', desc: 'Step through a complete ticket from issue creation to merged PR.', href: '/docs/getting-started/first-issue' },
-    { icon: '🏗️', title: 'System Design', desc: 'PocketFlow, SharedStore contracts, and the NEXUS reconcile loop.', href: '/docs/architecture/system-design' },
-    { icon: '👥', title: 'Agent Roles', desc: 'Contracts, permissions, workspace lifecycle, and CLI modules for each role.', href: '/docs/architecture/agent-roles' },
+    { icon: '🔑', title: 'Identity & OAuth', desc: 'How OpenFlows acts on GitHub through a scoped OAuth link - no raw tokens in workspaces.', href: '/docs/getting-started/token-guide' },
+    { icon: '🎯', title: 'Installation', desc: 'What you need before you start, the topology, and what the installer does.', href: '/docs/getting-started/installation' },
+    { icon: '🚀', title: 'First Issue Walkthrough', desc: 'Step through one complete ticket from issue creation to merged PR.', href: '/docs/getting-started/first-issue' },
+    { icon: '🔁', title: 'Ticket Lifecycle', desc: 'The phases every ticket travels through, from planning to merge.', href: '/docs/getting-started/first-issue-lifecycle' },
     { icon: '❓', title: 'FAQ', desc: 'Short answers to common setup, security, and operational questions.', href: '/docs/faq' },
   ]} />
 
-  <Callout type="info" title="Documentation">
+  <Callout type="info" title="Digging deeper">
     <ul>
-      <li><a href="/docs/architecture/system-design">System Design</a>  -  PocketFlow engine and SharedStore architecture</li>
-      <li><a href="/docs/concepts/coder-integration">Coder Integration</a>  -  Version compatibility and runtime contract</li>
-      <li><a href="/docs/guides/multi-tenancy">Multi-Tenancy</a>  -  Tenant model and Redis namespacing</li>
-      <li><a href="/docs/concepts/security-model">Security Model</a>  -  AI governance controls and network policy</li>
-      <li><a href="/docs/guides/extending">Extending</a>  -  Adding skills, MCP servers, and models</li>
-      <li><a href="/docs/reference/api">API Reference</a>  -  OpenFlows control-plane endpoints</li>
-      <li><a href="/docs/guides/troubleshooting">Troubleshooting</a>  -  Common failures and diagnostics</li>
+      <li><a href="/docs/concepts/coder-integration">Coder Integration</a> - how OpenFlows and Coder split the work</li>
+      <li><a href="/docs/concepts/architecture-first">Architecture-First</a> - why OpenFlows plans before coding</li>
+      <li><a href="/docs/concepts/agent-team">The Agent Team</a> - who NEXUS, FORGE, SENTINEL, VESSEL, and LORE are</li>
+      <li><a href="/docs/concepts/security-model">Security Model</a> - how secrets stay out of worker workspaces</li>
+      <li><a href="/docs/guides/operations">Operations</a> - managing the fleet at runtime</li>
+      <li><a href="/docs/guides/multi-tenancy">Multi-Tenancy</a> - one Coder server, many teams</li>
     </ul>
   </Callout>
 
@@ -276,36 +145,6 @@ You create a GitHub issue → NEXUS picks it up → FORGE writes code → SENTIN
       grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
       gap: 1.5rem;
       margin: 2rem 0;
-    }
-    .extension-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-      gap: 1.5rem;
-      margin: 2rem 0;
-    }
-    .extension-item {
-      background: var(--color-bone);
-      border: 1px solid var(--color-driftwood);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    }
-    .extension-item:hover {
-      border-color: var(--color-fog);
-      box-shadow: var(--shadow-card);
-    }
-    .extension-item h4 {
-      margin-top: 0;
-      margin-bottom: 0.75rem;
-      font-size: var(--font-size-base);
-      font-weight: var(--font-weight-semibold);
-      color: var(--color-ink);
-    }
-    .extension-item p {
-      margin: 0;
-      font-size: var(--font-size-sm);
-      color: var(--color-graphite);
-      line-height: 1.5;
     }
   </style>
 </DocsLayout>

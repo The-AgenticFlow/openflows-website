@@ -1,0 +1,85 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const WORKER_WORKSPACE_ROWS = [
+  ['The coordination surface', 'How the agent talks to the rest of the team.'],
+  ['The repository checkout', 'The code on the branch the agent is working on.'],
+  ['Role skills and standards', "The role's skills, standards, and persona."],
+];
+
+const FORBIDDEN_ROWS = [
+  ['LLM API keys', 'Every AI call is routed centrally through the model gateway in the control plane.'],
+  ['Raw repository credentials', 'Git identity flows through a scoped OAuth link, not a shared token.'],
+  ['Agent frameworks', 'The intelligence runs centrally; the workspace only hosts the coordination surface.'],
+];
+---
+
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'Workspaces' }]}>
+  <h1>Workspaces</h1>
+  <p>
+    A <strong>workspace</strong> is where an agent actually does its work. Understanding workspaces is the
+    key to understanding OpenFlows' security model, because nearly everything that makes the system safe
+    comes from how workspaces are built and isolated.
+  </p>
+  <p>
+    Each agent runs in its own short-lived, disposable workspace. It is the "execution seat" for one agent
+    on one ticket: it is created when work on a ticket begins, and it is <strong>torn down</strong> when
+    the work is done.
+  </p>
+
+  <h2>A worker workspace is deliberately thin</h2>
+  <p>A worker workspace is kept small on purpose. It contains only what the agent needs to do its job.</p>
+  <DocsTable headers={['A worker workspace contains', 'What it is for']} rows={WORKER_WORKSPACE_ROWS} />
+
+  <p>
+    And, critically, it contains <strong>none</strong> of the following:
+  </p>
+  <DocsTable headers={['Never in a worker workspace', 'How it is handled instead']} rows={FORBIDDEN_ROWS} />
+
+  <Callout type="warning" title="No secrets in worker workspaces">
+    Worker workspaces hold no secrets and no credentials. Remove the secrets from the sandbox and an entire
+    class of "stolen key" attacks disappears. This is the foundation of the security model.
+  </Callout>
+
+  <h2>Workspaces are isolated from each other</h2>
+  <p>
+    Every agent works in its own isolated environment. The reviewer and the builder <strong>never share a
+    filesystem</strong>: the reviewer cannot reach into the builder's tree, and can only request that the
+    builder run a safe command and send evidence back. This physical separation is what makes adversarial
+    review trustworthy  -  a reviewer cannot be fooled or coerced by inspecting or editing the work it is
+    meant to judge.
+  </p>
+
+  <h2>Network access is tight</h2>
+  <p>A worker workspace can reach only what it needs:</p>
+  <ul>
+    <li>The control plane, for coordination and model-backed work.</li>
+    <li>GitHub, to push, pull, and manage pull requests.</li>
+    <li>The coordination store.</li>
+    <li>The internal relay used for delegated verification.</li>
+  </ul>
+  <p>
+    Everything else is denied. Combined with the absence of keys, this dramatically shrinks the surface an
+    attacker  -  or a misbehaving agent  -  could exploit.
+  </p>
+
+  <h2>Nobody is anonymous</h2>
+  <p>
+    Every action an agent takes inherits a <strong>real identity</strong>. There are no shared, mysterious
+    accounts. When something is merged or commented on, it is attributable to the tenant's identity, and
+    the trail is auditable.
+  </p>
+
+  <h2>The orchestrator is different</h2>
+  <p>
+    One workspace is long-lived rather than disposable: the <strong>orchestrator</strong> workspace. This
+    is the trusted "brain" that runs the control loop and hosts the coordination relay. It is the one place
+    that legitimately holds the credentials the workers never see. The asymmetry is deliberate:
+  </p>
+  <ul>
+    <li>The trusted, long-lived component does the coordination.</li>
+    <li>The untrusted, disposable components do the work.</li>
+  </ul>
+</DocsLayout>

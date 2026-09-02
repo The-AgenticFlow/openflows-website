@@ -1,0 +1,68 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const REGISTRY_CONTROLS = [
+  ['How many workers', 'The concurrency ceiling for each role  -  how many instances may run at once.'],
+  ['Which model', 'The model each agent uses.'],
+  ['Whether approval is required', 'Whether the agent must get approval before acting (plan mode).'],
+  ['Which skills', 'The skills available to the agent.'],
+  ['Which tools', 'The tools and servers it can call.'],
+];
+
+const EXTEND_ROWS = [
+  ['Add a skill', 'A skill definition is added and referenced on a role.'],
+  ['Add a tool or server', 'Register it on the role, or centrally. Both can work together.'],
+  ['Enable a model', 'Configure it and reference it on the role.'],
+];
+---
+
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'The Agent Registry' }]}>
+  <h1>The Agent Registry</h1>
+  <p>
+    The <strong>agent registry</strong> is how you configure your team. Who is on it, how many of them,
+    what model they use, and which skills and tools they have  -  all of it lives here, and you can change
+    it <strong>without a restart or redeploy</strong>.
+  </p>
+
+  <h2>What the registry controls</h2>
+  <p>For each role on the team, the registry defines:</p>
+  <DocsTable headers={['Setting', 'What it controls']} rows={REGISTRY_CONTROLS} />
+
+  <h2>Where it lives</h2>
+  <p>
+    The registry is kept in the <strong>control plane</strong>, inside the coordination store  -  not in a
+    file you edit and redeploy. It is the single source of truth for the team's configuration.
+  </p>
+
+  <h2>How you change it</h2>
+  <p>
+    You edit the registry through the <strong>control panel</strong>. The change is validated, and then it
+    takes effect on the team's next cycle. No restart, no redeploy, no waiting for a maintenance window.
+    Change a role's model or add a skill, and the running team picks it up almost immediately.
+  </p>
+
+  <h2>The safety rule: you can't accidentally zero out a role</h2>
+  <p>
+    Changing configurations can be risky if done blindly. The registry enforces a guardrail: an override can
+    never silently drive a role down to <strong>zero</strong> workers. If a change would leave a role with
+    no capacity, it is rejected rather than applied, so you can't accidentally disable your whole builder
+    fleet with a bad edit.
+  </p>
+
+  <h2>Adding skills, tools, and models</h2>
+  <p>The common way to extend the team is through the registry, with configuration-only changes:</p>
+  <DocsTable headers={['Extension', 'How it works']} rows={EXTEND_ROWS} />
+  <p>
+    These are configuration-only changes. Building a brand-new <strong>role</strong> (with its own persona,
+    workspace template, and routing) is the one change that touches the system's internals  -  a deliberate,
+    less-common action.
+  </p>
+
+  <Callout type="info" title="The panel and the command surface never drift">
+    The web control panel is the everyday home of the registry. From it you see the live team  -  roles,
+    their sizes, their models  -  and edit the fleet directly. It rides on the same state and commands as
+    the command-line surface, so the two can never drift out of sync.
+  </Callout>
+</DocsLayout>

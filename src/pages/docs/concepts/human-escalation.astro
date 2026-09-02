@@ -1,0 +1,69 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const ESCALATION_REASONS = [
+  ['A security decision', 'Something touches a security boundary and only a person should judge it.'],
+  ['An ambiguous or underspecified requirement', 'The work is unclear and the team must not guess.'],
+  ['An architectural choice', 'A design direction that needs a human call.'],
+  ['A merge block or conflict', 'A merge conflict or block the team cannot resolve on its own.'],
+];
+
+const RESOLVE_ROWS = [
+  ['Comment on or close the GitHub issue', 'The team reacts on its next cycle, reopening or closing the ticket as appropriate.'],
+  ['Answer directly in the workspace or chat', 'Give the agent guidance and it resumes with your direction.'],
+  ['Reset the work', 'Start clean by resetting the stuck work back to the start and letting the team take another pass.'],
+];
+---
+
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'Human Escalation' }]}>
+  <h1>Human Escalation</h1>
+  <p>
+    OpenFlows is autonomous, but it is deliberately <strong>not</strong> unsupervised. There are decisions
+    that should always be made by a person, and the system is engineered to hand those to you clearly and
+    reliably. Escalation is a feature, not a failure: it is a controlled stop rather than a crash.
+  </p>
+
+  <h2>When OpenFlows pulls a human in</h2>
+  <p>A ticket escalates to a human when it genuinely needs a judgment call:</p>
+  <DocsTable headers={['Reason', 'What it looks like']} rows={ESCALATION_REASONS} />
+  <p>
+    It also escalates after <strong>exhausted automatic recovery</strong>: if the system has retried a
+    failing ticket a bounded number of times and it is still stuck, it stops retrying and tells you rather
+    than spinning forever.
+  </p>
+
+  <h2>What happens on escalation</h2>
+  <ol>
+    <li>
+      The ticket is <strong>parked</strong>  -  set aside so it doesn't deadlock the rest of the fleet.
+    </li>
+    <li>
+      The <strong>worker is released</strong> back to the pool.
+    </li>
+    <li>
+      You get a <strong>notification</strong> on your configured channels with the ticket, the reason, and
+      direct links to the workspace and the pull request.
+    </li>
+  </ol>
+  <p>
+    Notifications are carefully rate-limited so you never get flooded. If a channel is down, that never
+    breaks the system itself  -  it just means you check the panel.
+  </p>
+
+  <h2>How you resolve an escalation</h2>
+  <DocsTable headers={['You can', 'How the team responds']} rows={RESOLVE_ROWS} />
+
+  <h2>Why the system can't just approve around you</h2>
+  <p>
+    OpenFlows' whole posture is <em>"when in doubt, don't approve."</em> The gates are structural, so there
+    is no way for an agent to bypass a review or approve without evidence. An unresolved escalation is a
+    dead end until a person or a legitimate reset intervenes.
+  </p>
+
+  <Callout type="tip" title="You are in the loop where your judgment adds value">
+    You are in the loop exactly where your judgment adds value  -  on the decisions  -  and out of the loop
+    everywhere a well-guarded team can proceed on its own.
+  </Callout>
+</DocsLayout>

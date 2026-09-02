@@ -1,0 +1,59 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const CHANNEL_ROWS = [
+  ['Slack', 'Webhook URL', 'Team chat / operations channel'],
+  ['Discord', 'Webhook URL', 'Team chat / operations channel'],
+  ['WhatsApp', 'Credentials and phone numbers', 'On-call / urgent reach'],
+];
+
+const GUARANTEE_ROWS = [
+  ['Actionable', 'Includes enough context and links to jump in and decide.'],
+  ['Rate-limited', 'At most one notification per channel per ticket within a window — no floods.'],
+  ['Safe', 'Fire-and-forget: a failing channel is logged and never breaks the orchestration loop.'],
+  ['Not the only surface', 'Escalations always also appear in the control panel, so nothing is lost.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }, { label: 'Notifications Reference' }]}>
+  <h1>Notifications Reference</h1>
+  <p>
+    A quick reference for OpenFlows notifications: the channels, what they carry, and how they behave.
+  </p>
+
+  <h2>Channels</h2>
+  <DocsTable headers={['Channel', 'Connection', 'Typical use']} rows={CHANNEL_ROWS} />
+  <p>
+    Any combination can be enabled; each channel is configured independently. See the
+    <a href="/docs/guides/wiring-notifications">Wiring Notifications</a> guide to set them up.
+  </p>
+
+  <h2>What notifications carry</h2>
+  <p>
+    An escalation notification includes:
+  </p>
+  <ul>
+    <li>The <strong>ticket</strong> involved.</li>
+    <li>The <strong>reason</strong> it needs a human — security, ambiguity, architecture, merge block, or exhausted retries.</li>
+    <li>The <strong>role</strong> that flagged it.</li>
+    <li><strong>Direct links</strong> to the workspace and the GitHub pull request, so you can act immediately.</li>
+  </ul>
+
+  <h2>Behavior guarantees</h2>
+  <DocsTable headers={['Property', 'What it means']} rows={GUARANTEE_ROWS} />
+
+  <h2>What they are for</h2>
+  <p>
+    Notifications exist to surface <strong>human escalations</strong> promptly. They are not a general event stream —
+    the team’s routine progress is visible in the control panel, and you’re only pinged when the team needs your
+    judgment.
+  </p>
+
+  <h2>Related</h2>
+  <ul>
+    <li><a href="/docs/guides/wiring-notifications">Wiring Notifications</a> — how to set them up.</li>
+    <li><a href="/docs/guides/handling-human-escalations">Handling Human Escalations</a> — what to do when one arrives.</li>
+    <li><a href="/docs/reference/limits-and-defaults">Limits &amp; Defaults</a> — the notification limits behind these guarantees.</li>
+  </ul>
+</DocsLayout>

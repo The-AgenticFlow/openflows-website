@@ -1,0 +1,67 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const PHASE_ROWS = [
+  ['Planning', 'The builder writes a plan for how it will implement the ticket, then halts. Nothing is written yet.'],
+  ['Review and approval of the plan', 'The reviewer reads the plan and either approves it (unlocking the next step) or reports issues. This is the planning gate.'],
+  ['Building', 'The builder implements the approved plan, writes code, and runs tests. Changes are committed to a branch.'],
+  ['Review ready', 'The builder opens a pull request and signals that the work is ready for review.'],
+  ['Review', 'The reviewer reviews the pull request. It can approve, reject (sending work back), or request a delegated test run.'],
+  ['Merged', 'VESSEL watches CI, resolves conflicts, and merges the approved pull request. The workspace is then torn down.'],
+];
+---
+
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'The Ticket Lifecycle' }]}>
+  <h1>The Ticket Lifecycle</h1>
+  <p>
+    Every piece of work OpenFlows handles is a <strong>ticket</strong>. A ticket is born from a GitHub
+    issue and progresses through a fixed set of phases until it is merged  -  or until a human is needed.
+  </p>
+  <p>
+    The lifecycle runs from issue to merged pull request: the orchestrator ingests a GitHub issue as a
+    ticket, the team plans, builds, reviews, and merges it, and the workspace is torn down at the end.
+  </p>
+
+  <h2>The phases</h2>
+  <DocsTable headers={['Phase', 'What happens']} rows={PHASE_ROWS} />
+
+  <h2>Two special states</h2>
+  <ul>
+    <li>
+      <strong>Blocked.</strong> Work that is stuck  -  for example, it hit a wall it can't get past. It
+      often tunnels toward a human decision.
+    </li>
+    <li>
+      <strong>Awaiting a human.</strong> The ticket is parked because it needs a judgment call that only a
+      person can make (security, ambiguity, architecture, or an unresolvable merge). OpenFlows stops
+      retrying and tells you.
+    </li>
+  </ul>
+
+  <h2>Recovery is part of the lifecycle</h2>
+  <p>
+    Things go wrong: a workspace crashes, a process stalls, a merge is blocked. OpenFlows' reconciliation
+    loop watches every ticket and repairs what it can automatically, with a bounded number of retries. When
+    retries are exhausted, the ticket escalates to a human rather than failing silently. This is the
+    <em>bounded recovery then human escalation</em> principle in practice.
+  </p>
+
+  <h2>From the human's perspective</h2>
+  <p>
+    You don't watch every phase. You get involved at the boundaries:
+  </p>
+  <ul>
+    <li>When a <strong>ticket needs a decision</strong> (you're notified).</li>
+    <li>When you <strong>want to check status</strong> (from the control panel).</li>
+    <li>
+      When you <strong>close or comment on the issue</strong> (the team reacts on the next cycle).
+    </li>
+  </ul>
+
+  <Callout type="info" title="Plan before code runs through the whole lifecycle">
+    The planning gate sits at the front of this lifecycle: no ticket leaves the planning phase without an
+    approval, and that single structural rule shapes everything that follows.
+  </Callout>
+</DocsLayout>

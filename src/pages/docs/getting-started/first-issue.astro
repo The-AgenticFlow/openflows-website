@@ -1,87 +1,115 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, DocsTable, CodeBlock } from '@/molecules/DocComponents/DocComponents';
-
-const LIFECYCLE_ROWS = [
-  ['1', 'Trigger', 'You', 'Create a GitHub issue describing the change, bug, or feature.', 'GitHub issue #N opened.'],
-  ['2', 'Detection', 'NEXUS', 'Polls the GitHub Issues API or receives a webhook event.', 'Ticket created in SharedStore with status <code>open</code>.'],
-  ['3', 'Assignment', 'NEXUS', 'Selects an idle FORGE worker and binds the ticket.', 'SharedStore <code>worker_slots</code> updated; ticket status becomes <code>assigned</code>.'],
-  ['4', 'Workspace provisioning', 'NEXUS + Coder', 'Provisions an ephemeral Coder workspace from the <code>openflows-forge</code> template.', 'Workspace URL reported; harness installed; no AI keys or GitHub tokens inside.'],
-  ['5', 'Planning', 'FORGE', 'Reads the repository, issue, and context; writes <code>PLAN.md</code>.', 'STATUS.json reports <code>planning</code>; PLAN.md contains segments and acceptance criteria.'],
-  ['6', 'Plan review', 'SENTINEL', 'Reviews PLAN.md and writes <code>CONTRACT.md</code> (AGREED or CHANGES_REQUESTED).', 'If changes requested, FORGE revises plan.'],
-];
+import { Callout, StepHeading, DocCards } from '@/molecules/DocComponents/DocComponents';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'First Issue Walkthrough' }]}>
   <h1>First Issue Walkthrough</h1>
 
   <p>
-    This page is a frame-by-frame walkthrough of what happens when you create a GitHub issue in a repository that
-    OpenFlows is watching. It follows the architecture-first flow from the first line of the issue body to the final
-    workspace teardown, with the expected logs at each step and the exact commands you can run to watch the process in
-    real time.
+    This walkthrough takes you from a fresh environment to your first merged pull request produced by
+    the OpenFlows team. It is the fastest path to seeing the whole loop work.
   </p>
 
-  <p>
-    By the end of this guide you will understand how NEXUS detects work, how FORGE plans and implements it, how
-    SENTINEL reviews every segment adversarially, how VESSEL merges green pull requests, and how LORE documents the
-    outcome.
-  </p>
-
-  <Callout type="info" title="Architecture-first means plan before code">
-    FORGE does not write a single line of implementation until SENTINEL has agreed to the plan in
-    <code>CONTRACT.md</code>. The plan is the product. The code is the consequence.
+  <Callout type="info" title="Plan before code">
+    OpenFlows will not let an agent start writing code before a plan is agreed. FORGE writes a plan and
+    then halts; SENTINEL reviews that plan and either approves it or sends it back. Only an approved
+    plan unlocks the next step. This gate is structural - skipping the review is not possible, even by
+    accident.
   </Callout>
 
-  <h2>Prerequisites</h2>
-
+  <StepHeading step="1" id="stand-up">Stand up the control plane</StepHeading>
   <p>
-    Before you create an issue, ensure the OpenFlows stack is running and the tenant is linked to the target repository.
+    Start with Coder, the coordination store, and the database running together (see
+    <a href="/docs/getting-started/installation">Installation</a> for the topology). Once they are up,
+    confirm that Coder is reachable at your access URL.
   </p>
 
+  <StepHeading step="2" id="bootstrap">Bootstrap the environment</StepHeading>
+  <p>
+    Run the bootstrap step. It:
+  </p>
   <ul>
-    <li>Coder, Redis, and the OpenFlows orchestrator are running.</li>
-    <li>The orchestrator has a valid <code>CODER_SESSION_TOKEN</code> and GitHub OAuth App configured.</li>
-    <li>You have run the bootstrap command and added the tenant:
-      <CodeBlock lang="bash">{`./scripts/prod.sh bootstrap
-./scripts/prod.sh tenant owner/repo --name my-team`}</CodeBlock>
-    </li>
-    <li>The <code>orchestration/agent/registry.json</code> v2 file defines roles, skills, and model routing.</li>
+    <li>Creates the initial administrator.</li>
+    <li>Registers the workspace templates for each agent role.</li>
+    <li>Verifies that your model gateway and GitHub authentication are configured.</li>
   </ul>
-
-  <h2>Lifecycle overview</h2>
-
   <p>
-    The lifecycle of a single issue is a deterministic sequence of phases. Each phase is owned by a specific agent, and
-    each phase writes a well-known artifact into the workspace or the SharedStore.
+    Bootstrap should complete cleanly. If it reports a missing integration - for example, GitHub
+    authentication not set up - resolve that before continuing.
   </p>
 
-  <DocsTable
-    headers={['Step', 'Phase', 'Owner', 'What happens', 'Artifact / state change']}
-    rows={LIFECYCLE_ROWS}
-  />
+  <StepHeading step="3" id="tenant">Add a tenant for your repository</StepHeading>
+  <p>
+    Add a tenant bound to the GitHub repository you want OpenFlows to work on. This creates the
+    long-lived orchestrator workspace for that repository and initializes a fresh agent team.
+  </p>
+  <p>
+    A note on "tenant": in OpenFlows, one Coder server serves many teams. Each tenant is one team bound
+    to one repository. If you only have one team, think of this simply as "setting up your project."
+  </p>
 
-  <h2>A good issue contains</h2>
+  <StepHeading step="4" id="oauth">Complete GitHub OAuth for that tenant</StepHeading>
+  <p>
+    OpenFlows acts on GitHub through a real identity, not a shared token. In the Coder dashboard (or the
+    OpenFlows control panel), link GitHub OAuth for the tenant you just created. This is how agents gain
+    the ability to push branches, open pull requests, and comment on issues - scoped to that identity.
+    No raw token ever sits inside a worker workspace. See the
+    <a href="/docs/getting-started/token-guide">Identity & OAuth</a> page for the full model.
+  </p>
 
+  <StepHeading step="5" id="notifications">(Optional) Turn on notifications</StepHeading>
+  <p>
+    For the smoothest experience, configure at least one notification channel (Slack, Discord, or
+    WhatsApp). These are how OpenFlows tells you when it needs a human decision and how it surfaces
+    reactions you must make. Without them, it still works - you would just check the control panel.
+  </p>
+
+  <StepHeading step="6" id="open-an-issue">Open an issue</StepHeading>
+  <p>
+    Create a clearly-scoped GitHub issue in the bound repository. The better the issue is described, the
+    better the plan FORGE will produce. A good issue contains:
+  </p>
   <ul>
-    <li><strong>Context</strong>  -  why the change is needed, links to related issues or ADRs.</li>
-    <li><strong>Goal</strong>  -  a single sentence describing what success looks like.</li>
-    <li><strong>Constraints</strong>  -  non-functional requirements such as performance or security.</li>
-    <li><strong>Acceptance criteria</strong>  -  a checklist that the reviewer can verify against.</li>
+    <li><strong>Context</strong> - why the change is needed.</li>
+    <li><strong>Goal</strong> - a single sentence describing what success looks like.</li>
+    <li><strong>Constraints</strong> - non-functional requirements such as performance or security.</li>
+    <li><strong>Acceptance criteria</strong> - a checklist the reviewer can verify against.</li>
   </ul>
+  <p>You do not need to write a plan, write tests, or assign the issue. The team handles all of that.</p>
 
-  <p>
-    You do not need to write a plan. FORGE will write <code>PLAN.md</code>. You do not need to write tests.
-    SENTINEL will insist on them. You do not need to assign the issue. NEXUS does that automatically.
-  </p>
-
-  <Callout type="tip" title="Labels and milestones are optional hints">
-    NEXUS does not require labels, but it can use them. A <code>good first issue</code> or <code>bug</code> label may
-    influence routing decisions, especially if the registry.json routing table maps labels to specialized worker templates.
+  <Callout type="tip" title="What happens next">
+    Watch the pipeline run:
+    <ul>
+      <li><strong>NEXUS</strong> picks the issue up and turns it into a ticket.</li>
+      <li><strong>FORGE</strong> writes a plan and <strong>halts</strong>.</li>
+      <li><strong>SENTINEL</strong> reviews the plan and approves it.</li>
+      <li><strong>FORGE</strong> implements, tests, and opens a pull request.</li>
+      <li><strong>SENTINEL</strong> reviews the pull request adversarially.</li>
+      <li><strong>VESSEL</strong> watches CI, resolves conflicts, and merges.</li>
+    </ul>
   </Callout>
+
+  <StepHeading step="7" id="review">Review what came back</StepHeading>
+  <p>
+    When the work finishes, you get a merged pull request plus a record of the decisions made along the
+    way. If at any point OpenFlows needed a human call - a security concern, an ambiguous spec, or a
+    merge block - you were notified. Walk to that decision, resolve it, and the team continues. See
+    <a href="/docs/getting-started/first-issue-completion">Completion & Merge</a> for how to review what
+    came back.
+  </p>
 
   <Callout type="tip" title="Continue reading">
-    See <a href="/docs/getting-started/first-issue-lifecycle">Lifecycle Steps</a> for the detailed walkthrough
-    from detection through implementation.
+    See <a href="/docs/getting-started/first-issue-lifecycle">Ticket Lifecycle</a> for the detailed
+    phases every ticket travels through, and
+    <a href="/docs/getting-started/first-issue-completion">Completion & Merge</a> for how the work wraps
+    up.
   </Callout>
+
+  <h2 id="next-steps">Next steps</h2>
+  <DocCards cards={[
+    { icon: '🔁', title: 'Ticket Lifecycle', desc: 'The phases from issue detection through merge.', href: '/docs/getting-started/first-issue-lifecycle' },
+    { icon: '✅', title: 'Completion & Merge', desc: 'How work is reviewed, merged, and torn down.', href: '/docs/getting-started/first-issue-completion' },
+    { icon: '🔑', title: 'Identity & OAuth', desc: 'The scoped OAuth model behind every action.', href: '/docs/getting-started/token-guide' },
+  ]} />
 </DocsLayout>

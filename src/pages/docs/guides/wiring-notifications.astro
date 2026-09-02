@@ -1,0 +1,71 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Wiring Notifications' }]}>
+  <h1>Wiring Notifications</h1>
+
+  <p>
+    OpenFlows reaches out when it needs a human — most importantly for <strong>escalations</strong>
+    (tickets that need a decision). This guide covers connecting your notification channels.
+  </p>
+
+  <h2>Why notifications matter</h2>
+  <p>
+    OpenFlows runs autonomously, but it is not unsupervised. When a ticket escalates to a human,
+    you want to know promptly. Notifications turn "check the panel later" into "you were told
+    now," and they include direct links to the workspace and pull request so you can act
+    immediately.
+  </p>
+
+  <h2>Supported channels</h2>
+  <p>
+    OpenFlows can notify you through <strong>Slack</strong>, <strong>Discord</strong>, and
+    <strong>WhatsApp</strong>. You configure whichever channels your team uses. They can be
+    combined.
+  </p>
+
+  <h2>How each channel is wired</h2>
+  <p>Each channel needs its connection details supplied at setup:</p>
+  <ul>
+    <li><strong>Slack</strong> — a webhook URL for your workspace or channel.</li>
+    <li><strong>Discord</strong> — a webhook URL.</li>
+    <li><strong>WhatsApp</strong> — the Twilio account credentials and phone numbers (your sending number and the destination).</li>
+  </ul>
+  <p>Once set, the channel is live for that team.</p>
+
+  <h2>How notifications behave</h2>
+  <p>Notifications are engineered to be <strong>useful, not noisy</strong>:</p>
+  <ul>
+    <li><strong>Actionable.</strong> Each one names the ticket, the reason, the role involved, and includes links to jump in.</li>
+    <li><strong>Rate-limited.</strong> OpenFlows sends at most one notification per channel per ticket within a time window, preventing alert floods.</li>
+    <li><strong>Safe.</strong> Notifications are fire-and-forget: if a channel is down, it's logged and never breaks the orchestration loop. Your team's work is unaffected.</li>
+  </ul>
+
+  <h2>Steps</h2>
+  <ol>
+    <li><strong>Get the channel's connection details</strong> — a webhook URL, or Twilio credentials and phone numbers.</li>
+    <li><strong>Set the details</strong> for your team or setup in the appropriate configuration.</li>
+    <li><strong>Trigger a test escalation</strong> (or wait for a real one) and confirm the message arrives with correct links.</li>
+  </ol>
+
+  <h2>What you should see</h2>
+  <ul>
+    <li>A correctly formatted notification on your channel.</li>
+    <li>It includes the ticket ID, the reason for escalation, and direct links.</li>
+    <li>It doesn't repeat every few minutes — the rate limit holds.</li>
+  </ul>
+
+  <h2>Tips</h2>
+  <ul>
+    <li>Wire at least <strong>one</strong> channel from the start so you never miss an escalation.</li>
+    <li>If you use several channels, you'll get the same escalation policy on each (each is rate-limited independently).</li>
+    <li>Remember that notifications are only one surface — <strong>escalations always show in the control panel too</strong>, so nothing is lost if a channel is briefly unavailable.</li>
+  </ul>
+
+  <Callout type="info" title="What to do when a notification arrives">
+    See <a href="/docs/guides/handling-human-escalations">Handling Human Escalations</a> for how
+    to recognize and resolve a ticket that needs you.
+  </Callout>
+</DocsLayout>

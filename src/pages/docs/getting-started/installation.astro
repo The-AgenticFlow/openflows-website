@@ -1,231 +1,115 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
+import { Callout, DocCards, StepHeading } from '@/molecules/DocComponents/DocComponents';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Installation' }]}>
   <h1>Installation</h1>
 
   <p>
-    OpenFlows is a thin orchestration brain that runs on top of a self-hosted Coder deployment. Coder is
-    the only runtime: it provides ephemeral workspaces, control-plane AI agents, model governance,
-    identity, audit logging, and cost tracking. Worker workspaces contain zero AI software, zero LLM
-    keys, and zero GitHub tokens.
+    This page describes what running OpenFlows requires and how a production environment is put
+    together. The goal is to give you the full picture before you start, so you can plan your
+    deployment.
   </p>
 
+  <StepHeading step="1" id="what-you-need">What you need before you start</StepHeading>
   <p>
-    The only supported installation path is Docker Compose. It brings up the entire stack  -  Coder,
-    Redis, and the OpenFlows engine  -  with consistent networking and a single configuration surface.
-    Other legacy methods (npm, one-liner scripts, and <code>cargo install</code>) are no longer supported
-    and have been removed from the documentation.
+    OpenFlows is not a standalone tool - it is a system that orchestrates a fleet of workspaces. To
+    run it, you need:
   </p>
-
-  <h2 id="prerequisites">Prerequisites</h2>
   <ul>
-    <li><strong>Docker 24+</strong> and Docker Compose</li>
-    <li><strong>Git 2.x+</strong></li>
-    <li>A <strong>GitHub OAuth App</strong> for Coder external authentication</li>
-    <li>At least one LLM provider configured in the Coder dashboard (AI Settings → Coder Agents → Models)</li>
+    <li><strong>A Coder server</strong> (self-hosted). This is the control plane that provides identity, model access, and the disposable workspaces where agents run.</li>
+    <li><strong>GitHub integration.</strong> OpenFlows turns GitHub issues into pull requests, so it needs a repository and GitHub authentication for it.</li>
+    <li><strong>A coordination store.</strong> OpenFlows uses a shared record of truth to coordinate the team.</li>
+    <li><strong>A database</strong> for the Coder server itself.</li>
   </ul>
-
-  <Callout type="tip" title="Token scopes">
-    For a complete breakdown of GitHub OAuth scopes, Coder external auth configuration, and the
-    minimum viable credential setup, see the <a href="/docs/getting-started/token-guide">Token Guide</a>.
-  </Callout>
-
-  <h2 id="docker-compose">Docker Compose Stack</h2>
-  <p>Clone the repository, copy the environment template, and start the stack:</p>
-
-  <CodeBlock lang="bash">{`git clone https://github.com/The-AgenticFlow/openflows.git
-cd openflows
-cp .env.example .env   # edit with your GitHub OAuth app credentials
-
-# Start the infrastructure stack
-docker compose up -d`}</CodeBlock>
-
-  <Callout type="info" title="What this starts">
-    <ul>
-      <li><strong>Coder</strong>  -  governed execution environment on port 7080</li>
-      <li><strong>Redis</strong>  -  SharedStore for agent coordination on port 6379</li>
-      <li><strong>OpenFlows engine</strong>  -  orchestration layer and NEXUS reconcile loop</li>
-      <li>All services wired together with internal Docker networking</li>
-    </ul>
-  </Callout>
-
-  <h2 id="bootstrap">Bootstrap OpenFlows</h2>
   <p>
-    After the infrastructure is healthy, run the bootstrap command. It creates the OpenFlows admin
-    user, pushes Coder templates for each role (nexus, forge, sentinel, vessel, lore), and verifies
-    that the orchestration layer can reach Coder and Redis.
+    If you do not already operate Coder, the reference deployment stands up Coder, the coordination
+    store, and the database together, so you can start from a clean slate.
   </p>
 
-  <CodeBlock lang="bash">{`./scripts/prod.sh bootstrap`}</CodeBlock>
-
+  <StepHeading step="2" id="topology">The high-level topology</StepHeading>
   <p>
-    If bootstrap fails, the CLI prints a specific diagnostic and exits non-zero. Common causes are
-    missing GitHub OAuth credentials, an unreachable Coder server, or a Redis connection failure. See
-    <a href="/docs/guides/troubleshooting">Troubleshooting</a> for resolution steps.
+    The system is split into a <strong>control plane</strong> and a set of <strong>worker
+    workspaces</strong>.
+  </p>
+  <p>
+    The <strong>control plane</strong> is where the intelligence lives. It holds the Coder server
+    (identity, the model gateway, and workspace management), the long-lived orchestrator that runs the
+    coordination loop, the coordination store, and Coder's database. This is the only place that
+    legitimately holds credentials.
+  </p>
+  <p>
+    The <strong>worker workspaces</strong> are ephemeral and disposable - one per agent role per
+    ticket. They hold no model keys, no raw repository credentials, and no secrets. They have tight
+    network access because the intelligence and credentials they need live centrally, in the control
+    plane, rather than inside them.
+  </p>
+  <p>
+    The core idea that makes this safe is that <strong>Coder governs where agents run and OpenFlows
+    governs how they coordinate</strong>. See the <a href="/docs/concepts/coder-integration">Coder
+    Integration</a> page for more on this split.
   </p>
 
-  <h2 id="run">Run the Controller</h2>
+  <StepHeading step="3" id="reference-deployment">The reference deployment</StepHeading>
   <p>
-    Start the Orchestrator. This command <strong>always resets Redis to a clean slate</strong> before
-    starting the controller. It runs in the foreground  -  keep this terminal open or run it in a
-    service manager.
+    The simplest supported path stands up the whole control plane as a set of containers:
   </p>
-
-  <CodeBlock lang="bash">{`./scripts/prod.sh run`}</CodeBlock>
-
-  <p>
-    Monitor the controller logs in another terminal:
-  </p>
-
-  <CodeBlock lang="bash">{`tail -f /tmp/openflows-controller.log`}</CodeBlock>
-
-  <h2 id="tenant">Add Your First Tenant</h2>
-  <p>
-    A tenant represents a team bound to a specific repository. The <code>tenant add</code> command creates a
-    Coder user for the team, links the repository through Coder external auth, and provisions the
-    <code>openflows-nexus</code> workspace that polls the repo for issues.
-  </p>
-
-  <CodeBlock lang="bash">{`./scripts/prod.sh tenant owner/repo --name my-team`}</CodeBlock>
-
-  <p>
-    The first time a tenant is added, the owning user must complete the Coder external-auth flow to
-    grant GitHub access. After that, NEXUS can clone, create branches, open PRs, and merge on behalf of
-    the tenant. Tenant state is isolated by Redis keyspace prefixes (<code>ns:&#123;tenant&#125;:...</code>).
-  </p>
-
-  <h2 id="health-check">Health Check</h2>
-  <p>
-    Verify the full stack is functional:
-  </p>
-
-  <CodeBlock lang="bash">{`./scripts/prod.sh doctor`}</CodeBlock>
-
-  <h2 id="first-issue">Create Your First Issue</h2>
-  <p>
-    With the tenant active, create a GitHub issue in the bound repository. NEXUS detects it on the next
-    poll cycle, assigns it to an available FORGE worker, and the autonomous cycle begins. No further
-    CLI commands are required for normal operation.
-  </p>
-
-  <CodeBlock lang="bash">{`# Create a GitHub issue in owner/repo  -  OpenFlows picks it up automatically`}</CodeBlock>
-
-  <h2 id="environment">Environment Configuration</h2>
-  <p>
-    The <code>.env.example</code> file contains every required and optional variable. Copy it to
-    <code>.env</code> and edit at minimum:
-  </p>
-
   <ul>
-    <li><strong>GitHub OAuth App</strong>  -  client ID and secret for Coder external auth</li>
-    <li><strong>Coder deployment</strong>  -  external URL and internal API endpoint</li>
-    <li><strong>Redis</strong>  -  connection string for the SharedStore</li>
-    <li><strong>LLM routing</strong>  -  configured in the Coder dashboard, referenced by <code>orchestration/agent/registry.json</code></li>
+    <li><strong>Coordination store</strong> - configured for durable storage so facts survive restarts.</li>
+    <li><strong>Database</strong> - Coder's database.</li>
+    <li><strong>Coder server</strong> - configured with the database, your access URL, a provisioner, and GitHub signups enabled.</li>
   </ul>
-
-  <div class="config-grid">
-    <div class="config-item">
-      <h4>GitHub OAuth App</h4>
-      <p>Required for Coder external authentication. Create a GitHub OAuth App and add the client ID and secret to your <code>.env</code> file.</p>
-    </div>
-    <div class="config-item">
-      <h4>LLM Provider</h4>
-      <p>Configure at least one model in the Coder dashboard (AI Settings → Coder Agents → Models). OpenFlows routes all LLM calls through the Coder AI Gateway.</p>
-    </div>
-    <div class="config-item">
-      <h4>Multi-Tenancy</h4>
-      <p>Each team is a tenant with its own repository binding. The <code>tenant add</code> command links a GitHub repository to an OpenFlows team.</p>
-    </div>
-    <div class="config-item">
-      <h4>Coder Templates</h4>
-      <p>Bootstrap pushes the <code>openflows-{'{'}role{'}'}</code> templates to your Coder deployment for ephemeral workspace provisioning.</p>
-    </div>
-  </div>
-
-  <Callout type="info" title="Architecture-first approach">
-    OpenFlows encodes architectural discipline through:
-    <ul>
-      <li><strong>PocketFlow engine</strong>  -  declared flow graph for agent coordination</li>
-      <li><strong>SharedStore contracts</strong>  -  typed Redis schemas for state management</li>
-      <li><strong>Node trait pattern</strong>  -  <code>prep → exec → post</code> separation for each agent</li>
-      <li><strong>Explicit routing table</strong>  -  recovery built into every step</li>
-    </ul>
-  </Callout>
-
-  <h2 id="verification">Verification</h2>
-  <p>After running <code>docker compose up -d</code>, verify all services are running:</p>
-
-  <CodeBlock lang="bash">{`# Check Docker containers
-docker ps
-
-# Expected output should show:
-# - coder (port 7080)
-# - redis (port 6379)
-# - openflows engine`}</CodeBlock>
-
-  <h2 id="development">Development Workflow</h2>
   <p>
-    For operators and contributors iterating on OpenFlows itself, rebuild and redeploy binaries after
-    code changes:
+    You then run the OpenFlows installer against this environment to set up the initial state.
   </p>
 
-  <CodeBlock lang="bash">{`# After code changes, rebuild and update binaries
-./update-binaries.sh`}</CodeBlock>
+  <StepHeading step="4" id="installer">What the installer does</StepHeading>
+  <p>
+    After the control plane is standing, you complete a bootstrap sequence:
+  </p>
+  <ol>
+    <li><strong>Bootstrap the environment</strong> - create the initial administrator, register the workspace templates each agent role uses, and verify that both the model integration and GitHub authentication are reachable. This also initializes the default agent team in the control plane.</li>
+    <li><strong>Add a tenant</strong> for a repository - this creates the tenant and its long-lived orchestrator workspace, bound to a specific GitHub repository.</li>
+    <li><strong>Complete GitHub OAuth</strong> for that tenant - the mechanism OpenFlows uses to act on GitHub on behalf of a real identity, rather than a shared credential.</li>
+    <li><strong>Configure notifications</strong> (optional) - wire up Slack, Discord, or WhatsApp so OpenFlows can reach you when a human decision is needed.</li>
+    <li><strong>Open an issue</strong> - and watch the team turn it into a reviewed, merged pull request.</li>
+  </ol>
+
+  <Callout type="info" title="A note on tenants">
+    One Coder server serves many teams. Each tenant is one team bound to one repository. If you only
+    have one team, think of this simply as "setting up your project." See
+    <a href="/docs/guides/multi-tenancy">Multi-Tenancy</a> for more.
+  </Callout>
+
+  <StepHeading step="5" id="runtime">Manageable at runtime</StepHeading>
+  <p>
+    OpenFlows ships a control panel (a web interface) plus a command-line surface that stay in sync.
+    From either, you can:
+  </p>
+  <ul>
+    <li>See the <strong>live status</strong> of tickets, workers, and pull requests.</li>
+    <li>Edit the <strong>agent registry</strong> (roles, models, skills) with no restart.</li>
+    <li><strong>Pause, drain, or target</strong> the fleet toward specific work.</li>
+    <li>Attend to <strong>human escalations</strong> and link GitHub OAuth.</li>
+  </ul>
+  <p>
+    Installation is a one-time setup; from then on, day-to-day control happens through the panel.
+  </p>
 
   <Callout type="tip" title="Next steps">
-    After installation and tenant setup:
-    <ol>
-      <li>OpenFlows automatically monitors the bound repository for issues.</li>
-      <li>Create a GitHub issue to trigger the autonomous team.</li>
-      <li>Watch NEXUS pick it up, FORGE write code, SENTINEL review, and VESSEL ship the PR.</li>
-      <li>LORE documents the changes automatically.</li>
-    </ol>
-    See the <a href="/docs/getting-started">Getting Started</a> guide for the full walkthrough and
-    the <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a> for a
-    step-by-step example.
+    With the environment understood, head to the
+    <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a> for a step-by-step run of
+    your first issue-to-merge cycle, and the
+    <a href="/docs/getting-started/token-guide">Identity & OAuth</a> page to understand how
+    authentication works.
   </Callout>
 
   <h2 id="reference-links">Reference</h2>
   <DocCards cards={[
-    { icon: '🔑', title: 'Token Guide', desc: 'GitHub OAuth scopes and Coder external auth setup.', href: '/docs/getting-started/token-guide' },
-    { icon: '🏢', title: 'Multi-Tenancy', desc: 'Tenant model, Redis namespacing, and team isolation.', href: '/docs/guides/multi-tenancy' },
-    { icon: '🔧', title: 'Troubleshooting', desc: 'Common bootstrap and runtime failures.', href: '/docs/guides/troubleshooting' },
-    { icon: '🏗️', title: 'System Design', desc: 'PocketFlow, SharedStore, and NEXUS reconcile.', href: '/docs/architecture/system-design' },
+    { icon: '🔑', title: 'Identity & OAuth', desc: 'The scoped OAuth model and why no raw tokens live in workspaces.', href: '/docs/getting-started/token-guide' },
+    { icon: '🏢', title: 'Multi-Tenancy', desc: 'The tenant model and team isolation.', href: '/docs/guides/multi-tenancy' },
+    { icon: '🚀', title: 'First Issue', desc: 'One issue to a merged PR, end to end.', href: '/docs/getting-started/first-issue' },
+    { icon: '🏗️', title: 'How It Works', desc: 'The end-to-end flow and guardrails.', href: '/docs/concepts/architecture-first' },
   ]} />
-
-  <style>
-    .config-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-      gap: 1.5rem;
-      margin: 2rem 0;
-    }
-    .config-item {
-      background: var(--color-bone);
-      border: 1px solid var(--color-driftwood);
-      border-radius: var(--radius-lg);
-      padding: 1.5rem;
-      transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
-    }
-    .config-item:hover {
-      border-color: var(--color-fog);
-      box-shadow: var(--shadow-card);
-    }
-    .config-item h4 {
-      margin-top: 0;
-      margin-bottom: 0.75rem;
-      font-size: var(--font-size-base);
-      font-weight: var(--font-weight-semibold);
-      color: var(--color-ink);
-    }
-    .config-item p {
-      margin: 0;
-      font-size: var(--font-size-sm);
-      color: var(--color-graphite);
-      line-height: 1.5;
-    }
-  </style>
 </DocsLayout>

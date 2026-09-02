@@ -1,0 +1,67 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DocsTable, Callout } from '@/molecules/DocComponents/DocComponents';
+
+const PIECES = [
+  ['Coder server', 'The control-plane hub', 'Identity, model gateway, workspace provisioning, admin, audit'],
+  ['Coordination store', 'The shared record of truth', 'Holds all the team\u2019s durable coordination state'],
+  ['Database', 'Coder\u2019s own database', 'Coder\u2019s internal bookkeeping'],
+  ['Controller (in the NEXUS workspace)', 'The brain', 'Runs the orchestration loop and hosts the relay'],
+  ['Worker workspaces', 'Disposable Coder workspaces', 'One agent per ticket doing the actual work'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' },   { label: "How It's Deployed" }]}>
+  <h1>How It's Deployed</h1>
+  <p>
+    This page describes the reference deployment of OpenFlows — the standard set of pieces you stand up, and what
+    each one is for. It's the concrete shape of the architecture in the real world.
+  </p>
+
+  <h2>The pieces</h2>
+  <p>A full deployment has five cooperating parts:</p>
+  <DocsTable headers={['Piece', 'What it is', 'Role in the system']} rows={PIECES} />
+
+  <h2>How they're grouped</h2>
+  <p>
+    The <strong>control plane</strong> runs as a set of services together: the Coder server, the coordination store,
+    the database, plus the Controller brain running in its long-lived NEXUS workspace.
+  </p>
+  <p>
+    The <strong>work plane</strong> is a ripple of short-lived workspaces (FORGE, SENTINEL, VESSEL, LORE), each one
+    ephemeral and disposable, provisioned by the brain as needed.
+  </p>
+
+  <h2>Standing it up</h2>
+  <p>The reference deployment starts from a clean slate:</p>
+  <ol>
+    <li><strong>Run the control-plane services</strong> — the coordination store, the database, and the Coder server — configured to talk to each other. The Coder server is set up for GitHub signups and with a provisioner so it can create workspaces.</li>
+    <li><strong>Bootstrap</strong> — create the initial administrator, register each agent role's workspace template, and verify the model gateway and GitHub authentication are working. This also initializes the default agent team.</li>
+    <li><strong>Add a tenant</strong> for your repository — this creates the tenant's user and its long-lived orchestrator workspace, bound to the GitHub repo.</li>
+    <li><strong>Complete GitHub OAuth</strong> for that tenant — the scoped identity OpenFlows uses to act on GitHub.</li>
+    <li><strong>Configure notifications</strong> (optional) — Slack, Discord, or WhatsApp for human escalations.</li>
+    <li><strong>Open an issue</strong> — and run the pipeline.</li>
+  </ol>
+
+  <h2>Self-sufficiency of the deployed system</h2>
+  <p>Once it's up, the deployment mostly runs itself:</p>
+  <ul>
+    <li>The <strong>Controller self-heals</strong>: a bad pass is logged and retried, never fatal.</li>
+    <li><strong>Liveness beacons</strong> let the brain detect silent workspaces and recover them.</li>
+    <li><strong>Workspaces tear down</strong> after their work merges, keeping the fleet from accumulating cruft.</li>
+    <li>A <strong>doctor</strong> command diagnoses the Coder integration when something looks off.</li>
+  </ul>
+
+  <h2>Operated via the control panel</h2>
+  <p>
+    Day-to-day operation — status, the agent registry, pause/target/continue, human escalations, GitHub OAuth
+    linking — happens through the <strong>web control panel</strong> (with a command-line surface that stays in
+    sync). The panel rides on the same state and commands as the command line, so they can never disagree.
+  </p>
+
+  <h2>Running many teams</h2>
+  <p>
+    Because the deployment is multi-tenant by design, one Coder server and one coordination store can serve
+    <strong>many independent teams</strong>, each isolated — you just add each team as its own tenant.
+  </p>
+</DocsLayout>

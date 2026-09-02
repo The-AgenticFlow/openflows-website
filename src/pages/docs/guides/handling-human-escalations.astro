@@ -1,0 +1,88 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Handling Human Escalations' }]}>
+  <h1>Handling Human Escalations</h1>
+
+  <p>
+    OpenFlows pulls you into the loop at exactly the decisions that need a human. This guide
+    explains how to recognize, prioritize, and resolve escalations.
+  </p>
+
+  <h2>First: understand why you're being pinged</h2>
+  <p>
+    An escalation means the system made a judgment call that <em>a person should decide this</em>.
+    Common reasons:
+  </p>
+  <ul>
+    <li>A <strong>security decision</strong> the reviewer flagged.</li>
+    <li>An <strong>ambiguous or underspecified requirement</strong> the team can't safely interpret.</li>
+    <li>An <strong>architectural choice</strong>.</li>
+    <li>A <strong>merge block or conflict</strong> the team couldn't resolve.</li>
+    <li><strong>Exhausted retries</strong> — the team tried and tried, and stopped rather than spin.</li>
+  </ul>
+  <p>
+    None of these are the team being lazy; they're the system honoring "when in doubt, ask."
+  </p>
+
+  <h2>Recognizing an escalation</h2>
+  <p>Escalations surface in two places:</p>
+  <ol>
+    <li><strong>A notification</strong> on your configured channel (Slack, Discord, or WhatsApp) — with the ticket, the reason, and direct links to the workspace and pull request.</li>
+    <li><strong>The control panel</strong> — escalations are shown so you always have the queue in view, even if notifications are off.</li>
+  </ol>
+
+  <h2>Resolving an escalation</h2>
+  <p>You have three ways to act, depending on what's needed:</p>
+  <p><strong>1. Comment on or close the GitHub issue.</strong></p>
+  <p>
+    If the requirement was ambiguous, clarify it in a comment. If the idea is dead, close the
+    issue. The team reacts on its next cycle — reopening or closing the ticket accordingly.
+  </p>
+  <p><strong>2. Answer directly in the workspace or chat.</strong></p>
+  <p>
+    If it's a judgment call (architecture, a security nuance, a direction), give the agent
+    guidance in its session. The agent resumes with your direction in hand.
+  </p>
+  <p><strong>3. Reset the work.</strong></p>
+  <p>
+    If you'd rather start the ticket over than salvage it, reset the stuck work back to the
+    start and let the team take a fresh pass with your clarifications in place.
+  </p>
+
+  <h2>What a good resolution looks like</h2>
+  <ul>
+    <li><strong>For ambiguity</strong>: state the decision concretely ("use approach X"), so the agent doesn't just re-ask.</li>
+    <li><strong>For security</strong>: confirm or reject the flagged risk explicitly — if you confirm, that becomes the recorded decision.</li>
+    <li><strong>For a merge block</strong>: either resolve the conflict or tell the team how you want it handled.</li>
+  </ul>
+
+  <h2>After you resolve</h2>
+  <ul>
+    <li>The ticket leaves the parked state.</li>
+    <li>Your decision is part of the recorded history.</li>
+    <li>Normal recovery can proceed: stalled tickets get a fresh look on the next cycle.</li>
+  </ul>
+
+  <h2>Sensible operating habits</h2>
+  <ul>
+    <li><strong>Check escalations before anything else</strong> in the panel when you sit down — that's your queue of decisions.</li>
+    <li><strong>Batch them.</strong> Since decisions are isolated per ticket, you can clear several in one sitting.</li>
+    <li><strong>Don't ignore them.</strong> A parked escalation won't magically resolve; it's waiting specifically on you.</li>
+  </ul>
+
+  <Callout type="info" title="When in doubt, don't approve">
+    A flagged security or quality risk that you simply wave through is lost diligence. The
+    system stops and asks because a missing artifact or result means the reviewer won't
+    approve — which is a guardrail, not a bug. Confirm or reject explicitly so the decision is
+    recorded.
+  </Callout>
+
+  <Callout type="tip" title="Stay reachable">
+    Escalations reach you through your wired channels. If notifications aren't set up yet, see
+    <a href="/docs/guides/wiring-notifications">Wiring Notifications</a> — the panel always shows
+    the queue regardless.
+  </Callout>
+</DocsLayout>

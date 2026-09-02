@@ -1,0 +1,44 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Resources', href: '/docs/resources' }, { label: 'Community & Support' }]}>
+  <h1>Community &amp; Support</h1>
+  <p>
+    Where to ask questions, report problems, and keep up with OpenFlows.
+  </p>
+
+  <h2>Getting help</h2>
+  <ul>
+    <li><strong>Documentation (this site)</strong> — start here for how-tos and references. The <a href="/docs/guides">Guides</a> and <a href="/docs/reference">Reference</a> sections answer most operational questions.</li>
+    <li><strong>Issues</strong> — report bugs and propose features in the project’s GitHub issue tracker. The project and its documentation website live in the OpenFlows repository on GitHub, so its issue tracker is the place to file bug reports and feature requests. Search first to avoid duplicates, and include what you observed vs. what you expected.</li>
+  </ul>
+
+  <Callout type="info" title="The site shares the project’s issue tracker">
+    The documentation website is part of the OpenFlows project and points to the same GitHub repository and issue
+    tracker as the product itself — so questions about the docs and questions about the product land in the same place.
+  </Callout>
+
+  <h2>Asking good questions</h2>
+  <p>
+    To get a fast, useful answer:
+  </p>
+  <ul>
+    <li><strong>Say what you’re trying to do</strong> — not just the error you hit.</li>
+    <li><strong>Give context</strong> — your setup (tenant and repository), what you expected, and what happened instead.</li>
+    <li><strong>Check escalations</strong> — many “stuck” situations are a ticket waiting on a human decision.</li>
+  </ul>
+
+  <h2>Staying informed</h2>
+  <ul>
+    <li>Follow the project’s release process to learn about new versions and changes (see <a href="/docs/contributing/project-governance">Project Governance</a>).</li>
+    <li>Watch the repository for announcements and status updates.</li>
+  </ul>
+
+  <h2>Building relationships</h2>
+  <ul>
+    <li>The <a href="/docs/contributing">Contributing</a> section explains how to get involved.</li>
+    <li>Whether you’re a user, an operator, or a contributor, the project benefits most from clear, concrete feedback — tell us what works and what doesn’t.</li>
+  </ul>
+</DocsLayout>

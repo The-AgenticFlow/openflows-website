@@ -1,244 +1,80 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
-
-const RUNBOOK_ROWS = [
-  ['Start controller', 'Start the tenant NEXUS workspace and verify the controller process is running.'],
-  ['Stop controller', 'Isolate the tenant, wait for active workers to finish their segment, then stop the NEXUS workspace.'],
-  ['Scale FORGE workers', 'Edit <code>agents.forge.instances</code> in <code>registry.json</code>. Hot-reload applies within one poll cycle.'],
-  ['Rotate Coder token', 'Update the <code>CODER_NEXUS_TOKEN</code> environment variable and restart the NEXUS workspace.'],
-  ['Update binaries', 'Run <code>./update-binaries.sh</code> on the NEXUS workspace to pull the latest openflows CLI.'],
-  ['Recover from Redis outage', 'Restart Redis, verify keyspace prefixes are intact, and run <code>openflows doctor</code>.'],
-  ['Handle runaway worker', 'Isolate the tenant, inspect the worker workspace, and terminate the workspace if needed.'],
-  ['Investigate stuck merge', 'Check VESSEL logs, GitHub mergeable status, and CI status via the TUI or <code>redis-cli</code>.'],
-];
-
-const TUI_ROWS = [
-  ['<code>openflows tui</code>', 'Launch the interactive dashboard.'],
-  ['<code>q</code> / <code>Ctrl-C</code>', 'Quit the TUI.'],
-  ['<code>Tab</code>', 'Switch between panes: tickets, workers, events, logs.'],
-  ['<code>Enter</code>', 'Open detail view for the selected ticket or worker.'],
-  ['<code>i</code>', 'Isolate the selected tenant.'],
-  ['<code>r</code>', 'Resume the selected tenant.'],
-  ['<code>d</code>', 'Run doctor diagnostics for the selected tenant.'],
-  ['<code>/</code>', 'Search tickets or workers by ID or status.'],
-];
-
-const REDIS_ROWS = [
-  ['<code>KEYS ns:{"{tenant}"}:*</code>', 'List all keys for a tenant (avoid in production; use <code>SCAN</code> instead).'],
-  ['<code>SCAN 0 MATCH ns:{"{tenant}"}:tickets COUNT 100</code>', 'Paginate through ticket keys safely.'],
-  ['<code>HGET ns:{"{tenant}"}:tickets ISSUE-123</code>', 'Read the status of a specific ticket.'],
-  ['<code>HGETALL ns:{"{tenant}"}:worker_slots</code>', 'Read all worker slot statuses.'],
-  ['<code>LRANGE ns:{"{tenant}"}:event_ring 0 99</code>', 'Read the most recent 100 events.'],
-  ['<code>HLEN ns:{"{tenant}"}:pending_prs</code>', 'Count PRs awaiting merge.'],
-];
-
-const RECONCILE_ROWS = [
-  ['orphaned_tickets', 'Tickets assigned to a worker that no longer exists. Reassign or escalate to AwaitingHuman.'],
-  ['unmerged_prs', 'PRs with all checks passed but not yet merged. VESSEL should pick these up.'],
-  ['stale_workers', 'Workers whose last heartbeat is older than the timeout. Mark as failed and reassign.'],
-  ['completed_without_pr', 'Tickets marked completed but with no open PR. FORGE must reopen or escalate.'],
-  ['sentinel_reject_loop', 'SENTINEL has rejected the same segment more than the limit. Escalate to AwaitingHuman.'],
-  ['merge_conflict', 'PR mergeable state is false. VESSEL retries, then escalates if unresolved.'],
-];
-
-const SCALE_ROWS = [
-  ['Vertical scaling', 'Use a larger Coder workspace template for the NEXUS controller or FORGE workers.'],
-  ['Horizontal scaling', 'Increase FORGE <code>instances</code> in <code>registry.json</code>. Each instance is a separate Coder workspace.'],
-  ['Redis scaling', 'Move from a single Redis node to a managed Redis cluster or replica set.'],
-  ['Coder scaling', 'Scale the Coder control plane and workspace provisioner to handle more concurrent workspaces.'],
-  ['Gateway scaling', 'Add more replicas of the Coder AI Gateway or LiteLLM proxy for throughput.'],
-];
+import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Operations & Monitoring' }]}>
-  <h1>Operations &amp; Monitoring</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Managing the Fleet' }]}>
+  <h1>Managing the Fleet</h1>
+
   <p>
-    OpenFlows is an orchestration layer that runs on top of Coder. Operating it means
-    monitoring the controller, the Redis state machine, the Coder AI Gateway, and the fleet of
-    ephemeral worker workspaces. This guide covers production runbooks, TUI usage, log
-    locations, Redis inspection, monitoring NEXUS reconcile, and scaling workers. It is
-    written for operators who need to keep a multi-tenant deployment healthy.
-  </p>
-  <p>
-    The controller runs inside a per-tenant Coder workspace named
-    <code>openflows-nexus-{"{tenant}"}</code>. That workspace is the only long-lived component. All
-    other workspaces are ephemeral and are created and destroyed as tickets move through the
-    pipeline. Operators should treat the NEXUS workspace as the source of truth for a tenant's
-    health.
+    Once your team is running, most of your day-to-day control happens from the control panel.
+    This guide covers the core operating moves: seeing status, and steering the fleet.
   </p>
 
-  <h2>Production Runbooks</h2>
+  <h2>Seeing the live status</h2>
   <p>
-    The following runbooks are the most common operational procedures. They assume you have
-    shell access to the NEXUS workspace and the Redis instance, and that you have installed
-    the <code>openflows</code> CLI.
-  </p>
-  <DocsTable headers={['Procedure', 'Summary']} rows={RUNBOOK_ROWS} />
-
-  <h3>Starting the Controller</h3>
-  <p>
-    Ensure the Coder deployment is reachable, the NEXUS workspace is running, and the Redis
-    URL is correct. Then start the controller process inside the NEXUS workspace.
-  </p>
-  <CodeBlock lang="bash">{`coder ssh openflows-nexus-my-team
-
-export REDIS_URL=redis://redis.internal:6379
-export CODER_URL=https://coder.example.com
-export CODER_NEXUS_TOKEN=...
-
-openflows controller start --tenant my-team
-`}</CodeBlock>
-
-  <h3>Stopping the Controller</h3>
-  <p>
-    Isolating the tenant first stops new work from being assigned. Active workers are allowed
-    to finish their current segment, but they will not receive new segments. After a graceful
-    drain, stop the NEXUS workspace.
-  </p>
-  <CodeBlock lang="bash">{`openflows tenant isolate my-team
-
-# Wait for active workers to reach a safe point
-tail -f /tmp/openflows-controller.log
-
-coder stop openflows-nexus-my-team
-`}</CodeBlock>
-
-  <h3>Updating Binaries</h3>
-  <p>
-    The <code>./update-binaries.sh</code> script pulls the latest openflows release, replaces
-    the CLI binary, and restarts the controller. Run it inside the NEXUS workspace.
-  </p>
-  <CodeBlock lang="bash">{`coder ssh openflows-nexus-my-team
-./update-binaries.sh
-`}</CodeBlock>
-
-  <Callout type="warning" title="Updates are not zero-downtime">
-    The controller process must restart to load a new binary. Isolate the tenant before running
-    <code>update-binaries.sh</code> to avoid interrupting active workers mid-segment.
-  </Callout>
-
-  <h2>TUI Usage</h2>
-  <p>
-    The OpenFlows TUI is a ratatui-based dashboard that runs on the NEXUS workspace. It shows
-    live tickets, worker slots, events, and logs. It also provides one-key diagnostics and
-    tenant isolation. Operators should keep a TUI session open during incident response.
-  </p>
-  <CodeBlock lang="bash">{`openflows tui --tenant my-team
-`}</CodeBlock>
-  <DocsTable headers={['Key', 'Action']} rows={TUI_ROWS} />
-
-  <Callout type="tip" title="TUI is read-only by default">
-    The TUI does not modify state unless you explicitly press an action key. The default view
-    is read-only and safe to leave open on a shared screen. Isolation and resume keys require
-    the operator to have the Coder Owner role for the tenant.
-  </Callout>
-
-  <h2>Log Locations</h2>
-  <p>
-    The controller writes a single log file on the NEXUS workspace. Worker logs are also
-    forwarded to the controller, which writes them to the same file with a worker tag. This
-    keeps all operational telemetry in one place.
-  </p>
-  <CodeBlock lang="bash">{`# Controller log on the NEXUS workspace
-tail -f /tmp/openflows-controller.log
-
-# Recent error lines
-rg ERROR /tmp/openflows-controller.log | tail -50
-
-# Recent worker-specific logs
-rg 'forge-1' /tmp/openflows-controller.log | tail -100
-`}</CodeBlock>
-  <p>
-    The log format is structured JSON with a human-readable prefix. Each line contains a
-    timestamp, tenant, worker ID, level, and message. The structured fields are stable and
-    can be shipped to a central log aggregator with a simple forwarder.
-  </p>
-  <CodeBlock lang="json">{`{
-  "ts": "2026-07-20T15:43:21Z",
-  "tenant": "my-team",
-  "worker": "forge-1",
-  "level": "INFO",
-  "msg": "segment review APPROVED",
-  "ticket": "ISSUE-123",
-  "segment": 2
-}`}</CodeBlock>
-
-  <h2>Redis Inspection</h2>
-  <p>
-    Redis is the production SharedStore backend. Every tenant's keys are prefixed with
-    <code>ns:{"{tenant}"}:</code>. Operators can inspect the live state directly with
-    <code>redis-cli</code>. This is useful when the TUI is unavailable or when you need to run
-    programmatic checks.
-  </p>
-  <DocsTable headers={['Command', 'Purpose']} rows={REDIS_ROWS} />
-
-  <CodeBlock lang="bash">{`# Live event stream for a tenant
-redis-cli MONITOR | rg 'ns:my-team'
-
-# Check if a worker is still alive
-redis-cli HGET ns:my-team:worker_slots forge-1
-`}</CodeBlock>
-
-  <Callout type="info" title="Redis is the source of truth">
-    The controller keeps state in Redis, not in memory. If the controller restarts, it
-    resumes from Redis on the next poll cycle. Do not manually edit Redis keys unless you are
-    following a runbook; inconsistent state will trigger NEXUS reconcile recovery.
-  </Callout>
-
-  <h2>Monitoring NEXUS Reconcile</h2>
-  <p>
-    NEXUS runs <code>reconcile()</code> on every poll cycle. It scans the SharedStore for
-    inconsistencies and takes corrective action. Reconcile is the heart of OpenFlows' ability
-    to self-heal. Monitoring it means watching for the categories of problems it detects and
-    the actions it takes.
-  </p>
-  <p>
-    Reconcile events are emitted to the tenant's event ring and logged at INFO level. Look for
-    lines containing <code>reconcile:</code> in the controller log. Each reconcile event has a
-    <code>category</code> field that describes the type of inconsistency detected.
-  </p>
-  <DocsTable headers={['Category', 'What NEXUS does']} rows={RECONCILE_ROWS} />
-
-  <CodeBlock lang="bash">{`# Watch reconcile events in real time
-tail -f /tmp/openflows-controller.log | rg 'reconcile:'
-
-# Read the last 50 reconcile events from Redis
-redis-cli LRANGE ns:my-team:event_ring 0 49 | rg 'reconcile'
-`}</CodeBlock>
-
-  <Callout type="warning" title="Too many reconcile events is a smell">
-    A healthy deployment emits a small, steady number of reconcile events. A sudden spike in
-    orphaned tickets, stale workers, or merge conflicts usually indicates an upstream
-    problem: Coder API instability, Redis latency, or a change in the GitHub repository
-    settings. Investigate the root cause rather than letting NEXUS mask it.
-  </Callout>
-
-  <h2>Scaling Workers</h2>
-  <p>
-    FORGE workers are the primary parallel resource. Each instance is an independent Coder
-    workspace. Scaling is done by changing the <code>agents.forge.instances</code> value in
-    <code>registry.json</code>. The change is hot-reloaded on the next NEXUS poll cycle.
-  </p>
-  <p>
-    Scaling considerations:
+    The control panel shows you, at a glance:
   </p>
   <ul>
-    <li>Each instance consumes a Coder workspace slot and a GitHub MCP connection.</li>
-    <li>Concurrency is bounded by the Coder provisioner's capacity and the AI Gateway rate limits.</li>
-    <li>More instances do not make a single ticket faster; they increase the number of tickets that can be processed in parallel.</li>
-    <li>Reduce instances during off-hours to lower Coder and LLM costs.</li>
+    <li><strong>Tickets</strong> — what's open, in progress, awaiting a human, or merged.</li>
+    <li><strong>Workers</strong> — which roles are idle, busy, or assigned.</li>
+    <li><strong>Pull requests</strong> — what's awaiting merge and what's merged.</li>
+    <li><strong>Escalations</strong> — anything that needs a human.</li>
   </ul>
-  <CodeBlock lang="json">{`{
-  "agents": {
-    "forge": { "instances": 4 }
-  }
-}`}</CodeBlock>
-  <DocsTable headers={['Dimension', 'How to scale']} rows={SCALE_ROWS} />
+  <p>
+    This is the same machine-readable state the command-line surface exposes, rendered as a
+    dashboard. If you prefer the command surface, the two always agree.
+  </p>
 
-  <Callout type="tip" title="Set a Coder workspace quota">
-    Coder supports per-user or per-group workspace quotas. Set a quota on the tenant's NEXUS
-    service account to prevent runaway FORGE instances from exhausting the provisioner. A
-    reasonable starting point is 10 workspaces per tenant (1 NEXUS + up to 9 FORGE/SENTINEL/VESSEL/LORE).
+  <h2>Steering the fleet</h2>
+  <p>
+    OpenFlows lets you control <em>how much and what</em> the team works on, live:
+  </p>
+  <ul>
+    <li><strong>Pause.</strong> Let anything already in flight finish, but don't pick up new work. Useful when you want to hold the line before a release.</li>
+    <li><strong>Drain.</strong> Stop taking on new tickets entirely (while finishing what's active).</li>
+    <li><strong>Target.</strong> Focus the team on a specific repository, issue, or label — for example, "only work on the hotfix label right now."</li>
+    <li><strong>Resume / normal.</strong> Return to business as usual.</li>
+  </ul>
+  <p>
+    Because the controller re-reads its steering state every cycle, these take effect on the
+    very next cycle. No restart, no downtime.
+  </p>
+
+  <h2>Editing the team (the registry)</h2>
+  <p>
+    From the panel you can also edit the <strong>agent registry</strong> — how many workers each
+    role runs, which model, which skills and tools. Changes are validated (you can't
+    accidentally zero out a role) and take effect on the next cycle.
+  </p>
+
+  <h2>Recovering when something's stuck</h2>
+  <p>
+    Most problems are absorbed automatically. When they aren't, you have two levers:
+  </p>
+  <ul>
+    <li><strong>Wait.</strong> A persistent failure is retried every cycle; many "stuck" states clear themselves shortly.</li>
+    <li><strong>Reset.</strong> If a team's work is genuinely wedged and automatic recovery has already given up, reset that team back to a clean state. This returns stale or failed tickets to the start and clears the recovery counters, so the team can take a fresh pass.</li>
+  </ul>
+
+  <h2>What you should see</h2>
+  <ul>
+    <li>The new state appears in the panel's status view.</li>
+    <li>The team's next cycles honor the change — halting new work if paused, focusing if targeted, rescaling if you changed role counts.</li>
+    <li>No restart banner — the team just adjusts smoothly.</li>
+  </ul>
+
+  <h2>Best practices</h2>
+  <ul>
+    <li>Prefer <strong>pause or target</strong> over stopping the whole system when you only want to redirect work.</li>
+    <li>Check <strong>escalations</strong> first thing: a parked ticket is your queue of decisions that need a human.</li>
+    <li>Use <strong>reset</strong> sparingly and only after automatic recovery has given up — it restarts work, so it isn't free.</li>
+  </ul>
+
+  <Callout type="info" title="Stay reachable">
+    Alongside steering the fleet, make sure you're reachable when a ticket escalates. See
+    <a href="/docs/guides/wiring-notifications">Wiring Notifications</a> and
+    <a href="/docs/guides/handling-human-escalations">Handling Human Escalations</a> for the
+    other half of operations — acting on what needs you.
   </Callout>
 </DocsLayout>

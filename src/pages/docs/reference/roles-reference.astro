@@ -1,0 +1,65 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const ROLE_ROWS = [
+  ['NEXUS', 'Orchestrator', 'Ingests issues, assigns work, coordinates the team, performs recovery, and escalates to humans.', 'Yes'],
+  ['FORGE', 'Builder', 'Plans (then halts), implements the approved plan, runs tests, and opens pull requests.', 'No'],
+  ['SENTINEL', 'Reviewer', 'Adversarially reviews the plan and the pull request, approves gates, and requests evidence.', 'Yes'],
+  ['VESSEL', 'DevOps', 'Watches continuous integration, resolves merge conflicts, merges approved pull requests, and tears down workspaces.', 'No'],
+  ['LORE', 'Writer', 'Documents decisions and maintains changelog/history entries, often disabled by default.', 'No'],
+];
+
+const HANDOFF_ROWS = [
+  ['NEXUS to FORGE', 'NEXUS assigns a ticket and FORGE begins, once it has an approved plan.'],
+  ['FORGE to SENTINEL', 'FORGE opens a pull request and marks it for review.'],
+  ['SENTINEL to VESSEL', 'SENTINEL approves the reviewed pull request.'],
+  ['VESSEL to LORE', 'VESSEL merges and hands off for documentation.'],
+  ['LORE back to NEXUS', 'Documentation completes and NEXUS returns to orchestration.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }, { label: 'Roles Reference' }]}>
+  <h1>Roles Reference</h1>
+  <p>
+    The OpenFlows team has five roles. This page is the quick lookup for each one: who it is, what it does, and whether
+    it must get approval before acting. The source documentation contains no registry schema reference — that is
+    internal configuration detail. What you need to know is the team behind it.
+  </p>
+
+  <h2>The five roles</h2>
+  <DocsTable headers={['Role', 'Name', 'Responsibility', 'Requires approval to act?']} rows={ROLE_ROWS} />
+
+  <h2>What “requires approval to act” means</h2>
+  <ul>
+    <li><strong>Plan-mode roles</strong> (NEXUS, SENTINEL) are designed to review and gate rather than blindly proceed.</li>
+    <li><strong>Builder, DevOps, and Writer roles</strong> act directly, but their actions are bounded by gates: FORGE can’t build without an approved plan, VESSEL won’t merge an unapproved pull request, and LORE only documents merged work.</li>
+  </ul>
+
+  <h2>The hand-offs between roles</h2>
+  <DocsTable headers={['Hand-off', 'When it happens']} rows={HANDOFF_ROWS} />
+  <p>
+    Each transition only happens when the previous step produced the required result: an approved plan, a reviewed pull
+    request, or a successful merge.
+  </p>
+
+  <h2>Configuring roles</h2>
+  <p>
+    Every role’s behavior is set in the agent team configuration: how many workers, which model, plan mode, skills, and
+    tools. You change these from the control panel without a restart. See the
+    <a href="/docs/reference/configuration-reference">Configuration Reference</a>.
+  </p>
+
+  <h2>Extending roles</h2>
+  <ul>
+    <li>Add <strong>skills</strong> and <strong>external tools</strong> and pick <strong>models</strong> per role, configuration-only.</li>
+    <li>Adding a brand-new <strong>role</strong> is an internal change beyond this reference (see the Extending guide for how skills and tools are added).</li>
+  </ul>
+
+  <h2>Related</h2>
+  <ul>
+    <li><a href="/docs/reference/glossary">Glossary</a> — one-line definitions of every term used here.</li>
+    <li><a href="/docs/reference/lifecycle-states">Lifecycle States</a> — the phases a ticket travels through between these hand-offs.</li>
+    <li><a href="/docs/guides/extending">Adding a Skill</a> — how the config-only extension point works.</li>
+  </ul>
+</DocsLayout>

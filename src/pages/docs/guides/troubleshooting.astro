@@ -1,75 +1,62 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
-
-const FAILURE_ROWS = [
-  ['Coder unreachable', 'NEXUS cannot provision or destroy workspaces. Check <code>CODER_URL</code> and <code>CODER_NEXUS_TOKEN</code>.'],
-  ['GitHub external auth expired', 'Workers lose git push/pull access. Re-authenticate in Coder admin or user settings.'],
-  ['Worker timeout', 'A FORGE or SENTINEL workspace exceeded its step timeout. Check workspace logs and LLM gateway health.'],
-  ['SENTINEL rejection loop', 'SENTINEL rejects every segment repeatedly. Escalate to AwaitingHuman and review the plan.'],
-  ['Merge conflict', 'PR is no longer mergeable. VESSEL retries; if unresolved, escalate to AwaitingHuman.'],
-  ['Redis connection lost', 'All state operations fail. Controller enters degraded mode and retries.'],
-  ['AI Gateway 429', 'Rate limit hit. Back off and scale gateway capacity if sustained.'],
-  ['STATUS.json blocked', 'Agent wrote a blocked status. Read the <code>blocker</code> object for the exact question.'],
-];
+import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Troubleshooting' }]}>
-  <h1>Troubleshooting</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Troubleshooting the Common Path' }]}>
+  <h1>Troubleshooting the Common Path</h1>
 
   <p>
-    OpenFlows is a distributed system: a Coder control plane, a Redis state store, a Coder AI
-    Gateway, an orchestrator process running in a NEXUS workspace, and a fleet of ephemeral
-    worker workspaces. When something fails, the failure can appear anywhere in that chain.
-    This guide walks through common failures, diagnostics, and how to read the artifacts the
-    system leaves behind, especially <code>STATUS.json</code>.
+    Most of the time, OpenFlows recovers on its own. This guide is for the situations where you
+    need to look closer or nudge it. It's organized by symptom.
   </p>
 
-  <p>
-    The first rule of troubleshooting is to check the controller log. The NEXUS workspace
-    writes to <code>/tmp/openflows-controller.log</code>, and that log contains structured
-    events from the controller and every worker. The second rule is to check Redis, which is
-    the source of truth for ticket and worker state. The third rule is to read
-    <code>STATUS.json</code> when a worker writes one; it is the worker's own statement of
-    what went wrong.
-  </p>
-
-  <h2>Common Failures</h2>
-
-  <DocsTable headers={['Failure', 'Symptom / Cause']} rows={FAILURE_ROWS} />
-
-  <h2>Diagnostics</h2>
-
-  <p>
-    The <code>openflows doctor</code> command runs a battery of health checks against the
-    orchestrator, Coder, Redis, and the AI Gateway. Run it from the NEXUS workspace before
-    digging into manual logs.
-  </p>
-
-  <CodeBlock lang="bash">{`openflows doctor --tenant my-team
-`}</CodeBlock>
-
-  <p>
-    The doctor command checks:
-  </p>
-
+  <h2>Symptom: a ticket seems stuck</h2>
+  <p><strong>What it might be.</strong></p>
   <ul>
-    <li>Redis connectivity and keyspace prefix integrity.</li>
-    <li>Coder API reachability and token validity.</li>
-    <li>AI Gateway reachability and model availability.</li>
-    <li>GitHub external auth status for the tenant.</li>
-    <li>Stale workers and orphaned tickets.</li>
-    <li>Disk space and workspace quota on the NEXUS workspace.</li>
+    <li>A <strong>human escalation</strong> that's waiting on you. Stuck tickets are often just parked decisions.</li>
+    <li>Work that hit a <strong>transient failure</strong> which the loop will retry.</li>
+    <li>A genuinely wedged piece of work that exhausted its retries.</li>
+  </ul>
+  <p><strong>What to do.</strong></p>
+  <ol>
+    <li>Check <strong>escalations</strong> first — if there's a pending decision, that's the ticket's state and it needs you (see <a href="/docs/guides/handling-human-escalations">Handling Human Escalations</a>).</li>
+    <li>Give it a cycle. The loop re-reads and re-advances every cycle, so many stuck states clear shortly.</li>
+    <li>If it's still stuck after automatic recovery gave up, <strong>reset</strong> the team's stuck work back to the start and let it take a fresh pass.</li>
+  </ol>
+
+  <h2>Symptom: new work isn't starting</h2>
+  <p><strong>What it might be.</strong></p>
+  <ul>
+    <li>The fleet is <strong>paused or drained</strong> (you or a teammate set it earlier).</li>
+    <li>The team is <strong>targeted</strong> at a different repository, issue, or label.</li>
+  </ul>
+  <p><strong>What to do.</strong> Check the fleet steering state in the panel. If paused, drained, or targeted, switch back to normal to resume pickup.</p>
+
+  <h2>Symptom: an environment or integration looks off</h2>
+  <p><strong>What it might be.</strong> A configuration drift in the Coder or control-plane integration.</p>
+  <p><strong>What to do.</strong> Run a <strong>diagnostics</strong> check against the integration and address whatever it reports — identity access, model gateway reachability, GitHub authentication. This is the tooling equivalent of "check under the hood."</p>
+
+  <h2>Symptom: workspaces accumulating</h2>
+  <p><strong>What it might be.</strong> Workspaces that should have been torn down.</p>
+  <p><strong>What to do.</strong> Confirm the merge flow completed for those tickets. Workspaces are torn down on merge by design; if a merge didn't finish cleanly, that's the root cause to resolve first.</p>
+
+  <h2>Symptom: a previously stuck team</h2>
+  <p><strong>What it might be.</strong> Work that got wedged and needs a clean state to proceed.</p>
+  <p><strong>What to do.</strong> Clean the team's stale or failed tickets back to the start and clear the recovery counters, allowing the loop to begin again.</p>
+
+  <h2>The recovery principles to rely on</h2>
+  <ul>
+    <li><strong>The system self-heals by default.</strong> A single bad step is logged and retried; it never kills the brain.</li>
+    <li><strong>Recovery is bounded, then escalated.</strong> The loop retries a bounded number of times, then asks a human rather than spinning.</li>
+    <li><strong>State is in the store, not a process.</strong> Restarts pick up cleanly; durability means nothing is lost.</li>
+    <li><strong>"When in doubt, don't approve."</strong> A missing artifact or result means the reviewer will not approve — which is a guardrail, not a bug.</li>
   </ul>
 
+  <h2>When to escalate to a human (that's you)</h2>
   <p>
-    If doctor reports a failure, it prints a remediation hint. If it reports all green but the
-    system still misbehaves, the issue is likely in the LLM-driven agent logic, not the
-    infrastructure.
+    If you've checked escalations, given it a cycle, verified steering, and the work is still
+    wedged, use a <strong>reset</strong> — and if the cause is an unclear requirement or a
+    security question, treat it as the decision it is.
   </p>
-
-  <Callout type="info" title="Continue reading">
-    See <a href="/docs/guides/troubleshooting-connectivity">Connectivity &amp; Auth</a> for Coder, token, and GitHub external auth issues.
-    See <a href="/docs/guides/troubleshooting-workers">Worker &amp; Pipeline Issues</a> for worker timeouts, SENTINEL loops, merge conflicts, and STATUS.json.
-  </Callout>
 </DocsLayout>

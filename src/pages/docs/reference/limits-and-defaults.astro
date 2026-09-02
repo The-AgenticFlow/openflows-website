@@ -1,0 +1,93 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const HEALTH_ROWS = [
+  ['Beacon refresh', 'Workers refresh their liveness beacon on a short cadence.'],
+  ['Beacon lifetime', 'If a beacon stops refreshing, it expires on its own shortly after.'],
+  ['Staleness threshold', 'A worker silent past this point is declared stale and recoverable.'],
+];
+
+const RECOVERY_ROWS = [
+  ['Recovery attempts', 'A bounded retry count per ticket.'],
+  ['After exhausting', 'The ticket escalates to a human instead of retrying forever.'],
+];
+
+const NOTIFY_ROWS = [
+  ['Per-channel cooldown', 'At most one notification per channel per ticket within a window — prevents alert floods.'],
+  ['Failure safety', 'A failing channel is logged, never fatal to the orchestration.'],
+];
+
+const VERIFY_ROWS = [
+  ['Command set', 'Only a fixed allowlist of safe commands can be run during delegated verification.'],
+  ['Timeout cap', 'A verification run has a hard maximum timeout.'],
+  ['Output bound', 'Captured output is bounded so large logs don’t overflow the exchange.'],
+];
+
+const PACING_ROWS = [
+  ['Pass interval', 'The cadence at which the Controller re-reads the whole system and advances work.'],
+  ['Pass bound', 'A single pass is bounded so it can’t loop forever; it stops and retries next beat.'],
+  ['Self-healing', 'A bad pass is logged and retried — it never kills the controller.'],
+];
+
+const DURABILITY_ROWS = [
+  ['Coordination store', 'Configured for durable storage so team state survives restarts.'],
+  ['Two-writer rule', 'Only the controller and the worker surface may write; writes are validated.'],
+];
+
+const INVARIANT_ROWS = [
+  ['Planning before code', 'No code until the plan is approved.'],
+  ['Single-use approvals', 'A gate approval can’t be replayed.'],
+  ['Isolated review', 'Reviewer and builder never share a filesystem.'],
+  ['No keys in workers', 'Security by construction.'],
+  ['“When in doubt, don’t approve”', 'The reviewer blocks rather than guesses.'],
+  ['Bounded then escalate', 'Recovery stops and asks rather than spinning.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }, { label: 'Limits & Defaults' }]}>
+  <h1>Limits &amp; Defaults</h1>
+  <p>
+    The meaningful numbers to know when operating OpenFlows. Most of these are deliberate design choices rather than
+    settings you’d tune — they’re presented here in plain language as behaviors and ranges, not as configuration
+    constants.
+  </p>
+
+  <h2>Health &amp; liveness</h2>
+  <DocsTable headers={['Number', 'Meaning']} rows={HEALTH_ROWS} />
+  <p>
+    Net effect: OpenFlows detects a dead or unresponsive worker within roughly a couple of minutes, without needing to
+    poke every container.
+  </p>
+
+  <h2>Recovery</h2>
+  <DocsTable headers={['Number', 'Meaning']} rows={RECOVERY_ROWS} />
+  <p>
+    Recovery is bounded, then escalated — the system stops and asks rather than retrying forever.
+  </p>
+
+  <h2>Notifications</h2>
+  <DocsTable headers={['Limit', 'Meaning']} rows={NOTIFY_ROWS} />
+
+  <h2>Delegated verification</h2>
+  <p>
+    During delegated verification, the reviewer asks the builder to run a safe command and return evidence:
+  </p>
+  <DocsTable headers={['Limit', 'Meaning']} rows={VERIFY_ROWS} />
+
+  <h2>Orchestration pacing</h2>
+  <DocsTable headers={['Number', 'Meaning']} rows={PACING_ROWS} />
+
+  <h2>Durability</h2>
+  <DocsTable headers={['Item', 'Meaning']} rows={DURABILITY_ROWS} />
+
+  <h2>Design invariants (not configurable)</h2>
+  <DocsTable headers={['Invariant', 'Why it exists']} rows={INVARIANT_ROWS} />
+
+  <h2>Related</h2>
+  <ul>
+    <li><a href="/docs/reference/configuration-reference">Configuration Reference</a> — the knobs you can change.</li>
+    <li><a href="/docs/reference/notifications-reference">Notifications Reference</a> — how notifications carry their limits.</li>
+    <li><a href="/docs/concepts/security-model">Security by Design</a> — why the invariants exist.</li>
+  </ul>
+</DocsLayout>

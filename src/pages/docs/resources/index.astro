@@ -1,0 +1,21 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Resources', href: '/docs/resources' }]}>
+  <h1>Resources</h1>
+  <p>
+    Useful links and further reading for OpenFlows — where to go next, and where to keep up with the project.
+  </p>
+  <ul>
+    <li style={{ marginBottom: '0.75rem' }}>
+      <strong><a href="/docs/resources/further-reading">Further Reading</a></strong> — deeper material on the concepts and architecture.
+    </li>
+    <li style={{ marginBottom: '0.75rem' }}>
+      <strong><a href="/docs/resources/community-and-support">Community &amp; Support</a></strong> — where to ask questions and connect.
+    </li>
+    <li>
+      <strong><a href="/docs/reference/glossary">Glossary</a></strong> — a quick lookup of terms when reading the deeper material.
+    </li>
+  </ul>
+</DocsLayout>

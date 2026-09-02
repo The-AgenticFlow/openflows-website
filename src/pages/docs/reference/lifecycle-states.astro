@@ -1,0 +1,62 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const STATE_ROWS = [
+  ['Planning', 'FORGE is writing (or waiting on) the plan; no code is written. The first state a ticket enters.', 'Blocked, or Building (on plan approval)'],
+  ['Building', 'FORGE implements the approved plan and runs tests.', 'Testing, Blocked'],
+  ['Testing', 'Test work is underway.', 'Review ready, Blocked'],
+  ['Review ready', 'FORGE opened a pull request and marked it for review.', 'Blocked, Awaiting human'],
+  ['Review', 'SENTINEL is adversarially reviewing the pull request.', 'Merged (on approval), or back to Building (on rejection, continuous-integration failure, or conflict)'],
+  ['Merged', 'VESSEL merged the approved pull request. Terminal — the workspace is torn down and documentation follows.', '—'],
+  ['Blocked', 'Work is stuck at a step.', 'Usually toward Awaiting human'],
+  ['Awaiting human', 'Parked for a human decision; the system stopped retrying.', 'Resolved by a human action or a reset'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }, { label: 'Lifecycle States' }]}>
+  <h1>Lifecycle States</h1>
+  <p>
+    Every ticket travels through a fixed set of states. This reference lists them, what they mean, and what can happen
+    from each one.
+  </p>
+
+  <h2>The main states</h2>
+  <DocsTable headers={['State', 'Meaning', 'Can move to']} rows={STATE_ROWS} />
+
+  <h2>The enforced rules</h2>
+  <ul>
+    <li>A fresh ticket can only start in <strong>planning</strong> (or blocked) — it can’t skip planning.</li>
+    <li>Leaving <strong>planning</strong> requires consuming an <strong>approval</strong> that only the reviewer can issue.</li>
+    <li>The approval is <strong>single-use</strong> — it can’t be replayed.</li>
+  </ul>
+
+  <h2>Recovery states (invisible but important)</h2>
+  <p>
+    Separate from the ticket phases, recovery tracks things like:
+  </p>
+  <ul>
+    <li><strong>Stale worker</strong> — a workspace went silent (its heartbeat fired too long ago) and is marked for recovery.</li>
+    <li><strong>Orphaned ticket</strong> — assigned or in progress, but with no active worker.</li>
+    <li><strong>Crashed workspace</strong> — the machine or session died.</li>
+    <li><strong>Unmerged pull request</strong> — a pull request that should have been processed but wasn’t.</li>
+  </ul>
+  <p>
+    These are repaired automatically, with a bounded number of attempts, before escalation. See the
+    <a href="/docs/reference/limits-and-defaults">Limits &amp; Defaults</a> reference for how recovery behaves.
+  </p>
+
+  <h2>How a human interacts with states</h2>
+  <ul>
+    <li>You’re notified when a ticket enters <strong>awaiting human</strong>.</li>
+    <li>You can see every state in the control panel.</li>
+    <li><strong>Closing or commenting on the issue</strong>, or <strong>resetting</strong> a ticket, moves it between states.</li>
+    <li>A <strong>merged</strong> ticket is your output: a reviewed, production-ready pull request.</li>
+  </ul>
+
+  <h2>Related</h2>
+  <ul>
+    <li><a href="/docs/reference/roles-reference">Roles Reference</a> — who acts at each phase.</li>
+    <li><a href="/docs/guides/handling-human-escalations">Handling Human Escalations</a> — what to do when a ticket reaches you.</li>
+  </ul>
+</DocsLayout>

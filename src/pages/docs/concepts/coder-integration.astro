@@ -1,215 +1,78 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
-const CODER_PROVIDES_ROWS = [
-  ['Ephemeral workspaces', 'Terraform-defined templates; created per ticket and destroyed after merge.'],
-  ['Control-plane AI agents', 'Coder exposes AI agents at the control plane, not inside every workspace.'],
-  ['Model governance', 'LLM provider configuration, rate limits, cost tracking, and audit in one place.'],
-  ['Identity', 'SSO, RBAC, and Git external auth are managed by Coder.'],
-  ['Audit logging', 'Every workspace action, agent chat, and admin change is logged by Coder.'],
-  ['Cost tracking', 'Per-user and per-workspace compute and token cost attribution.'],
-  ['External auth', 'GitHub OAuth providers can be attached to Coder users  -  no PATs required.'],
+const SPLIT_ROWS = [
+  ['Job', 'Where work runs', 'How work is coordinated'],
+  ['Provides', 'Identity and login, disposable workspaces, model gateway, audit, network policy', 'The team, the plan gate, adversarial review, self-healing, merges'],
+  ['Never', 'Decides what the team should build', 'Decides where work executes'],
 ];
 
-const API_COMPARISON_ROWS = [
-  ['Where agents run', 'Control plane (Orchestrator host)', 'Inside the Coder workspace'],
-  ['Best suited for', 'Orchestration, planning, routing, long-running workflows', 'Inline coding assistance, short edits, ad-hoc questions'],
-  ['State management', 'OpenFlows SharedStore + Redis', 'Workspace-local context and chat history'],
-  ['LLM key exposure', 'Keys stay in Coder AI Gateway; never in workspace', 'Keys may be in the workspace depending on module setup'],
-  ['Lifecycle', 'Bound to a ticket and torn down after merge', 'Bound to a chat session'],
-  ['Scalability', 'Many parallel workers, each isolated', 'One chat per workspace, shared context'],
-  ['OpenFlows uses it', '<strong>Yes  -  for all orchestration</strong>', 'No  -  worker agents run via the CLI module inside the workspace'],
+const SECURITY_ROWS = [
+  ['AI calls happen only in the control plane', 'Through a central gateway, which means worker workspaces never hold an LLM key.'],
+  ['Git identity is a scoped OAuth link', 'No shared raw token ever sits in a workspace.'],
+  ['Worker workspaces are thin and disposable', 'No framework, no keys, tight network  -  because the intelligence they need lives centrally, not inside them.'],
 ];
 
-const LAYER_ROWS = [
-  ['Coder', 'Runtime, identity, workspaces, model governance, audit, external auth.'],
-  ['OpenFlows', 'Orchestration brain: flow graph, agent roles, state machine, review gates, recovery.'],
-  ['Coder Agent / CLI module', 'The tool FORGE/SENTINEL use inside a workspace to edit files and run tests.'],
-  ['GitHub / CI', 'External systems of record for issues, PRs, and required checks.'],
-];
-
-const EXTENSION_ROWS = [
-  ['<code>agents.&lt;role&gt;.coder_module</code>', 'Which Coder Registry module installs the code agent CLI in the worker workspace.'],
-  ['<code>agents.&lt;role&gt;.provider</code>', 'LLM provider and model passed through the Coder AI Gateway.'],
-  ['<code>agents.&lt;role&gt;.instances</code>', 'How many parallel worker slots NEXUS may provision for that role.'],
-  ['<code>ai_gateway.primary</code>', 'Set to <code>"coder"</code> to route all calls through the Coder AI Gateway.'],
+const MAINTENANCE_ROWS = [
+  ['Each side upgrades independently', 'Coder can own and improve the agent loop; OpenFlows owns coordination.'],
+  ['One integration to keep', 'Every role is driven over one consistent interface, and OpenFlows stays a layer on top.'],
+  ['The pieces stay small and focused', 'Coder doesn\u2019t think about workflow; OpenFlows doesn\u2019t think about machines.'],
 ];
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'Coder Integration' }]}>
-  <h1>Coder Integration</h1>
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'The Coder / OpenFlows Split' }]}>
+  <h1>The Coder / OpenFlows Split</h1>
   <p>
-    OpenFlows is a thin orchestration brain that runs on top of a self-hosted <strong>Coder</strong>
-    deployment. Coder is the runtime. OpenFlows does not provision virtual machines, manage SSH keys, host
-    models, or maintain a user directory. It tells Coder to create a workspace, binds a worker to it,
-    and then coordinates the agents through the Coder API. When the ticket is done, it tells Coder to
-    destroy the workspace. Everything that is hard about infrastructure  -  identity, isolation, audit,
-    cost tracking, and model governance  -  is delegated to Coder.
+    If you remember only one idea from this documentation, let it be this founding asymmetry:
   </p>
   <p>
-    This split is intentional. Coder is a mature, self-hosted platform for development environments. It
-    already knows how to provision ephemeral workspaces, enforce SSO, route LLM calls through a central
-    gateway, and log every action. OpenFlows adds the layer that turns those capabilities into an
-    autonomous engineering pipeline: a directed flow graph, a typed state store, adversarial review, and
-    crash recovery. The two layers are complementary, not competitive.
+    <strong>Coder governs <em>where</em> agents run. OpenFlows governs <em>how</em> they coordinate.</strong>
+  </p>
+  <p>
+    This single split explains the entire architecture, and it's worth understanding on its own.
   </p>
 
-  <Callout type="warning" title="Coder is the only runtime">
-    OpenFlows does not run workers on the orchestrator host, on local laptops, or on raw Kubernetes
-    pods. In production, every agent invocation happens inside an ephemeral Coder workspace. If Coder is
-    not available, OpenFlows cannot create workers.
+  <h2>Two providers, two jobs</h2>
+  <p>
+    OpenFlows composes two very different systems, and each does the thing it's best at  -  nothing else.
+  </p>
+  <DocsTable headers={['', 'Coder', 'OpenFlows']} rows={SPLIT_ROWS} />
+  <ul>
+    <li>
+      <strong>Coder is the execution substrate.</strong> It gives you governed, ephemeral workspaces; real
+      identities; a central place where model calls happen; and the network and admin controls that keep
+      things safe. It provides <em>machines and access</em>.
+    </li>
+    <li>
+      <strong>OpenFlows is the intelligence layer.</strong> It turns a pile of workspaces into a
+      <em>team</em>. It plans, reviews, recovers, and merges. It provides <em>process and judgment</em>.
+    </li>
+  </ul>
+  <p>Neither duplicates the other's core job.</p>
+
+  <h2>Why the split makes the system secure</h2>
+  <p>Most of OpenFlows' security comes directly from this division:</p>
+  <DocsTable headers={['Property', 'How the split delivers it']} rows={SECURITY_ROWS} />
+  <p>
+    If OpenFlows tried to do Coder's job, it would have to put intelligence and credentials into every
+    workspace, and the safety picture would collapse.
+  </p>
+
+  <h2>Why the split makes the system maintainable</h2>
+  <DocsTable headers={['Reason', 'What it means']} rows={MAINTENANCE_ROWS} />
+
+  <h2>Where the trusted boundary sits</h2>
+  <p>
+    There is one long-lived, trusted component  -  the <strong>orchestrator workspace</strong>  -  which
+    legitimately holds the credentials and runs the control loop. Everything else is ephemeral and
+    untrusted. The split tells you exactly which box to trust and why, which is the mental model you need
+    before reading the architecture material.
+  </p>
+
+  <Callout type="info" title="One trusted place, everything else disposable">
+    Trust is concentrated rather than spread. Instead of sprinkling trust across many long-lived pieces,
+    OpenFlows keeps it in a single auditable place and keeps the rest ephemeral.
   </Callout>
-
-  <h2>What Coder Provides</h2>
-  <p>
-    Coder is responsible for the runtime substrate. A single Coder deployment can serve many OpenFlows
-    tenants, and each tenant benefits from Coder's built-in controls without OpenFlows reimplementing them.
-  </p>
-  <DocsTable headers={['Capability', 'What it means for OpenFlows']} rows={CODER_PROVIDES_ROWS} />
-
-  <h2>OpenFlows as a Thin Orchestration Brain</h2>
-  <p>
-    If Coder is the body  -  the workspaces, the network, the identity, the model gateway  -  OpenFlows is
-    the nervous system. It decides which agent should act on which ticket, in what order, with what review
-    gates, and with what recovery behaviour. It does this by maintaining the SharedStore and driving the
-    PocketFlow graph.
-  </p>
-  <p>
-    The orchestrator is a Rust process that runs somewhere with network access to Coder and Redis. It does
-    not need a large GPU or a model server. It only needs to call the Coder API, the GitHub API (via Coder
-    external auth), and Redis. All LLM calls are forwarded to the Coder AI Gateway, which owns the keys and
-    the model configuration. The orchestrator never sees an API key.
-  </p>
-
-  <CodeBlock lang="json">{`{
-  "workspace_provider": "coder",
-  "coder_module": "claude-code",
-  "ai_gateway": {
-    "primary": "coder",
-    "fallback": "litellm"
-  }
-}`}</CodeBlock>
-
-  <h2>Control-Plane AI Agents vs Workspace Agents</h2>
-  <p>
-    Coder has two ways of using AI agents, and the distinction is important for understanding OpenFlows.
-  </p>
-  <p>
-    <strong>Control-plane AI agents</strong> run in the Coder control plane and are exposed through APIs.
-    They are centrally managed, can see all workspaces, and are governed by the Coder AI Gateway. They are
-    ideal for orchestration: long-running tasks, routing decisions, and multi-workspace coordination.
-  </p>
-  <p>
-    <strong>Workspace agents</strong> run inside an individual Coder workspace, usually attached to the
-    editor or IDE. They have local context, can edit files in that workspace, and are tied to the user's
-    chat session. They are ideal for interactive coding assistance, not for autonomous, cross-workflow
-    orchestration.
-  </p>
-  <p>
-    OpenFlows uses the control-plane model for orchestration. NEXUS, FORGE, and SENTINEL are not sitting in
-    a chat window inside a workspace; they are worker identities that the orchestrator dispatches to Coder
-    workspaces. The <code>coder_module</code> field in registry.json determines which CLI tool (Claude Code,
-    Codex, Aider) is installed inside the workspace for the agent to use.
-  </p>
-
-  <h2>Chats API vs AgentAPI</h2>
-  <p>
-    Coder exposes two APIs for agent interaction. OpenFlows uses the <strong>Chats API</strong> for
-    orchestration. The <strong>AgentAPI</strong> is the in-workspace API used by editor-embedded agents.
-  </p>
-  <DocsTable headers={['Aspect', 'Chats API', 'AgentAPI']} rows={API_COMPARISON_ROWS} />
-
-  <Callout type="info" title="OpenFlows uses Chats API, not AgentAPI">
-    OpenFlows orchestrates workers by creating chats through the Coder Chats API, bound to a specific
-    Coder workspace. This gives the orchestrator a durable, observable, and centrally governed channel
-    for every worker. The workspace agent CLI then performs the actual file edits and test commands.
-  </Callout>
-
-  <h2>Complementary Layers</h2>
-  <p>
-    The cleanest way to think about the architecture is as a stack of responsibilities. Coder owns the
-    bottom two layers: the infrastructure and the AI gateway. OpenFlows owns the orchestration layer. The
-    CLI module inside the workspace is the narrow bridge between the two. GitHub and CI sit below and above
-    the stack as external systems of record.
-  </p>
-  <DocsTable headers={['Layer', 'Responsibility']} rows={LAYER_ROWS} />
-
-  <p>
-    This separation means that improvements in Coder automatically improve OpenFlows. If Coder adds a new
-    identity provider, OpenFlows can use it without code changes. If Coder improves workspace isolation or
-    model governance, every OpenFlows worker benefits. OpenFlows, in turn, can focus on the hard problem of
-    coordinating multiple agents toward a mergeable PR.
-  </p>
-
-  <h2>Workspace Lifecycle</h2>
-  <p>
-    The Coder integration is most visible in the workspace lifecycle. Every worker gets a fresh workspace
-    from a template, runs a single ticket's worth of work, and is destroyed. The workspace is identified by
-    the worker ID and the ticket ID, so NEXUS can map state back to the correct agent even if many
-    workspaces are running concurrently.
-  </p>
-  <ol>
-    <li>
-      <strong>Provision:</strong> NEXUS calls the Coder API to create a workspace from the configured
-      template. The <code>coder_module</code> is installed automatically by the Coder Registry.
-    </li>
-    <li>
-      <strong>Bind:</strong> NEXUS creates a Chats API session bound to the workspace and assigns it to the
-      worker identity.
-    </li>
-    <li>
-      <strong>Execute:</strong> FORGE, SENTINEL, or VESSEL runs inside the workspace via the CLI module,
-      reading and writing files as a normal Coder user would.
-    </li>
-    <li>
-      <strong>Complete:</strong> when the ticket reaches a terminal state (merged, awaiting human, or
-      failed recovery), NEXUS releases the worker slot.
-    </li>
-    <li>
-      <strong>Teardown:</strong> NEXUS calls the Coder API to destroy the workspace. Any local files,
-      downloaded dependencies, or cached model outputs are deleted with it.
-    </li>
-  </ol>
-
-  <h2>Extension Point: registry.json v2</h2>
-  <p>
-    The bridge between OpenFlows and Coder is configured in
-    <code>orchestration/agent/registry.json</code>. The v2 schema adds explicit fields for workspace
-    provisioning, AI Gateway routing, and per-agent CLI modules. This is the extension point for adding new
-    models, new agent CLIs, or new Coder templates without changing the orchestrator code.
-  </p>
-  <DocsTable headers={['Field', 'What it controls']} rows={EXTENSION_ROWS} />
-
-  <CodeBlock lang="json">{`{
-  "agents": {
-    "forge": {
-      "provider": "anthropic",
-      "model": "claude-sonnet-4-20250514",
-      "coder_module": "claude-code",
-      "active": true,
-      "instances": 2
-    },
-    "sentinel": {
-      "provider": "openai",
-      "model": "gpt-4.1",
-      "coder_module": "codex",
-      "active": true,
-      "instances": 1
-    }
-  }
-}`}</CodeBlock>
-
-  <h2>Why the Split Matters</h2>
-  <p>
-    Running autonomous agents inside long-lived workspaces with local secrets and accumulated context is a
-    security and reliability anti-pattern. Coder solves the workspace problem; OpenFlows solves the
-    coordination problem. By composing the two, OpenFlows gets enterprise-grade isolation, identity, and
-    audit for free, and can concentrate on the orchestration logic that makes the agents useful.
-  </p>
-  <p>
-    For operators, the split is also a clean responsibility boundary. If a workspace fails to provision,
-    the problem is in Coder or the template. If the wrong agent is assigned to a ticket, the problem is in
-    OpenFlows. Debugging is simpler because each layer only worries about its own concerns.
-  </p>
 </DocsLayout>

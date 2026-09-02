@@ -1,141 +1,87 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
-
-const GITHUB_OAUTH_SCOPES = [
-  ['repo', 'Full read and write access to the target repository. FORGE needs this to read code, push branches, and open pull requests. VESSEL needs this to poll merge status and perform the merge.'],
-  ['workflow', 'Grants permission to read and update GitHub Actions workflow files. Enable only if the repository contains workflows that the agents may modify or extend.'],
-  ['read:org', 'Read-only access to organization membership. Required when the target repository is owned by a GitHub organization, because Coder external auth must resolve the organization-scoped identity.'],
-  ['user:email', 'Read-only access to the authenticated user\'s email addresses. Coder uses this to map the GitHub identity to a Coder user account.'],
-];
+import { Callout, StepHeading, DocCards } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Token Guide' }]}>
-  <h1>Token &amp; Authentication Guide</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Identity & OAuth' }]}>
+  <h1>Identity &amp; OAuth</h1>
 
   <p>
-    OpenFlows is a thin orchestration brain that runs on top of a self-hosted Coder deployment. Coder is the
-    <strong>only</strong> runtime. Every GitHub action, every workspace provision, and every LLM call is routed through
-    Coder's governed control plane. Tokens are therefore the single most sensitive part of the deployment: they are the
-    boundary between the autonomous agents and the repositories, infrastructure, and model providers they touch.
+    OpenFlows acts on GitHub through a <strong>real identity</strong>, not a shared token. When the team
+    pushes a branch, opens a pull request, or comments on an issue, it does so as the tenant's linked
+    GitHub identity, resolved through a <strong>scoped OAuth link</strong>. This page explains that
+    model in user-facing terms.
   </p>
 
-  <p>
-    This guide explains how to obtain and configure the three credentials OpenFlows needs: a GitHub OAuth App for Coder
-    external authentication, a Coder API token for the orchestrator, and  -  in test environments only  -  a GitHub personal
-    access token. It also covers the required scopes, rotation procedures, and security controls that keep the
-    deployment safe.
-  </p>
-
-  <Callout type="warning" title="Worker workspaces contain zero credentials">
-    Coder workspaces created for FORGE, SENTINEL, VESSEL, and LORE workers contain
-    <strong>no AI software</strong>, <strong>no LLM keys</strong>, and <strong>no GitHub tokens</strong>. The Coder Agent runs
-    in the Coder control plane and reaches into the workspace through the same secure tunnel that an IDE uses. All
-    GitHub identity is resolved by Coder external auth; orchestration commands are issued through the Coder Chats API.
+  <Callout type="info" title="No raw tokens in worker workspaces">
+    This is the single most important fact about how OpenFlows authenticates: <strong>worker
+    workspaces hold no raw repository credentials and no model keys.</strong> The working spaces where
+    agents do their jobs are thin and disposable - they contain none of the secrets that would let an
+    attacker - or a misbehaving agent - act on your behalf.
   </Callout>
 
-  <h2>What you are configuring</h2>
-
+  <StepHeading step="1" id="identity-model">The identity model</StepHeading>
   <p>
-    A production OpenFlows deployment needs exactly two long-lived secrets in the orchestrator's environment, plus one
-    short-lived per-user OAuth flow that Coder manages for the tenant:
+    OpenFlows never relies on a shared token sitting inside a sandbox. Instead, identity works in two
+    layers:
   </p>
+  <ul>
+    <li>
+      <strong>A scoped GitHub OAuth link per tenant.</strong> For each tenant, you link a real GitHub
+      identity through OAuth in the Coder dashboard (or the OpenFlows control panel). This grants the
+      team the scoped ability to read the repository, push branches, open pull requests, and comment on
+      issues - attributable to that tenant's identity, not to a shared, mysterious account.
+    </li>
+    <li>
+      <strong>A real, attributable identity for every action.</strong> Every action an agent takes
+      inherits a real identity through Coder's login and that scoped OAuth link. There are no shared,
+      anonymous accounts. When something is merged or commented on, it is attributable and auditable.
+    </li>
+  </ul>
 
+  <StepHeading step="2" id="where-credentials-live">Where credentials live</StepHeading>
+  <p>
+    Credentials are deliberately concentrated, not spread around:
+  </p>
+  <ul>
+    <li>
+      <strong>The control plane</strong> is where model access and the coordination happen. Every AI
+      call is routed centrally through the model gateway, so worker workspaces never hold a model key.
+    </li>
+    <li>
+      <strong>The orchestrator workspace</strong> is the one long-lived, trusted component that
+      legitimately holds the credentials the workers never see. It runs the coordination loop and is
+      the auditable place where trust is concentrated.
+    </li>
+    <li>
+      <strong>Worker workspaces</strong> hold none of this. They have no raw repository credentials, no
+      model keys, and no secrets - only the repository checkout, the coordination surface, and their
+      role's skills.
+    </li>
+  </ul>
+
+  <Callout type="tip" title="Why this keeps things safe">
+    Remove the secrets from the sandbox and an entire class of "stolen key" attacks disappears. Trust
+    is concentrated in a single auditable place, and everything else is disposable and keyless. See the
+    <a href="/docs/concepts/security-model">Security Model</a> page for the full picture.
+  </Callout>
+
+  <StepHeading step="3" id="how-it-is-set-up">How it is set up</StepHeading>
   <ol>
-    <li>
-      <strong>GitHub OAuth App</strong>  -  registered in GitHub and wired into Coder external auth. This is how Coder
-      obtains a short-lived, scoped token to act on GitHub as the tenant. It is the only production path for GitHub
-      authentication.
-    </li>
-    <li>
-      <strong>Coder API token (<code>CODER_SESSION_TOKEN</code>)</strong>  -  issued to the OpenFlows orchestrator so it can
-      call the Coder control plane, provision workspaces, and dispatch Chats API messages.
-    </li>
-    <li>
-      <strong>GitHub PAT (test only)</strong>  -  in isolated test environments, a personal access token may be placed at
-      <code>/tmp/github_token</code>. It is a convenience for integration tests and is never used in production.
-    </li>
+    <li><strong>Add a tenant</strong> for your repository (see <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a>).</li>
+    <li><strong>Complete GitHub OAuth</strong> for that tenant - link the real identity OpenFlows will act as.</li>
+    <li>That scope follows the team from then on. No per-ticket token management is needed.</li>
   </ol>
-
   <p>
-    No other token is required. Do not put GitHub PATs, LLM API keys, or cloud credentials inside worker workspaces,
-    and do not store them in repository code. The entire credential model is centralized in Coder or the orchestrator
-    host.
+    If a deeper topic (such as token-level configuration or troubleshooting) is not covered here, that
+    is because the current documentation keeps the authentication model intentionally simple: a scoped
+    OAuth link, real identity, and no raw tokens in workspaces.
   </p>
 
-  <h2>Register a GitHub OAuth App</h2>
-
-  <p>
-    The GitHub OAuth App is the production source of identity. OpenFlows does not accept PATs in production, so every
-    tenant repository must be reachable through a Coder-managed OAuth session that is backed by this app.
-  </p>
-
-  <h3>Create the OAuth App</h3>
-
-  <ol>
-    <li>
-      Open <strong>Settings → Developer settings → OAuth Apps</strong> in your GitHub account or organization. If the
-      repository is owned by an organization, create the app under the organization so it can be authorized at the org
-      level.
-    </li>
-    <li>
-      Click <strong>New OAuth App</strong> and fill in the fields:
-      <ul>
-        <li>
-          <strong>Application name</strong>: a descriptive name such as <code>OpenFlows - Coder External Auth</code>.
-        </li>
-        <li>
-          <strong>Homepage URL</strong>: the root URL of your Coder deployment, e.g.
-          <code>https://coder.example.com</code>.
-        </li>
-        <li>
-          <strong>Authorization callback URL</strong>: the Coder external auth callback endpoint. For a default Coder
-          deployment this is <code>https://coder.example.com/external-auth/callback</code>. The exact path is shown in
-          the Coder dashboard when you add the external auth provider.
-        </li>
-      </ul>
-    </li>
-    <li>
-      Uncheck <strong>Enable Device Flow</strong> unless you have a specific use case for it; OpenFlows uses the
-      web-based authorization flow.
-    </li>
-    <li>
-      Click <strong>Register application</strong>. On the next page, click <strong>Generate a new client secret</strong>
-      and copy both the client ID and the client secret to a password manager or vault. GitHub will show the secret only
-      once.
-    </li>
-  </ol>
-
-  <h3>Select the scopes</h3>
-
-  <p>
-    OAuth App scopes are requested by Coder when the tenant authorizes the connection. Request the smallest set that still
-    lets the autonomous team read the repository, open pull requests, and merge them. The recommended scopes are:
-  </p>
-
-  <DocsTable headers={['Scope', 'Why it is needed']} rows={GITHUB_OAUTH_SCOPES} />
-
-  <Callout type="tip" title="Use a dedicated OAuth App per environment">
-    Register one GitHub OAuth App for production, another for staging, and a separate one for local development. This
-    isolates scopes, audit logs, and blast radius if a client secret is leaked. Never reuse the production OAuth App for
-    ephemeral test tenants.
-  </Callout>
-
-  <h3>Authorize the organization</h3>
-
-  <p>
-    If the target repository belongs to an organization, the OAuth App must be authorized at the organization level
-    before Coder can request tokens on behalf of members. A user can authorize the app for their own account, but the
-    organization authorization is what grants access to organization-owned repositories.
-  </p>
-
-  <p>
-    Go to <strong>Organization settings → Third-party access → OAuth Apps</strong>, find the app you created, and click
-    <strong>Grant access</strong>. Members will then see the app during the Coder external auth flow and can approve it
-    for their own accounts.
-  </p>
-
-  <Callout type="info" title="Continue reading">
-    See <a href="/docs/getting-started/token-guide-coder">Coder External Auth & API Token</a> for wiring the OAuth App into Coder and obtaining the orchestrator token.
-  </Callout>
+  <h2 id="related">Related pages</h2>
+  <DocCards cards={[
+    { icon: '🔐', title: 'Security by Design', desc: 'Why the split keeps secrets out of the sandbox.', href: '/docs/concepts/security-model' },
+    { icon: '🖥️', title: 'Workspaces', desc: 'What a workspace contains - and deliberately does not.', href: '/docs/concepts/coder-integration' },
+    { icon: '🚀', title: 'First Issue', desc: 'See the OAuth step in the full walkthrough.', href: '/docs/getting-started/first-issue' },
+  ]} />
 </DocsLayout>

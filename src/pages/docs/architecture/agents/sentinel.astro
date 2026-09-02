@@ -1,126 +1,44 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'SENTINEL (Reviewer)' }]}>
   <h1>SENTINEL  -  Adversarial Reviewer</h1>
 
   <p>
-    SENTINEL is the adversarial reviewer. It runs in a fresh, ephemeral Coder workspace for each
-    evaluation to eliminate accumulated bias. SENTINEL reviews security, test coverage,
-    adherence to <code>CONTRACT.md</code>, and code quality. Using a different LLM provider
-    than FORGE creates <strong>adversarial review</strong>  -  the reviewer's blind spots differ
-    from the writer's.
+    SENTINEL is the <strong>reviewer</strong>. It adversarially reviews plans and code for security, quality, and test
+    coverage, and it approves the gates that let work move forward. SENTINEL reviews from its own isolated workspace
+    and can request evidence from the builder — but it never reaches into the builder's filesystem.
   </p>
-
-  <Callout type="info" title="plan_mode: true">
-    SENTINEL runs with <code>plan_mode: true</code> which allocates more thinking tokens
-    for thorough review. This is critical for catching subtle security and logic issues.
-  </Callout>
-
-  <h2>Architecture</h2>
-
-  <pre style="background: var(--color-parchment-canvas); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font-mono); font-size: 0.875rem; overflow-x: auto;">
-┌─────────────────────────────────────────────────────────────┐
-│ SENTINEL Workspace (fresh per evaluation)                    │
-│                                                              │
-│  ┌────────────────┐     ┌──────────────────────────────────┐│
-│  │ Coder Agent    │────▶│ openflows-harness                ││
-│  │ (LLM Session)  │     │ - dispatch read (get task)       ││
-│  └────────────────┘     │ - status get (track phase)       ││
-│                          │ - pr review (read diff)          ││
-│                          │ - review write (blocking comments)││
-│                          └──────────────────────────────────┘│
-│                                      │                        │
-│                                      ▼                        │
-│                              ┌─────────────┐                 │
-│                              │    Redis    │                 │
-│                              │ SharedStore │                 │
-│                              └─────────────┘                 │
-└─────────────────────────────────────────────────────────────┘</pre>
-
-  <h2>Review Process</h2>
-
-  <ol>
-    <li><strong>Handoff received</strong>  -  FORGE writes <code>handoff.md</code> via harness; SENTINEL reads it</li>
-    <li><strong>Plan review</strong>  -  Reads <code>CONTRACT.md</code> and <code>PLAN.md</code>; writes <code>CONTRACT.md</code> response: <code>AGREED</code> / <code>CHANGES_REQUESTED</code></li>
-    <li><strong>Segment evaluation</strong>  -  After each FORGE commit, evaluates diff; writes <code>segment-N-eval.md</code></li>
-    <li><strong>Final review</strong>  -  Holistic review of entire branch; writes <code>final-review.md</code> (APPROVED / CHANGES_REQUESTED)</li>
-    <li><strong>GitHub PR comments</strong>  -  Posts blocking comments directly on PR via GitHub MCP</li>
-  </ol>
-
-  <h2>Evaluation Criteria (5 Dimensions)</h2>
-
-  <DocsTable headers={['Dimension', 'What SENTINEL Checks']} rows={[
-    ['Correctness', 'Logic matches spec; edge cases handled; no off-by-one errors'],
-    ['Security', 'Input validation; no secrets in logs; no SQL injection; auth checks'],
-    ['Test Coverage', 'Unit tests for new logic; integration tests for API changes; property-based tests for algorithms'],
-    ['Standards', 'Code style (rustfmt/prettier); naming conventions; error handling patterns; documentation'],
-    ['No Regressions', 'Existing tests pass; no broken APIs; backward compatibility maintained'],
-  ]} />
-
-  <h2>Output Artifacts</h2>
-
-  <DocsTable headers={['Artifact', 'When', 'Content']} rows={[
-    ['<code>CONTRACT.md</code>', 'Plan phase', 'AGREED / CHANGES_REQUESTED with specific feedback'],
-    ['<code>segment-N-eval.md</code>', 'Per segment', 'APPROVED / REJECTED with line-level comments'],
-    ['<code>final-review.md</code>', 'Pre-merge', 'APPROVED / CHANGES_REQUESTED  -  unblocks VESSEL'],
-    ['GitHub PR review', 'Continuous', 'Blocking comments on specific lines; security labels'],
-  ]} />
-
-  <h2>Configuration</h2>
-
-  <CodeBlock lang="json">{`{
-  "agents": {
-    "sentinel": {
-      "provider": "openai",
-      "model": "gpt-4.1",
-      "coder_module": "codex",
-      "active": true,
-      "instances": 1,
-      "plan_mode": true,
-      "skills": ["security-audit", "test-coverage"],
-      "mcps": ["github-mcp"]
-    }
-  }
-}`}</CodeBlock>
-
-  <Callout type="warning" title="Adversarial routing matters">
-    FORGE and SENTINEL <strong>must</strong> use different model families (e.g., FORGE on Anthropic,
-    SENTINEL on OpenAI). Running both on the same provider defeats the purpose of adversarial review.
-    See <a href="/docs/guides/model-routing">Model Routing</a>.
-  </Callout>
-
-  <h2>Workspace Lifecycle</h2>
 
   <p>
-    SENTINEL workspaces are <strong>ephemeral per evaluation</strong>:
+    SENTINEL reviews in a fresh workspace for each evaluation, which eliminates accumulated bias. It reviews against
+    the agreed plan, records a verdict, and, if it cannot verify the work, it holds the ticket rather than guessing.
+    This is the "when in doubt, don't approve" principle in action: if the required evidence is missing or
+    unreadable, SENTINEL does not approve.
   </p>
 
-  <ol>
-    <li>NEXUS provisions fresh workspace for evaluation</li>
-    <li>SENTINEL clones repo at PR commit</li>
-    <li>Runs review against CONTRACT.md</li>
-    <li>Writes evaluation to PR and SharedStore</li>
-    <li>Workspace destroyed immediately after</li>
-  </ol>
+  <h2>What SENTINEL does</h2>
+  <ul>
+    <li><strong>Reviews the plan</strong> before any code is written, and agrees or requests changes.</li>
+    <li><strong>Adversarially reviews the pull request</strong> for security, quality, and test coverage against the plan.</li>
+    <li><strong>Approves gates.</strong> An approved plan unblocks building; an approved review unblocks merging.</li>
+    <li><strong>Requests evidence.</strong> SENTINEL asks FORGE to run a safe, allowlisted command and reads the returned evidence — it never gets shell access to FORGE's tree.</li>
+  </ul>
 
-  <p>This eliminates bias accumulation and ensures each review starts from a clean slate.</p>
-
-  <h2>Hook System</h2>
-
-  <DocsTable headers={['Hook', 'Purpose']} rows={[
-    ['<code>session_start.sh</code>', 'Loads CONTRACT.md, PR diff, handoff context'],
-    ['<code>pre_bash_guard.sh</code>', 'Read-only mode  -  blocks write commands'],
-    ['<code>post_write_lint.sh</code>', 'Validates review artifacts are well-formed'],
-    ['<code>stop_require_artifact.sh</code>', 'Requires evaluation artifact before stop'],
-  ]} />
-
-  <h2>Rejection Loop Detection</h2>
-
+  <h2>Why the review is trustworthy</h2>
   <p>
-    NEXUS tracks consecutive rejections for the same segment. After <code>SENTINEL_REJECTION_LIMIT</code>
-    (default 3), the ticket is escalated to <code>AwaitingHuman</code> with a <code>STATUS.json</code> blocker.
+    SENTINEL's review is meaningful because it's isolated:
   </p>
+  <ul>
+    <li>SENTINEL <strong>never touches FORGE's filesystem</strong>. Builder and reviewer don't share a tree.</li>
+    <li>SENTINEL only interacts with FORGE's code by requesting a safe command and reading the evidence.</li>
+    <li>A verification result that wasn't <strong>durably recorded</strong> cannot approve a gate.</li>
+  </ul>
+
+  <Callout type="warning" title="Strict by design">
+    SENTINEL would rather block than merge something unverified. If the evidence isn't there, it holds the ticket
+    or escalates — it never approves on a guess. This single strictness is worth more than any individual control.
+  </Callout>
 </DocsLayout>

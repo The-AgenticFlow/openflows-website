@@ -1,0 +1,28 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+
+const LINKS = [
+  { title: 'Glossary', desc: 'Every term, defined in one line.', href: '/docs/reference/glossary' },
+  { title: 'Roles Reference', desc: 'The team members and their responsibilities.', href: '/docs/reference/roles-reference' },
+  { title: 'Lifecycle States', desc: 'Every phase a ticket can be in.', href: '/docs/reference/lifecycle-states' },
+  { title: 'Configuration Reference', desc: 'The knobs you can set.', href: '/docs/reference/configuration-reference' },
+  { title: 'Command Surface', desc: 'The programmatic way to drive the same operations the panel provides.', href: '/docs/reference/command-surface' },
+  { title: 'Notifications Reference', desc: 'Channels, behavior, and limits.', href: '/docs/reference/notifications-reference' },
+  { title: 'Limits & Defaults', desc: 'The meaningful numbers to know.', href: '/docs/reference/limits-and-defaults' },
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }]}>
+  <h1>Reference</h1>
+  <p>
+    This section is the lookup part of the documentation — organized for quick answers rather than narrative. It’s
+    written in plain language with no code.
+  </p>
+  <ul>
+    {LINKS.map(({ title, desc, href }) => (
+      <li style={{ marginBottom: '0.75rem' }}>
+        <strong><a href={href}>{title}</a></strong> — {desc}
+      </li>
+    ))}
+  </ul>
+</DocsLayout>

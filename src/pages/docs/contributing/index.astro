@@ -1,183 +1,55 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
-
-const NORMS_ROWS = [
-  ['Architecture-first', 'Every change starts with a clear data model, flow phase, or SharedStore contract. Implementation details follow structure.'],
-  ['Coder is the runtime', 'OpenFlows is a thin orchestration layer over a self-hosted Coder deployment. Workspaces, identity, and LLM keys are owned by Coder.'],
-  ['Ephemeral by default', 'No long-lived agent state. Workspaces are provisioned per task and torn down after merge.'],
-  ['Reconcile, don’t assume', 'NEXUS recovers from ambiguity and failure. Every change must survive <code>reconcile()</code> and at least one crash scenario.'],
-  ['Minimal surface area', 'Prefer small, reviewable diffs. One logical change per branch, one branch per ticket.'],
-  ['Write the test before the excuse', 'If a change is hard to test, it is usually hard to operate. Tests are not optional.'],
-];
-
-const BRANCH_ROWS = [
-  ['Feature work', '<code>forge-{slot}/{ticket-id}</code>', 'Primary branch for tickets. Example: <code>forge-1/OF-142</code>.'],
-  ['Docs only', '<code>docs/{ticket-id}-{short-topic}</code>', 'Documentation, copy, and website changes that do not touch runtime code.'],
-  ['Hotfix', '<code>hotfix/{ticket-id}-{description}</code>', 'Urgent fixes against the current release branch.'],
-  ['Release prep', '<code>release/{version}</code>', 'Version bumps, changelog assembly, and release notes.'],
-];
-
-const TRIAGE_ROWS = [
-  ['Untriaged', 'New issues without a label or owner. NEXUS ignores them.'],
-  ['needs-info', 'Missing reproduction, logs, or scope. Ask the reporter before any code is written.'],
-  ['good-first-issue', 'Self-contained, well-scoped, safe for new contributors.'],
-  ['bug', 'Unexpected behavior with a reproducible path. Needs a regression test.'],
-  ['enhancement', 'New capability. Requires an ADR or a one-pager in the issue description.'],
-  ['blocked', 'Cannot proceed without a merge, decision, or external dependency.'],
-];
-
-const COMMIT_ROWS = [
-  ['<code>feat(scope): description</code>', 'New behavior or capability.'],
-  ['<code>fix(scope): description</code>', 'Bug fix with a regression test.'],
-  ['<code>docs(scope): description</code>', 'Documentation or website changes.'],
-  ['<code>refactor(scope): description</code>', 'Internal restructuring with no observable behavior change.'],
-  ['<code>test(scope): description</code>', 'Test-only changes.'],
-  ['<code>chore(scope): description</code>', 'Tooling, dependencies, or housekeeping.'],
-];
+import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Contributing', href: '/docs/contributing' }, { label: 'Contributor Guide' }]}>
   <h1>Contributor Guide</h1>
   <p>
-    OpenFlows is a serious system for orchestrating code agents. Every contributor  -  whether
-    they are fixing a typo, adding a skill, or extending the NEXUS reconcile loop  -  operates
-    under the same engineering contract: the architecture is the product, the runtime belongs to
-    Coder, and the only acceptable failure mode is a clean hand-off to NEXUS. This guide defines
-    the norms, expectations, and mechanics for working in the codebase.
-  </p>
-  <p>
-    The project is written primarily in Rust, orchestrated by the PocketFlow engine, and backed
-    by Redis. Its extension point is <code>orchestration/agent/registry.json</code> v2. If you can
-    model a task as a flow phase, you can add it without altering core code. If your change
-    requires core changes, it must be justified by a data-model or flow-level improvement.
+    OpenFlows is an open project, and contributions are welcome. Every contribution — whether it’s a bug report, a
+    documentation improvement, or a new feature — flows through a workflow that mirrors the product’s own culture:
+    a plan or proposal is discussed and agreed before implementation, the change is reviewed, and only reviewed work
+    is merged.
   </p>
 
-  <h2>Project Norms</h2>
-  <p>
-    These norms are not suggestions. They are the guardrails that keep a distributed team of
-    human and agent contributors from producing a fragile, stateful mess. Read them before you
-    open an issue, before you write code, and before you open a pull request.
-  </p>
-  <DocsTable headers={['Norm', 'What it means']} rows={NORMS_ROWS} />
-
-  <Callout type="info" title="OpenFlows = PocketFlow + SharedStore + NEXUS">
-    The system is a flow graph running on a typed Redis SharedStore, with NEXUS responsible for
-    reconcile. Every feature must fit into one of those three buckets: a flow node, a store
-    contract, or a reconcile decision. If it does not, it probably belongs in Coder itself.
-  </Callout>
-
-  <h2>Code of Conduct</h2>
-  <p>
-    We expect direct, respectful, evidence-based communication. Disagreement is welcome;
-    personal attacks, sealioning, or ungrounded criticism are not. The maintainers have final
-    say on scope, architecture, and release readiness. If a decision is made, move forward and
-    capture dissent in an ADR rather than relitigating it in the PR thread.
-  </p>
-  <p>
-    Harassment, discrimination, or sustained hostility toward any contributor will result in
-    immediate removal from the project. Report concerns privately to the maintainers. We do not
-    tolerate behavior that makes competent engineers hesitate to contribute.
-  </p>
+  <h2>Ways to contribute</h2>
   <ul>
-    <li>Be precise. Cite files, line numbers, and test results when making claims.</li>
-    <li>Assume good intent, but verify. Ask for clarification before assuming incompetence.</li>
-    <li>Respect the backlog. Not every good idea is a current priority.</li>
-    <li>Document your decisions. If it matters enough to argue about, it matters enough to write down.</li>
+    <li><strong>Report an issue.</strong> Found a bug, a confusing behavior, or something that doesn’t match the documentation? Open an issue describing what you observed and what you expected.</li>
+    <li><strong>Propose a feature.</strong> Describe the problem you’re solving and the behavior you’d want to see, and note which existing role or flow it relates to.</li>
+    <li><strong>Fix a bug or ship a feature.</strong> Individual work items are usually scoped as focused changes, each reviewed before merging.</li>
+    <li><strong>Improve documentation.</strong> Accurate, user-facing docs matter — a doc improvement is a real contribution.</li>
   </ul>
 
-  <h2>Issue Triage</h2>
-  <p>
-    NEXUS only works on issues that have been triaged. Untriaged issues are invisible to the
-    orchestration layer. When you create an issue, you are asking a human or an agent to spend
-    attention on it. Make that request as cheap to evaluate as possible.
-  </p>
-  <DocsTable headers={['Label', 'Meaning']} rows={TRIAGE_ROWS} />
-
-  <p>A well-formed issue includes:</p>
+  <h2>The contribution workflow</h2>
   <ol>
-    <li><strong>Goal</strong>  -  one sentence describing the outcome, not the mechanism.</li>
-    <li><strong>Context</strong>  -  links to the relevant registry, flow, or SharedStore contract.</li>
-    <li><strong>Reproduction</strong>  -  for bugs, a minimal set of commands or a failing test.</li>
-    <li><strong>Acceptance criteria</strong>  -  what must be true for the issue to close.</li>
-    <li><strong>Risk surface</strong>  -  what could break, and what the rollback plan is.</li>
+    <li><strong>Check existing work.</strong> Look through open issues and pull requests to avoid duplicating effort.</li>
+    <li><strong>Discuss a non-trivial change first.</strong> For larger features, open an issue or start a discussion to align on the approach before writing code.</li>
+    <li><strong>Make a focused change.</strong> Keep your change scoped to a clear unit of work. Smaller, reviewable changes move faster than large rewrites.</li>
+    <li><strong>Keep quality high.</strong> Follow the project’s conventions and make sure any behavior changes are covered as appropriate.</li>
+    <li><strong>Open a pull request.</strong> Explain what you changed and why, and reference the issue it addresses.</li>
+    <li><strong>Address review feedback.</strong> Maintainers (and the project’s own review culture) may request adjustments before merging.</li>
   </ol>
 
-  <Callout type="tip" title="Use the right audience">
-    NEXUS can handle clearly scoped implementation tickets. Ambiguous product or architecture
-    questions should be opened for human discussion first. If an issue reads like a design
-    review, add the <code>needs-info</code> label and request a one-pager or ADR before work
-    begins.
+  <Callout type="info" title="The workflow fits the product">
+    OpenFlows practices what its own architecture preaches. A plan or proposal is discussed and agreed before
+    implementation, the change is reviewed, and only reviewed work is merged. Your contribution flows through that same
+    gate-based culture. The project follows an architecture-first, review-before-merge process, and releases are
+    versioned in a controlled way (see <a href="/docs/contributing/project-governance">Project Governance</a>).
   </Callout>
 
-  <h2>How to Submit Changes</h2>
-  <p>
-    OpenFlows follows a one-ticket, one-branch, one-PR rule. Branch names are prefixed by the
-    worker slot that owns them, and every branch must be pushed to the remote so NEXUS can
-    observe it. Do not open multiple PRs for the same ticket.
-  </p>
-  <ol>
-    <li>Find or create an issue. Untriaged issues will not be picked up.</li>
-    <li>Create a branch from the latest default branch using the naming convention below.</li>
-    <li>Make focused, reviewable commits. Keep the diff under 400 lines when possible.</li>
-    <li>Run the test suite locally: <code>./orchestration/agent/tooling/run-tests.sh</code>.</li>
-    <li>Push the branch and open a pull request. Link the issue in the description.</li>
-    <li>Respond to review comments. Resolve conversations when the fix is committed.</li>
-    <li>Mark the PR ready for merge only after CI passes and at least one human or SENTINEL review approves.</li>
-  </ol>
-
-  <h2>Branch Naming</h2>
-  <DocsTable headers={['Kind', 'Pattern', 'Notes']} rows={BRANCH_ROWS} />
-
-  <Callout type="warning" title="Never touch another worker’s files">
-    Your working directory is your domain. If you see files owned by another worker slot, treat
-    them as locked. Do not check them out, do not commit into them, and do not resolve conflicts
-    in them without explicit coordination. NEXUS enforces this by worker slot scoping.
-  </Callout>
-
-  <h2>Commit Conventions</h2>
-  <p>
-    Commit messages tell the story of a change. They must use conventional commits so the
-    changelog, release notes, and rollback tooling can parse them automatically. Write the
-    message for the person debugging a production issue six months from now.
-  </p>
-  <DocsTable headers={['Type', 'Use when']} rows={COMMIT_ROWS} />
-
-  <CodeBlock lang="text">{`feat(nexus): add reconcile hook for completed_without_pr
-
-NEXUS now detects tickets that reached COMPLETED without a corresponding
-PR and re-routes them to the PR creation phase. This closes the gap where
-FORGE could finish work but fail to call the GitHub MCP before workspace
-teardown.
-
-Closes: OF-312`}</CodeBlock>
-
-  <p>Commit body rules:</p>
+  <h2>What makes a good contribution</h2>
   <ul>
-    <li>Explain <em>what</em> and <em>why</em>, not <em>how</em>. The diff shows the how.</li>
-    <li>Reference the issue or ticket with <code>Closes: OF-XXX</code> or <code>Relates: OF-XXX</code>.</li>
-    <li>Wrap at 72 characters.</li>
-    <li>Separate the summary from the body with a blank line.</li>
+    <li><strong>Clear scope</strong> — one problem, one coherent change.</li>
+    <li><strong>Aligns with the architecture</strong> — respects the split between Coder (where work runs) and OpenFlows (how it coordinates), and the security-by-design rules.</li>
+    <li><strong>Reviewed with the product’s own standards in mind</strong> — quality, security, and test coverage matter.</li>
   </ul>
-
-  <h2>Where to Ask Questions</h2>
   <p>
-    The right channel depends on the kind of question. Before you ask, do your homework: check
-    the docs, search closed issues, and read the relevant ADR. Then choose the appropriate
-    venue.
+    Start small, align early, and iterate — that’s the most reliable path to a merge.
   </p>
-  <ul>
-    <li><strong>Bug reports and feature requests</strong>  -  GitHub Issues, with the triage template.</li>
-    <li><strong>Architecture or design questions</strong>  -  GitHub Discussions, Architecture category, with a one-pager or ADR draft.</li>
-    <li><strong>Security concerns</strong>  -  Private maintainer email; do not open a public issue.</li>
-    <li><strong>Operational emergencies</strong>  -  The NEXUS runbook and on-call channel, not a GitHub issue.</li>
-    <li><strong>Skill or registry questions</strong>  -  This docs section, especially the Adding Skills and Testing pages.</li>
-  </ul>
 
-  <Callout type="info" title="Escalation protocol">
-    If you are blocked by an ambiguous requirement, a dependency that has not merged, or a file
-    lock conflict, write a <code>STATUS.json</code> with <code>outcome: blocked</code> and a
-    specific, answerable question. A blocked ticket with a precise question is infinitely more
-    valuable than a wrong guess shipped on time.
-  </Callout>
+  <h2>In this section</h2>
+  <ul>
+    <li><a href="/docs/contributing/adding-skills">Adding skills content</a> — contributing capabilities without code.</li>
+    <li><a href="/docs/contributing/project-governance">Project Governance</a> — how decisions and releases are made.</li>
+  </ul>
 </DocsLayout>

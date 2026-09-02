@@ -1,125 +1,42 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'FORGE (Builder)' }]}>
   <h1>FORGE  -  Builder Agent</h1>
 
   <p>
-    FORGE is the primary code generation agent. It writes implementation code against a
-    <code>CONTRACT.md</code> that defines the acceptance criteria, security requirements,
-    and test expectations. FORGE runs inside an ephemeral Coder workspace with its own
-    isolated Git worktree and branch.
+    FORGE is the <strong>builder</strong>. It writes code against an agreed plan, creates branches, and opens pull
+    requests. It never builds without an approved plan — it plans, then halts, and only implements once its plan
+    has been reviewed and approved.
   </p>
-
-  <h2>Architecture</h2>
-
-  <pre style="background: var(--color-parchment-canvas); border-radius: var(--radius-md); padding: 1rem; font-family: var(--font-mono); font-size: 0.875rem; overflow-x: auto;">
-┌─────────────────────────────────────────────────────────────┐
-│ FORGE Workspace (ephemeral Coder workspace)                  │
-│                                                              │
-│  ┌────────────────┐     ┌──────────────────────────────────┐│
-│  │ Coder Agent    │────▶│ openflows-harness                ││
-│  │ (LLM Session)  │     │ - dispatch read (get task)       ││
-│  └────────────────┘     │ - status get/set (track phase)   ││
-│                          │ - pr opened (record PR)          ││
-│                          │ - heartbeat start (alive signal) ││
-│                          │ - handoff write (to Sentinel)    ││
-│                          └──────────────────────────────────┘│
-│                                      │                        │
-│                                      ▼                        │
-│                              ┌─────────────┐                 │
-│                              │    Redis    │                 │
-│                              │ SharedStore │                 │
-│                              └─────────────┘                 │
-└─────────────────────────────────────────────────────────────┘</pre>
-
-  <h2>Workflow Phases</h2>
-
-  <DocsTable headers={['Phase', 'Status Value', 'Description']} rows={[
-    ['Planning', '<code>planning</code>', 'Analyze task, read repository, create <code>CONTRACT.md</code>'],
-    ['Building', '<code>building</code>', 'Implement solution per contract'],
-    ['Testing', '<code>testing</code>', 'Run test suite, verify all pass'],
-    ['Review Ready', '<code>review_ready</code>', 'PR opened, awaiting SENTINEL review'],
-    ['Revising', '<code>revising</code>', 'Addressing SENTINEL review comments'],
-    ['Blocked', '<code>blocked</code>', 'Cannot proceed  -  human escalation needed'],
-  ]} />
-
-  <h2>Hook System (Claude Code)</h2>
 
   <p>
-    FORGE uses a comprehensive hook system for policy enforcement and quality:
+    FORGE runs inside its own isolated, disposable workspace, provisioned for exactly one ticket and torn down when the
+    work merges. It coordinates with the team through the standard command surface, and it holds <strong>no LLM API
+    keys, no raw repository credentials</strong>, and has tightly restricted network access. Git identity comes from a
+    scoped OAuth link, and all AI calls are routed through the central gateway in the control plane.
   </p>
 
-  <DocsTable headers={['Hook', 'Trigger', 'Purpose']} rows={[
-    ['<code>session_start.sh</code>', 'Session starts', 'Provides dispatch context, workflow guide, contract path'],
-    ['<code>pre_bash_guard.sh</code>', 'Before any bash', 'Blocks direct Redis access, destructive commands, git push --force'],
-    ['<code>post_write_lint.sh</code>', 'After file write', 'Auto-formats code (rustfmt, prettier, gofmt)'],
-    ['<code>stop_require_artifact.sh</code>', 'On stop attempt', 'Refuses to stop unless PR is created or blocked'],
-    ['<code>pre_task_guard.sh</code>', 'Before subagent', 'Validates task scope, prevents scope creep'],
-    ['<code>post_task_guard.sh</code>', 'After subagent', 'Verifies subagent completed expected work'],
-  ]} />
-
-  <h2>Coordination via Harness</h2>
-
-  <p>
-    FORGE uses the following harness commands to coordinate with NEXUS and SENTINEL:
-  </p>
-
+  <h2>What FORGE does</h2>
   <ul>
-    <li><code>openflows-harness dispatch read</code> — Reads task assignment from NEXUS</li>
-    <li><code>openflows-harness status set building</code> — Updates progress to building phase</li>
-    <li><code>openflows-harness pr opened</code> — Records PR creation</li>
-    <li><code>openflows-harness heartbeat start</code> — Starts heartbeat daemon for liveness signal</li>
-    <li><code>openflows-harness handoff write</code> — Hands off to SENTINEL for review</li>
+    <li><strong>Plans, then halts.</strong> FORGE writes a plan — a breakdown of the work — before writing any code. It stops there and waits for approval. This is the "plan before code" guardrail.</li>
+    <li><strong>Implements the approved plan.</strong> Only after the plan is approved does FORGE write code, one step at a time.</li>
+    <li><strong>Runs tests.</strong> FORGE verifies its own work as it goes.</li>
+    <li><strong>Opens a pull request.</strong> Once the work is reviewed and approved, FORGE opens the pull request for merging.</li>
   </ul>
 
-
-  <h2>CONTRACT.md Format</h2>
-
+  <h2>How it fits into the team</h2>
   <p>
-    The contract is the agreement between FORGE and SENTINEL. FORGE writes it during planning;
-    SENTINEL reviews against it during code review.
+    NEXUS assigns a ticket to an idle FORGE worker and provisions its workspace. FORGE plans and waits; SENTINEL
+    reviews; FORGE implements against the approved plan; SENTINEL reviews the result; and once approved, FORGE opens
+    the pull request that VESSEL will merge.
   </p>
 
-  <p>
-    The CONTRACT.md is a markdown document that specifies the goal, acceptance criteria, security requirements,
-    files to be modified, and risks. It serves as the specification that FORGE implements against and SENTINEL reviews.
-  </p>
-
-  <h2>Configuration</h2>
-
-  <p>
-    Configure FORGE in <code>registry.json</code> under the <code>agents</code> section with <code>plan_mode: false</code>.
-  </p>
-
-  <Callout type="info" title="plan_mode: false">
-    FORGE runs with <code>plan_mode: false</code> because it executes implementation, not planning.
-    SENTINEL uses <code>plan_mode: true</code> for adversarial review.
+  <Callout type="info" title="Bounded by gates, not by permission prompts">
+    FORGE acts directly — it doesn't need to ask permission for every action — but its actions are
+    bounded by gates. It can't build without an approved plan, and it can't open a pull request before its
+    work has been reviewed and approved. This keeps a direct builder from running ahead of the plan.
   </Callout>
-
-  <h2>Workspace Template</h2>
-
-  <p>
-    The <code>openflows-forge</code> template includes:
-  </p>
-
-  <ul>
-    <li>Repository clone</li>
-    <li><code>openflows-harness</code> binary</li>
-    <li>Claude Code CLI with hook scripts</li>
-    <li>Rust toolchain, Node.js, Go (as needed per workspace)</li>
-    <li>Git configuration for FORGE user identity</li>
-  </ul>
-
-  <h2>Security Controls</h2>
-
-  <ul>
-    <li><strong>No direct Redis</strong>  -  All access via <code>openflows-harness</code></li>
-    <li><strong>No GitHub tokens</strong>  -  Identity via Coder external auth</li>
-    <li><strong>No LLM keys</strong>  -  All calls route through Coder AI Gateway</li>
-    <li><strong>Hook guards</strong>  -  Prevent <code>redis-cli</code>, <code>git push --force</code>, destructive ops</li>
-    <li><strong>Ephemeral workspace</strong>  -  Destroyed after PR merge</li>
-  </ul>
 </DocsLayout>

@@ -3,25 +3,32 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { DocCards } from '@/molecules/DocComponents/DocComponents';
 
 const CARDS = [
-  { icon: '🤖', title: 'Agent Setup', desc: 'Configure NEXUS, FORGE, SENTINEL, LORE, and VESSEL - registry.json, model routing, Coder modules, and worker scaling.', href: '/docs/guides/agent-setup' },
-  { icon: '🔀', title: 'Model Routing', desc: 'Per-agent provider selection, cost optimization, adversarial review across model families, and AI Gateway fallback.', href: '/docs/guides/model-routing' },
-  { icon: '💰', title: 'Cost Optimization', desc: 'Shrink FORGE context, reduce SENTINEL rounds, downgrade VESSEL/LORE models, scale instances deliberately.', href: '/docs/guides/model-routing-cost' },
-  { icon: '🔄', title: 'LiteLLM Fallback', desc: 'Air-gapped deployments: configure LiteLLM proxy for local models when Coder AI Gateway is unavailable.', href: '/docs/guides/model-routing-fallback' },
-  { icon: '🏢', title: 'Multi-Tenancy', desc: 'Tenant model, Coder RBAC, Redis keyspace isolation, and per-tenant NEXUS workspaces.', href: '/docs/guides/multi-tenancy' },
-  { icon: '🛠️', title: 'Multi-Tenancy CLI', desc: 'Commands to add, remove, isolate, and resume tenants.', href: '/docs/guides/multi-tenancy-cli' },
-  { icon: '☸️', title: 'NEXUS Workspaces', desc: 'Per-tenant NEXUS workspace setup, fault isolation, and service accounts.', href: '/docs/guides/multi-tenancy-nexus' },
-  { icon: '🔧', title: 'Extending: Skills', desc: 'Add skills via SKILL.md, register in registry.json v2.', href: '/docs/guides/extending' },
-  { icon: '🔌', title: 'Extending: MCP', desc: 'Register MCP servers globally or per-agent in registry.json.', href: '/docs/guides/extending-mcp' },
-  { icon: '🤖', title: 'Extending: Models', desc: 'Custom model definitions, aliases, cost tiers in registry.json.', href: '/docs/guides/extending-models' },
-  { icon: '📊', title: 'Operations & Monitoring', desc: 'Production runbooks, TUI usage, log inspection, Redis monitoring, and scaling workers.', href: '/docs/guides/operations' },
-  { icon: '🔍', title: 'Troubleshooting', desc: 'Common failures, diagnostics, Coder connectivity, token issues, and how to read STATUS.json.', href: '/docs/guides/troubleshooting' },
-  { icon: '🔗', title: 'Connectivity & Auth', desc: 'Coder API reachability, token rotation, GitHub external auth issues.', href: '/docs/guides/troubleshooting-connectivity' },
-  { icon: '👷', title: 'Worker & Pipeline', desc: 'Worker timeouts, SENTINEL rejection loops, merge conflicts, STATUS.json deep-dive.', href: '/docs/guides/troubleshooting-workers' },
+  { icon: '🎫', title: 'Running Your First Ticket', desc: 'Follow one issue from creation to a merged pull request, and know exactly what to expect at every step.', href: '/docs/guides/running-your-first-ticket' },
+  { icon: '📊', title: 'Managing the Fleet', desc: 'See live status and steer the team: pause, drain, target, and resume from the control panel.', href: '/docs/guides/operations' },
+  { icon: '🙋', title: 'Handling Human Escalations', desc: 'Why you get pinged, how to recognize an escalation, and how to resolve it.', href: '/docs/guides/handling-human-escalations' },
+  { icon: '📌', title: 'Adding a Skill', desc: 'Teach a role a new capability with configuration only — no system code.', href: '/docs/guides/extending' },
+  { icon: '🔌', title: 'Connecting an MCP Server', desc: 'Give the team access to a private tool, either per role or centrally.', href: '/docs/guides/extending-mcp' },
+  { icon: '🧠', title: 'Enabling a Model', desc: 'Choose which model a role uses, from lightweight to rigorous — and switch live.', href: '/docs/guides/model-routing' },
+  { icon: '🏢', title: 'Setting Up Multi-Tenant Teams', desc: 'Run several independent teams on one server with real isolation.', href: '/docs/guides/multi-tenancy' },
+  { icon: '🔔', title: 'Wiring Notifications', desc: 'Connect Slack, Discord, or WhatsApp so escalations reach you promptly.', href: '/docs/guides/wiring-notifications' },
+  { icon: '🔍', title: 'Troubleshooting the Common Path', desc: 'What a stuck state means, symptom by symptom, and how to recover.', href: '/docs/guides/troubleshooting' },
+  { icon: '🧩', title: 'Extending with a New Role', desc: 'The one extension that touches the system\'s internals — what it really takes.', href: '/docs/guides/extending-with-a-new-role' },
+  { icon: '🤖', title: 'Agent Setup', desc: 'Configure a team end to end: roles, models, skills, and tools through the agent registry.', href: '/docs/guides/agent-setup' },
 ];
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides' }]}>
   <h1>Guides</h1>
-  <p>Practical guides for configuring and integrating OpenFlows into your development workflow.</p>
+  <p>
+    The guides walk you through real, practical tasks with OpenFlows — the things you'll do
+    again and again as an operator or an extender of a team. Each guide is self-contained and
+    includes what you should see at each step.
+  </p>
+  <p>
+    Choose the guide that matches what you're trying to accomplish. Each page assumes you've
+    completed the Quickstart, and throughout, keep two partnership ideas in mind: Coder
+    governs <strong>where</strong> agents run, while OpenFlows governs <strong>how</strong>
+    they coordinate.
+  </p>
   <DocCards cards={CARDS} />
 </DocsLayout>

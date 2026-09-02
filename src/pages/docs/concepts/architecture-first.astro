@@ -1,190 +1,85 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
-
-const ARTIFACT_ROWS = [
-  ['<code>PLAN.md</code>', 'FORGE', 'SENTINEL, NEXUS, humans', 'A human-readable design: goals, constraints, segment breakdown, files touched, dependencies, and risk notes.'],
-  ['<code>CONTRACT.md</code>', 'SENTINEL', 'FORGE', 'Review outcome: AGREED, CHANGES_REQUESTED, or REJECTED, with specific, actionable feedback.'],
-  ['<code>segment-N-eval.md</code>', 'SENTINEL', 'FORGE', 'Per-segment evaluation after each commit. Catches drift before the next segment begins.'],
-  ['<code>final-review.md</code>', 'SENTINEL', 'FORGE / VESSEL', 'Pre-PR approval. Must be APPROVED before VESSEL may merge.'],
-  ['<code>STATUS.json</code>', 'FORGE / VESSEL', 'NEXUS', 'Structured machine state: ticket id, status, blocker, PR link, and next action.'],
-];
-
-const PRINCIPLE_ROWS = [
-  ['Plan is the contract', 'Both the human team and the LLM have a single source of truth: the agreed PLAN.md.'],
-  ['Review before execution', 'SENTINEL sees the plan before any code is written. This is cheaper than reviewing code after the fact.'],
-  ['Segmented implementation', 'Each segment is small enough to review in isolation and large enough to be meaningful.'],
-  ['Structured state', 'STATUS.json and the SharedStore record what phase a ticket is in, so NEXUS can resume after a crash.'],
-  ['Human escalation is a feature', 'CommandGate and AwaitingHuman are explicit, not failures. Ambiguity is escalated; routine work is automated.'],
-];
-
-const PHASE_ROWS = [
-  ['1. Discovery', 'NEXUS polls GitHub, normalises the issue into a Ticket, and writes it to SharedStore.'],
-  ['2. Assignment', 'NEXUS matches the ticket to an idle FORGE worker based on load, role, and any required skills.'],
-  ['3. Planning', 'FORGE writes PLAN.md; SENTINEL reviews it and emits CONTRACT.md.'],
-  ['4. Implementation', 'FORGE implements one segment per commit; SENTINEL evaluates each segment.'],
-  ['5. Final Review', 'SENTINEL writes final-review.md. APPROVED unblocks the PR; CHANGES_REQUESTED loops back.'],
-  ['6. Merge', 'FORGE opens the PR; VESSEL polls CI and merges.'],
-  ['7. Documentation', 'LORE writes ADRs and updates CHANGELOG.md.'],
-  ['8. Teardown', 'The Coder workspace is destroyed.'],
-];
+import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'Architecture-First Development' }]}>
-  <h1>Architecture-First Development</h1>
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'Architecture-First' }]}>
+  <h1>Architecture-First</h1>
   <p>
-    OpenFlows treats the plan as the primary deliverable. Before any implementation code is written, a
-    FORGE agent produces a <code>PLAN.md</code> document and a SENTINEL agent reviews it into a
-    <code>CONTRACT.md</code>. Only when the contract is AGREED does FORGE start writing code. This is the
-    architecture-first philosophy in practice: <strong>engineering goes into the system, and software comes out.</strong>
-  </p>
-  <p>
-    The reason is pragmatic. Large language models are excellent at producing correct syntax and idiomatic
-    boilerplate, but they are unreliable at deciding what to build and how the pieces should fit together.
-    A vague prompt yields a plausible-looking program that is subtly wrong at the architectural level. A
-    detailed plan  -  reviewed by a second model with a different provider  -  makes the hidden assumptions
-    visible before they become bugs in the codebase.
+    The planning gate is one of the most important ideas in OpenFlows, because it is what turns "an AI that
+    writes code" into "an AI that works like a disciplined engineer." OpenFlows will not let an agent start
+    writing code before a plan is agreed.
   </p>
 
-  <h2>Why OpenFlows Plans Before Executing</h2>
+  <h2>The problem it solves</h2>
   <p>
-    In a traditional workflow, the human engineer writes a plan inside their head, translates it into
-    code, and submits a PR for review. The reviewer then tries to reverse-engineer the plan from the
-    diff. OpenFlows inverts that order. The plan is externalised, reviewed, and agreed upon before the
-    first commit. This has several consequences:
+    Given a spec, code is cheap. The hard, valuable work is deciding <em>what to build</em> before writing
+    it. If you let an agent start typing immediately, you often end up with confident, well-written code
+    that solves the wrong problem. The planning gate forces the team to agree on the <strong>plan</strong>
+    first.
+  </p>
+
+  <h2>How the gate works</h2>
+  <ol>
+    <li>
+      The builder takes the ticket and produces a written plan describing how it intends to implement it.
+    </li>
+    <li>
+      The builder <strong>stops</strong>. Even though it is fully capable of writing code, it waits.
+    </li>
+    <li>
+      The reviewer reviews the plan  -  the same adversarial reviewer that later reviews the code.
+    </li>
+    <li>
+      Only an <strong>approved</strong> plan unlocks the build phase.
+    </li>
+  </ol>
+
+  <h2>Why the system can enforce it</h2>
+  <p>
+    This is not a convention or a prompt that an agent could ignore. The planning gate is
+    <strong>structural</strong>:
   </p>
   <ul>
+    <li>A ticket can only enter the pipeline through the planning phase.</li>
     <li>
-      <strong>Cheaper review:</strong> reviewing a two-page plan is faster than reviewing a two-hundred-file
-      refactor. SENTINEL can reject a bad direction before any code is written.
+      Moving out of planning requires consuming an <strong>approval</strong> that only the reviewer role can
+      create.
     </li>
     <li>
-      <strong>Traceability:</strong> every later decision can be traced back to PLAN.md. When a segment
-      evaluation fails, the reason is usually that the implementation drifted from the plan.
+      That approval is <strong>single-use</strong>  -  it can be consumed once, and a second attempt finds
+      nothing.
+    </li>
+  </ul>
+  <p>
+    An agent physically cannot skip the review, approve its own plan, or replay a stale approval. If you
+    look at a ticket and it has no approval, there is no path forward for it. "Let's just skip the review"
+    is not possible, even by accident.
+  </p>
+
+  <h2>What this buys you</h2>
+  <ul>
+    <li><strong>No code before a plan.</strong> You never get an agent barreling ahead on a misunderstanding.</li>
+    <li>
+      <strong>A reviewable decision.</strong> The plan and its approval are part of the recorded history.
     </li>
     <li>
-      <strong>Parallelisation:</strong> once the plan is agreed, multiple FORGE workers can implement
-      independent segments in parallel, each in its own Coder workspace.
-    </li>
-    <li>
-      <strong>Recovery:</strong> if a workspace is destroyed or a node crashes, NEXUS can resume from the
-      last completed segment because the plan and the state are both explicit.
+      <strong>Trustworthy autonomy.</strong> The system can be left to run because it won't cut this corner.
     </li>
   </ul>
 
-  <Callout type="info" title="The plan is the contract, not the code">
-    <code>CONTRACT.md</code> is the formal agreement that the plan is acceptable. It does not guarantee
-    that the implementation is correct  -  SENTINEL checks that in each segment evaluation. It guarantees
-    that the direction is correct, the scope is bounded, and the risks are acknowledged.
+  <h2>The "when in doubt, don't approve" principle</h2>
+  <p>
+    The reviewer's job is to be strict. If it cannot verify the required evidence  -  a plan it can read, a
+    change it can review, a test result that was actually recorded  -  it must <strong>not</strong> approve.
+    The system would rather hold a ticket, or escalate it to a human, than merge something unverified. This
+    bias toward "block rather than guess" runs through the whole product.
+  </p>
+
+  <Callout type="info" title="Plan before code">
+    Planning first is the cheapest correctness strategy available. A rejected plan costs little; a confident
+    implementation of the wrong thing costs a great deal more. The planning gate keeps the team aligned
+    before a single line is written.
   </Callout>
-
-  <h2>PLAN.md and CONTRACT.md</h2>
-  <p>
-    <code>PLAN.md</code> is written by FORGE inside the ticket workspace. It is designed to be readable by
-    both humans and the reviewing agent. A good plan includes the goal, constraints, a segment breakdown,
-    the files and dependencies that will be touched, and any risks or open questions that need human
-    escalation. The plan is the input to the rest of the pipeline.
-  </p>
-  <CodeBlock lang="markdown">{`# PLAN.md
-
-## Goal
-Add idempotency retries to the PocketFlow executor so that a node that transiently fails can be retried
-without corrupting the SharedStore.
-
-## Constraints
-- The retry count must be persisted in the store, not in memory, so that a restarted node resumes from
-the correct count.
-- No node may be retried more than max_retries (default 3).
-- A retry must be visible in the event ring for TUI observers.
-
-## Segments
-1. Add a retry_count field to NodeState in the SharedStore contract.
-2. Update Flow::run() to increment the counter and short-circuit when max_retries is exceeded.
-3. Emit a node_retry event on each retry and a node_failed event on exhaustion.
-4. Add unit tests for the three retry paths: success-on-retry, exhaustion, and idempotency.
-
-## Files touched
-- src/flow.rs
-- src/store/state.rs
-- src/events.rs
-- tests/flow_retries.rs
-
-## Risks / open questions
-- Should we back off between retries? If so, what policy? Default to immediate retry for now.
-`}</CodeBlock>
-
-  <p>
-    SENTINEL reads the plan and writes <code>CONTRACT.md</code>. The contract is not a commentary; it is a
-    decision. The status is one of <code>AGREED</code>, <code>CHANGES_REQUESTED</code>, or
-    <code>REJECTED</code>. If changes are requested, the feedback must be specific enough that FORGE can
-    rewrite the plan without asking for clarification. If the plan is rejected, SENTINEL escalates to
-    NEXUS, which marks the ticket <code>AwaitingHuman</code>.
-  </p>
-  <CodeBlock lang="markdown">{`# CONTRACT.md
-
-## Status: CHANGES_REQUESTED
-
-## Reasoning
-The plan is directionally correct but under-specifies the retry policy. "Default to immediate retry"
-is a hidden operational risk for external API calls.
-
-## Required changes
-1. Choose a backoff policy. Suggested: exponential backoff with jitter, capped at 30 seconds, or a
-   configurable policy string in registry.json.
-2. Add a test case that proves the store counter is not incremented twice for the same failure.
-3. Document the event schema for node_retry and node_failed in the ADR that LORE will write.
-
-## Approval criteria
-SENTINEL will re-evaluate after FORGE updates PLAN.md with the backoff policy and the idempotency test.
-`}</CodeBlock>
-
-  <h2>The Artifacts of the Pipeline</h2>
-  <DocsTable headers={['Artifact', 'Author', 'Consumer', 'Purpose']} rows={ARTIFACT_ROWS} />
-
-  <h2>Why Specs Matter When Models Make Boilerplate Cheap</h2>
-  <p>
-    The cost of writing boilerplate has collapsed. A model can generate a REST handler, a database
-    migration, a React component, or a Terraform module in seconds. That speed is valuable, but it is
-    also dangerous: it makes it easy to build the wrong thing quickly. The bottleneck in modern software
-    engineering is no longer typing speed; it is <strong>decision quality</strong>.
-  </p>
-  <p>
-    A specification is a compressed decision. It captures the intent, the constraints, the trade-offs,
-    and the success criteria. When FORGE writes PLAN.md, it is doing the expensive work: translating a
-    vague issue into a concrete design. The code that follows is, in a sense, a rendering of the spec.
-    SENTINEL's job is to make sure the rendering is faithful, not to invent the design on the fly.
-  </p>
-  <p>
-    This division of labour mirrors the best human engineering teams. Architects produce a design;
-    implementers build to it; reviewers verify conformance. OpenFlows simply encodes that division into
-    a repeatable, observable machine process. The human team retains control over the design; the agents
-    handle the execution and the mechanical review.
-  </p>
-
-  <Callout type="tip" title="A good plan saves tokens, not just time">
-    A rejected plan costs a few thousand tokens and a few seconds of review. A bad implementation that
-    reaches final review costs tens of thousands of tokens, multiple workspace cycles, and possibly a
-    flawed commit in the repository. Planning first is the cheapest correctness strategy available.
-  </Callout>
-
-  <h2>The Architecture-First Flow</h2>
-  <DocsTable headers={['Phase', 'What happens']} rows={PHASE_ROWS} />
-
-  <h2>Design Principles</h2>
-  <DocsTable headers={['Principle', 'Why it matters']} rows={PRINCIPLE_ROWS} />
-
-  <h2>When the Plan is Wrong</h2>
-  <p>
-    No plan survives contact with implementation. OpenFlows handles this by reviewing every segment.
-    If FORGE discovers during segment 3 that segment 2's design is unworkable, it does not silently change
-    direction. It updates <code>PLAN.md</code>, asks SENTINEL to re-approve the affected segments, and
-    only then continues. The contract is a living document, but it is always explicit.
-  </p>
-  <p>
-    When the issue itself is ambiguous  -  the user story is incomplete, the acceptance criteria conflict,
-    or the change touches a security boundary  -  OpenFlows does not guess. It writes a
-    <code>STATUS.json</code> with <code>status: AwaitingHuman</code> and stops. The escalation is visible,
-    auditable, and recoverable. Once a human clarifies the requirement, NEXUS resumes the pipeline at the
-    planning phase.
-  </p>
 </DocsLayout>

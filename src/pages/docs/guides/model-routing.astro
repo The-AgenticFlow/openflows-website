@@ -1,82 +1,65 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
-const STRATEGY_ROWS = [
-  ['Per-agent provider', 'Each agent entry in <code>agents.{"{role}"}.provider</code> maps to a Coder AI Gateway provider slug. No global override.'],
-  ['Per-agent model', '<code>agents.{"{role}"}.model</code> selects the exact model identifier. FORGE and NEXUS can share the same model, SENTINEL should differ.'],
-  ['Cost tier routing', 'Lightweight agents (LORE, VESSEL) use smaller / cheaper models; reasoning-heavy agents (FORGE, NEXUS) use frontier models.'],
-  ['Adversarial routing', 'FORGE and SENTINEL must be configured with different providers or model families to avoid correlated reasoning failures.'],
-  ['Fallback routing', 'If the Coder AI Gateway is unavailable, the orchestrator switches to <code>ai_gateway.fallback</code> (LiteLLM) for all providers.'],
+const MODEL_ROWS = [
+  ['Builder (FORGE)', 'A strong general coding model; does the bulk of implementation.'],
+  ['Reviewer (SENTINEL)', 'A model you trust for rigorous, adversarial reasoning about security and quality — often worth a higher-cost, more careful model.'],
+  ['Orchestrator / devops / writer', 'A reliable model; these roles are lighter on raw reasoning.'],
 ];
-
-const GATEWAY_ROWS = [
-  ['<code>ai_gateway.primary</code>', 'string', '<code>"coder"</code>  -  route all LLM calls through the Coder AI Gateway. Centralized keys, audit logging, and model governance.'],
-  ['<code>ai_gateway.fallback</code>', 'string', '<code>"litellm"</code>  -  LiteLLM proxy endpoint for air-gapped or self-hosted model providers.'],
-  ['<code>ai_gateway.litellm_url</code>', 'string', 'Optional URL of the LiteLLM fallback (e.g. <code>http://litellm.internal:4000</code>). If unset, the orchestrator reads <code>LITELLM_URL</code> from the environment.'],
-  ['<code>ai_gateway.timeout_ms</code>', 'int', 'Request timeout for LLM calls. Default <code>120000</code> (2 minutes). SENTINEL and NEXUS may override per-call.'],
-];
-
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Model Routing' }]}>
-  <h1>Model Routing</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Enabling a Model' }]}>
+  <h1>Enabling a Model</h1>
 
   <p>
-    OpenFlows does not embed LLM API keys inside worker workspaces. Instead, every LLM call
-    routes through the <strong>Coder AI Gateway</strong>, which centralizes provider
-    credentials, model governance, audit logging, and cost tracking. The orchestrator
-    (NEXUS) decides <em>which agent</em> runs, but <code>registry.json</code> decides
-    <em>which model and provider</em> each agent uses. This guide explains how to configure
-    per-agent routing, optimize costs, set up adversarial review across model families, and
-    configure an air-gapped LiteLLM fallback.
+    Different tasks suit different models. OpenFlows lets you choose which model a role uses —
+    and switch it live — without a restart. This page walks through choosing and assigning a
+    model for a role.
   </p>
 
+  <h2>Where models live</h2>
   <p>
-    The routing model is intentionally simple: each agent role has a single
-    <code>provider</code> and <code>model</code> field. There is no prompt-level routing,
-    no dynamic model selection, and no A/B testing framework. The goal is predictability and
-    operator control. If you want a different model for a specific task, create a different
-    agent role or adjust the agent's configuration in <code>registry.json</code>.
+    Models are configured in the platform's AI settings (the Coder dashboard), where you enable
+    the models you want available. OpenFlows then <em>references</em> those models for each
+    role — so the catalog lives in the platform, and the assignment lives in your team's
+    registry.
   </p>
 
-  <h2>Routing Strategy</h2>
+  <h2>Choosing a model for a role</h2>
+  <ol>
+    <li><strong>Make sure the model is enabled</strong> in the platform's AI settings.</li>
+    <li><strong>Open the agent registry</strong> for the role you want to change (for example, the builder).</li>
+    <li><strong>Set the model</strong> on that role.</li>
+    <li><strong>Save.</strong> The change is validated and takes effect on the team's next cycle. No restart, no redeploy.</li>
+  </ol>
 
-  <DocsTable headers={['Strategy', 'Description']} rows={STRATEGY_ROWS} />
-
-  <h2>registry.json Routing Configuration</h2>
-
+  <h2>Which model for which job?</h2>
   <p>
-    The top-level <code>ai_gateway</code> block controls where LLM calls go. The per-agent
-    <code>provider</code> and <code>model</code> fields are passed through to that gateway as
-    the model identifier. The Coder AI Gateway translates these into the provider-specific
-    API calls and handles authentication centrally.
+    A sensible starting point:
+  </p>
+  <DocsTable headers={['Role', 'A sensible model']} rows={MODEL_ROWS} />
+  <p>
+    You're free to tune from there based on what you observe.
   </p>
 
+  <h2>What you should see</h2>
+  <ul>
+    <li>The role now uses the assigned model for its work.</li>
+    <li>The change applied without a restart; the next workspace provisioned for that role reflects the new model.</li>
+    <li>The role's model shows in the panel.</li>
+  </ul>
 
-  <h2>AI Gateway Fields</h2>
-
-  <DocsTable headers={['Field', 'Type', 'Description']} rows={GATEWAY_ROWS} />
-
-  <Callout type="info" title="No provider credentials in workspaces">
-    Worker workspaces contain zero AI software, zero LLM keys, and zero GitHub tokens by
-    design. The Coder AI Gateway holds the provider credentials and makes the upstream calls.
-    If a worker workspace is compromised, the attacker gains access to the current repository
-    clone but not to any LLM or GitHub credentials.
+  <Callout type="info" title="Availability notes">
+    A model that isn't enabled in the platform can't be assigned — enable it first. Changing a
+    model affects <em>new</em> sessions for that role; the exact timing depends on when the
+    role's next workspace or session is provisioned. This is a per-role control; you can have
+    different roles on different models simultaneously.
   </Callout>
 
-  <h2>Per-Agent Model Selection</h2>
-
-  <p>
-    Model selection is a cost-quality trade-off. FORGE and NEXUS need frontier reasoning
-    models because they drive planning, implementation, and reconcile decisions. SENTINEL
-    needs a model strong enough to catch implementation mistakes but should be a different
-    family than FORGE to create adversarial pressure. VESSEL and LORE are lightweight tasks
-    and can run on smaller, cheaper models.
-  </p>
-
-  <Callout type="info" title="Continue reading">
-    See <a href="/docs/guides/model-routing-cost">Cost Optimization &amp; Adversarial Review</a> for cost tuning and cross-provider review strategies.
-    See <a href="/docs/guides/model-routing-fallback">LiteLLM Fallback &amp; Gateway Config</a> for air-gapped deployments and Coder AI Gateway setup.
+  <Callout type="tip" title="Related reading">
+    See <a href="/docs/guides/agent-setup">Agent Setup</a> for how model assignment fits
+    in the registry. Choosing a more careful model for the reviewer is often worth it, and you
+    can tune from there based on what you observe.
   </Callout>
 </DocsLayout>

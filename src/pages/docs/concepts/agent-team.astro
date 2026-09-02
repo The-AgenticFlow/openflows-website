@@ -1,203 +1,81 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, CodeBlock, DocsTable } from '@/molecules/DocComponents/DocComponents';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
 const ROLE_ROWS = [
-  ['<code style="color:var(--color-agent-nexus)">NEXUS</code>', 'Controller', 'Orchestrator', 'Polls GitHub, assigns tickets, provisions workspaces, reconciles state, escalates to humans.'],
-  ['<code style="color:var(--color-agent-forge)">FORGE</code>', 'Worker', 'Implementer', 'Writes PLAN.md, implements segments, opens PRs, writes STATUS.json.'],
-  ['<code style="color:var(--color-agent-sentinel)">SENTINEL</code>', 'Worker', 'Reviewer', 'Reviews plans, evaluates segments, writes final-review.md, blocks merge until approved.'],
-  ['<code style="color:var(--color-agent-vessel)">VESSEL</code>', 'Worker', 'CI/CD gate', 'Polls CI, checks mergeability, performs squash merges, updates STATUS.json.'],
-  ['<code style="color:var(--color-agent-lore)">LORE</code>', 'Worker', 'Documentarian', 'Writes ADRs, updates CHANGELOG.md, documents decisions after merge.'],
+  ['<strong>NEXUS</strong>', 'Orchestrator', 'Owns the whole pipeline: picks up issues, assigns work, coordinates the team, recovers from failures, and notifies humans when needed.', 'Yes'],
+  ['<strong>FORGE</strong>', 'Builder', 'Writes code against an agreed plan, creates branches, and opens pull requests.', 'No'],
+  ['<strong>SENTINEL</strong>', 'Reviewer', 'Adversarially reviews plans and code for security, quality, and test coverage.', 'Yes'],
+  ['<strong>VESSEL</strong>', 'DevOps', 'Watches CI, resolves merge conflicts, and merges green pull requests.', 'No'],
+  ['<strong>LORE</strong>', 'Writer', 'Documents decisions and updates changelogs after a merge. Often disabled by default.', 'No'],
 ];
 
-const PIPELINE_ROWS = [
-  ['1', 'Issue discovery', 'NEXUS', 'Polls GitHub; creates a Ticket in SharedStore.'],
-  ['2', 'Assignment', 'NEXUS', 'Selects an idle FORGE worker and provisions a Coder workspace.'],
-  ['3', 'Planning', 'FORGE → SENTINEL', 'FORGE writes PLAN.md; SENTINEL writes CONTRACT.md.'],
-  ['4', 'Implementation', 'FORGE ↔ SENTINEL', 'FORGE implements each segment; SENTINEL writes segment-N-eval.md.'],
-  ['5', 'Final review', 'SENTINEL', 'Approves or rejects the full change.'],
-  ['6', 'PR creation', 'FORGE', 'Opens the PR via GitHub MCP.'],
-  ['7', 'Merge', 'VESSEL', 'Polls CI and squash-merges when green.'],
-  ['8', 'Documentation', 'LORE', 'Writes ADR and CHANGELOG updates.'],
-  ['9', 'Teardown', 'NEXUS', 'Destroys the Coder workspace and releases the worker slot.'],
-];
-
-const BOUNDARY_ROWS = [
-  ['NEXUS never writes implementation code', 'NEXUS is the controller. It assigns, provisions, and reconciles. It does not edit files in a workspace.'],
-  ['FORGE never merges its own PR', 'FORGE authors and opens the PR. VESSEL, a different agent with a different model, merges it.'],
-  ['SENTINEL never implements', 'SENTINEL reviews and writes evaluation documents. It never commits code or open PRs.'],
-  ['VESSEL never plans', 'VESSEL only cares about CI status, mergeability, and the final-review outcome.'],
-  ['LORE never touches production logic', 'LORE writes documentation and ADRs only after the merge is complete.'],
-  ['Workers never share a workspace', 'Each worker gets its own ephemeral Coder workspace. A SENTINEL reviewer is spawned fresh per evaluation.'],
-];
-
-const MODEL_ROWS = [
-  ['<code style="color:var(--color-agent-nexus)">NEXUS</code>', 'anthropic', 'claude-sonnet-4-20250514', 'claude-code', '1', 'Reliable routing and reconcile decisions'],
-  ['<code style="color:var(--color-agent-forge)">FORGE</code>', 'anthropic', 'claude-sonnet-4-20250514', 'claude-code', '2', 'Top-tier reasoning for complex implementation'],
-  ['<code style="color:var(--color-agent-sentinel)">SENTINEL</code>', 'openai', 'gpt-4.1', 'codex', '1', 'Adversarial review from a different model family'],
-  ['<code style="color:var(--color-agent-vessel)">VESSEL</code>', 'openai', 'gpt-4o', 'codex', '1', 'Fast, cheap CI scripting and merge checks'],
-  ['<code style="color:var(--color-agent-lore)">LORE</code>', 'anthropic', 'claude-haiku-4-20250514', 'aider', '1', 'Lightweight documentation work'],
+const HANDOFF_ROWS = [
+  ['NEXUS plans the assignment', 'Hands work to an idle builder.'],
+  ['FORGE writes and stops', 'Waits until its plan is approved.'],
+  ['SENTINEL reviews', 'Never touches the builder\u2019s workspace.'],
+  ['VESSEL merges', 'And tears down the workspace.'],
+  ['LORE documents', 'Records the completed work.'],
 ];
 ---
+
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'The Agent Team' }]}>
   <h1>The Agent Team</h1>
   <p>
-    OpenFlows is not one large language model doing everything. It is a team of five specialised agents
-    with narrow roles, clear boundaries, and enforced handoffs. Each agent is a node in the PocketFlow
-    graph, and the SharedStore is the only place they are allowed to coordinate. This design prevents the
-    common failure mode of a single agent that both writes and reviews its own work, drifting into
-    self-justification and hidden bugs.
-  </p>
-  <p>
-    A <strong>worker</strong> is defined by a tuple: <code>(role, ticket)</code>. When NEXUS assigns a ticket
-    to FORGE, it creates a worker identity such as <code>forge-1</code> or <code>forge-2</code>, provisions an
-    ephemeral Coder workspace bound to that identity, and records the assignment in the SharedStore. When
-    the ticket is merged, the worker slot is released and the workspace is destroyed. There is no persistent
-    agent personality, no long-lived context, and no accumulated bias.
+    OpenFlows runs a group of AI agents that cooperate like a real engineering team. Each agent has one
+    primary job, and together they close the loop from issue to merged pull request. The team has five
+    roles.
   </p>
 
-  <h2>Roles at a Glance</h2>
-  <DocsTable headers={['Agent', 'Kind', 'Role', 'Responsibilities']} rows={ROLE_ROWS} />
+  <h2>The five roles</h2>
+  <DocsTable headers={['Agent', 'Role', 'What it does', 'Reviews before acting?']} rows={ROLE_ROWS} />
 
-  <h2>NEXUS: The Controller, Not a Chat</h2>
+  <h2>What "reviews before acting" means</h2>
   <p>
-    NEXUS is the orchestrator. It runs on the control plane, not inside a workspace, and it does not
-    engage in open-ended chat. Its job is to keep the pipeline moving and to keep the state consistent.
-    On every poll cycle, NEXUS performs the following actions:
+    The roles that review and gate  -  the orchestrator and the reviewer  -  are designed to check before
+    they proceed rather than blindly move ahead. The builder, DevOps, and writer roles act directly, but
+    their actions are bounded by gates: the builder can't build without an approved plan, DevOps won't merge
+    an unapproved pull request, and the writer only documents merged work.
   </p>
+
+  <h2>How they act like a team</h2>
+  <p>
+    The team is <strong>sequential where it must be</strong> and <strong>parallel where it can be</strong>.
+    Each transition only happens when the previous step produced the required result  -  an approved plan, a
+    reviewed pull request, a successful merge.
+  </p>
+  <DocsTable headers={['Hand-off', 'What happens']} rows={HANDOFF_ROWS} />
+
+  <h2>Roles are configured, not hard-coded</h2>
+  <p>
+    Which roles exist, how many workers each role can run at once, what model each uses, and what skills and
+    tools are available  -  all of this is kept in the <strong>agent registry</strong>, which lives in the
+    control plane and can be changed without a restart or redeploy.
+  </p>
+
+  <h2>What an agent workspace looks like</h2>
+  <p>Each agent runs in its own isolated, disposable workspace:</p>
   <ul>
-    <li>
-      <strong>Discover:</strong> poll GitHub for open issues, PRs, and merge statuses; create or update
-      Ticket records in the SharedStore.
-    </li>
-    <li>
-      <strong>Assign:</strong> match open tickets to idle workers using registry.json constraints and
-      current load.
-    </li>
-    <li>
-      <strong>Provision:</strong> create a Coder workspace for the assigned worker and install the
-      configured CLI module.
-    </li>
-    <li>
-      <strong>Reconcile:</strong> detect orphaned tickets, stale workers, unmerged PRs, and
-      <code>completed_without_pr</code> states; resume the flow at the correct phase.
-    </li>
-    <li>
-      <strong>Escalate:</strong> when a ticket is blocked by ambiguity, a security concern, or a failing
-      recovery strategy, mark it <code>AwaitingHuman</code> and stop the worker cleanly.
-    </li>
+    <li>No LLM API keys.</li>
+    <li>No raw repository credentials.</li>
+    <li>Heavily restricted network access (the control plane, GitHub, and the coordination store  -  and little else).</li>
   </ul>
   <p>
-    NEXUS never writes implementation code. It may write <code>STATUS.json</code> when it detects a
-    system-level failure, but it does not edit PLAN.md, CONTRACT.md, or source files. This boundary is
-    what keeps the orchestrator honest: it cannot silently "fix" a bad implementation by patching it itself.
+    The agent coordinates with the team strictly through a small, typed command surface  -  it never talks
+    directly to the coordination store. This is what keeps the whole system safe and auditable.
   </p>
 
-  <Callout type="warning" title="NEXUS is not a chatbot">
-    Do not treat NEXUS as a conversational assistant. It is a reconcile loop with a deterministic
-    decision surface. The only way to change its behaviour is to change the SharedStore state, the
-    registry configuration, or the issue text. If you need a chat interface, use the Coder workspace directly.
+  <h2>Adding to the team</h2>
+  <p>
+    You can extend what the team can do <strong>without writing code</strong> by adding skills, tools, or
+    models through the registry. Adding a brand-new <em>role</em> is the one extension that touches the
+    system's internals.
+  </p>
+
+  <Callout type="info" title="Review is a separate role, not a prompt">
+    The reviewer is not a prompt attached to the builder. It is a separate agent with a separate workspace
+    and a separate model, which is exactly what makes adversarial review meaningful. A writer and a reviewer
+    never share a filesystem.
   </Callout>
-
-  <h2>FORGE: The Implementer</h2>
-  <p>
-    FORGE is the primary coding worker. Its lifecycle is the longest of the workers because it owns the
-    planning and implementation phases. In a typical cycle, FORGE:
-  </p>
-  <ol>
-    <li>Reads the ticket and the repository context.</li>
-    <li>Writes <code>PLAN.md</code> with a segment breakdown and risk assessment.</li>
-    <li>Waits for SENTINEL to produce an AGREED <code>CONTRACT.md</code>.</li>
-    <li>Implements each segment in turn, committing after each one.</li>
-    <li>Requests SENTINEL evaluation after each segment.</li>
-    <li>Addresses evaluation feedback or rewrites the plan if the direction changes.</li>
-    <li>After final approval, opens a PR via GitHub MCP.</li>
-    <li>Writes a <code>STATUS.json</code> with <code>PR_OPENED</code> and the PR URL.</li>
-  </ol>
-  <p>
-    FORGE is configured with the strongest reasoning model available because the planning phase is where
-    the most expensive decisions happen. It is also the only worker that is typically scaled to multiple
-    parallel instances, each with its own Coder workspace.
-  </p>
-
-  <h2>SENTINEL: The Adversarial Reviewer</h2>
-  <p>
-    SENTINEL is the quality gate. It reviews plans before implementation, evaluates each segment after it is
-    committed, and performs the final review before a PR is opened. SENTINEL is usually configured with a
-    different model provider than FORGE, creating a natural adversarial review: the reviewer does not share
-    the same training distribution or latent biases as the writer.
-  </p>
-  <p>
-    SENTINEL is spawned fresh for each evaluation. It does not carry memory of previous reviews, so it
-    cannot develop a grudge or a habit of rubber-stamping. Its workspace is ephemeral and contains only the
-    documents it needs to evaluate: the PLAN.md, the CONTRACT.md, the segment code, and any relevant test
-    output. It has no access to the LLM keys, GitHub tokens, or other secrets used to drive the pipeline.
-  </p>
-
-  <Callout type="tip" title="Review is a separate role, not a prompt">
-    SENTINEL is not a system prompt attached to FORGE. It is a separate worker with a separate workspace,
-    a separate model, and a separate output artifact. That separation is what makes the review meaningful.
-  </Callout>
-
-  <h2>VESSEL: The Merge Gate</h2>
-  <p>
-    VESSEL is responsible for the final step of the issue-to-merge pipeline. It polls the PR every ten
-    seconds, checks the CI status, and inspects the <code>mergeable</code> field to detect conflicts early.
-    When CI is green and SENTINEL's <code>final-review.md</code> is APPROVED, VESSEL performs a squash merge
-    with a ticket reference in the commit message.
-  </p>
-  <p>
-    VESSEL does not write code, open PRs, or review plans. Its narrow scope is intentional: it is the only
-    agent allowed to merge, and it only merges after two independent conditions are satisfied. This prevents
-    FORGE from merging its own work and gives NEXUS a clean event to act on after merge.
-  </p>
-
-  <h2>LORE: The Documentarian</h2>
-  <p>
-    LORE runs after the merge. Its job is to capture the decision in durable documentation: an Architecture
-    Decision Record (ADR) that explains why the change was made, and an update to <code>CHANGELOG.md</code>.
-    LORE uses a lightweight model because its task is summarisation and formatting, not deep reasoning.
-  </p>
-  <p>
-    Documentation is not an afterthought in OpenFlows; it is a phase of the pipeline. If LORE fails to
-    write the ADR, NEXUS marks the ticket accordingly and may retry or escalate. The repository history is
-    therefore self-describing: every significant change has a design document, a review trail, and a
-    changelog entry.
-  </p>
-
-  <h2>The Issue-to-Merge Pipeline</h2>
-  <DocsTable headers={['Step', 'Phase', 'Agent', 'Action']} rows={PIPELINE_ROWS} />
-
-  <h2>Boundaries and Handoffs</h2>
-  <p>
-    Boundaries are enforced by convention, by workspace isolation, and by the SharedStore schema. A worker
-    can only write the documents associated with its role. NEXUS checks the state transitions and refuses to
-    move a ticket to a phase that has not been properly authorised. For example, a ticket cannot move to
-    <code>PR_OPENED</code> unless the SharedStore contains a final-review outcome of APPROVED.
-  </p>
-  <DocsTable headers={['Boundary', 'Why it exists']} rows={BOUNDARY_ROWS} />
-
-  <h2>Worker Identity and Scaling</h2>
-  <p>
-    A worker is not a user account. It is a runtime slot created by NEXUS for a specific ticket. The identity
-    is <code>role-instance</code>, such as <code>forge-1</code> or <code>sentinel-1</code>. Each instance is
-    mapped to a separate Coder workspace, a separate SharedStore slot, and a separate lifecycle.
-  </p>
-  <CodeBlock lang="json">{`{
-  "agents": {
-    "forge": { "instances": 2, "coder_module": "claude-code" },
-    "sentinel": { "instances": 1, "coder_module": "codex" },
-    "vessel": { "instances": 1, "coder_module": "codex" },
-    "lore": { "instances": 1, "coder_module": "aider" }
-  }
-}`}</CodeBlock>
-  <p>
-    With two FORGE instances, NEXUS can work on two tickets in parallel. Each FORGE worker is isolated, so
-    a crash or a runaway process in one workspace does not affect the other. When a worker finishes, its slot
-    returns to the idle pool and NEXUS assigns the next ticket.
-  </p>
-
-  <h2>Recommended Model Assignments</h2>
-  <DocsTable headers={['Agent', 'Provider', 'Model', 'CLI Module', 'Instances', 'Why']} rows={MODEL_ROWS} />
 </DocsLayout>

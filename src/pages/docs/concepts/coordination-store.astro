@@ -1,0 +1,72 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const STORE_CONTENTS = [
+  ['Tickets', 'Every piece of work OpenFlows knows about, and the current state of each one.'],
+  ['Worker slots', 'Which agent is available, busy, or assigned to a ticket.'],
+  ['Pull requests', 'The pull requests awaiting a merge.'],
+  ['Phases and history', 'Each ticket\u2019s current phase and the trail that led there.'],
+  ['Approvals', 'The single-use approvals that unlock gated steps.'],
+  ['Reviews', 'Review verdicts and their outcomes.'],
+  ['Liveness', 'The signal that a workspace is still alive and working.'],
+  ['Team configuration', 'The live agent registry and the pause and resume control state.'],
+];
+---
+
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'The Coordination Store' }]}>
+  <h1>The Coordination Store</h1>
+  <p>
+    Every agent, every ticket, every approval, every review, and every pull request is tracked in one
+    place: the <strong>coordination store</strong>. It is the single record of truth that makes the team
+    behave like a coherent organisation rather than a set of disconnected systems.
+  </p>
+  <p>
+    OpenFlows is a distributed system  -  many workspaces, many agents, all working at once. If each of
+    those workspaces kept its own copy of what was happening, they would drift apart and start to
+    contradict one another. By routing everything through a single store, OpenFlows guarantees that the
+    whole team sees the same state and that no step can be skipped or forged.
+  </p>
+
+  <h2>What the store holds</h2>
+  <p>
+    The coordination store is the shared, durable memory of the team. It records everything the team needs
+    to agree on to stay consistent.
+  </p>
+  <DocsTable headers={['What it tracks', 'Why it matters']} rows={STORE_CONTENTS} />
+
+  <h2>Who is allowed to write</h2>
+  <p>
+    This is a strict design rule: exactly <strong>two</strong> things may ever write to the coordination
+    store.
+  </p>
+  <ul>
+    <li>
+      The <strong>orchestrator</strong>, the central brain, which writes planning, assignment, and fleet
+      state.
+    </li>
+    <li>
+      The <strong>worker command surface</strong>, the only way an agent inside a workspace records its
+      phase, approvals, reviews, and heartbeats.
+    </li>
+  </ul>
+  <p>
+    Everything else  -  and in particular the agents themselves  -  cannot touch it. Writes are validated,
+    so malformed or out-of-order writes are rejected rather than silently accepted. This is what makes
+    "the store is the source of truth" a real guarantee rather than a hope.
+  </p>
+
+  <Callout type="info" title="The store is a source of truth, not a place to poke around">
+    Most operators interact with the store through the control panel, which surfaces current tickets,
+    worker status, pending pull requests, and escalations. Day to day you rarely interact with the store
+    directly  -  the panel sits on top of it, and the store underneath keeps everything consistent.
+  </Callout>
+
+  <h2>Durable by design</h2>
+  <p>
+    The store is configured for durable storage, so the team's record survives restarts. This is what
+    allows OpenFlows to pause mid-flight, restart, and pick up exactly where it left off. The team does not
+    forget where it was just because a process stopped.
+  </p>
+</DocsLayout>

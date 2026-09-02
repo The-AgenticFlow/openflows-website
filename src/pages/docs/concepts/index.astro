@@ -3,42 +3,48 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { DocCards, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
 const CARDS = [
-  { icon: '🏛️', title: 'Architecture-First Development', desc: 'Why OpenFlows plans before it executes, and why PLAN.md and CONTRACT.md are the real deliverables.', href: '/docs/concepts/architecture-first' },
-  { icon: '👥', title: 'The Agent Team', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, and LORE  -  their roles, boundaries, and the issue-to-merge pipeline.', href: '/docs/concepts/agent-team' },
-  { icon: '🧠', title: 'PocketFlow & SharedStore', desc: 'The directed flow graph, the Node lifecycle, and typed Redis state contracts that keep the system coherent.', href: '/docs/concepts/pocketflow-sharedstore' },
-  { icon: '🔗', title: 'Coder Integration', desc: 'How OpenFlows runs as a thin orchestration brain on top of a self-hosted Coder deployment.', href: '/docs/concepts/coder-integration' },
-  { icon: '🛡️', title: 'Security Model', desc: 'Identity, audit, secrets, ephemeral workspaces, and the no-PAT, no-LLM-keys-in-workspaces policy.', href: '/docs/concepts/security-model' },
+  { icon: '🏛️', title: 'Architecture-First', desc: 'Why OpenFlows plans before it codes, how the planning gate works, and the "when in doubt, don\u2019t approve" rule.', href: '/docs/concepts/architecture-first' },
+  { icon: '👥', title: 'The Agent Team', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, and LORE \u2014 their roles, how they work in sequence and in parallel, and how they\u2019re configured.', href: '/docs/concepts/agent-team' },
+  { icon: '🔁', title: 'The Ticket Lifecycle', desc: 'How an issue becomes a merged pull request, the fixed phases, and what happens when work gets stuck.', href: '/docs/concepts/ticket-lifecycle' },
+  { icon: '🏗️', title: 'The Planning Gate', desc: 'Plan before code: why it\u2019s structural, how the gate is enforced, and why the system blocks rather than guesses.', href: '/docs/concepts/architecture-first' },
+  { icon: '🗂️', title: 'The Coordination Store', desc: 'The single record of truth that keeps every agent, ticket, approval, and review consistent.', href: '/docs/concepts/coordination-store' },
+  { icon: '🖥️', title: 'Workspaces', desc: 'Where work actually runs: thin, isolated, disposable workspaces with real identity and tight networks.', href: '/docs/concepts/workspaces' },
+  { icon: '🏢', title: 'Tenants', desc: 'How one server serves many teams \u2014 what a tenant is, how isolation is enforced, and how you manage one.', href: '/docs/concepts/tenants' },
+  { icon: '🧑‍💻', title: 'Human Escalation', desc: 'When a human gets pulled in, what happens on escalation, and the three ways you can resolve it.', href: '/docs/concepts/human-escalation' },
+  { icon: '⚙️', title: 'The Agent Registry', desc: 'How the team is configured without code \u2014 roles, models, skills, and tools \u2014 and the zero-capacity safety rule.', href: '/docs/concepts/agent-registry' },
+  { icon: '🔗', title: 'The Coder / OpenFlows Split', desc: 'The founding idea: Coder governs where agents run; OpenFlows governs how they coordinate.', href: '/docs/concepts/coder-integration' },
 ];
 
 const CONCEPT_ROWS = [
-  ['Architecture-First', 'Boilerplate is cheap; correctness is not. Agents write code only after a human-reviewable plan and contract exist.', '/docs/concepts/architecture-first'],
-  ['Agent Team', 'Specialised roles with narrow boundaries prevent a single agent from drifting into both authorship and review.', '/docs/concepts/agent-team'],
-  ['PocketFlow & SharedStore', 'A deterministic graph and a typed state bus let the orchestrator reason about progress, not just emit prompts.', '/docs/concepts/pocketflow-sharedstore'],
-  ['Coder Integration', 'Coder is the runtime. OpenFlows does not provision VMs, manage SSH keys, or host AI models itself.', '/docs/concepts/coder-integration'],
-  ['Security Model', 'Secrets and identity are handled by Coder; workers start empty and are destroyed after merge.', '/docs/concepts/security-model'],
+  ['The Team', 'Five specialised agents with narrow roles and enforced hand-offs, so no single agent both writes and reviews its own work.', '/docs/concepts/agent-team'],
+  ['The Ticket Lifecycle', 'A fixed path from GitHub issue to merged pull request, with recovery and human escalation as part of the loop.', '/docs/concepts/ticket-lifecycle'],
+  ['The Planning Gate', 'No code before an approved plan; the gate is structural and single-use approvals can\u2019t be replayed.', '/docs/concepts/architecture-first'],
+  ['The Coordination Store', 'A shared, durable record of truth that only the orchestrator and the worker command surface may write.', '/docs/concepts/coordination-store'],
+  ['Workspaces', 'Thin, disposable, isolated execution seats with no secrets and real, attributable identity.', '/docs/concepts/workspaces'],
+  ['Tenants', 'Strictly separated teams on one server, isolated by both identity and namespaced coordination state.', '/docs/concepts/tenants'],
+  ['Human Escalation', 'The system stops and hands you the decisions that need a judgment call, rather than guessing.', '/docs/concepts/human-escalation'],
+  ['The Agent Registry', 'Team configuration without code or restarts, with a guardrail against accidentally zeroing a role.', '/docs/concepts/agent-registry'],
+  ['The Coder / OpenFlows Split', 'Coder governs where agents run; OpenFlows governs how they coordinate. The founding asymmetry.', '/docs/concepts/coder-integration'],
 ];
 ---
+
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Core Concepts' }]}>
   <h1>Core Concepts</h1>
   <p>
-    OpenFlows is not a model, an IDE, or a CI/CD product. It is an <strong>orchestration layer</strong>
-    that turns a self-hosted Coder deployment into an autonomous engineering team. The concepts in this
-    section explain the ideas that make that possible: why planning beats prompting, why five narrow agents
-    beat one general-purpose agent, how a directed graph and a typed store keep the system coherent, and
-    why security is a property of the runtime rather than a policy document.
+    OpenFlows runs a disciplined engineering team of AI agents that coordinate through a shared, governed
+    system. The concepts in this section are the vocabulary the rest of the documentation uses: who the
+    team is, how a ticket travels from issue to merged pull request, why the team plans before it codes,
+    where the coordination state lives, where work actually runs, and how security holds together.
   </p>
   <p>
-    If you are a developer or operator trying to decide whether OpenFlows fits your organisation, read
-    these pages first. If you are already running the system, they explain the reasoning behind the
-    configuration files, the registry schema, and the workspace lifecycle you see in production.
+    If you are deciding whether OpenFlows fits your organisation, read these pages first. If you are already
+    running it, they explain the reasoning behind the behaviour you see in production.
   </p>
 
-  <Callout type="info" title="Architecture is the product">
-    The central thesis of OpenFlows is that the hard part of software engineering is the architecture,
-    the contract, and the review gate  -  not the code itself. When agents are cheap and models can write
-    boilerplate in seconds, the value shifts from keystrokes to specification. OpenFlows encodes that
-    shift into a repeatable pipeline.
+  <Callout type="info" title="One idea anchors everything">
+    <strong>Coder governs <em>where</em> agents run. OpenFlows governs <em>how</em> they coordinate.</strong>
+    This founding split explains the architecture, and the other concepts build on it.
   </Callout>
 
   <h2>Concepts at a Glance</h2>
@@ -47,45 +53,29 @@ const CONCEPT_ROWS = [
     rows={CONCEPT_ROWS.map(([concept, desc, href]) => [
       `<strong>${concept}</strong>`,
       desc,
-      `<a href="${href}">Details →</a>`,
+      `<a href="${href}">Details \u2192</a>`,
     ])}
   />
 
   <h2>How the Concepts Fit Together</h2>
   <p>
-    The five concepts form a stack. At the bottom, <strong>Coder</strong> provides the runtime: identity,
-    workspaces, model governance, and audit. On top of that runtime, OpenFlows runs a <strong>PocketFlow</strong>
-    graph whose nodes are the five agents. The agents communicate through a <strong>SharedStore</strong> with
-    typed contracts, and the whole flow is governed by the <strong>architecture-first</strong> rule that no
-    implementation begins until a plan has been written and reviewed. Finally, the <strong>security model</strong>
-    makes those guarantees concrete by ensuring that no worker workspace ever contains secrets, credentials,
-    or long-lived state.
+    OpenFlows is an orchestration layer that turns a self-hosted runtime into an autonomous engineering
+    team. The <strong>Coder / OpenFlows split</strong> sets the stage: the runtime provides governed,
+    ephemeral <strong>workspaces</strong> and real identity, while OpenFlows supplies the coordination that
+    makes them a team. The <strong>agent team</strong> plans, builds, reviews, merges, and documents, and
+    each <strong>ticket</strong> moves through a fixed <strong>lifecycle</strong>. The
+    <strong>planning gate</strong> keeps every ticket honest by refusing to advance work without an approved
+    plan. All of this is held together by the <strong>coordination store</strong>  -  the single source of
+    truth  -  and configured through the <strong>agent registry</strong>. <strong>Tenants</strong> isolate
+    many teams on one server, and <strong>human escalation</strong> keeps a person in the loop exactly where
+    a judgment call is needed.
   </p>
-  <ol>
-    <li>
-      <strong>Plan:</strong> a GitHub issue is interpreted as a ticket. NEXUS assigns it to FORGE, which writes
-      <code>PLAN.md</code>. SENTINEL writes <code>CONTRACT.md</code>  -  a reviewable contract, not a guess.
-    </li>
-    <li>
-      <strong>Execute:</strong> FORGE implements the plan in segments inside an ephemeral Coder workspace.
-      SENTINEL evaluates each segment and produces <code>segment-N-eval.md</code>.
-    </li>
-    <li>
-      <strong>Merge:</strong> after a final review, FORGE opens a PR. VESSEL monitors CI and squash-merges.
-      LORE documents the change, and the workspace is destroyed.
-    </li>
-    <li>
-      <strong>Recover:</strong> NEXUS continuously reconciles the SharedStore. If a node crashes, an agent
-      hallucinates, or a workspace disappears, the flow resumes at the correct phase.
-    </li>
-  </ol>
 
   <h2>Where to Start</h2>
   <DocCards cards={CARDS} />
 
-  <Callout type="tip" title="Read these pages before editing registry.json">
-    The <code>orchestration/agent/registry.json</code> file makes a lot more sense once you understand the
-    agent-team model and the Coder integration. If you are tempted to change a model or disable an agent,
-    read the corresponding concept page first.
+  <Callout type="tip" title="Read the split first, then the gate">
+    If you're new, start with the Coder / OpenFlows split to get the mental model, then the planning gate to
+    see how discipline is enforced. The rest of the concepts fill in the details.
   </Callout>
 </DocsLayout>

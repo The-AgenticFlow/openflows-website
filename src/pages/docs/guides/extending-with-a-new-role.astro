@@ -1,0 +1,65 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Extending with a New Role' }]}>
+  <h1>Extending with a New Role</h1>
+
+  <p>
+    Most extensions to OpenFlows are <strong>configuration only</strong> — skills, MCP servers,
+    models. Adding a <strong>brand-new role</strong> is the one extension that touches the
+    system's internals, because a new role needs a few things wired together. This guide
+    explains the full scope so you know what you're committing to.
+  </p>
+
+  <h2>The difference from other extensions</h2>
+  <ul>
+    <li><strong>Skills, MCP servers, and models</strong> — configuration in the registry. Some risk, low effort, done in minutes.</li>
+    <li><strong>A new role</strong> — needs a persona, a workspace template, and routing in the orchestration. It's a deliberate engineering change.</li>
+  </ul>
+
+  <h2>What a new role needs</h2>
+  <ol>
+    <li><strong>A persona.</strong> How the agent should behave and sound — the role's identity and capability context. The agent reads this to know what it is and what it can do.</li>
+    <li><strong>A workspace template.</strong> The blueprint Coder uses to provision a workspace for this role — what it installs, its startup behavior, its network profile.</li>
+    <li><strong>Routing.</strong> Wiring the new role into the orchestration so the team knows when and how to hand it work — which transitions lead to and from it.</li>
+    <li><strong>(Recommended) a skill.</strong> So the role inherits the coordination protocol it needs to report progress like the other agents.</li>
+  </ol>
+
+  <h2>Honoring the security model</h2>
+  <p>A new role must respect the same rules as the existing ones:</p>
+  <ul>
+    <li><strong>No credentials in the workspace.</strong> Keep the no-keys, no-token posture.</li>
+    <li><strong>Restricted network access.</strong> Only the control plane, GitHub, and the store.</li>
+    <li><strong>Coordination through the surface.</strong> The role reports through the typed command surface, not by poking the store directly.</li>
+    <li><strong>A real identity.</strong> Every action attributable to the team's identity.</li>
+  </ul>
+  <p>
+    If the new role can't honor these, it can't be a drop-in — you'd be widening the trust
+    boundary, which is a significant decision.
+  </p>
+
+  <h2>The steps in brief</h2>
+  <ol>
+    <li>Write the <strong>persona</strong> for the role.</li>
+    <li>Add the <strong>workspace template</strong> for it.</li>
+    <li><strong>Register the role</strong> in the agent registry (concurrency, model, plan mode, skills).</li>
+    <li>Wire <strong>routing</strong> so the orchestration can dispatch to and from it.</li>
+    <li>Validate the role's workspace provisions and coordinates like the others.</li>
+  </ol>
+
+  <h2>Before you start, ask</h2>
+  <ul>
+    <li><strong>Could this be a skill instead?</strong> If the capability is a <em>behavior</em> an existing role could perform, give the existing role a skill — far cheaper.</li>
+    <li><strong>Could it be a model or server?</strong> For a capability, an MCP server or a different model on an existing role often suffices.</li>
+    <li><strong>Do you need a separate workspace?</strong> Isolation between the builder and the reviewer is essential <em>because</em> they're adversarial. If your new role isn't adversarial, it may not need full workspace isolation.</li>
+  </ul>
+
+  <Callout type="info" title="Try the light path first">
+    Before committing to a new role, revisit the configuration-only extensions:
+    <a href="/docs/guides/extending">Adding a Skill</a>, <a href="/docs/guides/extending-mcp">Connecting an MCP Server</a>,
+    and <a href="/docs/guides/model-routing">Enabling a Model</a>. A new role is the one change
+    that reshapes the trust boundary, so it should be a deliberate choice.
+  </Callout>
+</DocsLayout>

@@ -1,92 +1,38 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { CodeBlock, Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'LORE (Documentation)' }]}>
-  <h1>LORE  -  Documentation Agent</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Agents', href: '/docs/architecture/agents' }, { label: 'LORE (Writer)' }]}>
+  <h1>LORE  -  Writer Agent</h1>
 
   <p>
-    LORE is the technical writer. It activates after every successful merge and never
-    interrupts active development. LORE generates Architecture Decision Records, updates
-    <code>CHANGELOG.md</code>, and maintains project history. <strong>Disabled by default</strong>  - 
-    enable in <code>registry.json</code>.
-  </p>
-
-  <h2>Trigger</h2>
-
-  <p>
-    LORE is triggered by the <code>ticket_merged</code> event emitted by VESSEL. This event
-    contains the ticket ID, PR number, and repository. LORE never runs during active
-    development  -  only post-merge.
+    LORE is the <strong>writer</strong>. It documents decisions and updates changelogs after a merge. LORE activates
+    after work is merged and never interrupts active development. It is <strong>often disabled by default</strong> —
+    you enable it when you want documentation kept up to date as the team delivers.
   </p>
 
   <p>
-    LORE is triggered by the <code>ticket_merged</code> event emitted by VESSEL:
+    LORE acts directly but its actions are bounded by its role: it only documents <em>merged</em> work. It records
+    decisions and maintains the changelog and history so that the team's output is captured — without slowing
+    down the build, test, review, and merge cycle.
   </p>
 
+  <h2>What LORE does</h2>
   <ul>
-    <li><code>openflows-harness event listen ticket_merged</code> — Listens for the event from VESSEL</li>
-    <li>The event contains ticket ID, PR number, and repository information</li>
+    <li><strong>Documents merged work.</strong> LORE triggers after a successful merge and captures what changed and why.</li>
+    <li><strong>Updates changelogs.</strong> It maintains the project's changelog and history as work lands.</li>
+    <li><strong>Stays out of the way.</strong> LORE runs post-merge, so it never interrupts active development or blocks a merge.</li>
   </ul>
 
-  <h2>Artifacts Produced</h2>
-
-  <DocsTable headers={['Artifact', 'Location', 'Description']} rows={[
-    ['ADR', '<code>docs/adr/NNNN-title.md</code>', 'Architecture Decision Record for significant changes'],
-    ['CHANGELOG.md', 'Repository root', 'User-visible changes with PR references'],
-    ['README updates', 'As needed', 'Public API changes, new configuration options'],
-    ['Workflow docs', '<code>docs/workflows/</code>', 'Updated process documentation'],
-  ]} />
-
-  <h2>ADR Template</h2>
-
+  <h2>How it fits into the team</h2>
   <p>
-    LORE generates Architecture Decision Records (ADRs) in <code>docs/adr/</code> with YAML frontmatter 
-    and markdown content. Each ADR documents the context, decision, consequences, and alternatives for 
-    significant changes to the system.
+    After VESSEL merges a pull request, LORE activates to document the completed work — the final step in the
+    cycle before control returns to NEXUS to pick up the next ticket.
   </p>
 
-  <h2>CHANGELOG.md Format</h2>
-
-  <p>
-    LORE maintains a <code>CHANGELOG.md</code> at the repository root using the Keep a Changelog format,
-    with sections for Added, Changed, Fixed, and other change types grouped by release.
-  </p>
-
-  <h2>Configuration</h2>
-
-  <p>
-    Configure LORE in <code>registry.json</code> under the <code>agents</code> section:
-  </p>
-
-  <Callout type="tip" title="Enable LORE">
-    Set <code>"lore": &#123; "active": true &#125;</code> in <code>registry.json</code>. LORE is lightweight
-    and runs on <code>claude-haiku</code>, making it cost-effective.
+  <Callout type="info" title="Enabled when you want it">
+    Because LORE is a documentation pass rather than a delivery step, it's often off by default. When you turn it
+    on, it keeps history current without changing how the rest of the pipeline works.
   </Callout>
-
-  <h2>Harness Integration</h2>
-
-  <p>
-    LORE uses the following harness commands:
-  </p>
-
-  <ul>
-    <li><code>openflows-harness doc write --adr NNNN --content "..."</code> — Writes ADR documentation</li>
-    <li><code>openflows-harness git commit --branch main --message "..."</code> — Commits directly to default branch</li>
-    <li>LORE does not open PRs; it commits documentation directly to main</li>
-  </ul>
-
-  <Callout type="info" title="Direct commit to main">
-    LORE commits documentation directly to the default branch via GitHub MCP. It does not
-    open a separate PR unless the registry policy is configured to require one.
-  </Callout>
-
-  <h2>Read-Only Access</h2>
-
-  <p>
-    LORE has <strong>read-only access to application code</strong>. It cannot modify
-    source files, only documentation files. This prevents accidental code changes
-    by the documentation agent.
-  </p>
 </DocsLayout>

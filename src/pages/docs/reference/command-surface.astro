@@ -1,0 +1,83 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const SETUP_ROWS = [
+  ['Start', 'Begin the Controller loop. This is the default action when you start the system.'],
+  ['Bootstrap', 'Create the initial administrator, register the role templates, and verify that the model and GitHub integrations are working.'],
+  ['Diagnose', 'Check the health of the Coder integration.'],
+];
+
+const TENANT_ROWS = [
+  ['Add tenant', 'Create a team bound to a repository, including its user, its orchestrator workspace, and a fresh agent team.'],
+  ['List tenants', 'See the teams running on the server.'],
+  ['Clean tenant', 'Reset stale or failed work back to the start and clear any recovery state.'],
+  ['Remove tenant', 'Tear down a team and its fleet.'],
+];
+
+const STATUS_ROWS = [
+  ['Status', 'A read-only snapshot of tickets, workers, and pull requests.'],
+  ['Pause / resume', 'Halt or continue the fleet, gracefully.'],
+  ['Drain', 'Stop picking up new tickets while letting in-flight work finish.'],
+  ['Target', 'Focus the fleet on a specific repository, issue, or label.'],
+  ['Set registry', 'Update the agent team live, with no restart.'],
+];
+
+const GATE_ROWS = [
+  ['Inspect a gate', 'Look at the approval state of a gated step.'],
+  ['Approve a gate', 'Record an approval. Used by the reviewer role.'],
+];
+
+const RESET_ROWS = [
+  ['Reset orchestration', 'Restore orchestration content to the bundled defaults.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }, { label: 'Command Surface' }]}>
+  <h1>Command Surface</h1>
+  <p>
+    OpenFlows provides a command-line surface alongside the web control panel. They drive the same state, so neither
+    can drift from the other: every panel action maps to a command, and the command surface stays automation-friendly.
+    This page describes the operations available, in plain language — no command syntax, no flags, no exact
+    invocations.
+  </p>
+  <p>
+    The web control panel is the everyday interface; the command surface is for scripting, automation, and headless
+    operation. Both are always in sync because they operate on the same control state.
+  </p>
+
+  <h2>Setup &amp; environment operations</h2>
+  <DocsTable headers={['Operation', 'Purpose']} rows={SETUP_ROWS} />
+
+  <h2>Tenant operations</h2>
+  <DocsTable headers={['Operation', 'Purpose']} rows={TENANT_ROWS} />
+  <Callout type="info" title="Removing a tenant">
+    Removing a tenant tears down the team and its fleet. It is a deliberate, end-of-life action rather than a routine
+    cleanup — the everyday cleanup path is the clean operation, which resets stalled work to the start.
+  </Callout>
+
+  <h2>Status &amp; control operations</h2>
+  <DocsTable headers={['Operation', 'Purpose']} rows={STATUS_ROWS} />
+
+  <h2>Gate operations</h2>
+  <DocsTable headers={['Operation', 'Purpose']} rows={GATE_ROWS} />
+  <p>
+    Gates are where the plan-before-code guardrail lives: work cannot leave planning until a reviewer approves it, and
+    that approval is single-use. The gate operations let you inspect and record that approval state.
+  </p>
+
+  <h2>Reset operations</h2>
+  <DocsTable headers={['Operation', 'Purpose']} rows={RESET_ROWS} />
+
+  <Callout type="tip" title="Panel first, commands when needed">
+    The web control panel is the everyday surface for seeing status, editing the registry, steering the fleet, and
+    handling escalations. Reach for the command surface when you are scripting, automating, or running headless — you
+    are driving the same operations either way.
+  </Callout>
+
+  <h2>Related</h2>
+  <ul>
+    <li><a href="/docs/reference/configuration-reference">Configuration Reference</a> — the knobs behind fleet steering and the team registry.</li>
+    <li><a href="/docs/reference/limits-and-defaults">Limits &amp; Defaults</a> — the meaningful numbers to know.</li>
+  </ul>
+</DocsLayout>
