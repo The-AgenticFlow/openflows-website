@@ -1,108 +1,75 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, DocCards, DocsTable } from '@/molecules/DocComponents/DocComponents';
-
-const TEAM_ROWS = [
-  ['<strong>NEXUS</strong>', 'Orchestrator', 'Picks up issues, coordinates the team, recovers from failures, and notifies you when input is needed.'],
-  ['<strong>FORGE</strong>', 'Builder', 'Writes code against an agreed plan, creates branches, and opens pull requests.'],
-  ['<strong>SENTINEL</strong>', 'Reviewer', 'Adversarially reviews the plan and the code for security, quality, and test coverage.'],
-  ['<strong>VESSEL</strong>', 'DevOps', 'Watches CI, resolves merge conflicts, and merges green pull requests.'],
-  ['<strong>LORE</strong>', 'Writer', 'Documents decisions and keeps project history up to date. Often disabled by default.'],
-];
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Introduction', href: '/docs/introduction' }, { label: 'What is OpenFlows' }]}>
   <h1>What is OpenFlows?</h1>
 
   <p>
-    <strong>OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
-    production-ready pull requests — running entirely inside your own self-hosted Coder
-    environment.</strong>
-  </p>
-  <p>
-    Instead of a single chatbot that suggests snippets, OpenFlows stands up a small team of
-    specialized AI agents — each with a clear role — that plan, write, test, and adversarially
-    review code on your behalf. You stay in control of architecture and final decisions; the
-    team handles the execution.
+    OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
+    production-ready pull requests, all inside your own self-hosted Coder environment. Instead of a
+    single chatbot that suggests snippets, OpenFlows stands up a small team of specialized AI agents,
+    each with a clear role, that plan, write, test, and risk-review code on your behalf. You keep
+    control of the architecture and the final decisions; the team handles the execution.
   </p>
 
-  <Callout type="info" title="The one-line idea">
-    You open a GitHub issue. OpenFlows plans it, writes it, stresses it, and merges it — then
-    tells you what happened.
-  </Callout>
+  <p>
+    In short, you open a GitHub issue, and OpenFlows plans it, writes it, stresses it, and merges
+    it, then tells you what happened.
+  </p>
 
   <h2>The founding principle</h2>
   <p>
-    OpenFlows is built around a simple principle:
-  </p>
-  <blockquote>
-    <strong>Coder decides <em>where</em> work runs. OpenFlows decides <em>how</em> agents work
-    together.</strong>
-  </blockquote>
-  <ul>
-    <li><strong>Coder</strong> provides the governed, isolated, disposable workspaces and the model gateway where every AI call happens.</li>
-    <li><strong>OpenFlows</strong> provides the coordination — the plan, the review, the merge, and the guardrails.</li>
-  </ul>
-  <p>
-    Neither replaces the other. OpenFlows does not try to manage machines, and Coder does not
-    try to write your code.
+    OpenFlows is built around one idea: Coder decides <em>where</em> work runs, and OpenFlows
+    decides <em>how</em> agents work together. Coder provides the governed, isolated, disposable
+    workspaces and the model gateway where every AI call happens. OpenFlows provides the
+    coordination, including the plan, the review, the merge, and the guardrails. Neither replaces
+    the other: OpenFlows does not try to manage machines, and Coder does not try to write your
+    code.
   </p>
 
-  <h2>The problem OpenFlows actually solves</h2>
+  <h2>The problem it solves</h2>
   <p>
-    Writing code in teams has become a bottleneck — not because teams got slower, but because a
-    language model can now produce working code faster and more consistently than a person typing
-    it by hand. Yet <strong>humans remain the product owners</strong>. They define what should be
-    built and why, decide the architecture, and own the quality of what ships. The bottleneck the
-    industry is now hitting is not coding speed — it is that <strong>people are sitting at the
-    wrong phase of the pipeline</strong>, doing work that a machine could referee, while the work
-    only a person can do goes undone.
-  </p>
-
-  <h2>Why the old review chain breaks down</h2>
-  <p>
-    Once agents are involved, the old chain — an agent writes, a human reviews — stops scaling. An
-    agent can push far more code than any person can review by hand, but that code still needs
-    review. The only first-pass reviewer that can keep up with an agent is <strong>another
-    agent</strong>. In OpenFlows, review is an adversarial, isolated agent role, so humans are no
-    longer the bottleneck that gates every pull request.
+    Writing code in teams has become a bottleneck, but not because teams got slower. A language
+    model can now produce working code faster and more consistently than a person typing by hand.
+    Yet humans are still the product owners. They decide what gets built and why, set the
+    architecture, and own the quality of what ships.
   </p>
   <p>
-    This is why a skilled engineer should not sit mid-pipeline clicking accept and deny on trivial
-    changes day after day — work companies pay dearly for and that adds little judgment. That
-    engineer is far more valuable <strong>one level up the chain</strong>: at product design and
-    architecture, where human judgment cannot be replaced. Moving people to that level is not a
-    cost cut; it is where they deliver the most value.
-  </p>
-
-  <h2>What problem does it solve?</h2>
-  <p>
-    Writing code against a specification has become cheap. What stays hard is <em>thinking</em>:
-    understanding the architecture, making product judgments, and keeping security in mind.
-    OpenFlows encodes that discipline as an automated team, so the engineering judgment gets
-    applied to every issue, consistently — while removing the repetitive, low-judgment work and
-    running it in a well-defined pipeline from start to end.
+    The real bottleneck is that people are sitting at the wrong phase of the pipeline. Once agents
+    are involved, an agent can push far more code than any person can review by hand, but that code
+    still needs review. The only first-pass reviewer that can keep up is another agent. OpenFlows
+    makes that first pass an isolated, adversarial agent role, so a skilled engineer no longer has
+    to click accept or deny on trivial changes all day. That engineer is far more valuable one level
+    up the chain, at product design and architecture, where human judgment cannot be replaced.
   </p>
 
   <h2>Who is it for?</h2>
   <p>
-    OpenFlows is built as an <strong>enterprise-grade</strong> orchestration layer — governed,
-    auditable, self-hosted in your own infrastructure, with strong isolation and security controls
-    — but it is just as much at home for a <strong>solo developer</strong> who wants an AI team
-    working their backlog overnight. It scales from one person to many teams on the same fleet.
+    OpenFlows is built to be an enterprise-grade orchestration layer: governed, auditable, and
+    self-hosted on your own infrastructure. It is just as useful for a solo developer who wants a
+    personal AI team working their backlog overnight. It scales from one person to many teams on the
+    same fleet.
   </p>
   <ul>
-    <li><strong>Enterprises &amp; teams</strong> that need governed, auditable AI delivery inside their own network — strict isolation, no model keys in worker workspaces, and a complete audit trail. One Coder server serves many isolated teams.</li>
-    <li><strong>Developers</strong> who want the mechanics of planning, coding, testing, and review handled while they stay in charge of the important decisions.</li>
-    <li><strong>Solo developers</strong> who want a personal AI team to open issues, run the pipeline, and return reviewed pull requests — without sitting at the keyboard or babysitting every change.</li>
+    <li>Enterprises and teams that need governed, auditable AI delivery inside their own network, with strict isolation and no model keys in worker workspaces.</li>
+    <li>Developers who want the mechanics of planning, coding, testing, and review handled while they stay in charge of the important decisions.</li>
+    <li>Solo developers who want a personal AI team to work through issues and return reviewed pull requests, without babysitting every change.</li>
   </ul>
 
   <h2>A quick tour of the team</h2>
-  <DocsTable headers={['Agent', 'Role', 'What it does']} rows={TEAM_ROWS} />
-
+  <p>OpenFlows runs five roles that hand work from one to the next:</p>
+  <ul>
+    <li><strong>NEXUS</strong>, the orchestrator, picks up issues, keeps the team moving, recovers from failures, and notifies you when input is needed.</li>
+    <li><strong>FORGE</strong>, the builder, writes code against an agreed plan, creates branches, and opens pull requests.</li>
+    <li><strong>SENTINEL</strong>, the reviewer, risk-reviews both the plan and the code for security, quality, and test coverage.</li>
+    <li><strong>VESSEL</strong>, the merger, watches CI, resolves merge conflicts, and merges green pull requests.</li>
+    <li><strong>LORE</strong>, the writer, documents decisions and keeps project history up to date (often disabled by default).</li>
+  </ul>
   <p>
-    The rest of this documentation explains how that team works, what it needs, and how to make
-    it yours.
+    The rest of this documentation explains how that team works, what it needs, and how to make it
+    yours.
   </p>
 
   <h2>Where to go next</h2>
