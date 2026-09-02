@@ -35,6 +35,16 @@ Writing code against a specification has become cheap. What stays hard is <em>th
 OpenFlows encodes that discipline as an automated team. It turns the judgment steps — planning,
     review, verification, and recovery — into enforced parts of the pipeline, applied to every
     issue, consistently, rather than left to chance.
+</p> <h2>Putting each actor at the right level of the chain</h2> <p>
+The insight behind OpenFlows is that software teams already have the right people — they are
+    often just operating at the wrong level. A person should own the <strong>architecture and the
+    product</strong>: what to build, why it matters, and how it should hold together. They should
+<em>not</em> be the bottleneck that reads every line an agent produces. Because agents write
+    faster than people can review, the first-pass review of agent-written code has to come from
+    another agent — that is what makes the pipeline scale at all.
+</p> <ul> <li><strong>Agents</strong> write, test, review (as a first pass), merge, and document — the repetitive, low-judgment work, run in a well-defined pipeline.</li> <li><strong>Humans</strong> own the architecture and product decisions — the security calls, the ambiguous requirements, the direction — and are pulled in only at those boundaries instead of clicking accept or deny all day.</li> </ul> <p>
+This is not about replacing engineers. It is about moving them to the level of the chain where
+    they create the most value.
 </p> <h2>The guardrails that make it "engineering," not just coding</h2> <p>Four principles run through the whole design, and each is enforced by the system rather than suggested to the agents:</p> <ul> <li><strong>Plan before code.</strong> No agent starts writing until a plan is agreed. This is the <a href="/docs/concepts/planning-gate">planning gate</a>.</li> <li><strong>When in doubt, don't approve.</strong> The reviewer blocks rather than guesses when evidence is missing — it would rather hold a ticket or escalate than merge something unverified.</li> <li><strong>Bounded recovery, then human escalation.</strong> The system repairs what it can, a bounded number of times, then asks a person rather than spinning forever.</li> <li><strong>No secrets in worker workspaces.</strong> Trust, keys, and credentials stay concentrated in the control plane; the work plane is disposable and keyless. See <a href="/docs/architecture/security-by-design">Security by Design</a>.</li> </ul> <h2>Why it is structural, not a suggestion</h2> <p>
 These guardrails are not prompts an agent could ignore. The planning gate cannot be skipped,
     approvals are single-use, the reviewer works in an isolated workspace, and recovery is
