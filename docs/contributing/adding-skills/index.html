@@ -20,159 +20,28 @@ Get Started
               </div>
             </div>
           </div>
-        `,t&&t.dataset.visibleClass&&t.classList.add(t.dataset.visibleClass);const n=document.getElementById("navbar");n&&n.dataset.dropdownActiveClass&&n.classList.add(n.dataset.dropdownActiveClass)}})});document.getElementById("navbar")?.addEventListener("mouseleave",()=>{a=setTimeout(()=>{t&&t.dataset.visibleClass&&t.classList.remove(t.dataset.visibleClass);const e=document.getElementById("navbar");e&&e.dataset.dropdownActiveClass&&e.classList.remove(e.dataset.dropdownActiveClass)},150)});t?.addEventListener("mouseenter",()=>{a&&clearTimeout(a)});</script> <aside class="sidebar"> <div class="sidebarSection"> <p class="sidebarTitle">Getting Started</p> <ul class="sidebarNav"> <li> <a href="/docs/getting-started" class="sidebarLink"> Quick Start </a> </li><li> <a href="/docs/getting-started/installation" class="sidebarLink"> Installation </a> </li><li class="hasChildren">  <button class="sidebarParent" data-expanded="true" aria-expanded="true"> <span class="sidebarParentLabel">Token Guide</span> <svg class="sidebarChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="6 9 12 15 18 9"></polyline> </svg> </button> <ul class="sidebarChildren"> <li> <a href="/docs/getting-started/token-guide" class="sidebarLink"> OAuth App </a> </li><li> <a href="/docs/getting-started/token-guide-coder" class="sidebarLink"> Coder Auth </a> </li><li> <a href="/docs/getting-started/token-guide-testing" class="sidebarLink"> Test PAT </a> </li><li> <a href="/docs/getting-started/token-guide-security" class="sidebarLink"> Security </a> </li> </ul>  </li><li> <a href="/docs/getting-started/first-issue" class="sidebarLink"> First Issue Walkthrough </a> </li><li> <a href="/docs/getting-started/first-issue-lifecycle" class="sidebarLink"> Lifecycle Steps </a> </li><li> <a href="/docs/getting-started/first-issue-completion" class="sidebarLink"> Completion &amp; Merge </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Core Concepts</p> <ul class="sidebarNav"> <li> <a href="/docs/concepts/architecture-first" class="sidebarLink"> Architecture-First Development </a> </li><li> <a href="/docs/concepts/agent-team" class="sidebarLink"> The Agent Team </a> </li><li> <a href="/docs/concepts/pocketflow-sharedstore" class="sidebarLink"> PocketFlow &amp; SharedStore </a> </li><li> <a href="/docs/concepts/coder-integration" class="sidebarLink"> Coder Integration </a> </li><li> <a href="/docs/concepts/security-model" class="sidebarLink"> Security Model </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Architecture</p> <ul class="sidebarNav"> <li> <a href="/docs/architecture" class="sidebarLink"> Overview </a> </li><li> <a href="/docs/architecture/system-design" class="sidebarLink"> System Design </a> </li><li> <a href="/docs/architecture/orchestrator" class="sidebarLink"> NEXUS Orchestrator </a> </li><li class="hasChildren">  <button class="sidebarParent" data-expanded="true" aria-expanded="true"> <span class="sidebarParentLabel">Agents</span> <svg class="sidebarChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="6 9 12 15 18 9"></polyline> </svg> </button> <ul class="sidebarChildren"> <li> <a href="/docs/architecture/agents/forge" class="sidebarLink"> FORGE (Builder) </a> </li><li> <a href="/docs/architecture/agents/sentinel" class="sidebarLink"> SENTINEL (Reviewer) </a> </li><li> <a href="/docs/architecture/agents/vessel" class="sidebarLink"> VESSEL (DevOps) </a> </li><li> <a href="/docs/architecture/agents/lore" class="sidebarLink"> LORE (Documentation) </a> </li> </ul>  </li><li> <a href="/docs/architecture/coordination-protocol" class="sidebarLink"> Coordination Protocol </a> </li><li> <a href="/docs/architecture/workspace-lifecycle" class="sidebarLink"> Workspace Lifecycle </a> </li><li> <a href="/docs/architecture/state-recovery" class="sidebarLink"> State Machine &amp; Recovery </a> </li><li> <a href="/docs/architecture/decision-routing" class="sidebarLink"> Decision &amp; Routing </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Guides</p> <ul class="sidebarNav"> <li> <a href="/docs/guides/agent-setup" class="sidebarLink"> Agent Setup </a> </li><li> <a href="/docs/guides/model-routing" class="sidebarLink"> Model Routing </a> </li><li class="hasChildren">  <button class="sidebarParent" data-expanded="true" aria-expanded="true"> <span class="sidebarParentLabel">Model Routing</span> <svg class="sidebarChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="6 9 12 15 18 9"></polyline> </svg> </button> <ul class="sidebarChildren"> <li> <a href="/docs/guides/model-routing-cost" class="sidebarLink"> Cost Optimization </a> </li><li> <a href="/docs/guides/model-routing-fallback" class="sidebarLink"> Fallback Strategies </a> </li> </ul>  </li><li> <a href="/docs/guides/multi-tenancy" class="sidebarLink"> Multi-Tenancy </a> </li><li class="hasChildren">  <button class="sidebarParent" data-expanded="true" aria-expanded="true"> <span class="sidebarParentLabel">Multi-Tenancy</span> <svg class="sidebarChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="6 9 12 15 18 9"></polyline> </svg> </button> <ul class="sidebarChildren"> <li> <a href="/docs/guides/multi-tenancy-cli" class="sidebarLink"> CLI </a> </li><li> <a href="/docs/guides/multi-tenancy-nexus" class="sidebarLink"> NEXUS Workspaces </a> </li> </ul>  </li><li> <a href="/docs/guides/extending" class="sidebarLink"> Extending: Skills </a> </li><li> <a href="/docs/guides/extending-mcp" class="sidebarLink"> Extending: MCP </a> </li><li> <a href="/docs/guides/extending-models" class="sidebarLink"> Extending: Models </a> </li><li> <a href="/docs/guides/operations" class="sidebarLink"> Operations &amp; Monitoring </a> </li><li> <a href="/docs/guides/troubleshooting" class="sidebarLink"> Troubleshooting </a> </li><li class="hasChildren">  <button class="sidebarParent" data-expanded="true" aria-expanded="true"> <span class="sidebarParentLabel">Troubleshooting</span> <svg class="sidebarChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="6 9 12 15 18 9"></polyline> </svg> </button> <ul class="sidebarChildren"> <li> <a href="/docs/guides/troubleshooting-connectivity" class="sidebarLink"> Connectivity </a> </li><li> <a href="/docs/guides/troubleshooting-workers" class="sidebarLink"> Workers </a> </li> </ul>  </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Reference</p> <ul class="sidebarNav"> <li> <a href="/docs/reference/api" class="sidebarLink"> API Reference </a> </li><li> <a href="/docs/reference/registry-schema" class="sidebarLink"> registry.json Schema </a> </li><li> <a href="/docs/reference/environment-variables" class="sidebarLink"> Environment Variables </a> </li><li> <a href="/docs/reference/cli" class="sidebarLink"> CLI Commands </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Contributing</p> <ul class="sidebarNav"> <li> <a href="/docs/contributing" class="sidebarLink"> Contributor Guide </a> </li><li> <a href="/docs/contributing/development-setup" class="sidebarLink"> Development Setup </a> </li><li> <a href="/docs/contributing/adding-skills" class="sidebarLink"> Adding Skills </a> </li><li> <a href="/docs/contributing/testing" class="sidebarLink"> Testing </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Other</p> <ul class="sidebarNav"> <li> <a href="/docs/faq" class="sidebarLink"> FAQ </a> </li> </ul> </div> </aside> <main class="content"> <div class="contentInner"> <nav class="breadcrumbs" aria-label="Breadcrumb"> <a href="/">Home</a> <span> <span class="sep">›</span> <a href="/docs">Docs</a> </span><span> <span class="sep">›</span> <a href="/docs/contributing">Contributing</a> </span><span> <span class="sep">›</span> <span class="current">Adding Skills</span> </span> </nav>  <h1>Adding Skills</h1> <p>
-Skills are the primary extension point in OpenFlows. A skill is a declarative unit of
-    capability: a directory, a specification document, and a registry entry. It does not
-    require a code change, a recompilation, or a restart. NEXUS discovers skills by reading
-<code>orchestration/agent/registry.json</code> v2, and agent roles execute them according to
-    their own flow phases.
+        `,t&&t.dataset.visibleClass&&t.classList.add(t.dataset.visibleClass);const n=document.getElementById("navbar");n&&n.dataset.dropdownActiveClass&&n.classList.add(n.dataset.dropdownActiveClass)}})});document.getElementById("navbar")?.addEventListener("mouseleave",()=>{a=setTimeout(()=>{t&&t.dataset.visibleClass&&t.classList.remove(t.dataset.visibleClass);const e=document.getElementById("navbar");e&&e.dataset.dropdownActiveClass&&e.classList.remove(e.dataset.dropdownActiveClass)},150)});t?.addEventListener("mouseenter",()=>{a&&clearTimeout(a)});</script> <aside class="sidebar"> <div class="sidebarSection"> <p class="sidebarTitle">Getting Started</p> <ul class="sidebarNav"> <li> <a href="/docs/getting-started" class="sidebarLink"> Quick Start </a> </li><li> <a href="/docs/getting-started/installation" class="sidebarLink"> Installation </a> </li><li class="hasChildren">  <button class="sidebarParent" data-expanded="true" aria-expanded="true"> <span class="sidebarParentLabel">Token Guide</span> <svg class="sidebarChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="6 9 12 15 18 9"></polyline> </svg> </button> <ul class="sidebarChildren"> <li> <a href="/docs/getting-started/token-guide" class="sidebarLink"> Identity &amp; OAuth </a> </li><li> <a href="/docs/getting-started/token-guide-coder" class="sidebarLink"> Coder Auth </a> </li><li> <a href="/docs/getting-started/token-guide-security" class="sidebarLink"> Security </a> </li> </ul>  </li><li> <a href="/docs/getting-started/first-issue" class="sidebarLink"> First Issue Walkthrough </a> </li><li> <a href="/docs/getting-started/first-issue-lifecycle" class="sidebarLink"> Lifecycle Steps </a> </li><li> <a href="/docs/getting-started/first-issue-completion" class="sidebarLink"> Completion &amp; Merge </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Core Concepts</p> <ul class="sidebarNav"> <li> <a href="/docs/concepts/architecture-first" class="sidebarLink"> Architecture-First Development </a> </li><li> <a href="/docs/concepts/agent-team" class="sidebarLink"> The Agent Team </a> </li><li> <a href="/docs/concepts/ticket-lifecycle" class="sidebarLink"> The Ticket Lifecycle </a> </li><li> <a href="/docs/concepts/coordination-store" class="sidebarLink"> The Coordination Store </a> </li><li> <a href="/docs/concepts/workspaces" class="sidebarLink"> Workspaces </a> </li><li> <a href="/docs/concepts/tenants" class="sidebarLink"> Tenants </a> </li><li> <a href="/docs/concepts/human-escalation" class="sidebarLink"> Human Escalation </a> </li><li> <a href="/docs/concepts/agent-registry" class="sidebarLink"> The Agent Registry </a> </li><li> <a href="/docs/concepts/coder-integration" class="sidebarLink"> Coder Integration </a> </li><li> <a href="/docs/concepts/security-model" class="sidebarLink"> Security Model </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Architecture</p> <ul class="sidebarNav"> <li> <a href="/docs/architecture" class="sidebarLink"> Overview </a> </li><li> <a href="/docs/architecture/system-design" class="sidebarLink"> Big Picture </a> </li><li> <a href="/docs/architecture/orchestrator" class="sidebarLink"> The Controller </a> </li><li class="hasChildren">  <button class="sidebarParent" data-expanded="true" aria-expanded="true"> <span class="sidebarParentLabel">Agents</span> <svg class="sidebarChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"> <polyline points="6 9 12 15 18 9"></polyline> </svg> </button> <ul class="sidebarChildren"> <li> <a href="/docs/architecture/agents/forge" class="sidebarLink"> FORGE (Builder) </a> </li><li> <a href="/docs/architecture/agents/sentinel" class="sidebarLink"> SENTINEL (Reviewer) </a> </li><li> <a href="/docs/architecture/agents/vessel" class="sidebarLink"> VESSEL (DevOps) </a> </li><li> <a href="/docs/architecture/agents/lore" class="sidebarLink"> LORE (Documentation) </a> </li> </ul>  </li><li> <a href="/docs/architecture/coordination-protocol" class="sidebarLink"> Coordination Protocol </a> </li><li> <a href="/docs/architecture/workspace-lifecycle" class="sidebarLink"> Workspace Lifecycle </a> </li><li> <a href="/docs/architecture/state-recovery" class="sidebarLink"> State Machine &amp; Recovery </a> </li><li> <a href="/docs/architecture/decision-routing" class="sidebarLink"> Decision &amp; Routing </a> </li><li> <a href="/docs/architecture/security-by-design" class="sidebarLink"> Security by Design </a> </li><li> <a href="/docs/architecture/deployment" class="sidebarLink"> How It&#39;s Deployed </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Guides</p> <ul class="sidebarNav"> <li> <a href="/docs/guides/running-your-first-ticket" class="sidebarLink"> Running Your First Ticket </a> </li><li> <a href="/docs/guides/agent-setup" class="sidebarLink"> Agent Setup </a> </li><li> <a href="/docs/guides/operations" class="sidebarLink"> Managing the Fleet </a> </li><li> <a href="/docs/guides/handling-human-escalations" class="sidebarLink"> Handling Human Escalations </a> </li><li> <a href="/docs/guides/model-routing" class="sidebarLink"> Enabling a Model </a> </li><li> <a href="/docs/guides/multi-tenancy" class="sidebarLink"> Multi-Tenancy </a> </li><li> <a href="/docs/guides/extending" class="sidebarLink"> Adding a Skill </a> </li><li> <a href="/docs/guides/extending-mcp" class="sidebarLink"> Connecting an MCP Server </a> </li><li> <a href="/docs/guides/extending-with-a-new-role" class="sidebarLink"> Extending with a New Role </a> </li><li> <a href="/docs/guides/wiring-notifications" class="sidebarLink"> Wiring Notifications </a> </li><li> <a href="/docs/guides/troubleshooting" class="sidebarLink"> Troubleshooting </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Reference</p> <ul class="sidebarNav"> <li> <a href="/docs/reference/command-surface" class="sidebarLink"> Command Surface </a> </li><li> <a href="/docs/reference/configuration-reference" class="sidebarLink"> Configuration Reference </a> </li><li> <a href="/docs/reference/roles-reference" class="sidebarLink"> Roles Reference </a> </li><li> <a href="/docs/reference/glossary" class="sidebarLink"> Glossary </a> </li><li> <a href="/docs/reference/lifecycle-states" class="sidebarLink"> Lifecycle States </a> </li><li> <a href="/docs/reference/notifications-reference" class="sidebarLink"> Notifications </a> </li><li> <a href="/docs/reference/limits-and-defaults" class="sidebarLink"> Limits &amp; Defaults </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Contributing</p> <ul class="sidebarNav"> <li> <a href="/docs/contributing" class="sidebarLink"> How to Contribute </a> </li><li> <a href="/docs/contributing/project-governance" class="sidebarLink"> Project Governance </a> </li><li> <a href="/docs/contributing/adding-skills" class="sidebarLink"> Contributing Skills </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Resources</p> <ul class="sidebarNav"> <li> <a href="/docs/resources" class="sidebarLink"> Overview </a> </li><li> <a href="/docs/resources/further-reading" class="sidebarLink"> Further Reading </a> </li><li> <a href="/docs/resources/community-and-support" class="sidebarLink"> Community &amp; Support </a> </li> </ul> </div><div class="sidebarSection"> <p class="sidebarTitle">Other</p> <ul class="sidebarNav"> <li> <a href="/docs/faq" class="sidebarLink"> FAQ </a> </li> </ul> </div> </aside> <main class="content"> <div class="contentInner"> <nav class="breadcrumbs" aria-label="Breadcrumb"> <a href="/">Home</a> <span> <span class="sep">›</span> <a href="/docs">Docs</a> </span><span> <span class="sep">›</span> <a href="/docs/contributing">Contributing</a> </span><span> <span class="sep">›</span> <span class="current">Contributing Skills Content</span> </span> </nav>  <h1>Contributing Skills Content</h1> <p>
+Skills are the configuration-only way to teach a role something new — a workflow, a project convention, a
+    linting process. Because a skill is packaged instructions rather than system code, contributing good skill content
+    is one of the lightest and most accessible ways to help the project.
+</p> <h2>How skills work</h2> <p>
+A skill is a set of instructions a role can load on demand. It typically captures a repeatable capability — how
+    this project runs its checks, the conventions we follow for this kind of work, the steps for that process — and it
+    is scoped per role, so the builder and the reviewer can carry different skills. Each skill is configured into a
+    role through the team configuration, without any system code change.
 </p> <p>
-This page explains how to design a new skill, where to place it, how to write the
-<code>SKILL.md</code> specification, how to register it under the correct role’s skills
-    array, and how to test it before submitting. The process is intentionally lightweight so
-    that domain experts can contribute capabilities without learning the entire Rust codebase.
-</p> <h2>What a Skill Is</h2> <p>
-A skill is a contract between a human contributor and an agent role. It answers three
-    questions: what problem does this solve, what inputs and outputs are expected, and what
-    procedure should the agent follow. The skill is not a script; it is a specification that an
-    LLM-driven agent interprets in context. Good skills are precise, composable, and
-    failure-aware.
-</p> <p>
-Because Coder is the only runtime, a skill never manages infrastructure directly. It operates
-    inside an ephemeral Coder workspace via the agent CLI or through the Coder API. The
-    orchestration layer decides when to invoke a skill; the skill tells the agent how to
-    execute it.
-</p> <div class="callout info"><div class="calloutBody"><span class="calloutIcon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span><div class="calloutContent"><p class="calloutTitle">No code change required</p><div class="calloutText">
-Adding a skill means dropping a directory into <code>orchestration/plugin/skills/</code> and
-    listing it in <code>registry.json</code>. If your proposal requires changing the flow engine,
-    SharedStore contracts, or the Coder transport, open an architecture issue instead. Those are
-    core features, not skills.
-</div></div></div></div> <h2>Directory Structure</h2> <p>
-Every skill lives in its own directory under <code>orchestration/plugin/skills/</code>. The
-    directory name becomes the skill identifier, so choose it carefully and match the
-<code>name</code> field in the registry entry.
-</p> <div class="codeBlock"><div class="codeHeader"><span class="codeLang">text</span><button class="copyBtn">Copy</button></div><pre>orchestration/plugin/skills/
-├── run-cargo-test/
-│   ├── SKILL.md
-│   ├── examples/
-│   │   ├── input.json
-│   │   └── output.txt
-│   └── tests/
-│       └── validation.json
-└── write-adr/
-    ├── SKILL.md
-    └── examples/
-        └── sample-adr.md</pre></div> <table class="docsTable"><thead><tr><th>File / Directory</th><th>Purpose</th></tr></thead><tbody><tr><td><code>SKILL.md</code></td><td>Required. The skill specification: what it does, when it runs, inputs, outputs, and examples.</td></tr><tr><td><code>examples/</code></td><td>Optional but strongly recommended. Sample inputs and expected outputs for manual and automated validation.</td></tr><tr><td><code>tests/</code></td><td>Optional. Custom test fixtures that exercise the skill through the CLI or a flow node.</td></tr><tr><td><code>assets/</code></td><td>Optional. Diagrams, reference tables, or other files referenced by SKILL.md.</td></tr></tbody></table> <h2>SKILL.md Format</h2> <p> <code>SKILL.md</code> is the specification. It must be complete enough that another agent
-    can execute the skill without asking for clarification. The following sections are required
-    unless explicitly marked optional.
-</p> <table class="docsTable"><thead><tr><th>Section</th><th>What to include</th></tr></thead><tbody><tr><td><code># Skill Name</code></td><td>Short, verb-first title. Example: <code>Run cargo test</code>.</td></tr><tr><td><code>## Purpose</code></td><td>One paragraph explaining the outcome and why it matters.</td></tr><tr><td><code>## When to Use</code></td><td>Trigger conditions: which flow phase, which agent role, and what decision criteria.</td></tr><tr><td><code>## Inputs</code></td><td>Typed inputs with required vs optional, defaults, and validation rules.</td></tr><tr><td><code>## Outputs</code></td><td>What the skill returns or writes. Include file paths and SharedStore keys if applicable.</td></tr><tr><td><code>## Procedure</code></td><td>Step-by-step instructions for the agent. Be precise enough to reproduce deterministically.</td></tr><tr><td><code>## Examples</code></td><td>One or more worked examples showing input, execution, and output.</td></tr><tr><td><code>## Failure Modes</code></td><td>What can go wrong, how to detect it, and what the agent should do next.</td></tr><tr><td><code>## Registry Entry</code></td><td>The exact JSON snippet to add to <code>registry.json</code> under the role’s skills array.</td></tr></tbody></table> <div class="codeBlock"><div class="codeHeader"><span class="codeLang">markdown</span><button class="copyBtn">Copy</button></div><pre># Run cargo test
-
-## Purpose
-Execute the Rust test suite for a given crate or workspace and report the
-result in a structured format that NEXUS can act on.
-
-## When to Use
-- VESSEL runs this skill after FORGE opens a pull request to verify CI status.
-- FORGE runs it before opening a PR when the issue includes a test requirement.
-- The skill is triggered by the &quot;/test&quot; command in a PR comment.
-
-## Inputs
-| Name | Type | Required | Default | Description |
-|------|------|----------|---------|-------------|
-| crate | string | no | &quot;workspace&quot; | Crate to test, or &quot;workspace&quot; for all crates |
-| target | string | no | &quot;x86_64-unknown-linux-gnu&quot; | Build target |
-| extra_args | array[string] | no | [] | Extra arguments passed to cargo test |
-
-## Outputs
-- stdout: raw cargo test output.
-- exit_code: 0 for pass, non-zero for fail.
-- summary_file: path to a JSON file with counts for passed, failed, and ignored tests.
-
-## Procedure
-1. Navigate to the repository root in the workspace.
-2. Run `cargo test -p {crate}` if crate is not &quot;workspace&quot;, otherwise run `cargo test --workspace`.
-3. Append any extra_args to the command.
-4. Capture stdout, stderr, and exit code.
-5. Parse the output and write summary_file to the workspace.
-6. If the exit code is non-zero, stop and report failure.
-
-## Examples
-### Input
-```json
-{
-  &quot;crate&quot;: &quot;openflows-core&quot;,
-  &quot;extra_args&quot;: [&quot;--no-fail-fast&quot;]
-}
-```
-
-### Output
-```json
-{
-  &quot;exit_code&quot;: 0,
-  &quot;summary_file&quot;: &quot;/workspace/.openflows/test-summary.json&quot;
-}
-```
-
-## Failure Modes
-- Missing crate: return exit_code 1 and set summary_file to null.
-- Compile failure: include the first compiler error in stderr.
-- Timeout: if the test run exceeds 10 minutes, kill the process and report TIMEOUT.
-
-## Registry Entry
-```json
-{
-  &quot;name&quot;: &quot;run-cargo-test&quot;,
-  &quot;description&quot;: &quot;Run the Rust test suite and return a structured summary&quot;,
-  &quot;role&quot;: &quot;vessel&quot;,
-  &quot;path&quot;: &quot;orchestration/plugin/skills/run-cargo-test&quot;,
-  &quot;required&quot;: true
-}
-```</pre></div> <h2>Registering the Skill in registry.json</h2> <p>
-The registry entry lives under the <code>skills</code> array of the relevant agent role. Each
-    role can have its own skills, and the same skill can be listed under multiple roles if the
-    context differs. NEXUS uses the role to decide when the skill is available.
-</p> <div class="codeBlock"><div class="codeHeader"><span class="codeLang">json</span><button class="copyBtn">Copy</button></div><pre>{
-  &quot;agents&quot;: {
-    &quot;vessel&quot;: {
-      &quot;provider&quot;: &quot;openai&quot;,
-      &quot;model&quot;: &quot;gpt-4o&quot;,
-      &quot;coder_module&quot;: &quot;codex&quot;,
-      &quot;active&quot;: true,
-      &quot;instances&quot;: 1,
-      &quot;skills&quot;: [
-        {
-          &quot;name&quot;: &quot;run-cargo-test&quot;,
-          &quot;description&quot;: &quot;Run the Rust test suite and return a structured summary&quot;,
-          &quot;path&quot;: &quot;orchestration/plugin/skills/run-cargo-test&quot;,
-          &quot;required&quot;: true
-        }
-      ]
-    }
-  }
-}</pre></div> <table class="docsTable"><thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead><tbody><tr><td><code>name</code></td><td>string</td><td>Unique identifier, matching the directory name.</td></tr><tr><td><code>description</code></td><td>string</td><td>One-line summary shown in the TUI and CLI help.</td></tr><tr><td><code>role</code></td><td>string</td><td>Agent role that owns the skill: <code>nexus</code>, <code>forge</code>, <code>sentinel</code>, <code>vessel</code>, or <code>lore</code>.</td></tr><tr><td><code>path</code></td><td>string</td><td>Relative path to the skill directory under <code>orchestration/plugin/skills/</code>.</td></tr><tr><td><code>required</code></td><td>bool</td><td>If <code>true</code>, the role must be able to execute this skill; the setup doctor checks it.</td></tr></tbody></table> <div class="callout warning"><div class="calloutBody"><span class="calloutIcon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86 1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg></span><div class="calloutContent"><p class="calloutTitle">Path must be relative to the workspace root</p><div class="calloutText">
-The <code>path</code> field is resolved from the repository root inside the Coder workspace.
-    Do not use absolute paths or paths that depend on the host machine layout. The same registry
-    must work in local mode, Coder mode, and CI.
-</div></div></div></div> <h2>Design Conventions</h2> <p>
-A skill is a contract, not a black box. The following conventions keep the registry
-    consistent and make it possible for NEXUS to reason about skill availability without
-    executing the skill itself.
-</p> <table class="docsTable"><thead><tr><th>Convention</th><th>Rule</th></tr></thead><tbody><tr><td>Verb-first names</td><td>Skills are actions. Use <code>run-tests</code>, not <code>test-runner</code>.</td></tr><tr><td>Single responsibility</td><td>One skill does one thing. Compose complex behavior through the flow graph, not by piling steps into a single skill.</td></tr><tr><td>Deterministic inputs</td><td>Every input must have a schema or contract. No free-form string parsing unless explicitly documented.</td></tr><tr><td>Typed outputs</td><td>Output must be a JSON value, a file path, or a SharedStore key. The flow node must know what to expect.</td></tr><tr><td>Documented failure</td><td>Every skill must list its failure modes and the recommended escalation.</td></tr><tr><td>No core code changes</td><td>Adding a skill should never require editing Rust source. If it does, it is not a skill; it is a core feature.</td></tr></tbody></table> <h2>Testing a Skill</h2> <p>
-A skill without tests is a skill that will drift. Every skill contribution must include at
-    least one of the following validation layers, and ideally all four.
-</p> <table class="docsTable"><thead><tr><th>Layer</th><th>How</th></tr></thead><tbody><tr><td>Manual validation</td><td>Run the skill via the CLI or a scratch workspace and compare output to the <code>examples/</code> directory.</td></tr><tr><td>Unit test of the flow node</td><td>If the skill is invoked by a flow node, add a test that mocks the skill directory and verifies the node dispatch.</td></tr><tr><td>Registry schema test</td><td>Run the registry validation command after editing <code>registry.json</code>.</td></tr><tr><td>Coder mode smoke test</td><td>Provision a Coder workspace, ensure the skill directory is mounted, and run the skill through the agent CLI.</td></tr></tbody></table> <div class="codeBlock"><div class="codeHeader"><span class="codeLang">bash</span><button class="copyBtn">Copy</button></div><pre># Validate the registry schema after adding a skill
-cargo run -p openflows --bin openflows -- registry validate
-
-# Run a single skill manually in a local workspace
-cargo run -p openflows --bin openflows -- skill run run-cargo-test   --input orchestration/plugin/skills/run-cargo-test/examples/input.json</pre></div> <p>
-The schema validation command checks that every skill entry has a valid path, a declared
-    role, and a matching directory. The manual run command executes the skill with the provided
-    input and prints the output. Both should pass before you open a PR.
-</p> <h2>Review Checklist</h2> <ul> <li>Directory name matches the <code>name</code> field in the registry.</li> <li><code>SKILL.md</code> includes all required sections.</li> <li>Inputs and outputs are typed and documented.</li> <li>Failure modes are listed with escalation guidance.</li> <li>At least one example is provided.</li> <li>Registry schema validation passes.</li> <li>Skill runs successfully in local or Coder mode.</li> </ul> <div class="callout tip"><div class="calloutBody"><span class="calloutIcon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18h6"></path><path d="M10 22h4"></path><path d="M15.09 14c.18-.98.65-1.74 1.41-2.5A4.65 4.65 0 0 0 18 8 6 6 0 0 0 6 8c0 1 .23 2.23 1.5 3.5A4.61 4.61 0 0 1 8.91 14"></path></svg></span><div class="calloutContent"><p class="calloutTitle">Start with a narrowly scoped skill</p><div class="calloutText">
-The best first contribution is a skill that automates one repetitive task, such as running a
-    linter, generating a changelog entry, or validating a schema. Avoid skills that require new
-    flow phases or SharedStore keys until you are familiar with the core architecture.
-</div></div></div></div>  </div> </main>  <script>
+For the full walkthrough of what a skill is and how a role picks one up, see the
+<a href="/docs/guides/extending">Adding a Skill</a> guide.
+</p> <h2>Contributing skills content</h2> <p>
+From a contributor’s perspective, a skill contribution is a documentation-and-content change:
+</p> <ul> <li><strong>Describe the capability clearly.</strong> State what outcome the skill produces, when a role should use it, and what inputs and outputs it needs.</li> <li><strong>Write precise instructions.</strong> A good skill is specific enough to be followed deterministically and includes a worked example.</li> <li><strong>Document failure modes.</strong> What can go wrong, how to detect it, and what the role should do next.</li> <li><strong>Keep it scoped.</strong> One skill does one thing. If a contribution needs to change how the system itself behaves, it’s a core feature, not a skill.</li> </ul> <div class="callout info"><div class="calloutBody"><span class="calloutIcon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg></span><div class="calloutContent"><p class="calloutTitle">No code change required</p><div class="calloutText">
+Adding skill content should never require touching system code. If your proposal needs that, it isn’t a skill — it
+    belongs in a core-feature discussion instead. Align on the approach before investing in the content.
+</div></div></div></div> <h2>How a skill contribution enters the project</h2> <p>
+A skills-content contribution follows the same review-before-merge path as any other change: check existing work to
+    avoid duplication, make a focused change, keep quality high, and open a pull request that explains what you added
+    and why. Maintainers review it with the project’s standards in mind before merging.
+</p> <h2>Related</h2> <ul> <li><a href="/docs/guides/extending">Adding a Skill</a> — how skills work and how a role uses one.</li> <li><a href="/docs/contributing">Contributor Guide</a> — the contribution workflow.</li> </ul>  </div> </main>  <script>
       if (typeof Prism !== 'undefined') {
         Prism.highlightAll();
       }
