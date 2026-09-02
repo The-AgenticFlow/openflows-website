@@ -8,8 +8,9 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
 
   <p>
     OpenFlows behaves like a real, disciplined engineering team — with the difference that the
-    "engineers" are AI agents that coordinate through a shared, governed system. The loop is
-    steady and repeatable.
+    "engineers" are AI agents that coordinate through a shared, governed system. It automates the
+    repetitive, low-judgment parts of the pipeline so people can focus on what only they can own.
+    The loop is steady and repeatable.
   </p>
 
   <h2>The end-to-end flow</h2>
@@ -41,6 +42,13 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
   </p>
 
   <h2>Review that is actually adversarial</h2>
+  <p>
+    Review is the reason an agent team stays honest: <strong>code written by an agent gets its
+    first pass of review from another agent</strong>, not from a person waiting at the bottom of a
+    queue. Because agents write far more code than any human can review by hand, the first-pass
+    reviewer has to be an agent too — otherwise the human becomes the bottleneck that gates every
+    pull request.
+  </p>
   <p>
     SENTINEL does not skim for style. It is instructed to attack the work for:
   </p>
@@ -75,8 +83,10 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
 
   <h2>Humans stay in the loop — exactly where it matters</h2>
   <p>
-    OpenFlows is autonomous but <strong>never unsupervised</strong>. It pulls a person in only at
-    the decisions that matter:
+    OpenFlows is autonomous but <strong>never unsupervised</strong>. Crucially, it moves people to
+    the <strong>right level of the chain</strong>: they are not reviewing every change an agent
+    produces. That time-consuming, repetitive, accept-or-deny work is automated as a first pass by
+    the team, so a person is pulled in only at the decisions that matter:
   </p>
   <ul>
     <li>A security call.</li>
@@ -85,8 +95,10 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
     <li>A merge block it cannot resolve on its own.</li>
   </ul>
   <p>
-    When that happens, you get a clear notification with links straight to the ticket, the
-    workspace, and the pull request, so you can jump in and decide.
+    That is where human judgment belongs — owning the architecture and the product — rather than
+    babysitting a code review queue. When OpenFlows does need a person, you get a clear
+    notification with links straight to the ticket, the workspace, and the pull request, so you can
+    jump in and decide.
   </p>
 
   <h2>What's actually happening under the hood</h2>
