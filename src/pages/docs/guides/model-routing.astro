@@ -1,32 +1,34 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+import { Callout, DocCards, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
-const MODEL_ROWS = [
+const ROUTE_ROWS = [
   ['Builder (FORGE)', 'A strong general coding model; does the bulk of implementation.'],
   ['Reviewer (SENTINEL)', 'A model you trust for rigorous, adversarial reasoning about security and quality — often worth a higher-cost, more careful model.'],
   ['Orchestrator / devops / writer', 'A reliable model; these roles are lighter on raw reasoning.'],
 ];
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Enabling a Model' }]}>
-  <h1>Enabling a Model</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Model Routing' }]}>
+  <h1>Model Routing</h1>
 
   <p>
-    Different tasks suit different models. OpenFlows lets you choose which model a role uses —
-    and switch it live — without a restart. This page walks through choosing and assigning a
-    model for a role.
+    Different tasks suit different models. Model routing is the practice of choosing which model
+    each role uses, and assigning it so the right reasoning is applied to the right job. Because
+    assignment lives in the <a href="/docs/concepts/agent-registry">agent registry</a>, you can
+    route a role to a different model live, without a restart or redeploy.
   </p>
 
-  <h2>Where models live</h2>
+  <h2>Where the catalog lives, and where the routing lives</h2>
   <p>
     Models are configured in the platform's AI settings (the Coder dashboard), where you enable
-    the models you want available. OpenFlows then <em>references</em> those models for each
-    role — so the catalog lives in the platform, and the assignment lives in your team's
-    registry.
+    the models you want available. OpenFlows then <em>references</em> those models for each role —
+    so the catalog lives in the platform, and the routing/assignment lives in your team's
+    registry. To add a new model to the catalog, see
+    <a href="/docs/guides/extending-models">Extending: Models</a>.
   </p>
 
-  <h2>Choosing a model for a role</h2>
+  <h2>Assigning a model to a role</h2>
   <ol>
     <li><strong>Make sure the model is enabled</strong> in the platform's AI settings.</li>
     <li><strong>Open the agent registry</strong> for the role you want to change (for example, the builder).</li>
@@ -35,31 +37,28 @@ const MODEL_ROWS = [
   </ol>
 
   <h2>Which model for which job?</h2>
-  <p>
-    A sensible starting point:
-  </p>
-  <DocsTable headers={['Role', 'A sensible model']} rows={MODEL_ROWS} />
-  <p>
-    You're free to tune from there based on what you observe.
-  </p>
+  <p>A sensible starting point for routing models across the team:</p>
+  <DocsTable headers={['Role', 'A sensible model']} rows={ROUTE_ROWS} />
+  <p>You're free to tune from there based on what you observe.</p>
 
   <h2>What you should see</h2>
   <ul>
     <li>The role now uses the assigned model for its work.</li>
     <li>The change applied without a restart; the next workspace provisioned for that role reflects the new model.</li>
-    <li>The role's model shows in the panel.</li>
+    <li>The role's model shows in the control panel.</li>
   </ul>
 
   <Callout type="info" title="Availability notes">
     A model that isn't enabled in the platform can't be assigned — enable it first. Changing a
-    model affects <em>new</em> sessions for that role; the exact timing depends on when the
-    role's next workspace or session is provisioned. This is a per-role control; you can have
-    different roles on different models simultaneously.
+    model affects <em>new</em> sessions for that role; the exact timing depends on when the role's
+    next workspace or session is provisioned. This is a per-role control; you can have different
+    roles on different models simultaneously.
   </Callout>
 
-  <Callout type="tip" title="Related reading">
-    See <a href="/docs/guides/agent-setup">Agent Setup</a> for how model assignment fits
-    in the registry. Choosing a more careful model for the reviewer is often worth it, and you
-    can tune from there based on what you observe.
-  </Callout>
+  <h2>Where to go next</h2>
+  <DocCards cards={[
+    { icon: '🧩', title: 'Extending: Models', desc: 'Add a new model to the platform catalog.', href: '/docs/guides/extending-models' },
+    { icon: '🤖', title: 'Agent Setup', desc: 'How model assignment fits with the rest of the registry.', href: '/docs/guides/agent-setup' },
+    { icon: '🛡️', title: 'Security by Design', desc: 'Why every model call happens through your gateway.', href: '/docs/architecture/security-by-design' },
+  ]} />
 </DocsLayout>

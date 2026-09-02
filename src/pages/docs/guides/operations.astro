@@ -3,12 +3,13 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Managing the Fleet' }]}>
-  <h1>Managing the Fleet</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Operations & Monitoring' }]}>
+  <h1>Operations &amp; Monitoring</h1>
 
   <p>
     Once your team is running, most of your day-to-day control happens from the control panel.
-    This guide covers the core operating moves: seeing status, and steering the fleet.
+    This guide covers the core operating moves: seeing status, steering the fleet, and staying
+    reachable when a ticket needs a human.
   </p>
 
   <h2>Seeing the live status</h2>
@@ -71,10 +72,38 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
     <li>Use <strong>reset</strong> sparingly and only after automatic recovery has given up — it restarts work, so it isn't free.</li>
   </ul>
 
-  <Callout type="info" title="Stay reachable">
-    Alongside steering the fleet, make sure you're reachable when a ticket escalates. See
-    <a href="/docs/guides/wiring-notifications">Wiring Notifications</a> and
-    <a href="/docs/guides/handling-human-escalations">Handling Human Escalations</a> for the
-    other half of operations — acting on what needs you.
+  <h2>Wiring notifications: stay reachable</h2>
+  <p>
+    OpenFlows runs autonomously, but it is not unsupervised. When a ticket escalates to a human,
+    you want to know promptly. Notifications turn "check the panel later" into "you were told
+    now," and they include direct links to the workspace and pull request so you can act
+    immediately.
+  </p>
+  <p>
+    OpenFlows can notify you through <strong>Slack</strong>, <strong>Discord</strong>, or
+    <strong>WhatsApp</strong>, and they can be combined. Each channel needs its connection details
+    supplied at setup:
+  </p>
+  <ul>
+    <li><strong>Slack</strong> — a webhook URL for your workspace or channel.</li>
+    <li><strong>Discord</strong> — a webhook URL.</li>
+    <li><strong>WhatsApp</strong> — the Twilio account credentials and phone numbers (your sending number and the destination).</li>
+  </ul>
+  <p>
+    Notifications are engineered to be <strong>useful, not noisy</strong>: each one names the
+    ticket, the reason, the role involved, and includes links; they are rate-limited to at most
+    one per channel per ticket within a window; and they are fire-and-forget, so a down channel
+    is logged and never breaks the loop. For the full behavior reference, see
+    <a href="/docs/reference/notifications-reference">Notifications Reference</a>.
+  </p>
+  <p>
+    Wire at least one channel from the start so you never miss an escalation. Remember that
+    notifications are only one surface — escalations always also appear in the control panel,
+    so nothing is lost if a channel is briefly unavailable.
+  </p>
+
+  <Callout type="info" title="Awaiting next steps">
+    When a notification arrives, see <a href="/docs/concepts/human-escalation">Human
+    Escalation</a> for how to resolve a ticket that needs you.
   </Callout>
 </DocsLayout>

@@ -56,9 +56,9 @@ const ROLE_ROWS = [
     The registry is the common seam for the everyday extensions:
   </Callout>
   <ul>
-    <li><strong>Add a skill</strong> — a set of instructions a role can load on demand (see <a href="/docs/guides/extending">Adding a Skill</a>).</li>
+    <li><strong>Add a skill</strong> — a set of instructions a role can load on demand (see <a href="/docs/guides/extending-skills">Adding a Skill</a>).</li>
     <li><strong>Connect an MCP server</strong> — register a tool on a role, or centrally (see <a href="/docs/guides/extending-mcp">Connecting an MCP Server</a>).</li>
-    <li><strong>Enable a model</strong> — configure it in the platform, then reference it on a role (see <a href="/docs/guides/model-routing">Enabling a Model</a>).</li>
+    <li><strong>Enable a model</strong> — configure it in the platform, then reference it on a role (see <a href="/docs/guides/extending-models">Enabling a Model</a>).</li>
   </ul>
 
   <h2>The safety rule</h2>
@@ -74,7 +74,7 @@ const ROLE_ROWS = [
     Adding a skill, connecting a server, or enabling a model are all <strong>configuration-only</strong>
     changes. They don't touch the system's internals. The one extension that does is building a
     brand-new <em>role</em>, with its own persona, workspace template, and routing — see
-    <a href="/docs/guides/extending-with-a-new-role">Extending with a New Role</a> for why that one is different.
+    <a href="/docs/concepts/agent-registry">Extending with a New Role</a> for why that one is different.
   </p>
 
   <h2>The control panel</h2>

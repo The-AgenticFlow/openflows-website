@@ -28,7 +28,7 @@ const NAV_DATA = [
         { label: 'Installation', href: '/docs/getting-started/installation' },
         { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
         { label: 'Architecture', href: '/docs/architecture' },
-        { label: 'FAQ', href: '/docs/faq' },
+        { label: 'FAQ', href: '/docs/resources/faq' },
       ]
     }
   },

@@ -1,0 +1,110 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Introduction', href: '/docs/introduction' }, { label: 'How OpenFlows works' }]}>
+  <h1>How OpenFlows works</h1>
+
+  <p>
+    OpenFlows behaves like a real, disciplined engineering team — with the difference that the
+    "engineers" are AI agents that coordinate through a shared, governed system. The loop is
+    steady and repeatable.
+  </p>
+
+  <h2>The end-to-end flow</h2>
+  <p>
+    From the moment an issue appears to the moment a pull request is merged, a ticket travels
+    through a fixed pipeline:
+  </p>
+  <ol>
+    <li><strong>NEXUS picks it up</strong> and plans the work.</li>
+    <li><strong>FORGE writes a plan</strong> — then <strong>stops</strong>.</li>
+    <li><strong>SENTINEL reviews and approves</strong> the plan.</li>
+    <li><strong>FORGE writes code</strong>, runs tests, and opens a pull request.</li>
+    <li><strong>SENTINEL reviews the code adversarially.</strong></li>
+    <li><strong>VESSEL watches CI</strong>, handles conflicts, and merges.</li>
+    <li><strong>LORE documents the change</strong> (optional).</li>
+    <li><strong>The workspace is torn down.</strong> You get a merged pull request.</li>
+  </ol>
+
+  <h2>Planning before coding: the gate</h2>
+  <p>
+    OpenFlows will not let an agent start writing code before a plan is agreed. FORGE writes a
+    plan and then <strong>halts</strong>. SENTINEL reviews that plan and either
+    <strong>approves</strong> it or sends it back. Only an approved plan unlocks the next step.
+  </p>
+  <p>
+    This gate is structural — the system itself refuses to move a ticket forward without an
+    approval — so "let's just skip the review" is not possible, even by accident. This is the
+    <em>plan-before-code</em> guardrail in action.
+  </p>
+
+  <h2>Review that is actually adversarial</h2>
+  <p>
+    SENTINEL does not skim for style. It is instructed to attack the work for:
+  </p>
+  <ul>
+    <li><strong>Security holes</strong> and risky patterns.</li>
+    <li><strong>Quality issues</strong> and inconsistencies.</li>
+    <li><strong>Missing test coverage</strong> against the agreed contract.</li>
+  </ul>
+  <p>
+    Crucially, SENTINEL works in its <strong>own isolated workspace</strong>. It never touches
+    the builder's files directly. When it needs proof — for example, to run the test suite — it
+    asks the builder's workspace to run a safe, allowlisted command and sends the evidence back.
+    Review and building stay physically separate, which is what makes the review trustworthy.
+  </p>
+
+  <h2>Self-healing: the system repairs itself</h2>
+  <p>
+    Agents crash, workspaces go silent, and merge processes stall. OpenFlows is built to absorb
+    this. A central reconciliation loop runs constantly, watching for:
+  </p>
+  <ul>
+    <li>Unmerged pull requests nobody processed.</li>
+    <li>Orphaned tickets with no active worker.</li>
+    <li>Workspaces that went silent.</li>
+    <li>Chats that errored out.</li>
+  </ul>
+  <p>
+    When it finds a problem, it retries with a bounded number of attempts. If something genuinely
+    needs a human decision, it stops and <strong>escalates to you</strong> rather than guessing —
+    the <em>bounded recovery then human escalation</em> guardrail.
+  </p>
+
+  <h2>Humans stay in the loop — exactly where it matters</h2>
+  <p>
+    OpenFlows is autonomous but <strong>never unsupervised</strong>. It pulls a person in only at
+    the decisions that matter:
+  </p>
+  <ul>
+    <li>A security call.</li>
+    <li>An ambiguous or underspecified requirement.</li>
+    <li>An architectural choice.</li>
+    <li>A merge block it cannot resolve on its own.</li>
+  </ul>
+  <p>
+    When that happens, you get a clear notification with links straight to the ticket, the
+    workspace, and the pull request, so you can jump in and decide.
+  </p>
+
+  <h2>What's actually happening under the hood</h2>
+  <p>
+    OpenFlows coordinates these agents through a <strong>shared coordination store</strong>
+    (backed by Redis) that records every ticket, every worker, every approval, every review, and
+    every pull request. That store is the single record of truth — Coder provides the machines,
+    GitHub holds the code, and OpenFlows holds the coordination state that ties them together.
+  </p>
+  <p>
+    The result is a system that is always converging back to correctness: even when a step fails,
+    the next cycle detects it and nudges the work forward.
+  </p>
+
+  <h2>Where to go next</h2>
+  <DocCards cards={[
+    { icon: '🎯', title: 'Use cases', desc: 'Where this design fits — and where it does not.', href: '/docs/introduction/use-cases' },
+    { icon: '🏛️', title: 'Core Concepts', desc: 'The ideas you need to reason about the system.', href: '/docs/concepts/coder-openflows-split' },
+    { icon: '🧠', title: 'The Controller', desc: 'The brain and its orchestration loop, in detail.', href: '/docs/architecture/controller' },
+  ]} />
+</DocsLayout>

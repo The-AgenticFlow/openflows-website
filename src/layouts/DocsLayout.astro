@@ -21,22 +21,23 @@ interface SidebarSection {
 
 const SIDEBAR: SidebarSection[] = [
   {
-    title: 'Getting Started',
+    title: 'Introduction',
+    links: [
+      { label: 'What is OpenFlows', href: '/docs/introduction/what-is-openflows' },
+      { label: 'How OpenFlows works', href: '/docs/introduction/how-it-works' },
+      { label: 'Use cases', href: '/docs/introduction/use-cases' },
+      { label: 'How OpenFlows compares', href: '/docs/introduction/how-openflows-compares' },
+    ],
+  },
+  {
+    title: 'Get Started',
     links: [
       { label: 'Quick Start', href: '/docs/getting-started' },
       { label: 'Installation', href: '/docs/getting-started/installation' },
-      {
-        label: 'Token Guide',
-        href: '/docs/getting-started/token-guide',
-        children: [
-          { label: 'Identity & OAuth', href: '/docs/getting-started/token-guide' },
-          { label: 'Coder Auth', href: '/docs/getting-started/token-guide-coder' },
-          { label: 'Security', href: '/docs/getting-started/token-guide-security' },
-        ],
-      },
       { label: 'First Issue Walkthrough', href: '/docs/getting-started/first-issue' },
-      { label: 'Lifecycle Steps', href: '/docs/getting-started/first-issue-lifecycle' },
-      { label: 'Completion & Merge', href: '/docs/getting-started/first-issue-completion' },
+      { label: 'Token Guide', href: '/docs/getting-started/token-guide' },
+      { label: 'Lifecycle Steps', href: '/docs/getting-started/lifecycle-steps' },
+      { label: 'Completion & Merge', href: '/docs/getting-started/completion-and-merge' },
     ],
   },
   {
@@ -44,35 +45,24 @@ const SIDEBAR: SidebarSection[] = [
     links: [
       { label: 'Architecture-First Development', href: '/docs/concepts/architecture-first' },
       { label: 'The Agent Team', href: '/docs/concepts/agent-team' },
-      { label: 'The Ticket Lifecycle', href: '/docs/concepts/ticket-lifecycle' },
+      { label: 'The Planning Gate', href: '/docs/concepts/planning-gate' },
       { label: 'The Coordination Store', href: '/docs/concepts/coordination-store' },
       { label: 'Workspaces', href: '/docs/concepts/workspaces' },
       { label: 'Tenants', href: '/docs/concepts/tenants' },
       { label: 'Human Escalation', href: '/docs/concepts/human-escalation' },
       { label: 'The Agent Registry', href: '/docs/concepts/agent-registry' },
-      { label: 'Coder Integration', href: '/docs/concepts/coder-integration' },
-      { label: 'Security Model', href: '/docs/concepts/security-model' },
+      { label: 'The Coder / OpenFlows Split', href: '/docs/concepts/coder-openflows-split' },
     ],
   },
   {
     title: 'Architecture',
     links: [
       { label: 'Overview', href: '/docs/architecture' },
-      { label: 'Big Picture', href: '/docs/architecture/system-design' },
-      { label: 'The Controller', href: '/docs/architecture/orchestrator' },
-      {
-        label: 'Agents',
-        href: '/docs/architecture/agents',
-        children: [
-          { label: 'FORGE (Builder)', href: '/docs/architecture/agents/forge' },
-          { label: 'SENTINEL (Reviewer)', href: '/docs/architecture/agents/sentinel' },
-          { label: 'VESSEL (DevOps)', href: '/docs/architecture/agents/vessel' },
-          { label: 'LORE (Documentation)', href: '/docs/architecture/agents/lore' },
-        ],
-      },
-      { label: 'Coordination Protocol', href: '/docs/architecture/coordination-protocol' },
-      { label: 'Workspace Lifecycle', href: '/docs/architecture/workspace-lifecycle' },
-      { label: 'State Machine & Recovery', href: '/docs/architecture/state-recovery' },
+      { label: 'Big Picture', href: '/docs/architecture/big-picture' },
+      { label: 'The Controller', href: '/docs/architecture/controller' },
+      { label: 'The Workspace Fleet', href: '/docs/architecture/workspace-fleet' },
+      { label: 'How the Pieces Talk', href: '/docs/architecture/how-the-pieces-talk' },
+      { label: 'State Machine & Recovery', href: '/docs/architecture/state-machine-recovery' },
       { label: 'Decision & Routing', href: '/docs/architecture/decision-routing' },
       { label: 'Security by Design', href: '/docs/architecture/security-by-design' },
       { label: 'How It\'s Deployed', href: '/docs/architecture/deployment' },
@@ -81,37 +71,35 @@ const SIDEBAR: SidebarSection[] = [
   {
     title: 'Guides',
     links: [
-      { label: 'Running Your First Ticket', href: '/docs/guides/running-your-first-ticket' },
       { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
-      { label: 'Managing the Fleet', href: '/docs/guides/operations' },
-      { label: 'Handling Human Escalations', href: '/docs/guides/handling-human-escalations' },
-      { label: 'Enabling a Model', href: '/docs/guides/model-routing' },
+      { label: 'Model Routing', href: '/docs/guides/model-routing' },
       { label: 'Multi-Tenancy', href: '/docs/guides/multi-tenancy' },
-      { label: 'Adding a Skill', href: '/docs/guides/extending' },
-      { label: 'Connecting an MCP Server', href: '/docs/guides/extending-mcp' },
-      { label: 'Extending with a New Role', href: '/docs/guides/extending-with-a-new-role' },
-      { label: 'Wiring Notifications', href: '/docs/guides/wiring-notifications' },
+      { label: 'Extending: Skills', href: '/docs/guides/extending-skills' },
+      { label: 'Extending: MCP', href: '/docs/guides/extending-mcp' },
+      { label: 'Extending: Models', href: '/docs/guides/extending-models' },
+      { label: 'Operations & Monitoring', href: '/docs/guides/operations' },
       { label: 'Troubleshooting', href: '/docs/guides/troubleshooting' },
     ],
   },
   {
     title: 'Reference',
     links: [
-      { label: 'Command Surface', href: '/docs/reference/command-surface' },
-      { label: 'Configuration Reference', href: '/docs/reference/configuration-reference' },
-      { label: 'Roles Reference', href: '/docs/reference/roles-reference' },
       { label: 'Glossary', href: '/docs/reference/glossary' },
+      { label: 'Roles Reference', href: '/docs/reference/roles-reference' },
       { label: 'Lifecycle States', href: '/docs/reference/lifecycle-states' },
-      { label: 'Notifications', href: '/docs/reference/notifications-reference' },
+      { label: 'Configuration Reference', href: '/docs/reference/configuration-reference' },
       { label: 'Limits & Defaults', href: '/docs/reference/limits-and-defaults' },
+      { label: 'Command Surface', href: '/docs/reference/command-surface' },
+      { label: 'Notifications Reference', href: '/docs/reference/notifications-reference' },
     ],
   },
   {
     title: 'Contributing',
     links: [
-      { label: 'How to Contribute', href: '/docs/contributing' },
-      { label: 'Project Governance', href: '/docs/contributing/project-governance' },
-      { label: 'Contributing Skills', href: '/docs/contributing/adding-skills' },
+      { label: 'Contributor Guide', href: '/docs/contributing' },
+      { label: 'Development Setup', href: '/docs/contributing/development-setup' },
+      { label: 'Adding Skills', href: '/docs/contributing/adding-skills' },
+      { label: 'Testing', href: '/docs/contributing/testing' },
     ],
   },
   {
@@ -120,12 +108,7 @@ const SIDEBAR: SidebarSection[] = [
       { label: 'Overview', href: '/docs/resources' },
       { label: 'Further Reading', href: '/docs/resources/further-reading' },
       { label: 'Community & Support', href: '/docs/resources/community-and-support' },
-    ],
-  },
-  {
-    title: 'Other',
-    links: [
-      { label: 'FAQ', href: '/docs/faq' },
+      { label: 'FAQ', href: '/docs/resources/faq' },
     ],
   },
 ];

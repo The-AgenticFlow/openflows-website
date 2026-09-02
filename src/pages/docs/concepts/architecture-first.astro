@@ -1,85 +1,65 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout } from '@/molecules/DocComponents/DocComponents';
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
 ---
 
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Core Concepts', href: '/docs/concepts/coder-openflows-split' }, { label: 'Architecture-First Development' }]}>
+  <h1>Architecture-First Development</h1>
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'Architecture-First' }]}>
-  <h1>Architecture-First</h1>
   <p>
-    The planning gate is one of the most important ideas in OpenFlows, because it is what turns "an AI that
-    writes code" into "an AI that works like a disciplined engineer." OpenFlows will not let an agent start
-    writing code before a plan is agreed.
+    OpenFlows is built on a simple thesis: <strong>architecture is the product</strong>. The
+    system does not just generate code — it encodes the engineering discipline that separates
+    production software from a pile of confident, well-written changes. This page explains what
+    that discipline is and why it is structural.
   </p>
 
-  <h2>The problem it solves</h2>
+  <h2>Code is cheap. Thinking is not.</h2>
   <p>
-    Given a spec, code is cheap. The hard, valuable work is deciding <em>what to build</em> before writing
-    it. If you let an agent start typing immediately, you often end up with confident, well-written code
-    that solves the wrong problem. The planning gate forces the team to agree on the <strong>plan</strong>
-    first.
+    Writing code against a specification has become cheap. What stays hard is <em>thinking</em>:
+    understanding the architecture, making product judgments, and keeping security and quality in
+    mind. A team of agents that simply write code would produce impressive-looking work that
+    solves the wrong problem, drifts from your conventions, and skips the careful review gates you
+    rely on.
+  </p>
+  <p>
+    OpenFlows encodes that discipline as an automated team. It turns the judgment steps — planning,
+    review, verification, and recovery — into enforced parts of the pipeline, applied to every
+    issue, consistently, rather than left to chance.
   </p>
 
-  <h2>How the gate works</h2>
-  <ol>
-    <li>
-      The builder takes the ticket and produces a written plan describing how it intends to implement it.
-    </li>
-    <li>
-      The builder <strong>stops</strong>. Even though it is fully capable of writing code, it waits.
-    </li>
-    <li>
-      The reviewer reviews the plan  -  the same adversarial reviewer that later reviews the code.
-    </li>
-    <li>
-      Only an <strong>approved</strong> plan unlocks the build phase.
-    </li>
-  </ol>
-
-  <h2>Why the system can enforce it</h2>
-  <p>
-    This is not a convention or a prompt that an agent could ignore. The planning gate is
-    <strong>structural</strong>:
-  </p>
+  <h2>The guardrails that make it "engineering," not just coding</h2>
+  <p>Four principles run through the whole design, and each is enforced by the system rather than suggested to the agents:</p>
   <ul>
-    <li>A ticket can only enter the pipeline through the planning phase.</li>
-    <li>
-      Moving out of planning requires consuming an <strong>approval</strong> that only the reviewer role can
-      create.
-    </li>
-    <li>
-      That approval is <strong>single-use</strong>  -  it can be consumed once, and a second attempt finds
-      nothing.
-    </li>
+    <li><strong>Plan before code.</strong> No agent starts writing until a plan is agreed. This is the <a href="/docs/concepts/planning-gate">planning gate</a>.</li>
+    <li><strong>When in doubt, don't approve.</strong> The reviewer blocks rather than guesses when evidence is missing — it would rather hold a ticket or escalate than merge something unverified.</li>
+    <li><strong>Bounded recovery, then human escalation.</strong> The system repairs what it can, a bounded number of times, then asks a person rather than spinning forever.</li>
+    <li><strong>No secrets in worker workspaces.</strong> Trust, keys, and credentials stay concentrated in the control plane; the work plane is disposable and keyless. See <a href="/docs/architecture/security-by-design">Security by Design</a>.</li>
   </ul>
+
+  <h2>Why it is structural, not a suggestion</h2>
   <p>
-    An agent physically cannot skip the review, approve its own plan, or replay a stale approval. If you
-    look at a ticket and it has no approval, there is no path forward for it. "Let's just skip the review"
-    is not possible, even by accident.
+    These guardrails are not prompts an agent could ignore. The planning gate cannot be skipped,
+    approvals are single-use, the reviewer works in an isolated workspace, and recovery is
+    bounded. Because the discipline is structural, you can leave the team running and trust that
+    it will not cut corners — which is exactly what makes autonomy safe.
   </p>
 
   <h2>What this buys you</h2>
   <ul>
-    <li><strong>No code before a plan.</strong> You never get an agent barreling ahead on a misunderstanding.</li>
-    <li>
-      <strong>A reviewable decision.</strong> The plan and its approval are part of the recorded history.
-    </li>
-    <li>
-      <strong>Trustworthy autonomy.</strong> The system can be left to run because it won't cut this corner.
-    </li>
+    <li><strong>Consistent judgment.</strong> The same plan, review, and verification discipline is applied to every issue.</li>
+    <li><strong>Trustworthy autonomy.</strong> The system can be left to run because it won't bypass the engineering steps.</li>
+    <li><strong>An audit trail.</strong> Every plan approval and review verdict is a recorded, attributable event.</li>
   </ul>
 
-  <h2>The "when in doubt, don't approve" principle</h2>
-  <p>
-    The reviewer's job is to be strict. If it cannot verify the required evidence  -  a plan it can read, a
-    change it can review, a test result that was actually recorded  -  it must <strong>not</strong> approve.
-    The system would rather hold a ticket, or escalate it to a human, than merge something unverified. This
-    bias toward "block rather than guess" runs through the whole product.
-  </p>
-
-  <Callout type="info" title="Plan before code">
-    Planning first is the cheapest correctness strategy available. A rejected plan costs little; a confident
-    implementation of the wrong thing costs a great deal more. The planning gate keeps the team aligned
-    before a single line is written.
+  <Callout type="info" title="Architecture as the product">
+    The value of OpenFlows is not that the agents write code — any assistant can do that. It is
+    that the architecture, contracts, and review gates produce <em>software</em>, not just code.
   </Callout>
+
+  <h2>Where to go next</h2>
+  <DocCards cards={[
+    { icon: '🚦', title: 'The Planning Gate', desc: 'The structural rule that starts every ticket.', href: '/docs/concepts/planning-gate' },
+    { icon: '👥', title: 'The Agent Team', desc: 'The roles that carry out the disciplined pipeline.', href: '/docs/concepts/agent-team' },
+    { icon: '🧠', title: 'The Controller', desc: 'The brain that runs the orchestration loop.', href: '/docs/architecture/controller' },
+  ]} />
 </DocsLayout>

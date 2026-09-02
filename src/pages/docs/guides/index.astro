@@ -3,17 +3,17 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { DocCards } from '@/molecules/DocComponents/DocComponents';
 
 const CARDS = [
-  { icon: '🎫', title: 'Running Your First Ticket', desc: 'Follow one issue from creation to a merged pull request, and know exactly what to expect at every step.', href: '/docs/guides/running-your-first-ticket' },
-  { icon: '📊', title: 'Managing the Fleet', desc: 'See live status and steer the team: pause, drain, target, and resume from the control panel.', href: '/docs/guides/operations' },
-  { icon: '🙋', title: 'Handling Human Escalations', desc: 'Why you get pinged, how to recognize an escalation, and how to resolve it.', href: '/docs/guides/handling-human-escalations' },
-  { icon: '📌', title: 'Adding a Skill', desc: 'Teach a role a new capability with configuration only — no system code.', href: '/docs/guides/extending' },
-  { icon: '🔌', title: 'Connecting an MCP Server', desc: 'Give the team access to a private tool, either per role or centrally.', href: '/docs/guides/extending-mcp' },
-  { icon: '🧠', title: 'Enabling a Model', desc: 'Choose which model a role uses, from lightweight to rigorous — and switch live.', href: '/docs/guides/model-routing' },
-  { icon: '🏢', title: 'Setting Up Multi-Tenant Teams', desc: 'Run several independent teams on one server with real isolation.', href: '/docs/guides/multi-tenancy' },
-  { icon: '🔔', title: 'Wiring Notifications', desc: 'Connect Slack, Discord, or WhatsApp so escalations reach you promptly.', href: '/docs/guides/wiring-notifications' },
-  { icon: '🔍', title: 'Troubleshooting the Common Path', desc: 'What a stuck state means, symptom by symptom, and how to recover.', href: '/docs/guides/troubleshooting' },
-  { icon: '🧩', title: 'Extending with a New Role', desc: 'The one extension that touches the system\'s internals — what it really takes.', href: '/docs/guides/extending-with-a-new-role' },
   { icon: '🤖', title: 'Agent Setup', desc: 'Configure a team end to end: roles, models, skills, and tools through the agent registry.', href: '/docs/guides/agent-setup' },
+  { icon: '🧭', title: 'Model Routing', desc: 'Choose which model each role uses, from lightweight to rigorous — and switch live.', href: '/docs/guides/model-routing' },
+  { icon: '🏢', title: 'Multi-Tenancy', desc: 'Run several independent teams on one server with real isolation.', href: '/docs/guides/multi-tenancy' },
+  { icon: '📌', title: 'Extending: Skills', desc: 'Teach a role a new capability with configuration only — no system code.', href: '/docs/guides/extending-skills' },
+  { icon: '🔌', title: 'Extending: MCP', desc: 'Give the team access to a private tool, either per role or centrally.', href: '/docs/guides/extending-mcp' },
+  { icon: '🧩', title: 'Extending: Models', desc: 'Add a new model to the platform catalog, configuration only.', href: '/docs/guides/extending-models' },
+  { icon: '📊', title: 'Operations & Monitoring', desc: 'See live status, steer the fleet (pause, drain, target, resume), and wire notifications.', href: '/docs/guides/operations' },
+  { icon: '🔍', title: 'Troubleshooting', desc: 'What a stuck state means, symptom by symptom, and how to recover.', href: '/docs/guides/troubleshooting' },
+  { icon: '🎫', title: 'First Issue Walkthrough', desc: 'Follow one issue from creation to a merged pull request. (Get Started)', href: '/docs/getting-started/first-issue' },
+  { icon: '🙋', title: 'Handling Escalations', desc: 'Why you get pinged and how to resolve a ticket that needs you. (Core Concepts)', href: '/docs/concepts/human-escalation' },
+  { icon: '🧩', title: 'Extending with a New Role', desc: "The one extension that touches the system's internals. (See the Agent Registry)", href: '/docs/concepts/agent-registry' },
 ];
 ---
 

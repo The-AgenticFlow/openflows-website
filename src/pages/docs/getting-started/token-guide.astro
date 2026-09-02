@@ -3,8 +3,8 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { Callout, StepHeading, DocCards } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Identity & OAuth' }]}>
-  <h1>Identity &amp; OAuth</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Token Guide' }]}>
+  <h1>Token Guide</h1>
 
   <p>
     OpenFlows acts on GitHub through a <strong>real identity</strong>, not a shared token. When the team
@@ -63,7 +63,7 @@ import { Callout, StepHeading, DocCards } from '@/molecules/DocComponents/DocCom
   <Callout type="tip" title="Why this keeps things safe">
     Remove the secrets from the sandbox and an entire class of "stolen key" attacks disappears. Trust
     is concentrated in a single auditable place, and everything else is disposable and keyless. See the
-    <a href="/docs/concepts/security-model">Security Model</a> page for the full picture.
+    <a href="/docs/architecture/security-by-design">Security Model</a> page for the full picture.
   </Callout>
 
   <StepHeading step="3" id="how-it-is-set-up">How it is set up</StepHeading>
@@ -80,8 +80,8 @@ import { Callout, StepHeading, DocCards } from '@/molecules/DocComponents/DocCom
 
   <h2 id="related">Related pages</h2>
   <DocCards cards={[
-    { icon: '🔐', title: 'Security by Design', desc: 'Why the split keeps secrets out of the sandbox.', href: '/docs/concepts/security-model' },
-    { icon: '🖥️', title: 'Workspaces', desc: 'What a workspace contains - and deliberately does not.', href: '/docs/concepts/coder-integration' },
+    { icon: '🔐', title: 'Security by Design', desc: 'Why the split keeps secrets out of the sandbox.', href: '/docs/architecture/security-by-design' },
+    { icon: '🖥️', title: 'Workspaces', desc: 'What a workspace contains - and deliberately does not.', href: '/docs/concepts/coder-openflows-split' },
     { icon: '🚀', title: 'First Issue', desc: 'See the OAuth step in the full walkthrough.', href: '/docs/getting-started/first-issue' },
   ]} />
 </DocsLayout>

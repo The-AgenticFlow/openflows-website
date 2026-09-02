@@ -34,8 +34,22 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
     OpenFlows practices what its own architecture preaches. A plan or proposal is discussed and agreed before
     implementation, the change is reviewed, and only reviewed work is merged. Your contribution flows through that same
     gate-based culture. The project follows an architecture-first, review-before-merge process, and releases are
-    versioned in a controlled way (see <a href="/docs/contributing/project-governance">Project Governance</a>).
+    versioned in a controlled way; the documentation website you are reading is part of the project and is published
+    automatically from its main branch, so the docs you see track the current state of the codebase.
   </Callout>
+
+  <h2>Governance at a glance</h2>
+  <p>How decisions are made:</p>
+  <ul>
+    <li><strong>Small, focused changes</strong> move quickly: open, review, merge.</li>
+    <li><strong>Non-trivial features</strong> are discussed and aligned on before implementation, so the approach is agreed before code is written — mirroring the planning gate.</li>
+    <li><strong>Security-sensitive work</strong> gets extra care, consistent with the product's "when in doubt, don't approve" posture.</li>
+    <li><strong>Maintainers</strong> review and merge contributions and steward the architecture; <strong>contributors</strong> propose and build improvements; <strong>users</strong> surface issues and ideas that drive direction.</li>
+  </ul>
+  <p>
+    For a working local environment, testing expectations, and the release model, see the pages in
+    this section.
+  </p>
 
   <h2>What makes a good contribution</h2>
   <ul>
@@ -49,7 +63,8 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
 
   <h2>In this section</h2>
   <ul>
-    <li><a href="/docs/contributing/adding-skills">Adding skills content</a> — contributing capabilities without code.</li>
-    <li><a href="/docs/contributing/project-governance">Project Governance</a> — how decisions and releases are made.</li>
+    <li><a href="/docs/contributing/development-setup">Development Setup</a> — get a local environment working.</li>
+    <li><a href="/docs/contributing/adding-skills">Adding Skills</a> — contributing capability content without code.</li>
+    <li><a href="/docs/contributing/testing">Testing</a> — how changes are verified before merging.</li>
   </ul>
 </DocsLayout>

@@ -21,14 +21,14 @@ const SIDEBAR = [
     title: 'Architecture',
     links: [
       { label: 'Overview', href: '/docs/architecture' },
-      { label: 'System Design', href: '/docs/architecture/system-design' },
-      { label: 'Agent Roles', href: '/docs/architecture/agent-roles' },
+      { label: 'Big Picture', href: '/docs/architecture/big-picture' },
+      { label: 'Agent Roles', href: '/docs/concepts/agent-team' },
     ],
   },
   {
     title: 'Other',
     links: [
-      { label: 'FAQ', href: '/docs/faq' },
+      { label: 'FAQ', href: '/docs/resources/faq' },
     ],
   },
 ]

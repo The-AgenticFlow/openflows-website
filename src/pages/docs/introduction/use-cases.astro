@@ -1,0 +1,69 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Introduction', href: '/docs/introduction' }, { label: 'Use cases' }]}>
+  <h1>Use cases</h1>
+
+  <p>
+    OpenFlows is a fit whenever you want AI to <em>do</em> engineering work inside your own
+    infrastructure, under your own control, rather than handing code off to a hosted tool you
+    cannot audit. Below are the situations where it shines.
+  </p>
+
+  <h2>A company: governed, auditable AI delivery</h2>
+  <p><strong>The need.</strong> You want the speed of AI-generated features, but you must keep model keys private, keep a complete audit trail, enforce security policy, and stay within your own network.</p>
+  <p><strong>How OpenFlows helps.</strong></p>
+  <ul>
+    <li>The AI model runs behind your <strong>own model gateway</strong>, inside your own Coder control plane. Worker workspaces contain <strong>no model keys</strong> — there is no key sitting in a sandbox for an agent to exfiltrate.</li>
+    <li>Every step — plan approval, review verdict, merge — is a <strong>typed, recorded event</strong>, so you can audit exactly what happened and why.</li>
+    <li>Network policy is tight: agent workspaces can only reach the control plane, GitHub, and the coordination store. Everything else is denied.</li>
+    <li>One Coder server can serve <strong>many teams at once</strong>, each isolated from the others.</li>
+  </ul>
+
+  <h2>A developer workflow: more throughput, same standards</h2>
+  <p><strong>The need.</strong> You have a backlog of issues and want AI to handle the mechanics — planning, implementation, testing, review — while you own the architecture and the final merge decision.</p>
+  <p><strong>How OpenFlows helps.</strong></p>
+  <ul>
+    <li>You stay in the loop <strong>only</strong> at security decisions, ambiguous specs, and major calls. Everything else runs autonomously.</li>
+    <li>The planning gate means code is never written against an unagreed plan.</li>
+    <li>The adversarial review means you don't have to re-litigate every pull request; the system already stressed it.</li>
+  </ul>
+
+  <h2>A team racing to ship: parallel, self-healing work</h2>
+  <p><strong>The need.</strong> Multiple issues flowing at once, with machines that crash and processes that stall.</p>
+  <p><strong>How OpenFlows helps.</strong></p>
+  <ul>
+    <li>OpenFlows runs a fleet of worker workspaces in parallel and assigns work to whichever is free.</li>
+    <li>If a workspace crashes or goes silent, the system <strong>detects and recovers</strong> it automatically, with bounded retries.</li>
+    <li>Completed pull requests are watched through CI and merged when green.</li>
+  </ul>
+
+  <h2>A stakeholder: transparency from intent to shipped</h2>
+  <p><strong>The need.</strong> You want to see progress from "we want this feature" to "it's deployed," without digging through code.</p>
+  <p><strong>How OpenFlows helps.</strong></p>
+  <ul>
+    <li>Every issue becomes a ticket with a visible lifecycle: planned → built → reviewed → merged.</li>
+    <li>Decisions that need a human are surfaced with notifications and direct links.</li>
+    <li>A web control panel shows the live state of the whole fleet at a glance.</li>
+  </ul>
+
+  <h2>Extending the workspace: skills, models, and tools</h2>
+  <p><strong>The need.</strong> Different features need different capabilities — a new linting skill, a model better suited to a task, an MCP server for a private tool.</p>
+  <p><strong>How OpenFlows helps.</strong> OpenFlows is plug-and-play. You can add a <strong>skill</strong>, register an <strong>MCP server</strong>, or enable a new <strong>model</strong> as configuration only — no engineering work required.</p>
+
+  <h2>When might it not be the right fit?</h2>
+  <p>
+    OpenFlows assumes you have a <strong>self-hosted Coder environment</strong> and a GitHub
+    repository you control. It is designed for governed, in-your-network delivery. If you have no
+    existing Coder infrastructure and want a fully hosted, zero-infrastructure AI coding
+    assistant, that's a different trade-off.
+  </p>
+
+  <h2>Where to go next</h2>
+  <DocCards cards={[
+    { icon: '⚖️', title: 'How OpenFlows compares', desc: 'The trade-offs against the common alternatives.', href: '/docs/introduction/how-openflows-compares' },
+    { icon: '🚀', title: 'Quick Start', desc: 'Ready to run it? Start here.', href: '/docs/getting-started' },
+  ]} />
+</DocsLayout>

@@ -3,35 +3,54 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 
 const SECTIONS = [
   {
-    title: 'Getting Started',
+    title: 'Introduction',
+    desc: 'New to OpenFlows? Start here to understand what it is and when it fits.',
+    cards: [
+      { icon: '🧭', title: 'What is OpenFlows', desc: 'The core idea, whom it is for, and a quick tour of the team.', href: '/docs/introduction/what-is-openflows' },
+      { icon: '🔁', title: 'How OpenFlows works', desc: 'The end-to-end flow from issue to merged pull request.', href: '/docs/introduction/how-it-works' },
+      { icon: '🎯', title: 'Use cases', desc: 'The situations where OpenFlows shines.', href: '/docs/introduction/use-cases' },
+      { icon: '⚖️', title: 'How OpenFlows compares', desc: 'OpenFlows vs. chat assistants, hosted agents, bare orchestrators, and Coder alone.', href: '/docs/introduction/how-openflows-compares' },
+    ],
+  },
+  {
+    title: 'Get Started',
     desc: 'Install OpenFlows, obtain tokens, and run your first autonomous issue-to-merge cycle.',
     cards: [
-      { icon: '🚀', title: 'Quick Start', desc: 'The 10-minute path from clone to a working OpenFlows stack.', href: '/docs/getting-started' },
-      { icon: '⚙️', title: 'Installation', desc: 'Docker Compose, bootstrap, tenant creation, and verification.', href: '/docs/getting-started/installation' },
-      { icon: '🔑', title: 'Token Guide', desc: 'GitHub OAuth, Coder external auth, and session tokens.', href: '/docs/getting-started/token-guide' },
+      { icon: '🚀', title: 'Quick Start', desc: 'The fast path from clone to a working OpenFlows stack.', href: '/docs/getting-started' },
+      { icon: '⚙️', title: 'Installation', desc: 'What you need before you start and how the environment is put together.', href: '/docs/getting-started/installation' },
       { icon: '🎯', title: 'First Issue Walkthrough', desc: 'What happens when you create a GitHub issue and the agents take over.', href: '/docs/getting-started/first-issue' },
+      { icon: '🔑', title: 'Token Guide', desc: 'How OpenFlows acts on GitHub through a scoped OAuth identity.', href: '/docs/getting-started/token-guide' },
+      { icon: '🔁', title: 'Lifecycle Steps', desc: 'The phases every ticket travels through, from planning to merge.', href: '/docs/getting-started/lifecycle-steps' },
+      { icon: '✅', title: 'Completion & Merge', desc: 'How work is reviewed, merged, and torn down.', href: '/docs/getting-started/completion-and-merge' },
     ],
   },
   {
     title: 'Core Concepts',
     desc: 'The ideas that make OpenFlows work: architecture-first orchestration, the agent team, and the Coder integration model.',
     cards: [
-      { icon: '🏛️', title: 'Architecture-First Development', desc: 'Why OpenFlows plans before it executes and why that matters.', href: '/docs/concepts/architecture-first' },
-      { icon: '👥', title: 'The Agent Team', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, and LORE  -  roles, boundaries, and handoffs.', href: '/docs/concepts/agent-team' },
-      { icon: '🧠', title: 'The Coordination Store', desc: 'The single record of truth that keeps every agent, ticket, and review consistent.', href: '/docs/concepts/coordination-store' },
-      { icon: '🔗', title: 'Coder Integration', desc: 'How OpenFlows runs on top of Coder and why the split is intentional.', href: '/docs/concepts/coder-integration' },
-      { icon: '🛡️', title: 'Security Model', desc: 'Identity, audit, secrets, and workspace isolation.', href: '/docs/concepts/security-model' },
+      { icon: '🏛️', title: 'Architecture-First Development', desc: 'Why the engineering discipline is the product.', href: '/docs/concepts/architecture-first' },
+      { icon: '👥', title: 'The Agent Team', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, and LORE - roles, boundaries, and handoffs.', href: '/docs/concepts/agent-team' },
+      { icon: '🚦', title: 'The Planning Gate', desc: 'Why agents must plan before they code.', href: '/docs/concepts/planning-gate' },
+      { icon: '🧠', title: 'The Coordination Store', desc: 'The single record of truth that keeps every agent consistent.', href: '/docs/concepts/coordination-store' },
+      { icon: '💻', title: 'Workspaces', desc: 'Where work actually runs - and why it is safe.', href: '/docs/concepts/workspaces' },
+      { icon: '🏢', title: 'Tenants', desc: 'How one server serves many isolated teams.', href: '/docs/concepts/tenants' },
+      { icon: '🛎️', title: 'Human Escalation', desc: 'When and how a person gets pulled in.', href: '/docs/concepts/human-escalation' },
+      { icon: '📇', title: 'The Agent Registry', desc: 'How the team is configured without code.', href: '/docs/concepts/agent-registry' },
+      { icon: '🔗', title: 'The Coder / OpenFlows Split', desc: 'The founding idea: where work runs vs. how it is coordinated.', href: '/docs/concepts/coder-openflows-split' },
     ],
   },
   {
     title: 'Architecture',
-    desc: 'Detailed design of the orchestration engine, state machine, recovery systems, and agent lifecycle.',
+    desc: 'Detailed design of the orchestration engine, state machine, recovery systems, and agent lifecycle - in plain language.',
     cards: [
-      { icon: '🏗️', title: 'Big Picture', desc: 'The control plane and the work plane, and how they fit together.', href: '/docs/architecture/system-design' },
-      { icon: '🎭', title: 'Agent Roles', desc: 'Per-agent responsibilities, permissions, and workspace behavior.', href: '/docs/architecture/agent-roles' },
-      { icon: '⚡', title: 'Workspace Lifecycle', desc: 'Provisioning, execution, teardown, and per-evaluation isolation.', href: '/docs/architecture/workspace-lifecycle' },
-      { icon: '🔄', title: 'State Machine & Recovery', desc: 'NEXUS reconcile, failure detection, and self-healing.', href: '/docs/architecture/state-recovery' },
-      { icon: '🧭', title: 'Decision & Routing', desc: 'How agents make decisions and how work is routed between them.', href: '/docs/architecture/decision-routing' },
+      { icon: '🗺️', title: 'Big Picture', desc: 'The control plane and the work plane, and how they fit together.', href: '/docs/architecture/big-picture' },
+      { icon: '🧠', title: 'The Controller', desc: 'The brain and its orchestration loop.', href: '/docs/architecture/controller' },
+      { icon: '🏗️', title: 'The Workspace Fleet', desc: 'Ephemeral worker spaces and the long-lived NEXUS workspace.', href: '/docs/architecture/workspace-fleet' },
+      { icon: '🔗', title: 'How the Pieces Talk', desc: 'The three channels that keep the team in sync.', href: '/docs/architecture/how-the-pieces-talk' },
+      { icon: '♻️', title: 'State Machine & Recovery', desc: 'NEXUS reconcile, failure detection, and self-healing.', href: '/docs/architecture/state-machine-recovery' },
+      { icon: '🧭', title: 'Decision & Routing', desc: 'How work is dispatched and steered between roles.', href: '/docs/architecture/decision-routing' },
+      { icon: '🛡️', title: 'Security by Design', desc: 'Why the architecture is safe by construction.', href: '/docs/architecture/security-by-design' },
+      { icon: '🚀', title: "How It's Deployed", desc: 'The reference deployment, stood up for many teams.', href: '/docs/architecture/deployment' },
     ],
   },
   {
@@ -39,10 +58,12 @@ const SECTIONS = [
     desc: 'Practical instructions for configuring, extending, and operating OpenFlows in production.',
     cards: [
       { icon: '🤖', title: 'Agent Setup', desc: 'Configure roles, models, skills, and tools from the control panel.', href: '/docs/guides/agent-setup' },
-      { icon: '🧪', title: 'Model Routing', desc: 'Provider selection, cost optimization, and adversarial review.', href: '/docs/guides/model-routing' },
+      { icon: '🧭', title: 'Model Routing', desc: 'Choose which model each role uses.', href: '/docs/guides/model-routing' },
       { icon: '🏢', title: 'Multi-Tenancy', desc: 'Running multiple teams on a single Coder deployment.', href: '/docs/guides/multi-tenancy' },
-      { icon: '🔌', title: 'Extending OpenFlows', desc: 'Skills, MCP servers, and custom models without code changes.', href: '/docs/guides/extending' },
-      { icon: '📈', title: 'Operations & Monitoring', desc: 'Logs, TUI, metrics, and production runbooks.', href: '/docs/guides/operations' },
+      { icon: '📝', title: 'Extending: Skills', desc: 'Teach a role something new, configuration only.', href: '/docs/guides/extending-skills' },
+      { icon: '🔌', title: 'Extending: MCP', desc: 'Connect external tools and data.', href: '/docs/guides/extending-mcp' },
+      { icon: '🧩', title: 'Extending: Models', desc: 'Add a new model to the platform catalog.', href: '/docs/guides/extending-models' },
+      { icon: '📈', title: 'Operations & Monitoring', desc: 'Status, steering, notifications, and recovery runbooks.', href: '/docs/guides/operations' },
       { icon: '🔧', title: 'Troubleshooting', desc: 'Common failures, diagnostics, and fixes.', href: '/docs/guides/troubleshooting' },
     ],
   },
@@ -50,20 +71,23 @@ const SECTIONS = [
     title: 'Reference',
     desc: 'Quick lookup: roles, glossaries, lifecycle states, configuration, and the control surface.',
     cards: [
-      { icon: '📚', title: 'Roles Reference', desc: 'The five team roles, their responsibilities, and who must approve before acting.', href: '/docs/reference/roles-reference' },
+      { icon: '📚', title: 'Roles Reference', desc: 'The five team roles and their responsibilities.', href: '/docs/reference/roles-reference' },
       { icon: '📖', title: 'Glossary', desc: 'Every term defined in one line.', href: '/docs/reference/glossary' },
       { icon: '🔁', title: 'Lifecycle States', desc: 'Every state a ticket passes through, and the enforced rules.', href: '/docs/reference/lifecycle-states' },
       { icon: '⚙️', title: 'Configuration Reference', desc: 'The knobs you can set, grouped by concern.', href: '/docs/reference/configuration-reference' },
+      { icon: '🔢', title: 'Limits & Defaults', desc: 'The meaningful numbers to know.', href: '/docs/reference/limits-and-defaults' },
       { icon: '🕹️', title: 'Command Surface', desc: 'The programmatic way to drive the same operations as the panel.', href: '/docs/reference/command-surface' },
+      { icon: '🔔', title: 'Notifications Reference', desc: 'Channels, what they carry, and how they behave.', href: '/docs/reference/notifications-reference' },
     ],
   },
   {
     title: 'Contributing',
     desc: 'How to get involved and how the project is governed.',
     cards: [
-      { icon: '🤝', title: 'How to Contribute', desc: 'The path from idea to merged change.', href: '/docs/contributing' },
-      { icon: '🏛️', title: 'Project Governance', desc: 'How decisions and releases are made.', href: '/docs/contributing/project-governance' },
-      { icon: '📝', title: 'Contributing Skills', desc: 'Extend a role with a new capability, configuration only.', href: '/docs/contributing/adding-skills' },
+      { icon: '🤝', title: 'Contributor Guide', desc: 'The path from idea to merged change.', href: '/docs/contributing' },
+      { icon: '🛠️', title: 'Development Setup', desc: 'Get a local environment working.', href: '/docs/contributing/development-setup' },
+      { icon: '📝', title: 'Adding Skills', desc: 'Contribute capability content, configuration only.', href: '/docs/contributing/adding-skills' },
+      { icon: '🧪', title: 'Testing', desc: 'How changes are verified before merging.', href: '/docs/contributing/testing' },
     ],
   },
   {
@@ -72,6 +96,7 @@ const SECTIONS = [
     cards: [
       { icon: '🧭', title: 'Further Reading', desc: 'A curated path from introduction to deep architecture.', href: '/docs/resources/further-reading' },
       { icon: '💬', title: 'Community & Support', desc: 'Where to ask questions and report problems.', href: '/docs/resources/community-and-support' },
+      { icon: '❓', title: 'FAQ', desc: 'Short answers to common setup, security, and operational questions.', href: '/docs/resources/faq' },
     ],
   },
 ];
@@ -86,7 +111,7 @@ const SECTIONS = [
     </p>
     <div class="docsCta">
       <a href="/docs/getting-started" class="docsCtaPrimary">Get Started →</a>
-      <a href="/docs/concepts/architecture-first" class="docsCtaSecondary">How it works</a>
+      <a href="/docs/introduction/how-openflows-compares" class="docsCtaSecondary">How OpenFlows compares</a>
     </div>
   </div>
 
@@ -105,28 +130,6 @@ const SECTIONS = [
       </div>
     </section>
   ))}
-
-  <section class="docsSection docsWhatIsNot">
-    <h2 class="docsSectionTitle">What OpenFlows is not</h2>
-    <div class="docsWhatGrid">
-      <div class="docsWhatItem">
-        <h3>Not a CI/CD platform</h3>
-        <p>It orchestrates agents and integrates with your existing CI/CD pipeline; it does not replace it.</p>
-      </div>
-      <div class="docsWhatItem">
-        <h3>Not a SaaS offering</h3>
-        <p>It is self-hosted on your infrastructure. You retain full control over data, models, and execution.</p>
-      </div>
-      <div class="docsWhatItem">
-        <h3>Not an IDE</h3>
-        <p>It works with any editor through Coder workspaces. It orchestrates agents, not your editor.</p>
-      </div>
-      <div class="docsWhatItem">
-        <h3>Not a code generator</h3>
-        <p>It coordinates agents that write code. The value is in the architecture, contracts, and review gates.</p>
-      </div>
-    </div>
-  </section>
 </DocsLayout>
 
 <style>
@@ -152,178 +155,41 @@ const SECTIONS = [
     margin-bottom: 2rem;
   }
 
-  .docsCta {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-  }
+  .docsCta { display: flex; gap: 1rem; flex-wrap: wrap; }
 
   .docsCtaPrimary {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    background-color: var(--color-aubergine);
-    color: white;
-    text-decoration: none;
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: background-color 0.2s;
+    display: inline-flex; align-items: center; padding: 0.75rem 1.5rem;
+    background-color: var(--color-aubergine); color: white; text-decoration: none;
+    border-radius: 0.5rem; font-weight: 600; transition: background-color 0.2s;
   }
-
-  .docsCtaPrimary:hover {
-    background-color: var(--color-aubergine-dark);
-  }
+  .docsCtaPrimary:hover { background-color: var(--color-aubergine-dark); }
 
   .docsCtaSecondary {
-    display: inline-flex;
-    align-items: center;
-    padding: 0.75rem 1.5rem;
-    background-color: transparent;
-    color: var(--color-aubergine);
-    text-decoration: none;
-    border: 2px solid var(--color-aubergine);
-    border-radius: 0.5rem;
-    font-weight: 600;
-    transition: all 0.2s;
+    display: inline-flex; align-items: center; padding: 0.75rem 1.5rem;
+    background-color: transparent; color: var(--color-aubergine); text-decoration: none;
+    border: 2px solid var(--color-aubergine); border-radius: 0.5rem; font-weight: 600; transition: all 0.2s;
   }
+  .docsCtaSecondary:hover { background-color: var(--color-aubergine); color: white; }
 
-  .docsCtaSecondary:hover {
-    background-color: var(--color-aubergine);
-    color: white;
-  }
-
-  .docsSection {
-    margin-bottom: 3rem;
-  }
-
-  .docsSectionTitle {
-    font-size: 1.75rem;
-    font-weight: 700;
-    color: var(--color-ink);
-    margin-bottom: 0.5rem;
-  }
-
-  .docsSectionDesc {
-    font-size: 1rem;
-    color: var(--color-graphite);
-    margin-bottom: 1.5rem;
-  }
+  .docsSection { margin-bottom: 3rem; }
+  .docsSectionTitle { font-size: 1.75rem; font-weight: 700; color: var(--color-ink); margin-bottom: 0.5rem; }
+  .docsSectionDesc { font-size: 1rem; color: var(--color-graphite); margin-bottom: 1.5rem; }
 
   .docsGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-    gap: 1.5rem;
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
   }
 
   .docsCard {
-    display: block;
-    padding: 1.5rem;
-    background-color: white;
-    border: 1px solid var(--color-fog);
-    border-radius: 0.5rem;
-    text-decoration: none;
-    transition: all 0.2s;
+    display: block; padding: 1.5rem; background-color: white; border: 1px solid var(--color-fog);
+    border-radius: 0.5rem; text-decoration: none; transition: all 0.2s;
   }
-
-  .docsCard:hover {
-    border-color: var(--color-aubergine);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-    transform: translateY(-2px);
-  }
-
-  .docsCardIcon {
-    font-size: 2rem;
-    margin-bottom: 1rem;
-  }
-
-  .docsCardTitle {
-    font-size: 1.25rem;
-    font-weight: 600;
-    color: var(--color-ink);
-    margin-bottom: 0.5rem;
-  }
-
-  .docsCardDesc {
-    font-size: 0.9375rem;
-    color: var(--color-graphite);
-    line-height: 1.5;
-  }
-
-  .docsWhatIsNot {
-    background-color: var(--color-parchment);
-    padding: 2rem;
-    border-radius: 0.5rem;
-  }
-
-  .docsWhatGrid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-top: 1.5rem;
-  }
-
-  .docsWhatItem {
-    padding: 1rem;
-    background-color: white;
-    border-radius: 0.5rem;
-  }
-
-  .docsWhatItem h3 {
-    font-size: 1rem;
-    font-weight: 600;
-    color: var(--color-ink);
-    margin-bottom: 0.5rem;
-  }
-
-  .docsWhatItem p {
-    font-size: 0.875rem;
-    color: var(--color-graphite);
-    line-height: 1.5;
-  }
-
-  .docsLearnMore {
-    border-top: 1px solid var(--color-fog);
-    padding-top: 2rem;
-  }
-
-  .docsLearnList {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-  }
-
-  .docsLearnList li {
-    padding: 0.75rem 0;
-    border-bottom: 1px solid var(--color-fog);
-    font-size: 1rem;
-    color: var(--color-graphite);
-  }
-
-  .docsLearnList li:last-child {
-    border-bottom: none;
-  }
-
-  .docsLearnList a {
-    color: var(--color-aubergine);
-    text-decoration: none;
-    font-weight: 600;
-  }
-
-  .docsLearnList a:hover {
-    text-decoration: underline;
-  }
+  .docsCard:hover { border-color: var(--color-aubergine); box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px); }
+  .docsCardIcon { font-size: 2rem; margin-bottom: 1rem; }
+  .docsCardTitle { font-size: 1.25rem; font-weight: 600; color: var(--color-ink); margin-bottom: 0.5rem; }
+  .docsCardDesc { font-size: 0.9375rem; color: var(--color-graphite); line-height: 1.5; }
 
   @media (max-width: 768px) {
-    .docsTitle {
-      font-size: 2rem;
-    }
-
-    .docsGrid {
-      grid-template-columns: 1fr;
-    }
-
-    .docsWhatGrid {
-      grid-template-columns: 1fr;
-    }
+    .docsTitle { font-size: 2rem; }
+    .docsGrid { grid-template-columns: 1fr; }
   }
 </style>

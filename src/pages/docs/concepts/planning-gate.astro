@@ -1,0 +1,74 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Core Concepts', href: '/docs/concepts/coder-openflows-split' }, { label: 'The Planning Gate' }]}>
+  <h1>The Planning Gate</h1>
+
+  <p>
+    The planning gate is one of the most important ideas in OpenFlows, because it is what turns
+    "an AI that writes code" into "an AI that works like a disciplined engineer."
+  </p>
+
+  <h2>The problem it solves</h2>
+  <p>
+    Given a spec, code is cheap. The hard, valuable work is deciding <em>what to build</em> before
+    writing it. If you let an agent start typing immediately, you often end up with confident,
+    well-written code that solves the wrong problem. The planning gate forces the team to agree on
+    the <strong>plan</strong> first.
+  </p>
+
+  <h2>How it works</h2>
+  <ol>
+    <li>The builder takes the ticket and produces a written plan describing how it intends to implement it.</li>
+    <li>The builder <strong>stops</strong>. Even though it is fully capable of writing code, it waits.</li>
+    <li>The reviewer reviews the plan — the same adversarial reviewer that later reviews the code.</li>
+    <li>Only an <strong>approved</strong> plan unlocks the build phase.</li>
+  </ol>
+
+  <h2>Why the system can enforce it</h2>
+  <p>
+    This is not a convention or a prompt that an agent could ignore. The planning gate is
+    <strong>structural</strong>:
+  </p>
+  <ul>
+    <li>A ticket can only enter the pipeline through the planning phase.</li>
+    <li>Moving out of planning requires consuming an <strong>approval</strong> that only the reviewer role can create.</li>
+    <li>That approval is <strong>single-use</strong> — it can be consumed once, and a second attempt finds nothing.</li>
+  </ul>
+  <p>
+    An agent physically cannot skip the review, approve its own plan, or replay a stale approval.
+    If you look at a ticket and it has no approval, there is no path forward for it. "Let's just
+    skip the review" is not possible, even by accident.
+  </p>
+
+  <h2>What this buys you</h2>
+  <ul>
+    <li><strong>No code before a plan.</strong> You never get an agent barreling ahead on a misunderstanding.</li>
+    <li><strong>A reviewable decision.</strong> The plan and its approval are part of the recorded history.</li>
+    <li><strong>Trustworthy autonomy.</strong> The system can be left to run because it won't cut this corner.</li>
+  </ul>
+
+  <h2>The "when in doubt, don't approve" principle</h2>
+  <p>
+    The reviewer's job is to be strict. If it cannot verify the required evidence — a plan it can
+    read, a change it can review, a test result that was actually recorded — it must
+    <strong>not</strong> approve. The system would rather hold a ticket, or escalate it to a
+    human, than merge something unverified. This bias toward "block rather than guess" runs
+    through the whole product.
+  </p>
+
+  <Callout type="info" title="Plan before code">
+    Planning first is the cheapest correctness strategy available. A rejected plan costs little; a
+    confident implementation of the wrong thing costs a great deal more. The planning gate keeps
+    the team aligned before a single line is written.
+  </Callout>
+
+  <h2>Where to go next</h2>
+  <DocCards cards={[
+    { icon: '🏛️', title: 'Architecture-First Development', desc: 'Why planning, review, and structure are the whole product.', href: '/docs/concepts/architecture-first' },
+    { icon: '🔁', title: 'Lifecycle Steps', desc: 'See the gate in its place in the ticket lifecycle.', href: '/docs/getting-started/lifecycle-steps' },
+    { icon: '🛡️', title: 'Security by Design', desc: 'How single-use approvals protect the gate.', href: '/docs/architecture/security-by-design' },
+  ]} />
+</DocsLayout>

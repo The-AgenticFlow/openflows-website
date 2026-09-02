@@ -1,0 +1,61 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Contributing', href: '/docs/contributing' }, { label: 'Testing' }]}>
+  <h1>Testing</h1>
+
+  <p>
+    Testing is a non-negotiable part of contributing to OpenFlows. The project's standard is
+    simple: <strong>changes are verified before they are considered done</strong>, and a change is
+    only merged once it passes review and its tests are green. This page explains the testing
+    culture and what is expected of every contribution.
+  </p>
+
+  <h2>The standard</h2>
+  <p>
+    Before a change is marked complete, it must pass the project's test/build checks. A failing
+    check means the work is not finished — you fix it, or you flag it as blocked rather than
+    working around the failure. This mirrors the product's own posture: verification comes first,
+    and a result that isn't verifiable is not treated as done.
+  </p>
+
+  <h2>What runs</h2>
+  <p>
+    The project provides a single, repeatable way to run its checks. In practice that means running
+    the project's test suite or, for the website, a production build from scratch if a build step
+    is part of the check. The exact command is documented in the repository's tooling (and the
+    README), and contributors are expected to run it and see it pass before opening or updating a
+    pull request.
+  </p>
+
+  <h2>What is expected of you</h2>
+  <ul>
+    <li><strong>Run the checks before you submit.</strong> Don't rely on review to catch what a quick local run would find.</li>
+    <li><strong>Keep behavior changes covered.</strong> If your change alters how something behaves, it should be covered by an appropriate test.</li>
+    <li><strong>Don't cheat the gate.</strong> Never mark work complete against failing or broken tests, and don't silently work around a failure.</li>
+    <li><strong>Keep changes scoped.</strong> Smaller, focused changes are easier to verify and review than large rewrites.</li>
+  </ul>
+
+  <Callout type="info" title="If testing blocks you, say so">
+    No hallucinated context and no guessing: if a change cannot be verified, that is a legitimate
+    blocker. Report it as blocked with a specific, answerable question rather than shipping
+    something unverified — the project would rather hold work than merge it unverified.
+  </Callout>
+
+  <h2>How this connects to the product</h2>
+  <p>
+    OpenFlows practices what it preaches. The product's reviewer checks every change for test
+    coverage and refuses to approve without verifiable evidence; the project's contribution
+    process works the same way. A contribution flows through the same gate-based culture it asks
+    its agents to follow.
+  </p>
+
+  <h2>Where to go next</h2>
+  <DocCards cards={[
+    { icon: '🛠️', title: 'Development Setup', desc: 'Get a local environment working first.', href: '/docs/contributing/development-setup' },
+    { icon: '🤝', title: 'Contributor Guide', desc: 'The contribution workflow that tests sit within.', href: '/docs/contributing' },
+    { icon: '🛡️', title: 'Security by Design', desc: 'Why rigorous verification is built into the architecture.', href: '/docs/architecture/security-by-design' },
+  ]} />
+</DocsLayout>

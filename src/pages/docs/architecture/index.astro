@@ -3,15 +3,14 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { DocCards, Callout } from '@/molecules/DocComponents/DocComponents';
 
 const CARDS = [
-  { icon: '🗺️', title: 'Big Picture', desc: 'The control plane and the work plane, and how the two halves fit together.', href: '/docs/architecture/system-design' },
-  { icon: '🧠', title: 'The Controller', desc: 'The long-lived \u201cbrain\u201d that ingests work, dispatches agents, and keeps the team moving.', href: '/docs/architecture/orchestrator' },
-  { icon: '🏗️', title: 'The Workspace Fleet', desc: 'One long-lived orchestrator workspace and many short-lived, disposable worker workspaces \u2014 and how they stay isolated.', href: '/docs/architecture/workspace-lifecycle' },
-  { icon: '🔗', title: 'How the Pieces Talk', desc: 'The three channels that keep the team in sync \u2014 and the difference between facts and live tasks.', href: '/docs/architecture/coordination-protocol' },
-  { icon: '♻️', title: 'The Orchestration Loop', desc: 'The steady \u201cread everything, nudge everything, repeat\u201d beat that makes the system self-healing.', href: '/docs/architecture/state-recovery' },
+  { icon: '🗺️', title: 'Big Picture', desc: 'The control plane and the work plane, and how the two halves fit together.', href: '/docs/architecture/big-picture' },
+  { icon: '🧠', title: 'The Controller', desc: 'The long-lived \u201cbrain\u201d that ingests work, dispatches agents, and keeps the team moving.', href: '/docs/architecture/controller' },
+  { icon: '🏗️', title: 'The Workspace Fleet', desc: 'One long-lived orchestrator workspace and many short-lived, disposable worker workspaces \u2014 and how they stay isolated.', href: '/docs/architecture/workspace-fleet' },
+  { icon: '🔗', title: 'How the Pieces Talk', desc: 'The three channels that keep the team in sync \u2014 and the difference between facts and live tasks.', href: '/docs/architecture/how-the-pieces-talk' },
+  { icon: '♻️', title: 'State Machine & Recovery', desc: 'The steady \u201cread everything, nudge everything, repeat\u201d beat that makes the system self-healing.', href: '/docs/architecture/state-machine-recovery' },
+  { icon: '🧭', title: 'Decision & Routing', desc: 'How work is dispatched between roles and how transitions are declared and routed through the pipeline.', href: '/docs/architecture/decision-routing' },
   { icon: '🛡️', title: 'Security by Design', desc: 'Why the architecture is safe by construction \u2014 no secrets in the sandbox, trust concentrated, auditability built in.', href: '/docs/architecture/security-by-design' },
   { icon: '🚀', title: 'How It\u2019s Deployed', desc: 'The reference deployment: the five pieces, how they\u2019re grouped, and standing it up for many teams.', href: '/docs/architecture/deployment' },
-  { icon: '👥', title: 'Agent Roles', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, LORE \u2014 the quick lookup for each role and when approval is required.', href: '/docs/architecture/agent-roles' },
-  { icon: '⚡', title: 'Decision & Routing', desc: 'How work is dispatched between roles and how transitions are declared and routed through the pipeline.', href: '/docs/architecture/decision-routing' },
 ];
 ---
 

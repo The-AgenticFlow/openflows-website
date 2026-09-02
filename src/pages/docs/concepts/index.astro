@@ -5,26 +5,26 @@ import { DocCards, Callout, DocsTable } from '@/molecules/DocComponents/DocCompo
 const CARDS = [
   { icon: '🏛️', title: 'Architecture-First', desc: 'Why OpenFlows plans before it codes, how the planning gate works, and the "when in doubt, don\u2019t approve" rule.', href: '/docs/concepts/architecture-first' },
   { icon: '👥', title: 'The Agent Team', desc: 'NEXUS, FORGE, SENTINEL, VESSEL, and LORE \u2014 their roles, how they work in sequence and in parallel, and how they\u2019re configured.', href: '/docs/concepts/agent-team' },
-  { icon: '🔁', title: 'The Ticket Lifecycle', desc: 'How an issue becomes a merged pull request, the fixed phases, and what happens when work gets stuck.', href: '/docs/concepts/ticket-lifecycle' },
-  { icon: '🏗️', title: 'The Planning Gate', desc: 'Plan before code: why it\u2019s structural, how the gate is enforced, and why the system blocks rather than guesses.', href: '/docs/concepts/architecture-first' },
+  { icon: '🔁', title: 'The Ticket Lifecycle', desc: 'How an issue becomes a merged pull request, the fixed phases, and what happens when work gets stuck.', href: '/docs/getting-started/lifecycle-steps' },
+  { icon: '🏗️', title: 'The Planning Gate', desc: 'Plan before code: why it\u2019s structural, how the gate is enforced, and why the system blocks rather than guesses.', href: '/docs/concepts/planning-gate' },
   { icon: '🗂️', title: 'The Coordination Store', desc: 'The single record of truth that keeps every agent, ticket, approval, and review consistent.', href: '/docs/concepts/coordination-store' },
   { icon: '🖥️', title: 'Workspaces', desc: 'Where work actually runs: thin, isolated, disposable workspaces with real identity and tight networks.', href: '/docs/concepts/workspaces' },
   { icon: '🏢', title: 'Tenants', desc: 'How one server serves many teams \u2014 what a tenant is, how isolation is enforced, and how you manage one.', href: '/docs/concepts/tenants' },
   { icon: '🧑‍💻', title: 'Human Escalation', desc: 'When a human gets pulled in, what happens on escalation, and the three ways you can resolve it.', href: '/docs/concepts/human-escalation' },
   { icon: '⚙️', title: 'The Agent Registry', desc: 'How the team is configured without code \u2014 roles, models, skills, and tools \u2014 and the zero-capacity safety rule.', href: '/docs/concepts/agent-registry' },
-  { icon: '🔗', title: 'The Coder / OpenFlows Split', desc: 'The founding idea: Coder governs where agents run; OpenFlows governs how they coordinate.', href: '/docs/concepts/coder-integration' },
+  { icon: '🔗', title: 'The Coder / OpenFlows Split', desc: 'The founding idea: Coder governs where agents run; OpenFlows governs how they coordinate.', href: '/docs/concepts/coder-openflows-split' },
 ];
 
 const CONCEPT_ROWS = [
   ['The Team', 'Five specialised agents with narrow roles and enforced hand-offs, so no single agent both writes and reviews its own work.', '/docs/concepts/agent-team'],
-  ['The Ticket Lifecycle', 'A fixed path from GitHub issue to merged pull request, with recovery and human escalation as part of the loop.', '/docs/concepts/ticket-lifecycle'],
-  ['The Planning Gate', 'No code before an approved plan; the gate is structural and single-use approvals can\u2019t be replayed.', '/docs/concepts/architecture-first'],
+  ['The Ticket Lifecycle', 'A fixed path from GitHub issue to merged pull request, with recovery and human escalation as part of the loop.', '/docs/getting-started/lifecycle-steps'],
+  ['The Planning Gate', 'No code before an approved plan; the gate is structural and single-use approvals can\u2019t be replayed.', '/docs/concepts/planning-gate'],
   ['The Coordination Store', 'A shared, durable record of truth that only the orchestrator and the worker command surface may write.', '/docs/concepts/coordination-store'],
   ['Workspaces', 'Thin, disposable, isolated execution seats with no secrets and real, attributable identity.', '/docs/concepts/workspaces'],
   ['Tenants', 'Strictly separated teams on one server, isolated by both identity and namespaced coordination state.', '/docs/concepts/tenants'],
   ['Human Escalation', 'The system stops and hands you the decisions that need a judgment call, rather than guessing.', '/docs/concepts/human-escalation'],
   ['The Agent Registry', 'Team configuration without code or restarts, with a guardrail against accidentally zeroing a role.', '/docs/concepts/agent-registry'],
-  ['The Coder / OpenFlows Split', 'Coder governs where agents run; OpenFlows governs how they coordinate. The founding asymmetry.', '/docs/concepts/coder-integration'],
+  ['The Coder / OpenFlows Split', 'Coder governs where agents run; OpenFlows governs how they coordinate. The founding asymmetry.', '/docs/concepts/coder-openflows-split'],
 ];
 ---
 

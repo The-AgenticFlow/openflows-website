@@ -1,0 +1,39 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DocCards } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Introduction' }]}>
+  <h1>Introduction</h1>
+
+  <p>
+    OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
+    production-ready pull requests — running entirely inside your own self-hosted Coder
+    environment. This section is where you start, whether you are just exploring or deciding
+    whether it fits your team.
+  </p>
+
+  <p>
+    The founding idea runs through everything you will read:
+    <strong>Coder governs <em>where</em> agents run; OpenFlows governs <em>how</em> they
+    coordinate.</strong> Coder provides the governed, disposable workspaces and the model
+    gateway. OpenFlows provides the team, the planning gate, adversarial review, self-healing,
+    and merges. The guardrails that shape the product are constant: plan before code, when in
+    doubt don't approve, bounded recovery then human escalation, and no secrets in worker
+    workspaces.
+  </p>
+
+  <DocCards cards={[
+    { icon: '🧭', title: 'What is OpenFlows', desc: 'The core idea, whom it is for, and a quick tour of the team.', href: '/docs/introduction/what-is-openflows' },
+    { icon: '🔁', title: 'How OpenFlows works', desc: 'The end-to-end flow from issue to merged pull request, in plain language.', href: '/docs/introduction/how-it-works' },
+    { icon: '🎯', title: 'Use cases', desc: 'The situations where OpenFlows shines — and a few where it is not the fit.', href: '/docs/introduction/use-cases' },
+    { icon: '⚖️', title: 'How OpenFlows compares', desc: 'OpenFlows vs. chat assistants, hosted agents, bare orchestrators, and Coder alone.', href: '/docs/introduction/how-openflows-compares' },
+  ]} />
+
+  <h2>Where to go next</h2>
+  <ul>
+    <li><strong>Ready to run it?</strong> Jump to <a href="/docs/getting-started">Quick Start</a>.</li>
+    <li><strong>Understand the ideas?</strong> Read <a href="/docs/concepts/coder-openflows-split">The Coder / OpenFlows Split</a>.</li>
+    <li><strong>Evaluate the architecture?</strong> Start with <a href="/docs/architecture/big-picture">Big Picture</a> and <a href="/docs/architecture/security-by-design">Security by Design</a>.</li>
+  </ul>
+</DocsLayout>

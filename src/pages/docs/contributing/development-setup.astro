@@ -1,0 +1,81 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Contributing', href: '/docs/contributing' }, { label: 'Development Setup' }]}>
+  <h1>Development Setup</h1>
+
+  <p>
+    This page describes what you need to set up a local development environment for the OpenFlows
+    project. It is written for contributors who want to build, run, or extend the work, in plain
+    language and without commands.
+  </p>
+
+  <h2>What the project needs</h2>
+  <p>
+    OpenFlows is an open project, and its documentation website is part of the same repository. To
+    develop locally you need a working Node.js toolchain, then you install the project's
+    dependencies. The project's build tooling (Astro, for the website) is declared in the
+    repository, so a fresh clone plus an install yields a working local environment.
+  </p>
+
+  <h2>The core workflow</h2>
+  <p>
+    Once dependencies are installed, the standard loop is straightforward:
+  </p>
+  <ul>
+    <li><strong>Run it locally with live reload</strong> while you work — edits show up immediately.</li>
+    <li><strong>Build a production output</strong> to verify the site compiles cleanly from scratch.</li>
+    <li><strong>Preview the built output</strong> before pushing, so what you ship is what you verified.</li>
+  </ul>
+  <p>
+    For detailed, copy-paste commands, refer to the project's <strong>README</strong> in the
+    repository root. It documents the exact steps to install dependencies, start the local server,
+    and build for production.
+  </p>
+
+  <h2>Where to find things in the repository</h2>
+  <ul>
+    <li><strong>Website source</strong> — the user-facing site you are reading (layouts, pages, and components) lives under the <code>src</code> tree.</li>
+    <li><strong>Documentation content</strong> — the source Markdown behind these pages lives in the <code>website-docs</code> directory.</li>
+    <li><strong>Project configuration</strong> — the site configuration and its dependencies are declared at the repository root.</li>
+  </ul>
+
+  <h2>Governance at a glance</h2>
+  <p>
+    OpenFlows' own organizing idea — <strong>plan before you build, review before you merge</strong>
+    — extends to how the project itself operates:
+  </p>
+  <ul>
+    <li><strong>Small, focused changes</strong> move quickly: open, review, merge.</li>
+    <li><strong>Non-trivial features</strong> are discussed and aligned on before implementation, so the approach is agreed before code is written — mirroring the planning gate.</li>
+    <li><strong>Security-sensitive work</strong> gets extra care, consistent with the product's "when in doubt, don't approve" posture.</li>
+  </ul>
+  <p>
+    OpenFlows is versioned and released in a controlled way: releases bundle a single, coherent
+    version of the system, and are handled through the project's release tooling and workflows.
+    The documentation website ships with the project and is published automatically from its main
+    branch, so the docs you see are tied to the current state of the codebase.
+  </p>
+
+  <h2>Roles in the project</h2>
+  <ul>
+    <li><strong>Maintainers</strong> review and merge contributions and steward the architecture.</li>
+    <li><strong>Contributors</strong> (that's you) propose and build improvements.</li>
+    <li><strong>Users</strong> surface issues and feature ideas that drive direction.</li>
+  </ul>
+
+  <Callout type="tip" title="Align early">
+    For anything non-trivial, align early — a short discussion before writing code saves a rejected
+    pull request. The project's review culture is rigorous by design; that is what keeps the
+    project (and the product) trustworthy.
+  </Callout>
+
+  <h2>Where to go next</h2>
+  <DocCards cards={[
+    { icon: '🤝', title: 'Contributor Guide', desc: 'The full path from idea to merged change.', href: '/docs/contributing' },
+    { icon: '🧪', title: 'Testing', desc: 'How changes are verified before merging.', href: '/docs/contributing/testing' },
+    { icon: '📝', title: 'Adding Skills', desc: 'Contribute capability content, configuration only.', href: '/docs/contributing/adding-skills' },
+  ]} />
+</DocsLayout>

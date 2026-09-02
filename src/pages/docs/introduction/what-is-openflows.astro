@@ -1,0 +1,80 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocCards, DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const TEAM_ROWS = [
+  ['<strong>NEXUS</strong>', 'Orchestrator', 'Picks up issues, coordinates the team, recovers from failures, and notifies you when input is needed.'],
+  ['<strong>FORGE</strong>', 'Builder', 'Writes code against an agreed plan, creates branches, and opens pull requests.'],
+  ['<strong>SENTINEL</strong>', 'Reviewer', 'Adversarially reviews the plan and the code for security, quality, and test coverage.'],
+  ['<strong>VESSEL</strong>', 'DevOps', 'Watches CI, resolves merge conflicts, and merges green pull requests.'],
+  ['<strong>LORE</strong>', 'Writer', 'Documents decisions and keeps project history up to date. Often disabled by default.'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Introduction', href: '/docs/introduction' }, { label: 'What is OpenFlows' }]}>
+  <h1>What is OpenFlows?</h1>
+
+  <p>
+    <strong>OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
+    production-ready pull requests — running entirely inside your own self-hosted Coder
+    environment.</strong>
+  </p>
+  <p>
+    Instead of a single chatbot that suggests snippets, OpenFlows stands up a small team of
+    specialized AI agents — each with a clear role — that plan, write, test, and adversarially
+    review code on your behalf. You stay in control of architecture and final decisions; the
+    team handles the execution.
+  </p>
+
+  <Callout type="info" title="The one-line idea">
+    You open a GitHub issue. OpenFlows plans it, writes it, stresses it, and merges it — then
+    tells you what happened.
+  </Callout>
+
+  <h2>The founding principle</h2>
+  <p>
+    OpenFlows is built around a simple principle:
+  </p>
+  <blockquote>
+    <strong>Coder decides <em>where</em> work runs. OpenFlows decides <em>how</em> agents work
+    together.</strong>
+  </blockquote>
+  <ul>
+    <li><strong>Coder</strong> provides the governed, isolated, disposable workspaces and the model gateway where every AI call happens.</li>
+    <li><strong>OpenFlows</strong> provides the coordination — the plan, the review, the merge, and the guardrails.</li>
+  </ul>
+  <p>
+    Neither replaces the other. OpenFlows does not try to manage machines, and Coder does not
+    try to write your code.
+  </p>
+
+  <h2>What problem does it solve?</h2>
+  <p>
+    Writing code against a specification has become cheap. What stays hard is <em>thinking</em>:
+    understanding the architecture, making product judgments, and keeping security in mind.
+    OpenFlows encodes that discipline as an automated team, so the engineering judgment gets
+    applied to every issue, consistently.
+  </p>
+
+  <h2>Who is it for?</h2>
+  <ul>
+    <li><strong>Developers</strong> who want the mechanics of planning, coding, testing, and review handled while they stay in charge of the important decisions.</li>
+    <li><strong>Companies</strong> that want governed, auditable AI delivery inside their existing engineering workflow — without exposing model keys or weakening security.</li>
+    <li><strong>Stakeholders</strong> who want a faster, more transparent path from "we want this feature" to "it shipped."</li>
+  </ul>
+
+  <h2>A quick tour of the team</h2>
+  <DocsTable headers={['Agent', 'Role', 'What it does']} rows={TEAM_ROWS} />
+
+  <p>
+    The rest of this documentation explains how that team works, what it needs, and how to make
+    it yours.
+  </p>
+
+  <h2>Where to go next</h2>
+  <DocCards cards={[
+    { icon: '🔁', title: 'How OpenFlows works', desc: 'The end-to-end flow, in plain language.', href: '/docs/introduction/how-it-works' },
+    { icon: '⚖️', title: 'How OpenFlows compares', desc: 'How it stacks up against the alternatives.', href: '/docs/introduction/how-openflows-compares' },
+    { icon: '🚀', title: 'Quick Start', desc: 'The fastest path to a running team.', href: '/docs/getting-started' },
+  ]} />
+</DocsLayout>

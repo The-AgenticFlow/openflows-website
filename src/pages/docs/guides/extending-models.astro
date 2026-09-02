@@ -1,0 +1,61 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Extending: Models' }]}>
+  <h1>Extending: Models</h1>
+
+  <p>
+    Models are the reasoning engine behind each agent. Extending OpenFlows with a new model is a
+    <strong>configuration-only</strong> change: you enable the model in the platform's AI catalog,
+    and the team can then route any role to it. No system code is involved.
+  </p>
+
+  <h2>Where models live</h2>
+  <p>
+    Models are configured in the platform's AI settings (the Coder dashboard), where you enable
+    the models you want available. OpenFlows then <em>references</em> those models for each role —
+    so the catalog lives in the platform, and the per-role assignment lives in your team's
+    registry.
+  </p>
+
+  <h2>Enabling a new model</h2>
+  <ol>
+    <li><strong>Open the platform's AI settings</strong> in the Coder dashboard.</li>
+    <li><strong>Enable the model</strong> you want to add to the catalog.</li>
+    <li><strong>Save.</strong> The model is now available for any role to reference.</li>
+  </ol>
+  <p>
+    This is a platform-level change. From here, assigning a role to the new model is a separate
+    step that lives in the <a href="/docs/concepts/agent-registry">agent registry</a> — see
+    <a href="/docs/guides/model-routing">Model Routing</a>.
+  </p>
+
+  <h2>What you should see</h2>
+  <ul>
+    <li>The model appears in the platform's catalog and is assignable to roles.</li>
+    <li>A role you point at the new model starts using it for the work of that role.</li>
+    <li>The model is available to route across the team the moment you enable it.</li>
+  </ul>
+
+  <Callout type="info" title="Enabling vs. routing">
+    <strong>Extending: Models</strong> is about making a model available — enabling it in the
+    catalog. <strong>Model Routing</strong> is about deciding which available model each role uses.
+    Enable first, then route: a model that isn't enabled can't be assigned.
+  </Callout>
+
+  <h2>Related extensions</h2>
+  <p>
+    Skills, MCP servers, and models are the three configuration-only capability extensions. They
+    compose: a role can carry several skills, reach several tools, and run on whatever enabled
+    model suits its job.
+  </p>
+
+  <h2>Where to go next</h2>
+  <DocCards cards={[
+    { icon: '🧭', title: 'Model Routing', desc: 'Choose which enabled model each role uses.', href: '/docs/guides/model-routing' },
+    { icon: '📝', title: 'Extending: Skills', desc: 'Teach a role something new, configuration only.', href: '/docs/guides/extending-skills' },
+    { icon: '🔌', title: 'Extending: MCP', desc: 'Connect external tools and data.', href: '/docs/guides/extending-mcp' },
+  ]} />
+</DocsLayout>

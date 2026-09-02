@@ -3,11 +3,12 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'The Orchestration Loop' }]}>
-  <h1>The Orchestration Loop</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'State Machine & Recovery' }]}>
+  <h1>State Machine &amp; Recovery</h1>
   <p>
-    The heart of the Controller is a simple, intentionally boring loop. Understanding it is understanding how
-    OpenFlows stays correct and self-healing over long, messy runs.
+    The heart of the Controller is a simple, intentionally boring loop that acts as the system's
+    state machine. Understanding it is understanding how OpenFlows stays correct and self-healing
+    over long, messy runs.
   </p>
 
   <h2>The loop in one line</h2>
