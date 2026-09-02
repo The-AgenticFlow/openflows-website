@@ -344,6 +344,86 @@ const currentPath = Astro.url.pathname;
 </style>
 
 <script>
+  // Make content headings shareable: each section heading becomes an anchor
+  // link with a stable id. Clicking the pilcrow copies the full URL (with the
+  // heading hash) to the clipboard and scrolls to the section, so it can be
+  // shared and linked directly.
+  const indexHeadingLinks = () => {
+    const article = document.querySelector('.content') || document.body;
+    let usedIds = new Set();
+
+    article.querySelectorAll('h1, h2, h3, h4').forEach((heading) => {
+      if (!heading.id) {
+        const base = (heading.textContent || '')
+          .trim()
+          .toLowerCase()
+          .replace(/[^a-z0-9]+/g, '-')
+          .replace(/^-+|-+$/g, '');
+        let id = base || 'section';
+        let n = 2;
+        while (usedIds.has(id)) {
+          id = `${base}-${n++}`;
+        }
+        usedIds.add(id);
+        heading.id = id;
+      } else {
+        usedIds.add(heading.id);
+      }
+
+      // Skip the page title (h1) - only section headings get share links.
+      if (heading.tagName === 'H1') return;
+
+      // Avoid double-adding on re-runs (Svelte/Astro islands may re-invoke).
+      if (heading.querySelector('.heading-link')) return;
+
+      const link = document.createElement('a');
+      link.className = 'heading-link';
+      link.href = `#${heading.id}`;
+      link.setAttribute('aria-label', `Link to "${heading.textContent.trim()}"`);
+      link.setAttribute('title', 'Copy link to this section');
+      link.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+
+      link.addEventListener('click', (e) => {
+        e.preventDefault();
+        const url = `${location.origin}${location.pathname}#${heading.id}`;
+        const label = link.getAttribute('aria-label') || '';
+        let copied = false;
+        if (navigator.clipboard && navigator.clipboard.writeText) {
+          navigator.clipboard.writeText(url).then(() => { copied = true; }).catch(() => { copied = false; });
+        } else {
+          // Fallback for older browsers / non-secure contexts.
+          try {
+            const temp = document.createElement('textarea');
+            temp.value = url;
+            document.body.appendChild(temp);
+            temp.select();
+            document.execCommand('copy');
+            document.body.removeChild(temp);
+            copied = true;
+          } catch (_) { copied = false; }
+        }
+        // Scroll to the section and update the hash for a shareable URL.
+        history.replaceState(null, '', `#${heading.id}`);
+        heading.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        // Brief visual feedback.
+        link.classList.add('copied');
+        link.innerHTML = '<span style="font-size:12px;font-weight:700">✓</span>';
+        setTimeout(() => {
+          link.classList.remove('copied');
+          link.innerHTML = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg>';
+        }, 1500);
+      });
+
+      heading.appendChild(link);
+    });
+  };
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', indexHeadingLinks);
+  } else {
+    indexHeadingLinks();
+  }
+
   // Mobile sidebar toggle
   const sidebar = document.querySelector('.sidebar');
   const content = document.querySelector('.content');

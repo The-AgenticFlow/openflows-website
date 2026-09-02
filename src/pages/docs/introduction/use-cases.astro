@@ -12,7 +12,7 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
     cannot audit. Below are the situations where it shines.
   </p>
 
-  <h2>A company: governed, auditable AI delivery</h2>
+  <h2>An enterprise: governed, auditable AI delivery</h2>
   <p><strong>The need.</strong> You want the speed of AI-generated features, but you must keep model keys private, keep a complete audit trail, enforce security policy, and stay within your own network.</p>
   <p><strong>How OpenFlows helps.</strong></p>
   <ul>
@@ -40,6 +40,15 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
     <li>Completed pull requests are watched through CI and merged when green.</li>
   </ul>
 
+  <h2>A solo developer: a personal AI team for your backlog</h2>
+  <p><strong>The need.</strong> You work alone, and you have a backlog of issues and features but only so many hours in a day. You want an AI team that does the grunt work and returns reviewed, mergeable changes.</p>
+  <p><strong>How OpenFlows helps.</strong></p>
+  <ul>
+    <li>Open an issue and let the team plan, build, test, and adversarially review it while you are away — you come back to a reviewed pull request, not a pile of work.</li>
+    <li>You stay in control: you own the architecture and the final merge decision, and the team only taps you for the calls that genuinely need a person.</li>
+    <li>It runs on top of your own self-hosted Coder, so even as a solo operator your private code never leaves your infrastructure and worker workspaces hold no keys.</li>
+  </ul>
+
   <h2>A stakeholder: transparency from intent to shipped</h2>
   <p><strong>The need.</strong> You want to see progress from "we want this feature" to "it's deployed," without digging through code.</p>
   <p><strong>How OpenFlows helps.</strong></p>
@@ -52,6 +61,14 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
   <h2>Extending the workspace: skills, models, and tools</h2>
   <p><strong>The need.</strong> Different features need different capabilities — a new linting skill, a model better suited to a task, an MCP server for a private tool.</p>
   <p><strong>How OpenFlows helps.</strong> OpenFlows is plug-and-play. You can add a <strong>skill</strong>, register an <strong>MCP server</strong>, or enable a new <strong>model</strong> as configuration only — no engineering work required.</p>
+
+  <Callout type="info" title="Enterprise and solo, on the same tool">
+    OpenFlows is position-led as an <strong>enterprise capability</strong> — self-hosted,
+    governed, auditable, and multi-tenant, so a whole company can run many isolated teams on one
+    Coder deployment — while remaining perfectly usable by a <strong>single developer</strong>. The
+    difference is scale and governance, not the product: the same pipeline runs your backlog,
+    whether you're one person or one thousand.
+  </Callout>
 
   <h2>When might it not be the right fit?</h2>
   <p>

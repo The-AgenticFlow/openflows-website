@@ -164,6 +164,7 @@
   width: 100%;
   max-width: 780px;
   min-width: 0;
+  font-weight: var(--font-weight-medium);
 }
 
 /* Table of Contents (right rail) */
@@ -291,21 +292,57 @@
 
 .content p {
   font-size: 1.125rem;
-  color: var(--color-graphite);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-ink);
   line-height: 1.85;
   margin-bottom: 1.5rem;
 }
 
 .content ul,
 .content ol {
-  color: var(--color-graphite);
+  color: var(--color-ink);
+  font-weight: var(--font-weight-medium);
   line-height: 1.75;
   margin: 0.75rem 0 1rem 1.5rem;
 }
 
 .content li {
   margin-bottom: 0.35rem;
+  font-weight: var(--font-weight-medium);
+  color: var(--color-ink);
 }
+
+/* Shareable heading links */
+.content .heading-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 0.5rem;
+  color: var(--color-graphite);
+  text-decoration: none;
+  opacity: 0;
+  transition: opacity var(--transition-fast), color var(--transition-fast);
+  vertical-align: middle;
+  border: none !important;
+}
+
+.content h1:hover .heading-link,
+.content h2:hover .heading-link,
+.content h3:hover .heading-link,
+.content h4:hover .heading-link,
+.content .heading-link:focus-visible,
+.content .heading-link.copied {
+  opacity: 1;
+}
+
+.content .heading-link:hover {
+  color: var(--color-aubergine);
+}
+
+.content .heading-link.copied {
+  color: var(--color-success);
+}
+
 
 .docContent a {
   color: var(--color-aubergine);
