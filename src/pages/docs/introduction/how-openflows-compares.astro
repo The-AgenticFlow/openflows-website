@@ -3,68 +3,234 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { Callout, DocCards, DocsTable } from '@/molecules/DocComponents/DocComponents';
 
 const COMPARE_ROWS = [
-  ['<strong>OpenFlows</strong>', 'Your own Coder environment', 'An isolated adversarial AI reviewer', 'Best governance and audit; requires self-hosted Coder'],
-  ['<strong>Chat assistant</strong>', 'Your machine / hosted', 'You', 'Fast and familiar, but you do the review and there are no team guardrails'],
-  ['<strong>Hosted autonomous coder</strong>', 'Their cloud', 'Their pipeline', 'Zero-infra convenience, but work, keys, and code leave your control'],
-  ['<strong>Bare orchestrator</strong>', 'Your infrastructure', 'You build it', 'Full control, but you write and maintain the coordination logic'],
-  ['<strong>Just Coder</strong>', 'Your Coder environment', 'You', 'You get workspaces and models, but no autonomous planning/review/merge'],
+  ['<strong>OpenFlows</strong>', 'Your own Coder environment', 'An isolated adversarial AI reviewer', 'Governance and audit with agent&#8209;first throughput', 'Enterprises, teams, and solo devs who want governed, automated delivery on their own infrastructure'],
+  ['<strong>Chat assistant</strong>', 'Your machine / hosted', 'You', 'Fast and familiar, but you do the review and there are no team guardrails', 'Individuals who want help typing, not a team that runs'],
+  ['<strong>Hosted autonomous coder</strong>', 'Their cloud', 'Their pipeline', 'Zero&#8209;infra convenience, but work, keys, and code leave your control', 'Teams that accept running on a third&#8209;party cloud'],
+  ['<strong>Bare orchestrator</strong>', 'Your infrastructure', 'You build it', 'Full control, but you write and maintain the coordination logic', 'Teams that want to build and own their own coordination'],
+  ['<strong>Just Coder</strong>', 'Your Coder environment', 'You', 'You get workspaces and models, but no autonomous planning/review/merge', 'Teams that already run Coder and want to stay human&#8209;driven'],
 ];
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Introduction', href: '/docs/introduction' }, { label: 'How OpenFlows compares' }]}>
   <h1>How OpenFlows compares</h1>
 
-  <p>
-    OpenFlows lives in a specific spot in the AI-coding landscape: it is a <strong>self-hosted,
-    governed, multi-agent team</strong> — not a chat assistant, not a hosted autonomous coder,
-    and not a bare orchestrator. This page contrasts OpenFlows against the common alternatives so
-    you can see when it's the right tool.
+  <p class="compareLead">
+    Every AI tool writes code. They differ in <strong>where the human sits</strong>. OpenFlows is a
+    <strong>self&#8209;hosted, governed, agent&#8209;first team</strong> — not a chat assistant, not a hosted
+    autonomous coder, and not a bare orchestrator. AI writes code faster than any team can consume it, so
+    <strong>review — not writing — is the bottleneck</strong>. The first pass of that review must be done by
+    another agent before a human ever sees anything, and OpenFlows moves humans up the chain to architecture
+    and product ownership. This page compares that to the alternatives.
   </p>
 
-  <h2>The short version</h2>
-  <DocsTable headers={['Approach', 'Where it runs', 'Who reviews the work', 'Key trade-off']} rows={COMPARE_ROWS} />
+  <!-- ═══ Visual 1 — Hero: where humans sit in the pipeline ═══ -->
+  <section class="visual visualHero" aria-labelledby="v1-title">
+    <h2 id="v1-title">Where humans sit in the pipeline</h2>
+    <div class="v1-columns">
+      <figure class="v1-col" role="img" aria-label="Classic assistant pipeline: everything funnels through a human in the Review box with a red bottleneck throttle, and throughput collapses to review speed.">
+        <figcaption class="v1-label off">Anything that writes code for a human to review</figcaption>
+        <div class="pipeline">
+          <div class="stage"><span>Intake</span></div>
+          <div class="stage"><span>Plan</span></div>
+          <div class="stage"><span>Build</span></div>
+          <div class="stage"><span>Test</span></div>
+          <div class="stage stage-bottleneck">
+            <span class="stage-title">Review</span>
+            <span class="bottleneck-mark" aria-hidden="true">⛔</span>
+            <svg class="human" aria-hidden="true" viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-8 1.6-8 4v2h16v-2c0-2.4-4.7-4-8-4Z"/></svg>
+            <em class="stage-note">human</em>
+          </div>
+          <div class="stage"><span>Merge</span></div>
+          <div class="stage"><span>Ship</span></div>
+        </div>
+        <p class="v1-caption">Throughput collapses to review speed.</p>
+      </figure>
 
-  <h2>OpenFlows vs. a coding chat assistant</h2>
-  <p><strong>Both are powered by language models writing code. The difference is process — and whether the human is the bottleneck.</strong></p>
-  <ul>
-    <li><strong>Chat assistants are a tool you operate.</strong> You prompt, you review, you accept. Because the assistant can write code faster than you can review it, <strong>you</strong> become the limiting step — every change funnels through your judgment, so the pipeline slows back down to human speed and costs you hours of accept-or-deny clicking.</li>
-    <li><strong>OpenFlows is a team that operates itself.</strong> It plans before coding, gives every change a <strong>first-pass review by another agent</strong>, and escalates to you only for genuine decisions — so you move up the chain to architecture and product, not down into the review queue.</li>
-  </ul>
-  <p><strong>Best for:</strong> when you want AI to execute end-to-end with guardrails, not just help you type.</p>
+      <figure class="v1-col v1-col-on" role="img" aria-label="OpenFlows pipeline: boxes are labeled with agent roles, a human sits above the flow at architecture and product, and only decisions reach the human at review.">
+        <figcaption class="v1-label on">OpenFlows</figcaption>
+        <div class="v1-human-helm">
+          <span class="helm-chip"><svg class="human" aria-hidden="true" viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><path d="M12 12a4 4 0 1 0 0-8 4 4 0 0 0 0 8Zm0 2c-3.3 0-8 1.6-8 4v2h16v-2c0-2.4-4.7-4-8-4Z"/></svg> Human — architecture &amp; product</span>
+        </div>
+        <div class="pipeline pipeline-on">
+          <div class="stage" style="--role:#69bee2"><span>Intake</span><em class="role-tag">NEXUS</em></div>
+          <div class="stage" style="--role:#8B5CF6"><span>Plan</span><em class="role-tag">FORGE</em></div>
+          <div class="stage" style="--role:#8B5CF6"><span>Build</span><em class="role-tag">FORGE</em></div>
+          <div class="stage" style="--role:#8B5CF6"><span>Test</span><em class="role-tag">FORGE</em></div>
+          <div class="stage stage-review-on" style="--role:#FBBF24">
+            <span class="stage-title">Review</span>
+            <em class="role-tag">SENTINEL</em>
+            <em class="stage-note-on">only decisions reach the human</em>
+          </div>
+          <div class="stage" style="--role:#06B6D4"><span>Merge</span><em class="role-tag">VESSEL</em></div>
+          <div class="stage"><span>Ship</span></div>
+        </div>
+        <p class="v1-caption">Only decisions reach the human.</p>
+      </figure>
+    </div>
+    <div class="v1-banner">Humans move from the bottleneck to the helm.</div>
+  </section>
 
-  <h2>OpenFlows vs. a hosted autonomous coder</h2>
-  <p><strong>Both automate coding end-to-end. The difference is where it runs and who can audit it.</strong></p>
-  <ul>
-    <li><strong>Hosted agents run in their cloud.</strong> Code, prompts, and outputs leave your network; you rely on their security and their review process, and you cannot fully audit.</li>
-    <li><strong>OpenFlows runs in your own Coder control plane.</strong> The model calls go through <strong>your</strong> gateway, every step is <strong>your</strong> auditable record, and worker workspaces hold <strong>no keys</strong> by design.</li>
-  </ul>
-  <p><strong>Best for:</strong> regulated companies and anyone who cannot or will not send code to a third-party cloud.</p>
+  <!-- ═══ Visual 2 — Position map (2×2) ═══ -->
+  <section class="visual" aria-labelledby="v2-title">
+    <h2 id="v2-title">The position map</h2>
+      <figure class="posmap-fig" role="img" aria-label="2x2 map. Y axis human-gated below vs agent-first above. X axis your infrastructure on the left vs their cloud on the right. OpenFlows sits in the upper-left (your infrastructure and agent-first) and is highlighted as the only one offering both; a bare orchestrator sits beside it in grey; a chat assistant sits lower-left (your infrastructure, human-gated); a hosted autonomous coder sits lower-right (their cloud).">
+      <div class="posmap">
+        <div class="posmap-axis axis-y"><span>human&#8209;gated</span><span class="axis-mid">&#10625;</span><span>agent&#8209;first</span></div>
+        <div class="posmap-grid">
+          <div class="quadrant">
+            <div class="pos-dot dot-openflows" data-label="OpenFlows">
+              <span class="dot-label">OpenFlows</span>
+            </div>
+            <div class="pos-dot dot-bare" data-label="Bare orchestrator">
+              <span class="dot-label">Bare orchestrator</span>
+            </div>
+            <span class="quad-note">your infra, agent&#8209;first <span class="muted">bare = you build it</span></span>
+          </div>
+          <div class="quadrant quadrant-empty">
+            <span class="quad-note-only">their cloud, agent&#8209;first</span>
+          </div>
+          <div class="quadrant">
+            <div class="pos-dot dot-chat" data-label="Chat assistant"><span class="dot-label">Chat assistant</span></div>
+            <span class="quad-note">your infra, human&#8209;gated</span>
+          </div>
+          <div class="quadrant">
+            <div class="pos-dot dot-hosted" data-label="Hosted autonomous coder"><span class="dot-label">Hosted autonomous coder</span></div>
+            <span class="quad-note">their cloud, human&#8209;gated</span>
+          </div>
+        </div>
+        <div class="posmap-axis axis-x">◀ &nbsp;your infrastructure<span class="axis-mid">&#8226;</span>their cloud&nbsp; ▶</div>
+      </div>
+      <figcaption class="cmp-caption">
+        OpenFlows is the only one that is <strong>both on your infrastructure and agent&#8209;first</strong> —
+        you get governance and throughput.
+      </figcaption>
+    </figure>
 
-  <h2>OpenFlows vs. a bare orchestrator</h2>
-  <p><strong>Both automate a multi-step agent pipeline. The difference is how much you build and maintain.</strong></p>
-  <ul>
-    <li><strong>A bare orchestrator</strong> gives you a flow that you author and debug yourself — routing, retries, state, and recovery are all your responsibility.</li>
-    <li><strong>OpenFlows</strong> ships the coordination as a product: a typed shared store, a gated planning cycle, adversarial review, self-healing reconciliation, and human escalation — all already built.</li>
-  </ul>
-  <p><strong>Best for:</strong> teams that want the engineering of the coordination handled, not reinvented.</p>
+    <h3>The short version</h3>
+    <DocsTable headers={['Approach', 'Where it runs', 'Who reviews the work', 'Key trade-off', 'Recommended when']} rows={COMPARE_ROWS} />
+  </section>
 
-  <h2>OpenFlows vs. Coder alone</h2>
-  <p><strong>Coder is the substrate; OpenFlows is what runs on it.</strong></p>
-  <ul>
-    <li><strong>Coder alone</strong> gives you governed, disposable workspaces and a model gateway — an excellent place for humans to work.</li>
-    <li><strong>OpenFlows adds the team.</strong> It provisions those workspaces, assigns one agent per ticket, coordinates their hand-offs, and drives the work to a reviewed merge.</li>
-  </ul>
-  <p>
-    In OpenFlows' own framing: <strong>Coder governs <em>where</em> agents run; OpenFlows governs
-    <em>how</em> they coordinate.</strong> This separation is the whole architecture.
-  </p>
+  <!-- ═══ Detailed vs. rows ═══ -->
+  <section class="visual" aria-labelledby="vs-title">
+    <h2 id="vs-title">The trade-offs, one by one</h2>
 
-  <h2>The trade-offs to weigh</h2>
-  <ul>
-    <li><strong>OpenFlows requires Coder.</strong> It is not a standalone tool; it rides on your self-hosted Coder environment. If you don't have (or don't want) that infrastructure, it isn't the right starting point.</li>
-    <li><strong>It favors governance over raw speed.</strong> The planning gate and adversarial review add steps. That is the point — they are the source of the audit trail and the quality ceiling — but for trivial, throwaway changes they are more ceremony than you might want.</li>
-    <li><strong>Setup is non-trivial.</strong> Installing it means standing up the control plane, provisioning a tenant, and linking GitHub OAuth.</li>
-  </ul>
+    <div class="vs-block">
+      <h3>OpenFlows vs. a coding chat assistant</h3>
+      <p><strong>Both are powered by language models writing code. The difference is process — and whether the human is the bottleneck.</strong></p>
+      <ul>
+        <li><strong>Chat assistants are a tool you operate.</strong> You prompt, you review, you accept. Because the assistant can write code faster than you can review it, <strong>you</strong> become the limiting step — every change funnels through your judgment, so the pipeline slows back down to human speed and costs you hours of accept&#8209;or&#8209;deny clicking.</li>
+        <li><strong>OpenFlows is a team that operates itself.</strong> It plans before coding, gives every change a <strong>first&#8209;pass review by another agent</strong>, and escalates to you only for genuine decisions — so you move up the chain to architecture and product, not down into the review queue.</li>
+      </ul>
+      <p><strong>Best for:</strong> when you want AI to execute end&#8209;to&#8209;end with guardrails, not just help you type.</p>
+    </div>
+
+    <div class="vs-block">
+      <h3>OpenFlows vs. a hosted autonomous coder</h3>
+      <p><strong>Both automate coding end&#8209;to&#8209;end. The difference is where it runs and who can audit it.</strong></p>
+      <ul>
+        <li><strong>Hosted agents run in their cloud.</strong> Code, prompts, and outputs leave your network; you rely on their security and their review process, and you cannot fully audit.</li>
+        <li><strong>OpenFlows runs in your own Coder control plane.</strong> The model calls go through <strong>your</strong> gateway, every step is <strong>your</strong> auditable record, and worker workspaces hold <strong>no keys</strong> by design.</li>
+      </ul>
+      <p><strong>Best for:</strong> regulated companies and anyone who cannot or will not send code to a third&#8209;party cloud.</p>
+    </div>
+
+    <div class="vs-block">
+      <h3>OpenFlows vs. a bare orchestrator</h3>
+      <p><strong>Both automate a multi&#8209;step agent pipeline. The difference is how much you build and maintain.</strong></p>
+      <ul>
+        <li><strong>A bare orchestrator</strong> gives you a flow that you author and debug yourself — routing, retries, state, and recovery are all your responsibility.</li>
+        <li><strong>OpenFlows</strong> ships the coordination as a product: a typed shared store, a gated planning cycle, adversarial review, self&#8209;healing reconciliation, and human escalation — all already built.</li>
+      </ul>
+      <p><strong>Best for:</strong> teams that want the engineering of the coordination handled, not reinvented.</p>
+    </div>
+
+    <div class="vs-block">
+      <h3>OpenFlows vs. Coder alone</h3>
+      <p><strong>Coder is the substrate; OpenFlows is what runs on it.</strong></p>
+      <ul>
+        <li><strong>Coder alone</strong> gives you governed, disposable workspaces and a model gateway — an excellent place for humans to work.</li>
+        <li><strong>OpenFlows adds the team.</strong> It provisions those workspaces, assigns one agent per ticket, coordinates their hand&#8209;offs, and drives the work to a reviewed merge.</li>
+      </ul>
+      <p>
+        In OpenFlows' own framing: <strong>Coder governs <em>where</em> agents run; OpenFlows governs
+        <em>how</em> they coordinate.</strong> This separation is the whole architecture.
+      </p>
+    </div>
+  </section>
+
+  <!-- ═══ Visual 3 — Where the time goes ═══ -->
+  <section class="visual" aria-labelledby="v3-title">
+    <h2 id="v3-title">Where the time goes</h2>
+    <figure class="timebar-fig" role="img" aria-label="Two stacked bars. The classic assistant workflow is mostly Accept/Deny per change with a small architecture-thinking sliver; OpenFlows is mostly architecture and product decisions with a small review-of-outcomes segment, labeled agent-run pipeline.">
+      <div class="timebar">
+        <div class="timebar-row">
+          <span class="timebar-name">Classic assistant workflow</span>
+          <div class="timebar-track">
+            <div class="seg seg-accept" style="--w:72%"><span>Accept / Deny per change</span></div>
+            <div class="seg seg-human" style="--w:28%"><span>Architecture thinking</span></div>
+          </div>
+        </div>
+        <div class="timebar-row timebar-on">
+          <span class="timebar-name">OpenFlows</span>
+          <div class="timebar-track">
+            <div class="seg seg-agent" style="--w:82%"><span>Architecture &amp; product decisions</span></div>
+            <div class="seg seg-outcome" style="--w:18%"><span>Review of outcomes only</span></div>
+          </div>
+          <em class="timebar-agent-label">agent&#8209;run pipeline</em>
+        </div>
+      </div>
+      <figcaption class="cmp-caption">
+        OpenFlows reallocates the boring per&#8209;change decisioning back to an automated pipeline — and gives
+        it back to product and architecture.
+      </figcaption>
+    </figure>
+  </section>
+
+  <!-- ═══ Visual 4 — Your chain vs. OpenFlows chain ═══ -->
+  <section class="visual" aria-labelledby="v4-title">
+    <h2 id="v4-title">Your chain vs. the OpenFlows chain</h2>
+    <div class="chain-grid">
+      <figure class="chain-col chain-off" role="img" aria-label="Without OpenFlows, one ticket costs human hours: the issue, every step, the pull request, and the merge are each reviewed by a human, adding human hours per ticket.">
+        <figcaption class="chain-h">Without OpenFlows</figcaption>
+        <ol class="chain">
+          <li>Issue</li>
+          <li>Human reviews each step</li>
+          <li>Code</li>
+          <li>Human reviews PR</li>
+          <li>Human merges</li>
+        </ol>
+        <p class="chain-total">+ human hours per ticket</p>
+      </figure>
+      <figure class="chain-col chain-on" role="img" aria-label="With OpenFlows, one ticket: the issue, agent plan, agent first-pass review, agent build and tests, agent adversarial review, agent merge — and the human steps in at decisions only, freeing engineer time.">
+        <figcaption class="chain-h">With OpenFlows</figcaption>
+        <ol class="chain">
+          <li>Issue</li>
+          <li>Agent plan</li>
+          <li>Agent first&#8209;pass review</li>
+          <li>Agent build + tests</li>
+          <li>Agent adversarial review</li>
+          <li>Agent merge</li>
+          <li>Human at <strong>decisions only</strong></li>
+        </ol>
+        <p class="chain-total on">engineer time freed</p>
+      </figure>
+    </div>
+  </section>
+
+  <!-- ═══ Honest trade-offs ═══ -->
+  <section class="tradeoffs">
+    <h2>The trade-offs to weigh</h2>
+    <ul>
+      <li><strong>OpenFlows requires Coder.</strong> It is not a standalone tool; it rides on your self&#8209;hosted Coder environment. If you don't have (or don't want) that infrastructure, it isn't the right starting point.</li>
+      <li><strong>It favors governance over raw speed.</strong> The planning gate and adversarial review add steps. That is the point — they are the source of the audit trail and the quality ceiling — but for trivial, throwaway changes they are more ceremony than you might want.</li>
+      <li><strong>Setup is non&#8209;trivial.</strong> Installing it means standing up the control plane, provisioning a tenant, and linking GitHub OAuth.</li>
+    </ul>
+    <p class="humans-not-removed">
+      <strong>Humans are moved, not removed.</strong> OpenFlows still hands you the architecture and the
+      final decision — you own the product, the direction, and what ships. What it removes is the per&#8209;change
+      accept/deny bottleneck, not the engineer.
+    </p>
+  </section>
 
   <h2>Where to go next</h2>
   <DocCards cards={[
@@ -72,3 +238,397 @@ const COMPARE_ROWS = [
     { icon: '🎯', title: 'Use cases', desc: 'The situations where OpenFlows fits best.', href: '/docs/introduction/use-cases' },
   ]} />
 </DocsLayout>
+
+<style>
+  .compareLead {
+    font-size: 1.125rem;
+    line-height: 1.85;
+    color: var(--color-ink);
+    margin-bottom: 2rem;
+    max-width: 72ch;
+  }
+
+  .visual {
+    margin: 2.5rem 0;
+  }
+  .visual h2 {
+    margin-top: 0;
+  }
+
+  /* ── Visual 1: pipelines ── */
+  .v1-columns {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin: 1rem 0 1.25rem;
+  }
+  .v1-col {
+    margin: 0;
+    padding: 1rem 1rem 1.25rem;
+    border: 1px solid var(--color-driftwood);
+    border-radius: var(--radius-md);
+    background: var(--color-bone);
+  }
+  .v1-label {
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    margin-bottom: 0.75rem;
+    color: var(--color-graphite);
+  }
+  .v1-label.on { color: var(--color-success); }
+  .v1-col-on { border-color: var(--color-accent-border); box-shadow: var(--shadow-sm); }
+
+  .v1-human-helm {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 0.5rem;
+  }
+  .helm-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: var(--radius-full);
+    background: var(--color-accent-muted);
+    color: var(--color-accent);
+    font-size: 0.8rem;
+    font-weight: var(--font-weight-semibold);
+    border: 1px solid var(--color-accent-border);
+  }
+  .helm-chip .human { color: var(--color-accent); }
+
+  .pipeline {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+  }
+  .stage {
+    flex: 1 1 90px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.15rem;
+    padding: 0.5rem 0.3rem;
+    border-radius: var(--radius-sm);
+    background: var(--color-fog);
+    border: 1px solid var(--color-driftwood);
+    font-size: 0.8rem;
+    color: var(--color-ink);
+    font-weight: var(--font-weight-semibold);
+    min-height: 52px;
+    position: relative;
+  }
+  .stage-bottleneck {
+    background: var(--color-destructive-bg);
+    border-color: var(--color-destructive);
+  }
+  .stage-title { display: block; }
+  .bottleneck-mark {
+    font-size: 1.1rem;
+    line-height: 1;
+    margin-top: 0.1rem;
+  }
+  .stage .human { color: var(--color-destructive); }
+  .stage-note {
+    font-style: normal;
+    font-size: 0.66rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-destructive);
+  }
+  .role-tag {
+    font-style: normal;
+    font-size: 0.62rem;
+    font-weight: var(--font-weight-bold);
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: var(--role, var(--color-graphite));
+    background: color-mix(in srgb, var(--role, #ccc) 14%, white);
+    padding: 0.05rem 0.35rem;
+    border-radius: var(--radius-sm);
+  }
+  .stage-review-on .role-tag {
+    color: #fff;
+    background: var(--role, var(--color-agent-sentinel));
+  }
+  .stage-note-on {
+    font-style: normal;
+    font-size: 0.62rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-success);
+    text-align: center;
+  }
+
+  .v1-caption {
+    margin: 0.6rem 0 0;
+    font-size: 0.85rem;
+    font-weight: var(--font-weight-medium);
+    color: var(--color-graphite);
+    text-align: center;
+  }
+  .v1-banner {
+    margin-top: 1rem;
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-md);
+    background: var(--color-accent);
+    color: #fff;
+    text-align: center;
+    font-weight: var(--font-weight-bold);
+    font-size: 1.05rem;
+  }
+
+  /* ── Visual 2: position map ── */
+  .posmap-fig { margin: 0; }
+  .posmap {
+    display: grid;
+    grid-template-columns: 1.9rem 1fr;
+    grid-template-rows: 1fr 1.9rem;
+    margin: 1rem 0 0.5rem;
+  }
+  .posmap-axis {
+    font-size: 0.68rem;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-graphite);
+    display: flex;
+    align-items: center;
+  }
+  .axis-y {
+    writing-mode: vertical-rl;
+    transform: rotate(180deg);
+    justify-content: center;
+    gap: 0.4rem;
+    grid-row: 1;
+    grid-column: 1;
+  }
+  .axis-y .axis-mid { color: var(--color-accent); font-size: 0.8rem; }
+  .posmap-grid {
+    grid-row: 1;
+    grid-column: 2;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    border: 1px solid var(--color-driftwood);
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    min-height: 300px;
+  }
+  .quadrant {
+    position: relative;
+    background: var(--color-bone);
+    border-right: 1px dashed var(--color-driftwood);
+    border-bottom: 1px dashed var(--color-driftwood);
+    padding: 0.9rem;
+    min-height: 150px;
+  }
+  .quadrant-empty { background: color-mix(in srgb, var(--color-parchment-canvas) 60%, white); }
+  .quadrant:nth-child(2) { border-right: none; }
+  .quadrant:nth-child(3) { border-bottom: none; }
+  .quadrant:nth-child(4) { border-right: none; border-bottom: none; }
+
+  .quad-note {
+    position: absolute;
+    left: 0.9rem;
+    right: 0.9rem;
+    bottom: 0.7rem;
+    font-size: 0.68rem;
+    color: var(--color-graphite);
+    line-height: 1.35;
+  }
+  .quad-note .muted { color: var(--color-text-muted); }
+  .quad-note-only {
+    display: block;
+    padding: 0.5rem 0.9rem;
+    font-size: 0.68rem;
+    color: var(--color-text-muted);
+    line-height: 1.4;
+  }
+
+  .pos-dot {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.15rem 0.5rem;
+    border-radius: var(--radius-full);
+    font-size: 0.72rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-ink);
+    background: var(--color-fog);
+    border: 1px solid var(--color-driftwood);
+    margin: 0.1rem 0.2rem;
+  }
+  .dot-label {
+    display: inline;
+    white-space: nowrap;
+  }
+  .dot-openflows {
+    background: var(--color-accent);
+    color: #fff;
+    border-color: var(--color-accent);
+    box-shadow: 0 0 0 3px var(--color-accent-muted);
+    font-weight: var(--font-weight-bold);
+  }
+  .dot-bare { opacity: 0.55; }
+  .dot-chat { opacity: 0.8; }
+  .dot-hosted { opacity: 0.8; }
+
+  .axis-x {
+    grid-row: 2;
+    grid-column: 1 / span 2;
+    justify-content: center;
+    gap: 0.4rem;
+    margin-top: 0.4rem;
+  }
+  .axis-mid { color: var(--color-accent); }
+
+  .cmp-caption {
+    margin: 0.75rem 0 0;
+    font-size: 0.95rem;
+    color: var(--color-ink);
+    line-height: 1.7;
+  }
+
+  /* ── Visual 3: time bars ── */
+  .timebar-fig { margin: 0; }
+  .timebar { margin: 1rem 0 0.5rem; }
+  .timebar-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+  }
+  .timebar-name {
+    flex: 0 0 170px;
+    font-size: 0.78rem;
+    font-weight: var(--font-weight-semibold);
+    color: var(--color-ink);
+  }
+  .timebar-track {
+    flex: 1 1 260px;
+    display: flex;
+    height: 46px;
+    border-radius: var(--radius-md);
+    overflow: hidden;
+    border: 1px solid var(--color-driftwood);
+  }
+  .seg {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.25rem 0.4rem;
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-bold);
+    color: #fff;
+    text-align: center;
+    line-height: 1.2;
+    width: var(--w);
+  }
+  .seg-accept { background: var(--color-destructive); }
+  .seg-human { background: var(--color-graphite); }
+  .seg-agent { background: var(--color-success); }
+  .seg-outcome { background: var(--color-aubergine-deep); }
+  .timebar-on .timebar-name { color: var(--color-success); }
+  .timebar-agent-label {
+    flex: 0 0 auto;
+    font-style: normal;
+    font-size: 0.66rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--color-success);
+    font-weight: var(--font-weight-semibold);
+  }
+
+  /* ── Visual 4: chains ── */
+  .chain-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1.25rem;
+    margin: 1rem 0 0.5rem;
+  }
+  .chain-col { margin: 0; }
+  .chain-h {
+    font-size: 0.7rem;
+    font-weight: var(--font-weight-semibold);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--color-graphite);
+    margin-bottom: 0.6rem;
+  }
+  .chain-on .chain-h { color: var(--color-success); }
+  .chain {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    counter-reset: chain;
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+  }
+  .chain li {
+    counter-increment: chain;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0.55rem 0.9rem;
+    background: var(--color-bone);
+    border: 1px solid var(--color-driftwood);
+    border-radius: var(--radius-sm);
+    font-size: 0.88rem;
+    color: var(--color-ink);
+    font-weight: var(--font-weight-medium);
+    margin: 0;
+  }
+  .chain li::before {
+    content: counter(chain);
+    flex: 0 0 auto;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--color-fog);
+    color: var(--color-graphite);
+    font-size: 0.72rem;
+    font-weight: var(--font-weight-bold);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .chain-off li:nth-child(2)::before,
+  .chain-off li:nth-child(4)::before,
+  .chain-off li:nth-child(5)::before {
+    background: var(--color-destructive-bg);
+    color: var(--color-destructive);
+  }
+  .chain-on li::before { background: var(--color-success-bg); color: var(--color-success); }
+  .chain-on li:nth-child(7)::before { background: var(--color-accent); color: #fff; }
+
+  .chain-total {
+    margin: 0.75rem 0 0;
+    font-size: 0.9rem;
+    font-weight: var(--font-weight-bold);
+    color: var(--color-destructive);
+  }
+  .chain-total.on { color: var(--color-success); }
+
+  /* Trade-offs + humans moved */
+  .tradeoffs ul { margin-bottom: 1.25rem; }
+  .humans-not-removed {
+    padding: 0.9rem 1.1rem;
+    border-left: 3px solid var(--color-accent);
+    background: var(--color-accent-muted);
+    border-radius: var(--radius-sm);
+    font-size: 0.98rem;
+    color: var(--color-ink);
+    line-height: 1.75;
+  }
+
+  @media (max-width: 760px) {
+    .v1-columns { grid-template-columns: 1fr; }
+    .chain-grid { grid-template-columns: 1fr; }
+    .timebar-name { flex-basis: 100%; }
+    .posmap-grid { min-height: 240px; }
+  }
+</style>
