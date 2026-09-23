@@ -17,7 +17,7 @@ excerpt: >-
 author_name: Christian Yemele
 cover_image_url: https://chatgpt.com/backend-api/estuary/content?id=file_000000001ab4820eb93ba7fe51018c7f&ts=497271&p=fs&cid=1&sig=b6e2a8b65220bf590c1880816086a781105181f2357e7ba6e9b9e30085ce65d0&v=0
 category_id: Architecture
-status: draft
+status: published
 published_at: 2026-09-23T16:24:00.000+01:00
 is_featured: true
 read_time_minutes: 4
