@@ -15,7 +15,7 @@ excerpt: >-
 
   disposable seat you leave behind.
 author_name: Christian Yemele
-cover_image_url: blob:https://openflows.dev/a889a9b6-d430-4330-bf15-a1dfa753ec22
+cover_image_url: https://openflows.dev/a889a9b6-d430-4330-bf15-a1dfa753ec22
 category_id: Architecture
 status: published
 published_at: 2026-09-23T16:24:00.000+01:00
