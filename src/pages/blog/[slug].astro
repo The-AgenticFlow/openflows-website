@@ -4,8 +4,16 @@ import { getCollection, render } from 'astro:content';
 
 export async function getStaticPaths() {
   const blogs = await getCollection('blogs');
+  const toSafeSlug = (rawSlug) => rawSlug
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+
   return blogs.map((blog) => ({
-    params: { slug: (blog.data.slug || blog.slug).trim() },
+    params: { slug: toSafeSlug(blog.data.slug || blog.slug) },
     props: { blog },
   }));
 }

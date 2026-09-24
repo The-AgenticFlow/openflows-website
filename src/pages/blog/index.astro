@@ -16,7 +16,18 @@ const blogs = allBlogs
 const featured = blogs.find(b => b.data.is_featured) || blogs[0];
 const rest = blogs.filter(b => b.id !== featured?.id);
 
-const getBlogHref = (blog) => `/blog/${(blog.data.slug || blog.slug).trim()}`;
+const getSafeBlogSlug = (blog) => {
+  const rawSlug = blog.data.slug || blog.slug;
+  return rawSlug
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
+const getBlogHref = (blog) => `/blog/${getSafeBlogSlug(blog)}`;
 
 const formatDate = (d) => {
   if (!d) return '';
