@@ -34,46 +34,48 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
   description={blog.data.meta_description || blog.data.excerpt}
   ogImage={blog.data.cover_image_url}
 >
-  <article style="max-width: 900px; margin: 0 auto; padding: calc(3rem + var(--nav-height)) 2rem 3rem;">
-    <header style="margin-bottom: 2rem;">
-      <a href="/blog" style="font-size: 0.875rem; color: var(--color-graphite); display: inline-block; margin-bottom: 1rem;">← Back to Blog</a>
-      <h1 style="font-size: 2.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem;">{blog.data.title}</h1>
-      <p style="font-size: 1.125rem; color: var(--color-graphite); margin-bottom: 1.5rem;">{blog.data.excerpt}</p>
-      <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--color-graphite);">
-        {authors.map((author, i) => (
-          <span style="display: flex; align-items: center; gap: 0.5rem;">
-            {author.avatar_url && <img src={author.avatar_url} alt={author.name} style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" />}
-            <span>{author.name}</span>
-          </span>
-        ))}
-        <span>·</span>
-        <span>{formatDate(blog.data.published_at)}</span>
-        <span>·</span>
-        <span>{readTime} min read</span>
-      </div>
-    </header>
+  <main class="blog-post-page">
+    <article style="max-width: 900px; margin: 0 auto; padding: calc(3rem + var(--nav-height)) 2rem 3rem;">
+      <header style="margin-bottom: 2rem; text-align: left;">
+        <a href="/blog" style="font-size: 0.875rem; color: var(--color-graphite); display: inline-block; margin-bottom: 1rem;">← Back to Blog</a>
+        <h1 style="font-size: 2.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem;">{blog.data.title}</h1>
+        <p style="font-size: 1.125rem; color: var(--color-graphite); margin-bottom: 1.5rem;">{blog.data.excerpt}</p>
+        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--color-graphite);">
+          {authors.map((author, i) => (
+            <span style="display: flex; align-items: center; gap: 0.5rem;">
+              {author.avatar_url && <img src={author.avatar_url} alt={author.name} style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" />}
+              <span>{author.name}</span>
+            </span>
+          ))}
+          <span>·</span>
+          <span>{formatDate(blog.data.published_at)}</span>
+          <span>·</span>
+          <span>{readTime} min read</span>
+        </div>
+      </header>
 
-    {blog.data.cover_image_url && (
-      <div style="margin-bottom: 2rem; border-radius: var(--radius-lg); overflow: hidden;">
-        <img src={blog.data.cover_image_url} alt={blog.data.cover_image_alt || blog.data.title} style="width: 100%; height: auto; display: block;" />
-      </div>
-    )}
+      {blog.data.cover_image_url && (
+        <div style="margin-bottom: 2rem; border-radius: var(--radius-lg); overflow: hidden;">
+          <img src={blog.data.cover_image_url} alt={blog.data.cover_image_alt || blog.data.title} style="width: 100%; height: auto; display: block;" />
+        </div>
+      )}
 
-    <div class="blog-content" style="font-size: 1.125rem; line-height: 1.8; color: var(--color-ink);">
-      <Content />
-    </div>
-    
-    <!-- Giscus Comments -->
-    <div id="comments" style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-fog);">
-      <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Comments</h2>
-      <div style="background: var(--color-bone); padding: 1.5rem; border-radius: var(--radius-md);">
-        <p style="color: var(--color-graphite); margin-bottom: 1rem; font-size: 0.875rem;">
-          Questions, feedback, or thoughts? Comment below and join the discussion on GitHub.
-        </p>
-        <div id="giscus-container" style="min-height: 200px;"></div>
+      <div class="blog-content">
+        <Content />
       </div>
-    </div>
-  </article>
+
+      <!-- Giscus Comments -->
+      <div id="comments" style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-fog);">
+        <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Comments</h2>
+        <div style="background: var(--color-bone); padding: 1.5rem; border-radius: var(--radius-md);">
+          <p style="color: var(--color-graphite); margin-bottom: 1rem; font-size: 0.875rem;">
+            Questions, feedback, or thoughts? Comment below and join the discussion on GitHub.
+          </p>
+          <div id="giscus-container" style="min-height: 200px;"></div>
+        </div>
+      </div>
+    </article>
+  </main>
   
   <script>
     // Initialize Giscus
@@ -106,26 +108,64 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
 </BaseLayout>
 
 <style>
+  .blog-post-page {
+    min-height: 100vh;
+    background: #fff;
+  }
+
+  .blog-content {
+    max-width: 680px;
+    margin-inline: auto;
+    color: #242424;
+    font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.56;
+    letter-spacing: 0;
+    text-align: left;
+    text-rendering: optimizelegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
   .blog-content :global(h2) {
+    color: #242424;
+    font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
     font-size: 1.5rem;
     font-weight: 700;
-    margin: 2rem 0 1rem;
+    line-height: 1.25;
+    margin: 2.2em 0 0.7em;
+    text-align: left;
   }
   .blog-content :global(h3) {
+    color: #242424;
+    font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
     font-size: 1.25rem;
-    font-weight: 600;
-    margin: 1.5rem 0 0.75rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 1.8em 0 0.65em;
+    text-align: left;
   }
   .blog-content :global(p) {
-    margin-bottom: 1rem;
-    line-height: 1.7;
+    color: #242424;
+    font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 18px;
+    font-weight: 400;
+    line-height: 1.56;
+    margin: 1.56em 0 -0.46em;
+    text-align: left;
   }
   .blog-content :global(ul), .blog-content :global(ol) {
-    margin-bottom: 1rem;
+    color: #242424;
+    font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 18px;
+    line-height: 1.56;
+    margin: 1.56em 0 -0.46em;
     padding-left: 1.5rem;
+    text-align: left;
   }
   .blog-content :global(li) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75em;
+    text-align: left;
   }
   .blog-content :global(pre) {
     background: var(--color-ink);
@@ -146,17 +186,35 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
   }
   .blog-content :global(blockquote) {
     border-left: 3px solid var(--color-aubergine);
+    color: #242424;
+    font-style: italic;
+    margin: 1.8em 0 0.4em;
     padding-left: 1rem;
-    margin: 1rem 0;
-    color: var(--color-graphite);
+    text-align: left;
   }
   .blog-content :global(img) {
     max-width: 100%;
     border-radius: var(--radius-md);
-    margin: 1rem 0;
+    display: block;
+    margin: 2rem auto;
   }
   .blog-content :global(a) {
     color: var(--color-aubergine);
     text-decoration: underline;
+  }
+  .blog-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 2rem 0;
+    text-align: left;
+  }
+  .blog-content :global(th), .blog-content :global(td) {
+    border: 1px solid var(--color-driftwood);
+    padding: 0.75rem;
+    text-align: left;
+    vertical-align: top;
   }
 </style>
