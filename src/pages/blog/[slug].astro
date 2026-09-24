@@ -35,8 +35,8 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
   ogImage={blog.data.cover_image_url}
 >
   <main class="blog-post-page">
-    <article style="max-width: 900px; margin: 0 auto; padding: calc(3rem + var(--nav-height)) 2rem 3rem;">
-      <header style="margin-bottom: 2rem; text-align: left;">
+    <article class="blog-post-article">
+      <header class="blog-post-header">
         <a href="/blog" style="font-size: 0.875rem; color: var(--color-graphite); display: inline-block; margin-bottom: 1rem;">← Back to Blog</a>
         <h1 style="font-size: 2.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 1rem;">{blog.data.title}</h1>
         <p style="font-size: 1.125rem; color: var(--color-graphite); margin-bottom: 1.5rem;">{blog.data.excerpt}</p>
@@ -55,8 +55,8 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
       </header>
 
       {blog.data.cover_image_url && (
-        <div style="margin-bottom: 2rem; border-radius: var(--radius-lg); overflow: hidden;">
-          <img src={blog.data.cover_image_url} alt={blog.data.cover_image_alt || blog.data.title} style="width: 100%; height: auto; display: block;" />
+        <div class="blog-cover-image">
+          <img src={blog.data.cover_image_url} alt={blog.data.cover_image_alt || blog.data.title} />
         </div>
       )}
 
@@ -65,7 +65,7 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
       </div>
 
       <!-- Giscus Comments -->
-      <div id="comments" style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-fog);">
+      <div id="comments" class="blog-comments">
         <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Comments</h2>
         <div style="background: var(--color-bone); padding: 1.5rem; border-radius: var(--radius-md);">
           <p style="color: var(--color-graphite); margin-bottom: 1rem; font-size: 0.875rem;">
@@ -108,9 +108,44 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
 </BaseLayout>
 
 <style>
+  :global(html),
+  :global(body) {
+    background: #ffffff;
+  }
+
   .blog-post-page {
     min-height: 100vh;
-    background: #fff;
+    background: #ffffff;
+  }
+
+  .blog-post-article {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: calc(3rem + var(--nav-height)) 2rem 3rem;
+  }
+
+  .blog-post-header,
+  .blog-cover-image,
+  .blog-comments {
+    max-width: 680px;
+    margin-inline: auto;
+  }
+
+  .blog-post-header {
+    margin-bottom: 2rem;
+    text-align: left;
+  }
+
+  .blog-cover-image {
+    margin-bottom: 2rem;
+    border-radius: var(--radius-lg);
+    overflow: hidden;
+  }
+
+  .blog-cover-image img {
+    display: block;
+    width: 100%;
+    height: auto;
   }
 
   .blog-content {
@@ -118,9 +153,9 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
     margin-inline: auto;
     color: #242424;
     font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 400;
-    line-height: 1.56;
+    line-height: 31.2px;
     letter-spacing: 0;
     text-align: left;
     text-rendering: optimizelegibility;
@@ -130,7 +165,7 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
   .blog-content :global(h2) {
     color: #242424;
     font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 1.5rem;
+    font-size: 1.75rem;
     font-weight: 700;
     line-height: 1.25;
     margin: 2.2em 0 0.7em;
@@ -139,7 +174,7 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
   .blog-content :global(h3) {
     color: #242424;
     font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 1.25rem;
+    font-size: 1.5rem;
     font-weight: 700;
     line-height: 1.3;
     margin: 1.8em 0 0.65em;
@@ -148,17 +183,17 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
   .blog-content :global(p) {
     color: #242424;
     font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 18px;
+    font-size: 20px;
     font-weight: 400;
-    line-height: 1.56;
+    line-height: 31.2px;
     margin: 1.56em 0 -0.46em;
     text-align: left;
   }
   .blog-content :global(ul), .blog-content :global(ol) {
     color: #242424;
     font-family: source-serif-pro, Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 18px;
-    line-height: 1.56;
+    font-size: 20px;
+    line-height: 31.2px;
     margin: 1.56em 0 -0.46em;
     padding-left: 1.5rem;
     text-align: left;
@@ -216,5 +251,11 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
     padding: 0.75rem;
     text-align: left;
     vertical-align: top;
+  }
+
+  .blog-comments {
+    margin-top: 4rem;
+    padding-top: 2rem;
+    border-top: 1px solid var(--color-fog);
   }
 </style>
