@@ -16,6 +16,19 @@ const blogs = allBlogs
 const featured = blogs.find(b => b.data.is_featured) || blogs[0];
 const rest = blogs.filter(b => b.id !== featured?.id);
 
+const getSafeBlogSlug = (blog) => {
+  const rawSlug = blog.data.slug || blog.slug;
+  return rawSlug
+    .toString()
+    .trim()
+    .toLowerCase()
+    .replace(/&/g, ' and ')
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-+|-+$/g, '');
+};
+
+const getBlogHref = (blog) => `/blog/${getSafeBlogSlug(blog)}`;
+
 const formatDate = (d) => {
   if (!d) return '';
   return new Date(d).toLocaleDateString('en-US', {
@@ -37,10 +50,10 @@ const formatDate = (d) => {
           {featured.data.is_featured && <span style="font-size: 0.75rem; background: var(--color-aubergine); color: white; padding: 0.125rem 0.5rem; border-radius: 99px;">Featured</span>}
         </div>
         <h2 style="font-size: 1.75rem; margin-bottom: 1rem;">
-          <a href={`/blog/${featured.data.slug}`} style="color: var(--color-ink);">{featured.data.title}</a>
+          <a href={getBlogHref(featured)} style="color: var(--color-ink);">{featured.data.title}</a>
         </h2>
         <p style="color: var(--color-graphite); margin-bottom: 1rem;">{featured.data.excerpt}</p>
-        <a href={`/blog/${featured.data.slug}`} style="font-weight: 600;">Read more →</a>
+        <a href={getBlogHref(featured)} style="font-weight: 600;">Read more →</a>
       </article>
     )}
     
@@ -49,7 +62,7 @@ const formatDate = (d) => {
         <article style="padding: 1.5rem; background: var(--color-bone); border-radius: var(--radius-md);">
           <span style="font-size: 0.75rem; color: var(--color-graphite);">{formatDate(blog.data.published_at)}</span>
           <h3 style="font-size: 1.25rem; margin: 0.5rem 0;">
-            <a href={`/blog/${blog.data.slug}`} style="color: var(--color-ink);">{blog.data.title}</a>
+            <a href={getBlogHref(blog)} style="color: var(--color-ink);">{blog.data.title}</a>
           </h3>
           <p style="font-size: 0.875rem; color: var(--color-graphite);">{blog.data.excerpt}</p>
         </article>

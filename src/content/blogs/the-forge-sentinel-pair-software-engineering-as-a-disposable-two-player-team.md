@@ -1,8 +1,6 @@
 ---
 title: "The Forge-Sentinel Pair: Software Engineering as a Disposable Two-Player Team"
-slug: How two agents, one that builds and one that reviews, work as a 1:1 pair
-  to ship a single ticket, armed with curated commands and skills, then tear
-  themselves down when the job is done. Not vibes. Architecture.
+slug: forge-sentinel-pair-disposable-two-player-team
 excerpt: >-
   Every software engineer knows the shape of a good workday. You don't walk in,
   wave your
