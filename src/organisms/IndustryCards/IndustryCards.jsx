@@ -10,21 +10,21 @@ const INDUSTRIES = [
     description:
       'Move fast without breaking things. OpenFlows orchestrates a 24/7 agentic dev team on top of your Coder environment  -  so your engineers focus on architecture, not implementation.',
     icon: '',
-    href: '/docs',
+    href: '/insights/openflows-agentic-dev-team-puts-engineering-back-in-control',
   },
   {
     title: 'Financial Services',
     description:
-      'Stay compliant while accelerating delivery. Every agent action is logged, reviewable, and auditable  -  governance built into the SDLC, not bolted on.',
+      'An AI delivery system either produces a defensible record or it does not. OpenFlows makes the record part of the design, so every change is auditable by construction.',
     icon: '',
-    href: '/docs',
+    href: '/insights/the-auditable-agent-compliance-evidence-as-a-design-property',
   },
   {
     title: 'Government Agencies',
     description:
-      'Self-host on air-gapped Coder infrastructure. Keep sensitive code, agent work, and audit trails inside your network at all times.',
+      'A government agency cannot adopt an AI software team whose code, decisions, and audit trail live outside its own infrastructure. OpenFlows runs where the agency says it runs.',
     icon: '',
-    href: '/docs',
+    href: '/insights/the-air-gapped-agent-sensitive-work-that-never-leaves-the-network',
   },
 ]
 

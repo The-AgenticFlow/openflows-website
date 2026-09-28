@@ -39,6 +39,19 @@ const blogsCollection = defineCollection({
   }),
 });
 
+const insightsCollection = defineCollection({
+  type: "content",
+  schema: z.object({
+    title: z.string(),
+    slug: z.string(),
+    excerpt: z.string().optional(),
+    author_name: z.string().optional(),
+    cover_image_url: z.string().optional(),
+    published_at: z.date().optional(),
+    read_time_minutes: z.number().optional(),
+  }),
+});
+
 const storiesCollection = defineCollection({
   type: "content",
   schema: z.object({
@@ -53,5 +66,6 @@ const storiesCollection = defineCollection({
 export const collections = {
   research: researchCollection,
   blogs: blogsCollection,
+  insights: insightsCollection,
   stories: storiesCollection,
 };
