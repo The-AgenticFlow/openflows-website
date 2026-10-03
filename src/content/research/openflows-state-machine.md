@@ -17,7 +17,7 @@ authors:
   - name: Arthur Ndefokou
   - name: Ngha Boris
 ---
-## System Context
+## dSystem Context
 
 OpenFlows runs an agent team across governed workspaces. Each agent has a role:
 
@@ -31,7 +31,7 @@ The state machine is the shared authority across those roles. It prevents each a
 
 ## Lifecycle Graph
 
-![](/uploads/screenshot-2026-09-29-at-23.01.14.png)
+![Livecycle Graph](https://private-user-images.githubusercontent.com/144161981/664901809-5266a41f-1fb8-44b0-939b-9bb3bd76a293.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3OTEwNjc3NzIsIm5iZiI6MTc5MTA2NzQ3MiwicGF0aCI6Ii8xNDQxNjE5ODEvNjY0OTAxODA5LTUyNjZhNDFmLTFmYjgtNDRiMC05MzliLTliYjNiZDc2YTI5My5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYxMDAzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MTAwM1QyMjQ0MzJaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT02ZmZmNDY0Njc1MThmMmFkNWYwZDgwODVkNWJhYmIxZmI3OGRmZmQ4NWE0MDI2NTY3NjQ5NmMzYjE4ODZlZThkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.yemqKTe4UeQQrF9b5AOWwoxRjp5RsQZLtKu67GbL8Cg)
 
 ## Lifecycle Phases
 
