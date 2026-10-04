@@ -17,7 +17,7 @@ authors:
   - name: Arthur Ndefokou
   - name: Ngha Boris
 ---
-## dSystem Context
+## System Context
 
 OpenFlows runs an agent team across governed workspaces. Each agent has a role:
 
