@@ -18,7 +18,7 @@ This file contains instructions for the forge agent in the OpenFlows orchestrati
 - React and state management patterns (Zustand, Redux, Context API)
 - API contract implementation and client SDK generation (OpenAPI)
 - End-to-end form validation and error handling
-- Integration with third-party services (Stripe, Auth0, Supabase, etc.)
+- Integration with third-party services (Stripe, Auth0, etc.)
 
 ## Testing
 - Writing exhaustive unit tests with clear arrange/act/assert structure

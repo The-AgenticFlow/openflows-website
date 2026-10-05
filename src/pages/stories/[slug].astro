@@ -31,7 +31,7 @@ const formatDate = (d) => {
   description={`${category} - ${title}`}
   ogImage={image}
 >
-  <article style="max-width: 900px; margin: 0 auto; padding: calc(3rem + var(--nav-height)) 2rem 3rem;">
+  <article class="story-page" style="max-width: 900px; margin: 0 auto; padding: calc(3rem + var(--nav-height)) 2rem 3rem;">
     <header style="margin-bottom: 2rem;">
       <a href="/resources#stories" style="font-size: 0.875rem; color: var(--color-graphite); display: inline-block; margin-bottom: 1rem;">← Back to Case Studies</a>
       <div style="display: flex; gap: 0.75rem; margin-bottom: 0.75rem; font-size: 0.875rem; color: var(--color-graphite); flex-wrap: wrap;">
@@ -47,33 +47,65 @@ const formatDate = (d) => {
       </div>
     )}
 
-    <div class="story-content" style="font-size: 1.125rem; line-height: 1.8; color: var(--color-ink);">
+    <div class="story-content">
       <Content />
     </div>
   </article>
 </BaseLayout>
 
 <style>
+  @import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap");
+
+  :global(html),
+  :global(body),
+  .story-page {
+    background: #ffffff;
+  }
+
+  .story-content {
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 31.2px;
+    text-rendering: optimizelegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
   .story-content :global(h2) {
-    font-size: 1.5rem;
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1.75rem;
     font-weight: 700;
-    margin: 2rem 0 1rem;
+    line-height: 1.25;
+    margin: 2.2em 0 0.7em;
   }
   .story-content :global(h3) {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 1.5rem 0 0.75rem;
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 1.8em 0 0.65em;
   }
   .story-content :global(p) {
-    margin-bottom: 1rem;
-    line-height: 1.7;
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 31.2px;
+    margin: 1.56em 0 -0.46em;
   }
   .story-content :global(ul), .story-content :global(ol) {
-    margin-bottom: 1rem;
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 20px;
+    line-height: 31.2px;
+    margin: 1.56em 0 -0.46em;
     padding-left: 1.5rem;
   }
   .story-content :global(li) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75em;
   }
   .story-content :global(pre) {
     background: var(--color-ink);
@@ -94,17 +126,32 @@ const formatDate = (d) => {
   }
   .story-content :global(blockquote) {
     border-left: 3px solid var(--color-aubergine);
+    color: #242424;
+    font-style: italic;
+    margin: 1.8em 0 0.4em;
     padding-left: 1rem;
-    margin: 1rem 0;
-    color: var(--color-graphite);
   }
   .story-content :global(img) {
     max-width: 100%;
     border-radius: var(--radius-md);
-    margin: 1rem 0;
+    display: block;
+    margin: 2rem auto;
   }
   .story-content :global(a) {
     color: var(--color-aubergine);
     text-decoration: underline;
+  }
+  .story-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 2rem 0;
+  }
+  .story-content :global(th), .story-content :global(td) {
+    border: 1px solid var(--color-driftwood);
+    padding: 0.75rem;
+    vertical-align: top;
   }
 </style>

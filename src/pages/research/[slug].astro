@@ -28,11 +28,11 @@ const formatDate = (d) => {
   description={item.data.abstract}
   ogImage={item.data.cover_image_url}
 >
-  <article style="max-width: 900px; margin: 0 auto; padding: 3rem 2rem;">
+  <article class="research-page" style="max-width: 900px; margin: 0 auto; padding: 3rem 2rem;">
     <a href="/research" style="font-size: 0.875rem; color: var(--color-graphite); display: inline-block; margin-bottom: 2rem;">← Back to Research</a>
     
-    <header style="margin-bottom: 3rem;">
-      <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; font-size: 0.875rem; color: var(--color-graphite); flex-wrap: wrap;">
+    <header class="research-header" style="margin-bottom: 3rem;">
+      <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; font-size: 0.875rem; color: var(--color-graphite); flex-wrap: wrap; justify-content: center;">
         <span style="text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">{item.data.category}</span>
         {item.data.venue && <><span>·</span><span>{item.data.venue}</span></>}
         <span>·</span>
@@ -42,8 +42,9 @@ const formatDate = (d) => {
       
       {item.data.authors && item.data.authors.length > 0 && (
         <div style="margin-bottom: 1.5rem;">
-          {item.data.authors.map((author) => (
+          {item.data.authors.map((author, i) => (
             <span style="font-size: 1rem; color: var(--color-ink);">
+              {i > 0 && <span style="margin: 0 0.5rem;">·</span>}
               {author.name}{author.affiliation && <span style="color: var(--color-graphite);"> ({author.affiliation})</span>}
             </span>
           ))}
@@ -51,7 +52,7 @@ const formatDate = (d) => {
       )}
       
       {item.data.tags && item.data.tags.length > 0 && (
-        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem;">
+        <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; justify-content: center;">
           {item.data.tags.map((tag) => (
             <span style="font-size: 0.75rem; background: var(--color-fog); color: var(--color-ink); padding: 0.25rem 0.75rem; border-radius: 99px;">{tag}</span>
           ))}
@@ -73,14 +74,56 @@ const formatDate = (d) => {
       <Content />
     </div>
 
+    <script is:inline>
+      (function () {
+        var blocks = document.querySelectorAll('.research-content pre[data-language="mermaid"]');
+        if (!blocks.length) return;
+
+        function render() {
+          if (typeof window.mermaid === 'undefined') return;
+          window.mermaid.initialize({ startOnLoad: false, theme: 'default', securityLevel: 'loose' });
+          blocks.forEach(function (pre, i) {
+            var code = pre.textContent || '';
+            var id = 'mermaid-' + i;
+            var wrapper = document.createElement('div');
+            wrapper.className = 'research-mermaid';
+            wrapper.id = id;
+            try {
+              window.mermaid.render(id, code).then(function (result) {
+                wrapper.innerHTML = result.svg;
+                var svg = wrapper.querySelector('svg');
+                if (svg) {
+                  svg.removeAttribute('style');
+                  svg.setAttribute('style', 'max-width: none; width: 100%; height: auto;');
+                }
+                pre.parentNode.replaceChild(wrapper, pre);
+              });
+            } catch (e) {
+              wrapper.textContent = code;
+              pre.parentNode.replaceChild(wrapper, pre);
+            }
+          });
+        }
+
+        if (window.mermaid) {
+          render();
+        } else {
+          var s = document.createElement('script');
+          s.src = 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js';
+          s.onload = render;
+          document.head.appendChild(s);
+        }
+      })();
+    </script>
+
     <!-- Giscus Comments Section -->
     <div style="margin-top: 4rem; padding-top: 2rem; border-top: 1px solid var(--color-fog);">
       <h3 style="font-size: 1.5rem; font-weight: 600; margin-bottom: 2rem;">Comments</h3>
       <script src="https://giscus.app/client.js"
-              data-repo={import.meta.env.PUBLIC_GISCUS_REPO}
-              data-repo-id={import.meta.env.PUBLIC_GISCUS_REPO_ID}
-              data-category={import.meta.env.PUBLIC_GISCUS_CATEGORY}
-              data-category-id={import.meta.env.PUBLIC_GISCUS_CATEGORY_ID}
+              data-repo="The-AgenticFlow/openflows-website"
+              data-repo-id="R_kgDOShxBEw"
+              data-category="Announcements"
+              data-category-id="DIC_kwDOShxBE84C_8Ek"
               data-mapping="pathname"
               data-strict="0"
               data-reactions-enabled="1"
@@ -96,26 +139,67 @@ const formatDate = (d) => {
 </BaseLayout>
 
 <style>
+  @import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap");
+
+  :global(html),
+  :global(body),
+  .research-page {
+    background: #ffffff;
+  }
+
+  .research-header {
+    text-align: center;
+  }
+
+  .research-header :global(h1) {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .research-content {
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 31.2px;
+    text-rendering: optimizelegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
   .research-content :global(h2) {
-    font-size: 1.5rem;
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1.75rem;
     font-weight: 700;
-    margin: 2rem 0 1rem;
+    line-height: 1.25;
+    margin: 2.2em 0 0.7em;
   }
   .research-content :global(h3) {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin: 1.5rem 0 0.75rem;
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 1.5rem;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 1.8em 0 0.65em;
   }
   .research-content :global(p) {
-    margin-bottom: 1rem;
-    line-height: 1.7;
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 20px;
+    font-weight: 400;
+    line-height: 31.2px;
+    margin: 1.56em 0 -0.46em;
   }
   .research-content :global(ul), .research-content :global(ol) {
-    margin-bottom: 1rem;
+    color: #242424;
+    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+    font-size: 20px;
+    line-height: 31.2px;
+    margin: 1.56em 0 -0.46em;
     padding-left: 1.5rem;
   }
   .research-content :global(li) {
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.75em;
   }
   .research-content :global(pre) {
     background: var(--color-ink);
@@ -136,17 +220,52 @@ const formatDate = (d) => {
   }
   .research-content :global(blockquote) {
     border-left: 3px solid var(--color-aubergine);
+    color: #242424;
+    font-style: italic;
+    margin: 1.8em 0 0.4em;
     padding-left: 1rem;
-    margin: 1rem 0;
-    color: var(--color-graphite);
   }
   .research-content :global(img) {
     max-width: 100%;
     border-radius: var(--radius-md);
-    margin: 1rem 0;
+    display: block;
+    margin: 2rem auto;
   }
   .research-content :global(a) {
     color: var(--color-aubergine);
     text-decoration: underline;
+  }
+  .research-content :global(table) {
+    width: 100%;
+    border-collapse: collapse;
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    line-height: 1.5;
+    margin: 2rem 0;
+  }
+  .research-content :global(th), .research-content :global(td) {
+    border: 1px solid var(--color-driftwood);
+    padding: 0.75rem;
+    vertical-align: top;
+  }
+
+  .research-mermaid {
+    background: #ffffff;
+    border: 1px solid var(--color-fog);
+    border-radius: var(--radius-md);
+    padding: 1rem;
+    margin: 2rem calc(50% - 50vw);
+    width: 100vw;
+    overflow-x: auto;
+    text-align: center;
+  }
+
+  .research-mermaid :global(svg) {
+    width: 100%;
+    max-width: none;
+    min-width: 1300px;
+    height: auto;
+    display: block;
+    margin: 0 auto;
   }
 </style>

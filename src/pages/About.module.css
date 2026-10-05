@@ -234,6 +234,36 @@
   transform: translateY(-1px);
 }
 
+/* Social / community action buttons */
+.socialBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.65rem 1.25rem;
+  background: #fff;
+  color: var(--color-ink);
+  border: 1px solid var(--color-driftwood);
+  border-radius: 99px;
+  font-size: var(--font-size-sm);
+  font-weight: var(--font-weight-semibold);
+  text-decoration: none;
+  box-shadow: var(--shadow-card);
+  transition: all var(--transition-fast);
+}
+
+.socialBtn:hover {
+  transform: translateY(-1px);
+  border-color: var(--color-aubergine);
+  color: var(--color-aubergine);
+  box-shadow: var(--shadow-lg);
+}
+
+.socialIcon {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
 .splitImageWrap {
   width: 100%;
   border-radius: var(--radius-lg);
