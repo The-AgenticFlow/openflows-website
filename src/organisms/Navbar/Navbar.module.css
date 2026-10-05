@@ -104,6 +104,34 @@
   font-variant-numeric: tabular-nums;
 }
 
+/* Discord button */
+.discordButton {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: var(--font-size-sm);
+  font-weight: 600;
+  color: #fff;
+  background-color: #5865F2;
+  border: 1px solid #5865F2;
+  border-radius: var(--radius-md);
+  text-decoration: none;
+  transition: background-color 0.18s, border-color 0.18s, transform 0.18s;
+  opacity: 0.92;
+}
+
+.discordButton:hover {
+  opacity: 1;
+  background-color: #4752c4;
+  border-color: #4752c4;
+  transform: translateY(-1px);
+}
+
+.mobileActions .discordButton {
+  align-self: flex-start;
+}
+
 /* Mega Panel  -  IZHUB: white bg, fog border */
 .megaPanel {
   position: absolute;

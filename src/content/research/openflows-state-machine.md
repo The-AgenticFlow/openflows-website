@@ -21,17 +21,31 @@ authors:
 
 OpenFlows runs an agent team across governed workspaces. Each agent has a role:
 
-* NEXUS coordinates assignment, routing, and recovery.
-* FORGE plans and builds the change.
-* SENTINEL reviews plans, implementation, and verification evidence.
-* VESSEL merges only approved and verified work.
-* Human operators approve high-trust gates before submission and merge.
+- NEXUS coordinates assignment, routing, and recovery.
+- FORGE plans and builds the change.
+- SENTINEL reviews plans, implementation, and verification evidence.
+- VESSEL merges only approved and verified work.
+- Human operators approve high-trust gates before submission and merge.
 
 The state machine is the shared authority across those roles. It prevents each agent from treating local memory, chat history, GitHub state, or workspace status as the source of truth. Those systems remain projections. The lifecycle record is the control point.
 
 ## Lifecycle Graph
 
-![Livecycle Graph](https://private-user-images.githubusercontent.com/144161981/664901809-5266a41f-1fb8-44b0-939b-9bb3bd76a293.png?jwt=eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3OTEwNjc3NzIsIm5iZiI6MTc5MTA2NzQ3MiwicGF0aCI6Ii8xNDQxNjE5ODEvNjY0OTAxODA5LTUyNjZhNDFmLTFmYjgtNDRiMC05MzliLTliYjNiZDc2YTI5My5wbmc_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjYxMDAzJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI2MTAwM1QyMjQ0MzJaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT02ZmZmNDY0Njc1MThmMmFkNWYwZDgwODVkNWJhYmIxZmI3OGRmZmQ4NWE0MDI2NTY3NjQ5NmMzYjE4ODZlZThkJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCZyZXNwb25zZS1jb250ZW50LXR5cGU9aW1hZ2UlMkZwbmcifQ.yemqKTe4UeQQrF9b5AOWwoxRjp5RsQZLtKu67GbL8Cg)
+```mermaid
+stateDiagram-v2
+    [*] --> planning
+    planning --> plan_ready: upload and submit plan
+    plan_ready --> plan_rejected: SENTINEL rejects
+    plan_rejected --> planning: revise
+    plan_ready --> building: SENTINEL approves exact revision and round
+    building --> testing: commit and clean checkout
+    testing --> building: failed review or rework
+    testing --> submit: A2A evidence, SENTINEL approval, human approval
+    submit --> building: PR or CI rejection, changed head
+    submit --> done: SENTINEL approval, human approval, CI success, confirmed merge
+    blocked --> planning: recover
+    done --> [*]
+```
 
 ## Lifecycle Phases
 
@@ -65,7 +79,18 @@ Done is terminal. It requires a confirmed merge, not merely an approved PR, a gr
 
 ### Blocked
 
-Blocked is a controlled interruption for nonterminal work. It records that progress cannot continue under current conditions. Recovery returns to planning because the safest restart point is an explicit re-evaluation of intent and constraints.
+Blocked is a controlled interruption for nonterminal work. It records that progress cannot continue under current conditions. Today, recovery is driven by FORGE: once the blocker clears, FORGE moves the lifecycle back to planning (`blocked → planning`) because the safest restart point is an explicit re-evaluation of intent and constraints. `blocked` is not terminal; `done` is the only absorbing state.
+
+#### Future design: human-driven recovery
+
+Planned evolution (not yet implemented) routes blocked recovery through a human operator rather than relying on FORGE to self-recover:
+
+- When status is set to `blocked`, the controller notifies a **human operator** with the recorded blocker, exact evidence, and the answerable unblock question.
+- The human addresses the underlying issue outside the lifecycle (repairing infrastructure, providing credentials/approval, resolving an external dependency, or correcting the constraint).
+- The human then **explicitly sets the next phase** the machine should resume from (typically `planning`, or `building`/`testing` when the blocker was external to the work and downstream evidence remains valid).
+- The lifecycle record persists the human's phase directive as an audited, actor-tagged transition, and the system resumes from that phase.
+
+This keeps blocked as a genuine human checkpoint: no autonomous agent advances out of `blocked` on its own. The human decision is recorded in the same versioned lifecycle history as every other transition, so restart recovery can distinguish "blocked and awaiting the operator" from "blocked and resolved." Until this is implemented, the current FORGE-driven `blocked → planning` path remains authoritative.
 
 ## Transition Motions
 
@@ -75,7 +100,7 @@ Forward motion advances work only when the required evidence for the current pha
 
 Corrective motion sends work backward when evidence fails or becomes stale. Plan rejection returns to planning. Failed implementation review or verification returns to building. PR rejection, CI failure, or a changed submitted head returns to building. These transitions deliberately discard downstream confidence.
 
-Recovery motion handles interruption and ambiguity. Blocked work returns to planning. Merge uncertainty does not automatically unlock or retry unsafe operations. The lifecycle preserves reservations and pending deliveries until a safe reconciliation path exists.
+Recovery motion handles interruption and ambiguity. Blocked work returns to planning today; in the planned future design a human operator is notified, resolves the issue, and explicitly sets the resume phase before the machine advances. Merge uncertainty does not automatically unlock or retry unsafe operations. The lifecycle preserves reservations and pending deliveries until a safe reconciliation path exists.
 
 ## Durable Lifecycle Record
 
@@ -85,10 +110,10 @@ Each mutation is atomic. A transition compares the observed version with the sto
 
 This record gives OpenFlows a single coordination surface:
 
-* Agents read the same phase and evidence.
-* Humans approve against the same revision and head.
-* Recovery reads durable decisions instead of reconstructing intent from logs.
-* GitHub state is reconciled against lifecycle state, not treated as the lifecycle itself.
+- Agents read the same phase and evidence.
+- Humans approve against the same revision and head.
+- Recovery reads durable decisions instead of reconstructing intent from logs.
+- GitHub state is reconciled against lifecycle state, not treated as the lifecycle itself.
 
 ## Evidence Binding
 
@@ -108,12 +133,12 @@ The first human gate confirms that implementation and verification evidence are 
 
 VESSEL can merge only when all merge prerequisites are present in the lifecycle:
 
-* The submitted head is known.
-* CI has succeeded for that head.
-* SENTINEL approval is durable.
-* Human approval is durable.
-* Review delivery is complete.
-* GitHub receives the expected head.
+- The submitted head is known.
+- CI has succeeded for that head.
+- SENTINEL approval is durable.
+- Human approval is durable.
+- Review delivery is complete.
+- GitHub receives the expected head.
 
 A merge reservation prevents concurrent rejection or rework while a merge request is in flight. A definitive rejection releases the reservation. An ambiguous network outcome does not. The system favors operator investigation over unsafe automatic retry when the merge result cannot be proven.
 
@@ -144,3 +169,31 @@ Recoverable operation. The record contains enough identity and history to resume
 The OpenFlows state machine is not only a workflow diagram. It is the safety boundary for autonomous delivery. It defines when work may advance, what evidence must exist, who must approve, and how the system recovers when infrastructure behaves imperfectly.
 
 By making lifecycle state explicit, versioned, and evidence-bound, OpenFlows allows agents to move quickly without allowing local context, stale approvals, or ambiguous external state to become authority.
+
+## Full Lifecycle Diagram
+
+The simplified graph above is the one used for discussion. This full diagram adds the future human-driven `blocked` recovery so a reader can follow the complete flow end to end: when status is set to `blocked`, the controller notifies a human operator, the human addresses the issue, and explicitly sets the next phase from which the system resumes.
+
+```mermaid
+stateDiagram-v2
+    [*] --> planning
+    planning --> plan_ready: upload and submit plan
+    plan_ready --> plan_rejected: SENTINEL rejects
+    plan_rejected --> planning: revise
+    plan_ready --> building: SENTINEL approves exact revision and round
+    building --> testing: commit and clean checkout
+    testing --> building: failed review or rework
+    testing --> submit: A2A evidence, SENTINEL approval, human approval
+    submit --> building: PR or CI rejection, changed head
+    submit --> done: SENTINEL approval, human approval, CI success, confirmed merge
+    planning --> blocked: "external prerequisite (any future phase)"
+    testing --> blocked: "external prerequisite (future design)"
+    submit --> blocked: "external prerequisite (future design)"
+    blocked --> human_operator: "notify with blocker + evidence (future design)"
+    human_operator --> planning: "human sets resume phase"
+    human_operator --> building: "human sets resume phase (future)"
+    human_operator --> testing: "human sets resume phase (future)"
+    done --> [*]
+```
+
+The `blocked → human_operator → <resume phase>` path is the planned future design (see the Blocked phase section); until it is implemented, the current FORGE-driven `blocked → planning` transition remains authoritative.
