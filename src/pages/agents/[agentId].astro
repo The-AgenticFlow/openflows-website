@@ -57,6 +57,22 @@ if (!agent) {
       })}
     </ol>
 
+    {/* Human Intervention */}
+    {agent.humanIntervention && (
+      <>
+        <h2 class={styles.sectionTitle}>Human Intervention</h2>
+        <p class={styles.humanIntro}>{agent.humanIntervention.intro}</p>
+        <ul class={styles.capList}>
+          {agent.humanIntervention.points.map((point, i) => (
+            <li key={i} class={styles.capItem}>
+              <span class={styles.bullet} />
+              {point}
+            </li>
+          ))}
+        </ul>
+      </>
+    )}
+
     {/* CTA */}
     <section class={styles.cta}>
       <h3>Deploy {agent.name} on your repo</h3>
