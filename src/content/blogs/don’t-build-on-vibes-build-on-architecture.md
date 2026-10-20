@@ -11,7 +11,7 @@ status: draft
 published_at: 2026-10-20T15:02:00.000+01:00
 is_featured: true
 ---
-AI has made writing code faster than ever. That is useful, but it has also created a risky habit: building software from prompts, vibes, and whichever suggestion an AI produces next.
+AI has made writing code faster than ever. That is useful, but it has also created a risky habit: building software from prompts, vibes, and whichever suggestion an AI produces next
 
 A feature request becomes a chat. A chat becomes code. Code becomes a pull request. Somewhere along the way, the architecture disappears.
 
