@@ -84,8 +84,6 @@ The promise of agentic development is not simply that code can be written faster
 
 OpenFlows helps make that possible.
 
-<div align="center">
-
 **You own the architecture.**  
 **You own the software.**  
 **You impose the design.**
@@ -94,4 +92,4 @@ OpenFlows helps produce the result at your speed, with your standards, and accor
 
 ### Stop building from vibes. Build from architecture.
 
-</div>
+
