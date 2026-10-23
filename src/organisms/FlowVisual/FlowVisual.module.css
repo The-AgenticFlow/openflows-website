@@ -69,24 +69,32 @@
 }
 
 .stage {
-  border-radius: var(--radius-xl);
-  border: 1px solid var(--color-driftwood);
-  background: var(--color-fog);
-  overflow: hidden;
   margin-bottom: 48px;
+  padding: clamp(1rem, 4vw, 3.5rem);
+  border: 1px solid var(--color-driftwood);
+  border-radius: var(--radius-xl);
+  background-color: #f8f7f3;
+  background-image: repeating-linear-gradient(45deg, #dcd7d3b3 0 1px, #0000 1px 5px);
 }
 
-.videoWrapper {
-  aspect-ratio: 16 / 9;
-  width: 100%;
-  background: var(--color-fog);
+/* Measured from the recording: the app fills the middle 90% horizontally,
+   and the desktop and browser chrome take the top 12.9%. */
+.videoCrop {
+  --crop-x: 0.05;
+  --crop-top: 0.129;
+
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 14.4 / 7.839;
 }
 
 .videoEmbed {
-  width: 100%;
-  height: 100%;
-  border-radius: var(--radius-lg);
-  border: none;
+  position: absolute;
+  top: calc(-100% * var(--crop-top) / (1 - var(--crop-top)));
+  left: calc(-100% * var(--crop-x) / (1 - 2 * var(--crop-x)));
+  width: calc(100% / (1 - 2 * var(--crop-x)));
+  height: calc(100% / (1 - var(--crop-top)));
+  border: 0;
 }
 
 .agents {

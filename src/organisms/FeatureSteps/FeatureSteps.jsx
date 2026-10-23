@@ -1,3 +1,4 @@
+import WindowFrame from '@/molecules/WindowFrame/WindowFrame'
 import styles from './FeatureSteps.module.css'
 
 export default function FeatureSteps() {
@@ -13,11 +14,17 @@ export default function FeatureSteps() {
         </div>
 
         <div className={styles.mediaPanel}>
-          <img
-            src="/images/howitworks.png"
-            alt="How OpenFlows orchestrates agents on top of the Coder environment"
-            className={styles.mediaImage}
-          />
+          <WindowFrame title="coder / workspaces">
+            <img
+              src="/images/howitworks.png"
+              alt="Coder workspaces list with FORGE agent workspaces and the NEXUS controller running"
+              className={styles.mediaImage}
+              width="1717"
+              height="1125"
+              loading="lazy"
+              decoding="async"
+            />
+          </WindowFrame>
         </div>
       </div>
     </section>
