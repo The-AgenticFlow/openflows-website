@@ -55,13 +55,35 @@
 }
 
 .tabs {
+  position: relative;
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
+.indicator {
+  position: absolute;
+  top: 0;
+  left: 0;
+  border: 1px solid var(--color-driftwood);
+  border-radius: var(--radius-md);
+  background: var(--color-bone);
+  box-shadow: 0 6px 18px -12px rgba(20, 19, 18, 0.35);
+  transition:
+    transform 0.45s var(--ease-out-soft),
+    width 0.45s var(--ease-out-soft),
+    height 0.45s var(--ease-out-soft);
+  pointer-events: none;
+}
+
 .tab {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
   width: 100%;
+  overflow: hidden;
   text-align: left;
   padding: 14px 20px;
   font-size: 15px;
@@ -70,60 +92,90 @@
   background: transparent;
   border: 1px solid transparent;
   border-radius: var(--radius-md);
-  transition: all var(--transition-fast);
+  cursor: pointer;
+  transition: color var(--transition-fast);
 }
 
 .tab:hover {
   color: var(--color-ink);
-  background: rgba(255, 255, 255, 0.6);
+}
+
+.tab:focus-visible {
+  outline: 2px solid var(--color-aubergine);
+  outline-offset: 2px;
 }
 
 .tabActive {
   color: var(--color-aubergine);
-  background: var(--color-bone);
-  border-color: var(--color-driftwood);
+}
+
+.tabIndex {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  color: var(--color-graphite);
+  font-variant-numeric: tabular-nums;
+  transition: color var(--transition-fast);
+}
+
+.tabActive .tabIndex {
+  color: var(--color-aubergine);
+}
+
+.tabProgress {
+  position: absolute;
+  right: 20px;
+  bottom: 8px;
+  left: 20px;
+  height: 2px;
+  overflow: hidden;
+  border-radius: 1px;
+  background: var(--color-fog);
+}
+
+.tabProgressFill {
+  display: block;
+  height: 100%;
+  background: var(--color-aubergine);
+  transform: scaleX(0);
+  transform-origin: left;
+  animation-name: tab-progress;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
+}
+
+@keyframes tab-progress {
+  to {
+    transform: scaleX(1);
+  }
 }
 
 .content {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
   padding: 40px 48px;
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-driftwood);
   background: var(--color-bone);
-  min-height: 400px;
-  transition: opacity 0.2s ease, transform 0.2s ease;
+  min-height: 460px;
 }
 
-.contentEnter {
-  animation: slideIn 0.3s ease forwards;
+.contentInner {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  min-height: inherit;
 }
 
-.contentExit {
-  animation: slideOut 0.2s ease forwards;
+.rise {
+  animation: izhub-hero-fade-slide-down 0.6s var(--ease-out-soft) both;
+  animation-delay: calc(var(--i, 0) * 70ms);
 }
 
-@keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-@keyframes slideOut {
-  from {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  to {
-    opacity: 0;
-    transform: translateY(-12px);
-  }
+.counter {
+  margin: 0 0 -8px;
+  font-family: var(--font-mono);
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  color: var(--color-graphite);
+  font-variant-numeric: tabular-nums;
 }
 
 .contentTitle {
@@ -186,6 +238,7 @@
 }
 
 .statValue {
+  font-variant-numeric: tabular-nums;
   font-size: 32px;
   font-weight: var(--font-weight-bold);
   color: var(--color-aubergine);
@@ -238,7 +291,13 @@
 
   .tab {
     width: auto;
-    padding: 10px 16px;
+    padding: 10px 16px 14px;
+  }
+
+  .tabProgress {
+    right: 16px;
+    bottom: 6px;
+    left: 16px;
   }
 
   .content {

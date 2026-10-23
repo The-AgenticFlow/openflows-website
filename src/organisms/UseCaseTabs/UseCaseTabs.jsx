@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import styles from './UseCaseTabs.module.css'
 
 const USE_CASES = [
@@ -64,22 +64,109 @@ const USE_CASES = [
   },
 ]
 
+const AUTO_ADVANCE_MS = 7000
+const COUNT_UP_MS = 900
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+const pad = (n) => String(n).padStart(2, '0')
+
+/** Counts the first number in a stat such as "< 2 min" or "10x" up from zero. */
+function CountUp({ value }) {
+  const match = value.match(/^(\D*)(\d+)(.*)$/)
+  const [shown, setShown] = useState(match ? `${match[1]}0${match[3]}` : value)
+
+  useEffect(() => {
+    if (!match || prefersReducedMotion()) {
+      setShown(value)
+      return undefined
+    }
+    const [, before, digits, after] = match
+    const target = Number(digits)
+    let frame = 0
+    const start = performance.now()
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / COUNT_UP_MS)
+      const eased = 1 - Math.pow(1 - t, 3)
+      setShown(`${before}${Math.round(target * eased)}${after}`)
+      if (t < 1) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [value])
+
+  return <span aria-label={value}>{shown}</span>
+}
+
 export default function UseCaseTabs() {
   const [active, setActive] = useState(0)
-  const [animating, setAnimating] = useState(false)
+  const [autoplay, setAutoplay] = useState(true)
+  const [inView, setInView] = useState(false)
+  const [paused, setPaused] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
+  const [indicator, setIndicator] = useState(null)
+  const sectionRef = useRef(null)
+  const tabsRef = useRef(null)
+  const tabRefs = useRef([])
   const activeCase = USE_CASES[active]
+  const running = autoplay && inView && !paused && !reducedMotion
 
-  const handleTabChange = (index) => {
-    if (index === active || animating) return
-    setAnimating(true)
-    setTimeout(() => {
-      setActive(index)
-      setAnimating(false)
-    }, 200)
+  useEffect(() => {
+    setReducedMotion(prefersReducedMotion())
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.4 })
+    if (sectionRef.current) observer.observe(sectionRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  const measure = useCallback(() => {
+    const tab = tabRefs.current[active]
+    if (!tab) return
+    setIndicator({ x: tab.offsetLeft, y: tab.offsetTop, width: tab.offsetWidth, height: tab.offsetHeight })
+  }, [active])
+
+  useLayoutEffect(() => {
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [measure])
+
+  const select = (index, { focus = false } = {}) => {
+    setAutoplay(false)
+    setActive(index)
+    if (focus) tabRefs.current[index]?.focus()
+  }
+
+  const advance = () => setActive((current) => (current + 1) % USE_CASES.length)
+
+  const onKeyDown = (event, index) => {
+    const last = USE_CASES.length - 1
+    const keys = {
+      ArrowDown: index === last ? 0 : index + 1,
+      ArrowRight: index === last ? 0 : index + 1,
+      ArrowUp: index === 0 ? last : index - 1,
+      ArrowLeft: index === 0 ? last : index - 1,
+      Home: 0,
+      End: last,
+    }
+    if (event.key in keys) {
+      event.preventDefault()
+      select(keys[event.key], { focus: true })
+    }
   }
 
   return (
-    <section className={styles.section} aria-labelledby="use-cases-title">
+    <section
+      ref={sectionRef}
+      className={styles.section}
+      aria-labelledby="use-cases-title"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false)
+      }}
+    >
       <div className={styles.container}>
         <div className={styles.header}>
           <p className={styles.eyebrow}>Use cases</p>
@@ -92,42 +179,97 @@ export default function UseCaseTabs() {
         </div>
 
         <div className={styles.layout}>
-          <div className={styles.tabs} role="tablist">
-            {USE_CASES.map((useCase, index) => (
-              <button
-                key={useCase.id}
-                role="tab"
-                aria-selected={active === index}
-                className={`${styles.tab} ${active === index ? styles.tabActive : ''}`}
-                onClick={() => handleTabChange(index)}
-              >
-                {useCase.label}
-              </button>
-            ))}
+          <div ref={tabsRef} className={styles.tabs} role="tablist" aria-label="Use cases" aria-orientation="vertical">
+            {indicator && (
+              <span
+                className={styles.indicator}
+                aria-hidden="true"
+                style={{
+                  width: indicator.width,
+                  height: indicator.height,
+                  transform: `translate(${indicator.x}px, ${indicator.y}px)`,
+                }}
+              />
+            )}
+            {USE_CASES.map((useCase, index) => {
+              const selected = active === index
+              return (
+                <button
+                  key={useCase.id}
+                  ref={(el) => {
+                    tabRefs.current[index] = el
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`use-case-tab-${useCase.id}`}
+                  aria-selected={selected}
+                  aria-controls="use-case-panel"
+                  tabIndex={selected ? 0 : -1}
+                  className={`${styles.tab} ${selected ? styles.tabActive : ''}`}
+                  onClick={() => select(index)}
+                  onKeyDown={(event) => onKeyDown(event, index)}
+                >
+                  <span className={styles.tabIndex}>{pad(index + 1)}</span>
+                  <span>{useCase.label}</span>
+                  {selected && autoplay && !reducedMotion && (
+                    <span className={styles.tabProgress} aria-hidden="true">
+                      <span
+                        key={active}
+                        className={styles.tabProgressFill}
+                        style={{
+                          animationDuration: `${AUTO_ADVANCE_MS}ms`,
+                          animationPlayState: running ? 'running' : 'paused',
+                        }}
+                        onAnimationEnd={advance}
+                      />
+                    </span>
+                  )}
+                </button>
+              )
+            })}
           </div>
 
-          <div className={`${styles.content} ${animating ? styles.contentExit : styles.contentEnter}`} role="tabpanel">
-            <h3 className={styles.contentTitle}>{activeCase.title}</h3>
-            <p className={styles.contentDesc}>{activeCase.summary}</p>
+          <div
+            className={styles.content}
+            role="tabpanel"
+            id="use-case-panel"
+            aria-labelledby={`use-case-tab-${activeCase.id}`}
+            aria-live={autoplay ? 'off' : 'polite'}
+          >
+            <div key={activeCase.id} className={styles.contentInner}>
+              <p className={`${styles.counter} ${styles.rise}`} style={{ '--i': 0 }}>
+                {pad(active + 1)} / {pad(USE_CASES.length)}
+              </p>
+              <h3 className={`${styles.contentTitle} ${styles.rise}`} style={{ '--i': 1 }}>
+                {activeCase.title}
+              </h3>
+              <p className={`${styles.contentDesc} ${styles.rise}`} style={{ '--i': 2 }}>
+                {activeCase.summary}
+              </p>
 
-            <ul className={styles.itemList}>
-              {activeCase.items.map((item, i) => (
-                <li key={i} className={styles.item}>{item}</li>
-              ))}
-            </ul>
+              <ul className={styles.itemList}>
+                {activeCase.items.map((item, i) => (
+                  <li key={item} className={`${styles.item} ${styles.rise}`} style={{ '--i': 3 + i }}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
 
-            <div className={styles.footer}>
-              <div className={styles.stat}>
-                <span className={styles.statValue}>{activeCase.stats.value}</span>
-                <span className={styles.statLabel}>{activeCase.stats.label}</span>
+              <div className={`${styles.footer} ${styles.rise}`} style={{ '--i': 3 + activeCase.items.length }}>
+                <div className={styles.stat}>
+                  <span className={styles.statValue}>
+                    <CountUp value={activeCase.stats.value} />
+                  </span>
+                  <span className={styles.statLabel}>{activeCase.stats.label}</span>
+                </div>
+                <a href={activeCase.href} className={styles.cta}>
+                  Learn more
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </a>
               </div>
-              <a href={activeCase.href} className={styles.cta}>
-                Learn more
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14"/>
-                  <path d="m12 5 7 7-7 7"/>
-                </svg>
-              </a>
             </div>
           </div>
         </div>
