@@ -1,0 +1,58 @@
+---
+interface Props {
+  src?: string;
+  eager?: boolean;
+}
+
+const { src, eager = false } = Astro.props;
+---
+
+<div class="cover">
+  {src ? (
+    <img
+      src={src}
+      alt=""
+      loading={eager ? 'eager' : 'lazy'}
+      decoding="async"
+      fetchpriority={eager ? 'high' : 'auto'}
+    />
+  ) : (
+    <div class="cover-fallback" aria-hidden="true">
+      <img src="/openlogo-transparent.png" alt="" width="48" height="48" />
+    </div>
+  )}
+</div>
+
+<style>
+  .cover {
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    background: var(--color-fog);
+    outline: 1px solid rgba(41, 40, 39, 0.08);
+    outline-offset: -1px;
+  }
+
+  .cover > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .cover-fallback {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    background: var(--color-aubergine);
+  }
+
+  .cover-fallback img {
+    width: 22%;
+    max-width: 64px;
+    height: auto;
+    opacity: 0.9;
+    filter: brightness(0) invert(1);
+  }
+</style>

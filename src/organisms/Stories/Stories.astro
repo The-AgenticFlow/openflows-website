@@ -1,22 +1,330 @@
 ---
-import Stories from '@/organisms/Stories/Stories.jsx';
+import { formatStoryDate as formatDate, getStories } from '@/components/stories/stories';
 
-const storyModules = import.meta.glob('/src/content/stories/*.md', { eager: true });
+const stories = getStories();
 
-const stories = Object.entries(storyModules)
-  .map(([path, mod]) => {
-    const slug = path.split('/').pop()!.replace('.md', '');
-    const { frontmatter } = mod as any;
-    return {
-      id: slug,
-      category: frontmatter.category || '',
-      date: frontmatter.date || '',
-      title: frontmatter.title || '',
-      href: frontmatter.href || `/stories/${slug}`,
-      image: frontmatter.image || '',
-    };
-  })
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+const STRIP_COUNT = 3;
+const [feature, ...others] = stories;
+const strip = others.slice(0, STRIP_COUNT);
+const hasMore = others.length > STRIP_COUNT;
 ---
 
-<Stories stories={stories} client:visible />
+{feature && (
+  <section class="stories" aria-labelledby="stories-title">
+    <div class="stories-container">
+      <div class="stories-header">
+        <div>
+          <h2 id="stories-title">Stories</h2>
+          <p>How teams put OpenFlows to work, and what they learned along the way.</p>
+        </div>
+        {hasMore && <a href="/resources#stories" class="stories-all">All stories</a>}
+      </div>
+
+      <article class="story-feature">
+        <div class="story-feature-image">
+          {feature.image ? (
+            <img src={feature.image} alt="" loading="lazy" decoding="async" />
+          ) : (
+            <div class="story-feature-fallback" aria-hidden="true">
+              <img src="/openlogo-transparent.png" alt="" width="48" height="48" />
+            </div>
+          )}
+        </div>
+        <div class="story-feature-body">
+          {feature.category && <p class="story-category">{feature.category}</p>}
+          <h3 class="story-feature-title">
+            <a href={feature.href}>{feature.title}</a>
+          </h3>
+          {feature.summary && <p class="story-feature-summary">{feature.summary}</p>}
+          <p class="story-feature-footer">
+            <span class="story-cta">Read the story</span>
+            {feature.date && <time datetime={feature.date.toISOString()}>{formatDate(feature.date)}</time>}
+          </p>
+        </div>
+      </article>
+
+      {strip.length > 0 && (
+        <ul class="story-strip" role="list">
+          {strip.map((story) => (
+            <li class="story-strip-item">
+              {story.category && <p class="story-category">{story.category}</p>}
+              <h3 class="story-strip-title">
+                <a href={story.href}>{story.title}</a>
+              </h3>
+              {story.summary && <p class="story-strip-summary">{story.summary}</p>}
+              {story.date && <time datetime={story.date.toISOString()}>{formatDate(story.date)}</time>}
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  </section>
+)}
+
+<style>
+  .stories {
+    padding: var(--space-16) 0;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .stories-container {
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .stories-header {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 1.5rem;
+    margin-bottom: var(--space-8);
+  }
+
+  .stories-header h2 {
+    margin: 0 0 0.5rem;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .stories-header p {
+    margin: 0;
+    max-width: 36rem;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    color: var(--color-graphite);
+  }
+
+  .stories-all {
+    flex-shrink: 0;
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-aubergine);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color var(--transition-fast);
+  }
+
+  .stories-all:hover {
+    color: var(--color-aubergine-deep);
+    text-decoration-color: currentColor;
+  }
+
+  .story-category {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-aubergine);
+  }
+
+  .story-feature {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+    overflow: hidden;
+    border: 1px solid var(--color-driftwood);
+    border-radius: var(--radius-xl);
+    background: var(--color-bone);
+    transition: border-color var(--transition-base);
+  }
+
+  .story-feature:hover {
+    border-color: var(--color-border-hover);
+  }
+
+  .story-feature-image {
+    min-height: 100%;
+    background: var(--color-fog);
+  }
+
+  .story-feature-image > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .story-feature-fallback {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    min-height: 16rem;
+    background: var(--color-aubergine);
+  }
+
+  .story-feature-fallback img {
+    width: 48px;
+    height: auto;
+    filter: brightness(0) invert(1);
+  }
+
+  .story-feature-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1rem;
+    padding: clamp(1.75rem, 4vw, 3rem);
+  }
+
+  .story-feature-title,
+  .story-strip-title {
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .story-feature-title {
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.15;
+  }
+
+  .story-strip-title {
+    font-size: 1.125rem;
+    line-height: 1.3;
+  }
+
+  .story-feature-title a,
+  .story-strip-title a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .story-feature-title a::after,
+  .story-strip-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-xl);
+  }
+
+  .story-strip-title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .story-feature-title a:focus-visible,
+  .story-strip-title a:focus-visible {
+    outline: none;
+  }
+
+  .story-feature-title a:focus-visible::after,
+  .story-strip-title a:focus-visible::after {
+    outline: 2px solid var(--color-aubergine);
+    outline-offset: 3px;
+  }
+
+  .story-feature-summary {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-graphite);
+    text-wrap: pretty;
+  }
+
+  .story-feature-footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0.5rem 0 0;
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+  }
+
+  .story-cta {
+    font-weight: 600;
+    color: var(--color-aubergine);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color var(--transition-fast);
+  }
+
+  .story-feature:hover .story-cta {
+    text-decoration-color: currentColor;
+  }
+
+  .story-strip {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 2.5rem;
+    margin: 2.5rem 0 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .story-strip-item {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .story-strip-summary {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.55;
+    color: var(--color-graphite);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .story-strip-item time {
+    margin-top: auto;
+    padding-top: 0.25rem;
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 860px) {
+    .story-feature {
+      grid-template-columns: 1fr;
+    }
+
+    .story-feature-image {
+      aspect-ratio: 16 / 9;
+      min-height: 0;
+    }
+
+    .story-strip {
+      grid-template-columns: 1fr;
+      gap: 0;
+      margin-top: 1.5rem;
+    }
+
+    .story-strip-item {
+      padding-block: 1.25rem;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stories {
+      padding: var(--space-10) 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .stories-container {
+      padding-inline: var(--space-4);
+    }
+
+    .stories-header {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
+    .story-feature-body {
+      padding: 1.25rem;
+    }
+  }
+</style>

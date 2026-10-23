@@ -1,0 +1,107 @@
+---
+import Cover from './Cover.astro';
+
+interface Props {
+  href: string;
+  title: string;
+  category?: string;
+  summary?: string;
+  image?: string;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { href, title, category, summary, image, headingLevel: Heading = 'h2' } = Astro.props;
+---
+
+<article class="content-row">
+  <Cover src={image} />
+  <div class="content-row-body">
+    {category && <p class="content-row-category">{category}</p>}
+    <Heading class="content-row-title">
+      <a href={href}>{title}</a>
+    </Heading>
+    {summary && <p class="content-row-summary">{summary}</p>}
+    <slot />
+  </div>
+</article>
+
+<style>
+  .content-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+    padding-block: 2rem;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .content-row-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    max-width: 40rem;
+  }
+
+  .content-row-category {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-aubergine);
+  }
+
+  .content-row-title {
+    margin: 0;
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .content-row-title a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .content-row-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+  }
+
+  .content-row-title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .content-row-title a:focus-visible {
+    outline: none;
+  }
+
+  .content-row-title a:focus-visible::after {
+    outline: 2px solid var(--color-aubergine);
+    outline-offset: 4px;
+  }
+
+  .content-row-summary {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--color-graphite);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @media (max-width: 640px) {
+    .content-row {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding-block: 1.5rem;
+    }
+  }
+</style>

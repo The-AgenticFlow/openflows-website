@@ -55,6 +55,7 @@
   --sidebar-ring: 174 70% 24%;
 
   /* Legacy aliases for existing components */
+  --color-parchment: var(--color-parchment-canvas);
   --color-bg: var(--color-parchment-canvas);
   --color-bg-elevated: var(--color-bone);
   --color-surface: var(--color-bone);
