@@ -35,13 +35,6 @@ export default function FlowVisual() {
           </WindowFrame>
         </div>
 
-        <div className={styles.agents}>
-          {['NEXUS', 'FORGE', 'SENTINEL', 'VESSEL', 'LORE'].map((agent) => (
-            <span key={agent} className={styles.agentBadge}>
-              {agent}
-            </span>
-          ))}
-        </div>
       </div>
     </section>
   )

@@ -69,7 +69,6 @@
 }
 
 .stage {
-  margin-bottom: 48px;
   padding: clamp(1rem, 4vw, 3.5rem);
   border: 1px solid var(--color-driftwood);
   border-radius: var(--radius-xl);
@@ -95,26 +94,6 @@
   width: calc(100% / (1 - 2 * var(--crop-x)));
   height: calc(100% / (1 - var(--crop-top)));
   border: 0;
-}
-
-.agents {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-}
-
-.agentBadge {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 8px 16px;
-  border-radius: 0;
-  border: 1px solid var(--color-driftwood);
-  color: var(--color-graphite);
-  background: var(--color-fog);
 }
 
 @media (max-width: 900px) {

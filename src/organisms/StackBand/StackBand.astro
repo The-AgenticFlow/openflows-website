@@ -1,0 +1,100 @@
+---
+import { STACK_INTEGRATIONS } from '@/data/stackIntegrations';
+---
+
+<section class="stack" aria-labelledby="stack-title">
+  <h2 id="stack-title" class="stack-title">Built for real teams</h2>
+
+  <div class="stack-band">
+    <p class="stack-intro">Runs on the workspaces, source control and chat tools your team already uses</p>
+    <ul class="stack-list" role="list">
+      {STACK_INTEGRATIONS.map((item) => (
+        <li class="stack-item" data-reveal title={item.role}>
+          <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+            <path d={item.path} />
+          </svg>
+          <span>{item.name}</span>
+        </li>
+      ))}
+    </ul>
+  </div>
+</section>
+
+<style>
+  .stack {
+    overflow: hidden;
+    padding-top: clamp(4rem, 8vw, 7.5rem);
+  }
+
+  .stack-title {
+    margin: 0;
+    padding: 0 var(--space-6);
+    font-size: clamp(3rem, 10.4vw, 10.5rem);
+    font-weight: 400;
+    line-height: 0.74;
+    letter-spacing: -0.05em;
+    text-align: center;
+    white-space: nowrap;
+    color: var(--color-ink);
+  }
+
+  .stack-band {
+    padding: clamp(3rem, 5vw, 4.5rem) var(--space-6);
+    background: #1d1c1b;
+    color: #f2f0eb;
+  }
+
+  .stack-intro {
+    max-width: 22rem;
+    margin: 0 auto 2.75rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    text-align: center;
+    color: rgba(242, 240, 235, 0.72);
+    text-wrap: balance;
+  }
+
+  .stack-list {
+    display: grid;
+    grid-template-columns: repeat(4, auto);
+    justify-content: center;
+    gap: 2rem 3.5rem;
+    max-width: 62rem;
+    margin: 0 auto;
+    padding: 0;
+    list-style: none;
+  }
+
+  .stack-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-size: 1.1875rem;
+    font-weight: 500;
+    letter-spacing: -0.01em;
+    color: #f2f0eb;
+  }
+
+  .stack-item svg {
+    width: 1.625rem;
+    height: 1.625rem;
+    flex-shrink: 0;
+  }
+
+  @media (max-width: 640px) {
+    .stack-title {
+      white-space: normal;
+      line-height: 0.92;
+      padding-bottom: 0.05em;
+    }
+
+    .stack-list {
+      grid-template-columns: repeat(2, minmax(0, 9rem));
+      gap: 1.5rem 1.5rem;
+    }
+
+    .stack-item {
+      font-size: 1.0625rem;
+    }
+  }
+</style>
