@@ -54,10 +54,19 @@ const stories: Story[] = Object.entries(storyModules)
 const formatDate = (date?: Date) =>
   date ? date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
 
+const QUOTE_MAX_LENGTH = 140;
+
+const toQuote = (summary: string): string => {
+  if (summary.length <= QUOTE_MAX_LENGTH) return summary;
+  const firstSentence = summary.match(/^.+?[.!?](?=\s|$)/)?.[0];
+  return firstSentence && firstSentence.length <= QUOTE_MAX_LENGTH * 1.5 ? firstSentence : summary;
+};
+
 const STRIP_COUNT = 3;
 const [feature, ...others] = stories;
 const strip = others.slice(0, STRIP_COUNT);
 const hasMore = others.length > STRIP_COUNT;
+const featureQuote = feature?.summary ? toQuote(feature.summary) : '';
 ---
 
 {feature && (
@@ -83,10 +92,14 @@ const hasMore = others.length > STRIP_COUNT;
         </div>
         <div class="story-feature-body">
           {feature.category && <p class="story-category">{feature.category}</p>}
+          {featureQuote && (
+            <blockquote class="story-feature-quote">
+              <p>“{featureQuote}”</p>
+            </blockquote>
+          )}
           <h3 class="story-feature-title">
             <a href={feature.href}>{feature.title}</a>
           </h3>
-          {feature.summary && <p class="story-feature-summary">{feature.summary}</p>}
           <p class="story-feature-footer">
             <span class="story-cta">Read the story</span>
             {feature.date && <time datetime={feature.date.toISOString()}>{formatDate(feature.date)}</time>}
@@ -114,8 +127,15 @@ const hasMore = others.length > STRIP_COUNT;
 
 <style>
   .stories {
-    padding: var(--space-16) 0;
-    border-top: 1px solid var(--color-driftwood);
+    --stories-text: var(--color-parchment-canvas);
+    --stories-text-secondary: #c4beb6;
+    --stories-text-muted: #a8a29a;
+    --stories-accent: #8fcabd;
+    --stories-rule: rgba(242, 240, 235, 0.16);
+
+    padding: clamp(4rem, 8vw, 6.5rem) 0;
+    background: var(--color-ink);
+    color: var(--stories-text);
   }
 
   .stories-container {
@@ -129,7 +149,7 @@ const hasMore = others.length > STRIP_COUNT;
     align-items: flex-end;
     justify-content: space-between;
     gap: 1.5rem;
-    margin-bottom: var(--space-8);
+    margin-bottom: clamp(2.5rem, 5vw, 3.5rem);
   }
 
   .stories-header h2 {
@@ -137,6 +157,7 @@ const hasMore = others.length > STRIP_COUNT;
     font-size: var(--font-size-2xl);
     font-weight: var(--font-weight-semibold);
     letter-spacing: var(--tracking-tight);
+    color: var(--stories-text);
   }
 
   .stories-header p {
@@ -144,14 +165,14 @@ const hasMore = others.length > STRIP_COUNT;
     max-width: 36rem;
     font-size: 1.0625rem;
     line-height: 1.5;
-    color: var(--color-graphite);
+    color: var(--stories-text-secondary);
   }
 
   .stories-all {
     flex-shrink: 0;
     font-size: var(--font-size-sm);
     font-weight: var(--font-weight-medium);
-    color: var(--color-aubergine);
+    color: var(--stories-accent);
     text-decoration: underline;
     text-decoration-color: transparent;
     text-underline-offset: 0.2em;
@@ -159,35 +180,37 @@ const hasMore = others.length > STRIP_COUNT;
   }
 
   .stories-all:hover {
-    color: var(--color-aubergine-deep);
+    color: var(--stories-accent);
     text-decoration-color: currentColor;
+  }
+
+  .stories-all:focus-visible {
+    outline: 2px solid var(--stories-accent);
+    outline-offset: 3px;
   }
 
   .story-category {
     margin: 0;
     font-size: 0.875rem;
     font-weight: 500;
-    color: var(--color-aubergine);
+    color: var(--stories-accent);
   }
 
   .story-feature {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
-    overflow: hidden;
-    border: 1px solid var(--color-driftwood);
-    border-radius: var(--radius-xl);
-    background: var(--color-bone);
-    transition: border-color var(--transition-base);
-  }
-
-  .story-feature:hover {
-    border-color: var(--color-border-hover);
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: center;
   }
 
   .story-feature-image {
-    min-height: 100%;
-    background: var(--color-fog);
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: rgba(242, 240, 235, 0.06);
+    outline: 1px solid var(--stories-rule);
+    outline-offset: -1px;
   }
 
   .story-feature-image > img {
@@ -202,7 +225,6 @@ const hasMore = others.length > STRIP_COUNT;
     place-items: center;
     width: 100%;
     height: 100%;
-    min-height: 16rem;
     background: var(--color-aubergine);
   }
 
@@ -215,32 +237,51 @@ const hasMore = others.length > STRIP_COUNT;
   .story-feature-body {
     display: flex;
     flex-direction: column;
-    justify-content: center;
-    gap: 1rem;
-    padding: clamp(1.75rem, 4vw, 3rem);
+    gap: 1.25rem;
+  }
+
+  .story-feature-quote {
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .story-feature-quote p {
+    margin: 0;
+    font-size: clamp(1.5rem, 2.6vw, 2.125rem);
+    font-weight: 500;
+    line-height: 1.25;
+    letter-spacing: -0.02em;
+    color: var(--stories-text);
+    text-wrap: balance;
+    hanging-punctuation: first;
   }
 
   .story-feature-title,
   .story-strip-title {
     margin: 0;
     font-weight: 600;
-    letter-spacing: -0.015em;
     text-wrap: balance;
   }
 
   .story-feature-title {
-    font-size: clamp(1.5rem, 2.4vw, 2rem);
-    line-height: 1.15;
+    font-size: 1.0625rem;
+    line-height: 1.4;
   }
 
   .story-strip-title {
     font-size: 1.125rem;
     line-height: 1.3;
+    letter-spacing: -0.015em;
   }
 
-  .story-feature-title a,
+  .story-feature-title a {
+    color: var(--stories-text-secondary);
+    text-decoration: none;
+  }
+
   .story-strip-title a {
-    color: var(--color-ink);
+    color: var(--stories-text);
     text-decoration: none;
   }
 
@@ -248,11 +289,13 @@ const hasMore = others.length > STRIP_COUNT;
   .story-strip-title a::after {
     content: '';
     position: absolute;
-    inset: 0;
+    inset: -0.5rem;
     border-radius: var(--radius-xl);
   }
 
+  .story-feature-title a:hover,
   .story-strip-title a:hover {
+    color: var(--stories-text);
     text-decoration: underline;
     text-decoration-thickness: 1px;
     text-underline-offset: 0.2em;
@@ -265,31 +308,21 @@ const hasMore = others.length > STRIP_COUNT;
 
   .story-feature-title a:focus-visible::after,
   .story-strip-title a:focus-visible::after {
-    outline: 2px solid var(--color-aubergine);
-    outline-offset: 3px;
-  }
-
-  .story-feature-summary {
-    margin: 0;
-    font-size: 1.0625rem;
-    line-height: 1.6;
-    color: var(--color-graphite);
-    text-wrap: pretty;
+    outline: 2px solid var(--stories-accent);
   }
 
   .story-feature-footer {
     display: flex;
     align-items: baseline;
-    justify-content: space-between;
-    gap: 1rem;
-    margin: 0.5rem 0 0;
+    gap: 1.5rem;
+    margin: 0.25rem 0 0;
     font-size: 0.875rem;
-    color: var(--color-graphite);
+    color: var(--stories-text-muted);
   }
 
   .story-cta {
     font-weight: 600;
-    color: var(--color-aubergine);
+    color: var(--stories-accent);
     text-decoration: underline;
     text-decoration-color: transparent;
     text-underline-offset: 0.2em;
@@ -304,7 +337,7 @@ const hasMore = others.length > STRIP_COUNT;
     display: grid;
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 2.5rem;
-    margin: 2.5rem 0 0;
+    margin: clamp(3rem, 6vw, 4.5rem) 0 0;
     padding: 0;
     list-style: none;
   }
@@ -315,14 +348,14 @@ const hasMore = others.length > STRIP_COUNT;
     flex-direction: column;
     gap: 0.625rem;
     padding-top: 1.25rem;
-    border-top: 1px solid var(--color-driftwood);
+    border-top: 1px solid var(--stories-rule);
   }
 
   .story-strip-summary {
     margin: 0;
     font-size: 0.9375rem;
     line-height: 1.55;
-    color: var(--color-graphite);
+    color: var(--stories-text-secondary);
     display: -webkit-box;
     -webkit-line-clamp: 2;
     -webkit-box-orient: vertical;
@@ -333,34 +366,23 @@ const hasMore = others.length > STRIP_COUNT;
     margin-top: auto;
     padding-top: 0.25rem;
     font-size: 0.875rem;
-    color: var(--color-graphite);
+    color: var(--stories-text-muted);
     font-variant-numeric: tabular-nums;
   }
 
   @media (max-width: 860px) {
     .story-feature {
       grid-template-columns: 1fr;
-    }
-
-    .story-feature-image {
-      aspect-ratio: 16 / 9;
-      min-height: 0;
+      gap: 1.75rem;
     }
 
     .story-strip {
       grid-template-columns: 1fr;
       gap: 0;
-      margin-top: 1.5rem;
     }
 
     .story-strip-item {
       padding-block: 1.25rem;
-    }
-  }
-
-  @media (max-width: 768px) {
-    .stories {
-      padding: var(--space-10) 0;
     }
   }
 
@@ -372,10 +394,6 @@ const hasMore = others.length > STRIP_COUNT;
     .stories-header {
       flex-direction: column;
       align-items: flex-start;
-    }
-
-    .story-feature-body {
-      padding: 1.25rem;
     }
   }
 </style>
