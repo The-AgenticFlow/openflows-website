@@ -8,7 +8,7 @@ const STATE_ROWS = [
   ['Testing', 'Test work is underway.', 'Review ready, Blocked'],
   ['Review ready', 'FORGE opened a pull request and marked it for review.', 'Blocked, Awaiting human'],
   ['Review', 'SENTINEL is adversarially reviewing the pull request.', 'Merged (on approval), or back to Building (on rejection, continuous-integration failure, or conflict)'],
-  ['Merged', 'VESSEL merged the approved pull request. Terminal — the workspace is torn down and documentation follows.', '—'],
+  ['Merged', 'VESSEL merged the approved pull request. Terminal  -  the workspace is torn down and documentation follows.', ' - '],
   ['Blocked', 'Work is stuck at a step.', 'Usually toward Awaiting human'],
   ['Awaiting human', 'Parked for a human decision; the system stopped retrying.', 'Resolved by a human action or a reset'],
 ];
@@ -26,9 +26,9 @@ const STATE_ROWS = [
 
   <h2>The enforced rules</h2>
   <ul>
-    <li>A fresh ticket can only start in <strong>planning</strong> (or blocked) — it can’t skip planning.</li>
+    <li>A fresh ticket can only start in <strong>planning</strong> (or blocked)  -  it can’t skip planning.</li>
     <li>Leaving <strong>planning</strong> requires consuming an <strong>approval</strong> that only the reviewer can issue.</li>
-    <li>The approval is <strong>single-use</strong> — it can’t be replayed.</li>
+    <li>The approval is <strong>single-use</strong>  -  it can’t be replayed.</li>
   </ul>
 
   <h2>Recovery states (invisible but important)</h2>
@@ -36,10 +36,10 @@ const STATE_ROWS = [
     Separate from the ticket phases, recovery tracks things like:
   </p>
   <ul>
-    <li><strong>Stale worker</strong> — a workspace went silent (its heartbeat fired too long ago) and is marked for recovery.</li>
-    <li><strong>Orphaned ticket</strong> — assigned or in progress, but with no active worker.</li>
-    <li><strong>Crashed workspace</strong> — the machine or session died.</li>
-    <li><strong>Unmerged pull request</strong> — a pull request that should have been processed but wasn’t.</li>
+    <li><strong>Stale worker</strong>  -  a workspace went silent (its heartbeat fired too long ago) and is marked for recovery.</li>
+    <li><strong>Orphaned ticket</strong>  -  assigned or in progress, but with no active worker.</li>
+    <li><strong>Crashed workspace</strong>  -  the machine or session died.</li>
+    <li><strong>Unmerged pull request</strong>  -  a pull request that should have been processed but wasn’t.</li>
   </ul>
   <p>
     These are repaired automatically, with a bounded number of attempts, before escalation. See the
@@ -56,7 +56,7 @@ const STATE_ROWS = [
 
   <h2>Related</h2>
   <ul>
-    <li><a href="/docs/reference/roles-reference">Roles Reference</a> — who acts at each phase.</li>
-    <li><a href="/docs/concepts/human-escalation">Handling Human Escalations</a> — what to do when a ticket reaches you.</li>
+    <li><a href="/docs/reference/roles-reference">Roles Reference</a>  -  who acts at each phase.</li>
+    <li><a href="/docs/concepts/human-escalation">Handling Human Escalations</a>  -  what to do when a ticket reaches you.</li>
   </ul>
 </DocsLayout>

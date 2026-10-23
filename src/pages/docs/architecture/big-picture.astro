@@ -1,71 +1,38 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout } from '@/molecules/DocComponents/DocComponents';
+import { DocsTable } from '@/molecules/DocComponents/DocComponents';
+import MermaidDiagram from '@/components/MermaidDiagram.astro';
+
+const COMPONENTS = [
+  ['Manager', 'Product control plane', 'Users, organizations, GitHub connections, runtime identity, broker, operations, hook ingress'],
+  ['Coder', 'Execution control plane', 'Templates, builds, workspace agents, and workspace lifecycle'],
+  ['Nexus', 'Tenant controller', 'Issue sync, scheduling, reconciliation, agent hooks, and A2A relay'],
+  ['Forge, Sentinel, Vessel, Lore', 'Tenant workers', 'Scoped work in separate disposable Coder workspaces'],
+  ['PostgreSQL', 'Manager system of record', 'Ownership, operation leases, workspace credentials, and broker leases'],
+  ['Redis', 'Tenant coordination store', 'Tickets, worker slots, agent heartbeats, A2A evidence, and hook audit'],
+];
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Big Picture' }]}>
-  <h1>The Big Picture</h1>
-  <p>
-    At the highest level, OpenFlows divides the world into two halves: a <strong>control plane</strong> where the
-    system's brain lives, and a <strong>work plane</strong> where disposable agents do the actual coding.
-    Everything else in the architecture serves that split.
-  </p>
-
-  <figure class="docFigure">
-    <img src="/images/system-architecture.png" alt="Diagram of the OpenFlows system architecture: a control plane (Coder server, the Controller brain, the coordination store, and a database) supervising a work plane of disposable worker workspaces, with a coordination relay joining the two." width="1536" height="1024" loading="lazy" />
-    <figcaption>The control plane supervises the work plane; a coordination relay joins them.</figcaption>
-  </figure>
-
-  <h2>The control plane</h2>
-  <p>
-    The control plane is where the trusted, long-lived pieces live:
-  </p>
-  <ul>
-    <li><strong>Coder server.</strong> Provides identity, the model gateway (the only place AI calls happen), administration, audit, and the ability to create workspaces.</li>
-    <li><strong>The Controller (the brain).</strong> A single long-lived process that runs the whole coordination loop. It is the only component that talks to Coder's API to create workspaces and chats.</li>
-    <li><strong>The coordination store.</strong> A shared store that is the single record of truth for the team's state.</li>
-    <li><strong>A database</strong> for Coder's own bookkeeping.</li>
-  </ul>
-
-  <h2>The work plane</h2>
-  <p>
-    The work plane is where the actual labor happens — and it is deliberately disposable and untrusted.
-  </p>
-  <ul>
-    <li><strong>The NEXUS workspace</strong> is long-lived and trusted: it hosts the Controller brain.</li>
-    <li><strong>Worker workspaces</strong> are short-lived and isolated. Each one holds exactly one agent working on one ticket. They are provisioned on demand and <strong>torn down</strong> when the work is done.</li>
-  </ul>
-  <p>
-    Worker workspaces contain <strong>no LLM keys</strong>, <strong>no raw repository credentials</strong>, and have
-    tightly restricted network access. The intelligence they need is served to them from the control plane.
-  </p>
-
-  <h2>What connects the two</h2>
-  <p>
-    The two planes are joined by:
-  </p>
-  <ul>
-    <li><strong>Provisioning and supervision</strong> — the brain creates and monitors workspaces.</li>
-    <li><strong>The coordination store</strong> — both planes read and write the same record of truth (subject to strict write rules).</li>
-    <li><strong>A coordination relay</strong> — used for one specific, live job: letting the reviewer ask the builder's workspace to run a safe command and return evidence.</li>
-  </ul>
-
-  <h2>The mental model</h2>
-  <p>
-    If the control plane is a <strong>headquarters</strong> and a worker workspace is a <strong>job site</strong>,
-    then OpenFlows is the management that plans the work, sends a crew to the site, inspects the result from a
-    distance, and approves the delivery — while the job site itself has no copying machine for secrets and is
-    torn down when the work is complete. Settling a messy run is the job of the orchestration loop, which reads
-    reality, repairs what it can, and rises to a human when it cannot.
-  </p>
-
-  <Callout type="info" title="Two systems, two jobs">
-    Coder governs <em>where</em> agents run; OpenFlows governs <em>how</em> they coordinate. Coder supplies the
-    machines, identities, and the gateway where model calls happen. OpenFlows turns a pile of workspaces into a
-    cooperative team that plans, reviews, recovers, and merges.
-  </Callout>
-
-  <p>
-    This is the whole architecture. Every other page in this section zooms into one corner of this picture.
-  </p>
+  <h1>The big picture</h1>
+  <p>OpenFlows Manager is the trusted product control plane. Coder provides workspace execution. Nexus is the controller inside one tenant's runtime, and workers execute ticket-scoped tasks in separate workspaces.</p>
+  <MermaidDiagram title="The product control plane provisions and supports a tenant runtime" source={`flowchart TB
+    user["Signed-in user"] --> manager["OpenFlows Manager"]
+    manager --> postgres[(PostgreSQL)]
+    manager --> coder["Coder"]
+    manager --> github["GitHub App"]
+    coder --> nexus["Nexus controller"]
+    coder --> workers["Worker workspaces"]
+    nexus <--> redis[("Tenant Redis")]
+    workers <--> redis`} />
+  <DocsTable headers={['Component', 'Boundary', 'Responsibility']} rows={COMPONENTS} />
+  <h2 id="flow">From organization to agent work</h2>
+  <ol>
+    <li>A user signs into Manager, creates an organization, and connects a GitHub App installation.</li>
+    <li>Manager provisions a tenant and Nexus using durable operations and pinned Coder templates.</li>
+    <li>Nexus registers a runtime session, synchronizes repository work using a brokered installation token, and asks Manager for workers.</li>
+    <li>Manager authorizes and creates workers in Coder. The workers register their own scoped runtime sessions.</li>
+    <li>Forge and Sentinel exchange verification requests through the Nexus A2A relay, with evidence stored in tenant Redis.</li>
+  </ol>
+  <p>See <a href="/docs/architecture/manager-runtime">Manager Runtime</a> for the lifecycle and <a href="/docs/architecture/credentials">Credentials and Trust</a> for the exact authority boundaries.</p>
 </DocsLayout>

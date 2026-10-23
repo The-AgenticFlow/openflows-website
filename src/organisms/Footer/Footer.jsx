@@ -9,6 +9,7 @@ const FOOTER_LINKS = [
       { label: 'Installation Guide', href: '/docs/getting-started/installation' },
       { label: 'Agent Setup', href: '/docs/guides/agent-setup' },
       { label: 'Architecture', href: '/docs/architecture' },
+      { label: 'Enterprise', href: '/enterprise/' },
     ],
   },
   {

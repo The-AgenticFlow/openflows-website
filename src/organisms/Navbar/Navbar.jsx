@@ -33,6 +33,19 @@ const NAV_DATA = [
     }
   },
   {
+    label: 'Enterprise',
+    href: '/enterprise',
+    dropdown: {
+      heading: 'Enterprise',
+      items: [
+        { label: 'Overview', href: '/enterprise' },
+        { label: 'Trust boundaries', href: '/enterprise#security' },
+        { label: 'Deployment', href: '/enterprise#deployment' },
+        { label: 'Availability', href: '/enterprise#editions' },
+      ]
+    }
+  },
+  {
     label: 'Resources',
     href: '/developer',
     dropdown: {

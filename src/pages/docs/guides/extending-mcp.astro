@@ -7,7 +7,7 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <h1>Connecting an MCP Server</h1>
 
   <p>
-    MCP (Model Context Protocol) servers give your agents access to external tools and data —
+    MCP (Model Context Protocol) servers give your agents access to external tools and data  -
     a private API, an internal knowledge base, a specialized tool. OpenFlows makes this a
     configuration change in most cases.
   </p>
@@ -26,7 +26,7 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
 
   <h2>Which one to use?</h2>
   <ul>
-    <li>Use <strong>per-role</strong> when only certain agents should have the tool — a coding tool for the builder, a review tool for the reviewer.</li>
+    <li>Use <strong>per-role</strong> when only certain agents should have the tool  -  a coding tool for the builder, a review tool for the reviewer.</li>
     <li>Use <strong>central</strong> when the tool should be available team-wide, or to all of Coder.</li>
   </ul>
 
@@ -43,18 +43,18 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <h2>Connecting centrally (via the Coder dashboard)</h2>
   <ol>
     <li><strong>Register the server</strong> in the platform's AI settings under MCP servers.</li>
-    <li><strong>Configure policies</strong> — which tools are allowed, which denied, and when the server is available.</li>
+    <li><strong>Configure policies</strong>  -  which tools are allowed, which denied, and when the server is available.</li>
     <li><strong>Save.</strong> The server applies to agent sessions.</li>
   </ol>
   <p>
-    This path applies beyond OpenFlows — to all chat sessions in the environment.
+    This path applies beyond OpenFlows  -  to all chat sessions in the environment.
   </p>
 
   <h2>What you should see</h2>
   <ul>
     <li>For per-role servers: the role can call the server's tools, and it's visible in the role's configured capabilities.</li>
     <li>For central servers: tools are available to sessions, subject to your allow and deny policy.</li>
-    <li>The merged result is what the agent actually sees — its role's servers plus the platform-wide ones.</li>
+    <li>The merged result is what the agent actually sees  -  its role's servers plus the platform-wide ones.</li>
   </ul>
 
   <h2>Practical guidance</h2>

@@ -1,0 +1,45 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import MermaidDiagram from '@/components/MermaidDiagram.astro';
+import { DocsTable, Callout } from '@/molecules/DocComponents/DocComponents';
+
+const interactions = [
+  ['User → Manager', 'Browser session', 'Sign in, connect GitHub, create an organization and tenant'],
+  ['Manager → Coder', 'Server-held operator credential', 'Provision templates and workspaces through durable operations'],
+  ['Workspace → Manager', 'One-time bootstrap, then runtime access token', 'Register, heartbeat, request authorized operations and credentials'],
+  ['Manager → GitHub App', 'Server-held App private key', 'Mint repository-scoped installation tokens'],
+  ['Workspace → GitHub', 'Short-lived installation token', 'Synchronize issues, clone, push, and inspect PRs'],
+  ['Coder → Manager → Nexus', 'Global hook signature, then tenant hook signature', 'Deliver a lifecycle event to the right tenant'],
+  ['Nexus ↔ tenant Redis', 'Tenant Redis ACL and namespace', 'Store tickets, assignments, heartbeats, hook audit and A2A evidence'],
+  ['Sentinel / Forge → Nexus', 'Ticket pair token', 'Request, claim and return verification evidence'],
+];
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Components and Interactions' }]}>
+  <h1>Components and interactions</h1>
+  <p>Start here for the system map. Manager owns product and runtime authority. Coder runs workspaces. Nexus coordinates one tenant; Forge, Sentinel, Vessel, and Lore do ticket-scoped work. The diagrams show the boundaries first, before the sequence diagrams explain individual requests.</p>
+
+  <h2 id="control-plane">The control plane and execution plane</h2>
+  <MermaidDiagram title="Manager holds authority; Coder runs tenant workspaces" source={`flowchart TB
+    user["Signed-in user"] --> manager["OpenFlows Manager"]
+    manager --> postgres[(PostgreSQL)]
+    manager --> secrets["Secret provider"]
+    manager --> coder["Coder"]
+    manager --> github["GitHub App"]
+    coder --> runtime["Nexus and worker workspaces"]`} />
+  <p>Workspaces do not receive Manager's Coder operator credential or GitHub App private key. They authenticate as one registered runtime. Manager is the control plane for provisioning and credential scope, not a proxy for every agent message.</p>
+
+  <h2 id="tenant-plane">Inside one tenant</h2>
+  <MermaidDiagram title="Nexus coordinates workers inside one tenant" source={`flowchart TB
+    manager["Manager"] --> nexus["Nexus controller"]
+    nexus --> forge["Forge"]
+    nexus --> sentinel["Sentinel"]
+    nexus --> others["Vessel and Lore"]
+    nexus <--> redis[("Tenant Redis")]
+    nexus --> artifacts["Shared role artifacts"]`} />
+  <p>Forge and Sentinel exchange verification through Nexus's tenant-local A2A relay. Manager provisions and scopes those workspaces, but it is not on the A2A message path. Redis holds the tenant coordination state and is protected by tenant-specific credentials.</p>
+
+  <h2 id="interaction-map">Who talks to whom</h2>
+  <DocsTable headers={['Interaction', 'Authority', 'Purpose']} rows={interactions} />
+  <Callout type="info" title="Read the flows next">Continue to <a href="/docs/architecture/manager-runtime">Manager runtime</a> for registration and provisioning, then <a href="/docs/architecture/credentials">Credentials and trust</a> and <a href="/docs/architecture/hooks-and-a2a">Hooks and A2A</a> for the cross-boundary protocols.</Callout>
+</DocsLayout>

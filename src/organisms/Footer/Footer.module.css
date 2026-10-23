@@ -21,7 +21,7 @@
   margin-inline: auto;
 }
 
-/* ── Link columns  -  IZHUB grid: 1.3fr 1fr 1fr 1fr on lg ── */
+/* Link columns */
 .columns {
   display: grid;
   gap: 3.5rem 4rem;
@@ -40,7 +40,7 @@
   }
 }
 
-/* ── Brand column  -  IZHUB style ── */
+/* Brand column */
 .brandColumn {
   max-width: 20rem;
 }

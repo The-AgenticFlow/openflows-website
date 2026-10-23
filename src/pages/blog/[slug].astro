@@ -84,7 +84,7 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
       </div>
     </article>
   </main>
-  
+
   <script>
     // Initialize Giscus
     const loadGiscus = () => {
@@ -105,7 +105,7 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
       script.async = true;
       document.getElementById('giscus-container')?.appendChild(script);
     };
-    
+
     // Load Giscus after page is ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', loadGiscus);

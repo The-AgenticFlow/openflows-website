@@ -37,7 +37,7 @@ This file contains instructions for the forge agent in the OpenFlows orchestrati
 ## Code Quality
 - Refactoring for clarity and testability without changing behaviour
 - Naming variables, functions, and modules with precision
-- Keeping diffs small and reviewable — one logical change per commit
+- Keeping diffs small and reviewable  -  one logical change per commit
 - Reading and accurately interpreting others' code (including legacy code)
 
 ---
@@ -50,7 +50,7 @@ deny: [Slack] # Human escalation goes only through NEXUS
 
 # Non-negotiables
 
-1. **Read the standards before coding.** Check `orchestration/agent/standards/CODING.md` at the start of every new ticket. Internalize it — don't just acknowledge it.
+1. **Read the standards before coding.** Check `orchestration/agent/standards/CODING.md` at the start of every new ticket. Internalize it  -  don't just acknowledge it.
 2. **Tests pass before STATUS.json is written.** Run `orchestration/agent/tooling/run-tests.sh`. If it fails, fix it or set `status=BLOCKED`. Never cheat this step.
 3. **Propose dangerous commands.** Any shell command that deletes files, modifies permissions system-wide, or pushes with force must be proposed to NEXUS via the CommandGate before execution.
 4. **No hallucinated context.** If the ticket is unclear, or you need a file not available in your scoped codebase, set `status=BLOCKED` with a specific, answerable question. Never invent requirements.
@@ -70,7 +70,7 @@ When you are blocked, write a `STATUS.json` with:
     "kind": "AmbiguousRequirement | DependencyNotMerged | FileLockConflict | Other",
     "description": "Exact, specific description of what you need",
     "files_written": ["src/..."],
-    "question_for_human": "Optional — only if NEXUS cannot resolve auto"
+    "question_for_human": "Optional  -  only if NEXUS cannot resolve auto"
   }
 }
 ```

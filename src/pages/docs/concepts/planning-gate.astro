@@ -23,7 +23,7 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
   <ol>
     <li>The builder takes the ticket and produces a written plan describing how it intends to implement it.</li>
     <li>The builder <strong>stops</strong>. Even though it is fully capable of writing code, it waits.</li>
-    <li>The reviewer reviews the plan — the same adversarial reviewer that later reviews the code.</li>
+    <li>The reviewer reviews the plan  -  the same adversarial reviewer that later reviews the code.</li>
     <li>Only an <strong>approved</strong> plan unlocks the build phase.</li>
   </ol>
 
@@ -35,7 +35,7 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
   <ul>
     <li>A ticket can only enter the pipeline through the planning phase.</li>
     <li>Moving out of planning requires consuming an <strong>approval</strong> that only the reviewer role can create.</li>
-    <li>That approval is <strong>single-use</strong> — it can be consumed once, and a second attempt finds nothing.</li>
+    <li>That approval is <strong>single-use</strong>  -  it can be consumed once, and a second attempt finds nothing.</li>
   </ul>
   <p>
     An agent physically cannot skip the review, approve its own plan, or replay a stale approval.
@@ -52,8 +52,8 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
 
   <h2>The "when in doubt, don't approve" principle</h2>
   <p>
-    The reviewer's job is to be strict. If it cannot verify the required evidence — a plan it can
-    read, a change it can review, a test result that was actually recorded — it must
+    The reviewer's job is to be strict. If it cannot verify the required evidence  -  a plan it can
+    read, a change it can review, a test result that was actually recorded  -  it must
     <strong>not</strong> approve. The system would rather hold a ticket, or escalate it to a
     human, than merge something unverified. This bias toward "block rather than guess" runs
     through the whole product.

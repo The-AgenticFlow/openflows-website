@@ -1,87 +1,27 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, StepHeading, DocCards } from '@/molecules/DocComponents/DocComponents';
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Token Guide' }]}>
-  <h1>Token Guide</h1>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Get Started', href: '/docs/getting-started' }, { label: 'Token Guide' }]}>
+  <h1>Identity and token guide</h1>
+  <p>Signing into OpenFlows, running a workspace, accessing GitHub, and coordinating a Forge–Sentinel pair use different credentials. The Manager validates each credential for one purpose.</p>
 
-  <p>
-    OpenFlows acts on GitHub through a <strong>real identity</strong>, not a shared token. When the team
-    pushes a branch, opens a pull request, or comments on an issue, it does so as the tenant's linked
-    GitHub identity, resolved through a <strong>scoped OAuth link</strong>. This page explains that
-    model in user-facing terms.
-  </p>
+  <h2 id="user-sign-in">User sign-in and GitHub installation</h2>
+  <p>A person signs in with GitHub to access the OpenFlows web interface. An organization admin connects a GitHub App installation and selects a repository that the installation can access. This browser session establishes the user's product permissions; it is not injected into a worker.</p>
 
-  <Callout type="info" title="No raw tokens in worker workspaces">
-    This is the single most important fact about how OpenFlows authenticates: <strong>worker
-    workspaces hold no raw repository credentials and no model keys.</strong> The working spaces where
-    agents do their jobs are thin and disposable - they contain none of the secrets that would let an
-    attacker - or a misbehaving agent - act on your behalf.
-  </Callout>
+  <h2 id="workspace-registration">Workspace registration</h2>
+  <p>Manager creates a one-time bootstrap value for each Coder workspace and mounts it in a read-only runtime bundle. Workspace startup calls <code>POST /api/v1/runtime/register</code>. Manager consumes the bootstrap and returns short-lived access and rotating refresh credentials. The workspace uses these to heartbeat, request a worker (Nexus only), or call the GitHub broker.</p>
 
-  <StepHeading step="1" id="identity-model">The identity model</StepHeading>
-  <p>
-    OpenFlows never relies on a shared token sitting inside a sandbox. Instead, identity works in two
-    layers:
-  </p>
-  <ul>
-    <li>
-      <strong>A scoped GitHub OAuth link per tenant.</strong> For each tenant, you link a real GitHub
-      identity through OAuth in the Coder dashboard (or the OpenFlows control panel). This grants the
-      team the scoped ability to read the repository, push branches, open pull requests, and comment on
-      issues - attributable to that tenant's identity, not to a shared, mysterious account.
-    </li>
-    <li>
-      <strong>A real, attributable identity for every action.</strong> Every action an agent takes
-      inherits a real identity through Coder's login and that scoped OAuth link. There are no shared,
-      anonymous accounts. When something is merged or commented on, it is attributable and auditable.
-    </li>
-  </ul>
+  <h2 id="github">GitHub repository access</h2>
+  <p>When Nexus or a worker needs GitHub access, it calls <code>POST /api/v1/runtime/github-credentials</code> with purpose <code>api</code> or <code>git</code>. Manager determines the installation, repository, and permissions from the authenticated workspace and returns a short-lived GitHub App installation token. GitHub records hosted operations under the App bot identity.</p>
 
-  <StepHeading step="2" id="where-credentials-live">Where credentials live</StepHeading>
-  <p>
-    Credentials are deliberately concentrated, not spread around:
-  </p>
-  <ul>
-    <li>
-      <strong>The control plane</strong> is where model access and the coordination happen. Every AI
-      call is routed centrally through the model gateway, so worker workspaces never hold a model key.
-    </li>
-    <li>
-      <strong>The orchestrator workspace</strong> is the one long-lived, trusted component that
-      legitimately holds the credentials the workers never see. It runs the coordination loop and is
-      the auditable place where trust is concentrated.
-    </li>
-    <li>
-      <strong>Worker workspaces</strong> hold none of this. They have no raw repository credentials, no
-      model keys, and no secrets - only the repository checkout, the coordination surface, and their
-      role's skills.
-    </li>
-  </ul>
+  <h2 id="redis-a2a">Redis and A2A</h2>
+  <p>The runtime bundle also carries a tenant-specific Redis credential and namespace. A2A verification uses a separate pair token for a particular ticket; it cannot be used as a Manager or Redis credential.</p>
 
-  <Callout type="tip" title="Why this keeps things safe">
-    Remove the secrets from the sandbox and an entire class of "stolen key" attacks disappears. Trust
-    is concentrated in a single auditable place, and everything else is disposable and keyless. See the
-    <a href="/docs/architecture/security-by-design">Security Model</a> page for the full picture.
-  </Callout>
-
-  <StepHeading step="3" id="how-it-is-set-up">How it is set up</StepHeading>
-  <ol>
-    <li><strong>Add a tenant</strong> for your repository (see <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a>).</li>
-    <li><strong>Complete GitHub OAuth</strong> for that tenant - link the real identity OpenFlows will act as.</li>
-    <li>That scope follows the team from then on. No per-ticket token management is needed.</li>
-  </ol>
-  <p>
-    If a deeper topic (such as token-level configuration or troubleshooting) is not covered here, that
-    is because the current documentation keeps the authentication model intentionally simple: a scoped
-    OAuth link, real identity, and no raw tokens in workspaces.
-  </p>
-
-  <h2 id="related">Related pages</h2>
+  <Callout type="warning" title="Workspace credential exposure">A running worker can read its own runtime bundle and temporary tokens. It cannot read the GitHub App private key, platform Coder credential, or another tenant's Redis password. Protect and revoke workspaces accordingly.</Callout>
   <DocCards cards={[
-    { icon: '🔐', title: 'Security by Design', desc: 'Why the split keeps secrets out of the sandbox.', href: '/docs/architecture/security-by-design' },
-    { icon: '🖥️', title: 'Workspaces', desc: 'What a workspace contains - and deliberately does not.', href: '/docs/concepts/coder-openflows-split' },
-    { icon: '🚀', title: 'First Issue', desc: 'See the OAuth step in the full walkthrough.', href: '/docs/getting-started/first-issue' },
+    { icon: '🗝️', title: 'Credentials and Trust', desc: 'The complete credential boundary and lifecycle.', href: '/docs/architecture/credentials' },
+    { icon: '🛡️', title: 'Security Model', desc: 'Isolation, audit, and remaining operational risks.', href: '/docs/architecture/security-by-design' },
   ]} />
 </DocsLayout>

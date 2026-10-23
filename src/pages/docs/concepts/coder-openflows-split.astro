@@ -1,78 +1,18 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout, DocsTable } from '@/molecules/DocComponents/DocComponents';
+import { DocsTable } from '@/molecules/DocComponents/DocComponents';
 
-const SPLIT_ROWS = [
-  ['Job', 'Where work runs', 'How work is coordinated'],
-  ['Provides', 'Identity and login, disposable workspaces, model gateway, audit, network policy', 'The team, the plan gate, adversarial review, self-healing, merges'],
-  ['Never', 'Decides what the team should build', 'Decides where work executes'],
-];
-
-const SECURITY_ROWS = [
-  ['AI calls happen only in the control plane', 'Through a central gateway, which means worker workspaces never hold an LLM key.'],
-  ['Git identity is a scoped OAuth link', 'No shared raw token ever sits in a workspace.'],
-  ['Worker workspaces are thin and disposable', 'No framework, no keys, tight network  -  because the intelligence they need lives centrally, not inside them.'],
-];
-
-const MAINTENANCE_ROWS = [
-  ['Each side upgrades independently', 'Coder can own and improve the agent loop; OpenFlows owns coordination.'],
-  ['One integration to keep', 'Every role is driven over one consistent interface, and OpenFlows stays a layer on top.'],
-  ['The pieces stay small and focused', 'Coder doesn\u2019t think about workflow; OpenFlows doesn\u2019t think about machines.'],
+const ROLES = [
+  ['Coder', 'Build and execute isolated workspaces; report build and agent state'],
+  ['OpenFlows Manager', 'Authorize users and runtimes; broker GitHub credentials; provision workspaces through Coder'],
+  ['Nexus', "Coordinate one tenant's issue-to-PR flow, worker assignments, hooks, and A2A evidence"],
 ];
 ---
 
-
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'The Coder / OpenFlows Split' }]}>
-  <h1>The Coder / OpenFlows Split</h1>
-  <p>
-    If you remember only one idea from this documentation, let it be this founding asymmetry:
-  </p>
-  <p>
-    <strong>Coder governs <em>where</em> agents run. OpenFlows governs <em>how</em> they coordinate.</strong>
-  </p>
-  <p>
-    This single split explains the entire architecture, and it's worth understanding on its own.
-  </p>
-
-  <h2>Two providers, two jobs</h2>
-  <p>
-    OpenFlows composes two very different systems, and each does the thing it's best at  -  nothing else.
-  </p>
-  <DocsTable headers={['', 'Coder', 'OpenFlows']} rows={SPLIT_ROWS} />
-  <ul>
-    <li>
-      <strong>Coder is the execution substrate.</strong> It gives you governed, ephemeral workspaces; real
-      identities; a central place where model calls happen; and the network and admin controls that keep
-      things safe. It provides <em>machines and access</em>.
-    </li>
-    <li>
-      <strong>OpenFlows is the intelligence layer.</strong> It turns a pile of workspaces into a
-      <em>team</em>. It plans, reviews, recovers, and merges. It provides <em>process and judgment</em>.
-    </li>
-  </ul>
-  <p>Neither duplicates the other's core job.</p>
-
-  <h2>Why the split makes the system secure</h2>
-  <p>Most of OpenFlows' security comes directly from this division:</p>
-  <DocsTable headers={['Property', 'How the split delivers it']} rows={SECURITY_ROWS} />
-  <p>
-    If OpenFlows tried to do Coder's job, it would have to put intelligence and credentials into every
-    workspace, and the safety picture would collapse.
-  </p>
-
-  <h2>Why the split makes the system maintainable</h2>
-  <DocsTable headers={['Reason', 'What it means']} rows={MAINTENANCE_ROWS} />
-
-  <h2>Where the trusted boundary sits</h2>
-  <p>
-    There is one long-lived, trusted component  -  the <strong>orchestrator workspace</strong>  -  which
-    legitimately holds the credentials and runs the control loop. Everything else is ephemeral and
-    untrusted. The split tells you exactly which box to trust and why, which is the mental model you need
-    before reading the architecture material.
-  </p>
-
-  <Callout type="info" title="One trusted place, everything else disposable">
-    Trust is concentrated rather than spread. Instead of sprinkling trust across many long-lived pieces,
-    OpenFlows keeps it in a single auditable place and keeps the rest ephemeral.
-  </Callout>
+  <h1>The Coder / OpenFlows split</h1>
+  <p>Coder decides where agents execute. Manager decides which user and tenant may run a workspace, which template and repository it uses, and what scoped credentials it may receive. Nexus decides how agents collaborate on that tenant's work.</p>
+  <DocsTable headers={['Component', 'Primary responsibility']} rows={ROLES} />
+  <p>The Manager holds the platform Coder operator credential and GitHub App private key. Nexus and workers register as workspace runtimes and receive only their own tenant-scoped bundle and short-lived credentials. Manager asks Coder to perform workspace lifecycle operations on their behalf.</p>
+  <p>Read <a href="/docs/architecture/manager-runtime">Manager Runtime</a> and <a href="/docs/architecture/credentials">Credentials and Trust</a> for the protocol and security boundaries.</p>
 </DocsLayout>

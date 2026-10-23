@@ -1,0 +1,64 @@
+---
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
+import MermaidDiagram from '@/components/MermaidDiagram.astro';
+---
+
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'Manager Runtime' }]}>
+  <h1>The Manager-mediated runtime</h1>
+  <p>OpenFlows Manager is the authority for users, organizations, GitHub connections, tenants, workspace records, and runtime permissions. Coder builds and runs workspaces; Nexus coordinates work within one tenant.</p>
+
+  <h2 id="workspace-start">How a workspace starts</h2>
+  <MermaidDiagram title="Workspace registration and runtime session" source={`sequenceDiagram
+    participant M as Manager
+    participant C as Coder
+    participant W as Workspace
+    participant P as PostgreSQL
+    M->>P: Record workspace and one-time bootstrap hash
+    M->>C: Create workspace from pinned template
+    C->>W: Start with scoped runtime bundle
+    W->>M: POST /api/v1/runtime/register
+    M->>P: Consume bootstrap and store token hashes
+    M-->>W: Access token and rotating refresh token
+    loop While running
+      W->>M: Authenticated heartbeat
+      M->>P: Check workspace and tenant state
+    end`} />
+  <ol>
+    <li>Manager records a workspace and prepares a read-only runtime bundle with its workspace ID, tenant ID, Manager URL, one-time bootstrap, Redis access, and tenant hook key.</li>
+    <li>Manager's operation worker asks Coder to create the workspace using a pinned template release.</li>
+    <li>The workspace submits its bootstrap to <code>POST /api/v1/runtime/register</code>. Manager consumes it once and returns a short-lived access token and rotating refresh token.</li>
+    <li>The process sends heartbeats to Manager. Manager checks its workspace, tenant, organization, connection, and credential state on privileged requests.</li>
+  </ol>
+
+  <h2 id="workers">How Nexus starts workers</h2>
+  <MermaidDiagram title="Durable worker provisioning" source={`sequenceDiagram
+    participant N as Nexus
+    participant M as Manager API
+    participant P as PostgreSQL
+    participant Q as Manager worker
+    participant C as Coder
+    N->>M: Request worker with idempotency key
+    M->>P: Authorize, reserve slot, enqueue operation
+    M-->>N: Operation ID
+    Q->>P: Claim leased operation
+    Q->>C: Create scoped worker workspace
+    C-->>Q: Workspace state
+    Q->>P: Record result
+    N->>M: Poll operation and adopt worker`} />
+  <p>Nexus chooses the role, ticket, branch, and slot, then requests a worker through <code>POST /api/v1/runtime/workspaces</code> with an idempotency key. Manager verifies that the caller is this tenant's Nexus, reserves capacity, and writes a durable operation. A Manager worker claims the operation and asks Coder to create the Forge, Sentinel, Vessel, or Lore workspace.</p>
+  <p>Nexus polls the workspace status and adopts the worker once it is running. Database leases let a different Manager instance reclaim provisioning work after a process crash. Repeating the same request does not create a second worker.</p>
+
+  <h2 id="state">Where state lives</h2>
+  <ul>
+    <li><strong>PostgreSQL:</strong> resource ownership, operations, runtime credential hashes, generations, and GitHub credential leases.</li>
+    <li><strong>Redis:</strong> tenant coordination, agent heartbeats, worker slots, hook audit, and A2A task evidence, protected by tenant credentials and namespace.</li>
+    <li><strong>Coder:</strong> workspace, build, and agent execution state.</li>
+    <li><strong>Secret provider:</strong> platform keys, bootstrap values, tenant credentials, and mounted runtime bundles.</li>
+  </ul>
+  <Callout type="info" title="Two control loops">Manager supervises durable workspace operations and runtime registration. Nexus supervises the tenant's issue-to-PR workflow and agent progress.</Callout>
+  <DocCards cards={[
+    { icon: '🗝️', title: 'Credentials and Trust', desc: 'What each token authorizes and where it lives.', href: '/docs/architecture/credentials' },
+    { icon: '🔁', title: 'Hooks and A2A', desc: 'How events and agent messages cross workspaces.', href: '/docs/architecture/hooks-and-a2a' },
+  ]} />
+</DocsLayout>

@@ -133,7 +133,7 @@ export function TextToSpeechPlayer({ title, text }) {
 
         utterance.onerror = (e) => {
             console.error('TTS Chunk Error:', e.error, '| Text:', chunkText);
-            // If interrupted, we usually want to stop or retry. 
+            // If interrupted, we usually want to stop or retry.
             // In most cases, interrupted means someone called cancel().
             if (e.error !== 'interrupted') {
                 setIsPlaying(false);

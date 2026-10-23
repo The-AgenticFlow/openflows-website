@@ -7,8 +7,8 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <h1>Adding a Skill</h1>
 
   <p>
-    Skills are how you teach a role something new — a specific workflow, a project convention,
-    a linting process — <strong>without writing any system code</strong>. This is one of the
+    Skills are how you teach a role something new  -  a specific workflow, a project convention,
+    a linting process  -  <strong>without writing any system code</strong>. This is one of the
     most common extensions, and it's configuration-only.
   </p>
 
@@ -27,14 +27,14 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <ul>
     <li>You've completed the Quickstart, so a team exists.</li>
     <li>You know which <strong>role</strong> should get the skill (for example, the builder).</li>
-    <li>You have the skill content ready — its instructions and any files it needs.</li>
+    <li>You have the skill content ready  -  its instructions and any files it needs.</li>
   </ul>
 
   <h2>Steps</h2>
   <ol>
-    <li><strong>Create the skill.</strong> Put the skill definition — its name and instructions — in the skills area of the orchestration content. A skill is essentially a folder with an instruction file inside.</li>
+    <li><strong>Create the skill.</strong> Put the skill definition  -  its name and instructions  -  in the skills area of the orchestration content. A skill is essentially a folder with an instruction file inside.</li>
     <li><strong>Assign it to a role in the registry.</strong> Open the agent registry for the role and add the skill to that role's skill list.</li>
-    <li><strong>Apply it.</strong> Save the registry change through the control panel. It's validated and takes effect on the team's next cycle — no restart and no redeploy.</li>
+    <li><strong>Apply it.</strong> Save the registry change through the control panel. It's validated and takes effect on the team's next cycle  -  no restart and no redeploy.</li>
   </ol>
 
   <h2>What you should see</h2>
@@ -46,16 +46,16 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
 
   <h2>Notes</h2>
   <ul>
-    <li>Skills are <strong>discovered by the agent</strong> during its session — you don't have to wait for a new workspace to reap the benefit beyond the natural provisioning cycle.</li>
+    <li>Skills are <strong>discovered by the agent</strong> during its session  -  you don't have to wait for a new workspace to reap the benefit beyond the natural provisioning cycle.</li>
     <li>There's a built-in shared protocol skill that teaches agents how to use the coordination surface; your skills layer on top of that.</li>
     <li>If you need to remove a skill, edit it off the role the same way and save.</li>
   </ul>
 
   <h2>Going further</h2>
   <ul>
-    <li>Multiple skills compose — a role can carry several.</li>
+    <li>Multiple skills compose  -  a role can carry several.</li>
     <li>For server-side tools rather than instructions, see <a href="/docs/guides/extending-mcp">Connecting an MCP Server</a>.</li>
-    <li>For a completely new capability that no existing role embodies, see <a href="/docs/concepts/agent-registry">Extending with a New Role</a> — the one extension that touches internals.</li>
+    <li>For a completely new capability that no existing role embodies, see <a href="/docs/concepts/agent-registry">Extending with a New Role</a>  -  the one extension that touches internals.</li>
   </ul>
 
   <Callout type="info" title="Model and tool side-by-side">

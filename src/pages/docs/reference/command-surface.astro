@@ -38,7 +38,7 @@ const RESET_ROWS = [
   <p>
     OpenFlows provides a command-line surface alongside the web control panel. They drive the same state, so neither
     can drift from the other: every panel action maps to a command, and the command surface stays automation-friendly.
-    This page describes the operations available, in plain language — no command syntax, no flags, no exact
+    This page describes the operations available, in plain language  -  no command syntax, no flags, no exact
     invocations.
   </p>
   <p>
@@ -53,7 +53,7 @@ const RESET_ROWS = [
   <DocsTable headers={['Operation', 'Purpose']} rows={TENANT_ROWS} />
   <Callout type="info" title="Removing a tenant">
     Removing a tenant tears down the team and its fleet. It is a deliberate, end-of-life action rather than a routine
-    cleanup — the everyday cleanup path is the clean operation, which resets stalled work to the start.
+    cleanup  -  the everyday cleanup path is the clean operation, which resets stalled work to the start.
   </Callout>
 
   <h2>Status &amp; control operations</h2>
@@ -71,13 +71,13 @@ const RESET_ROWS = [
 
   <Callout type="tip" title="Panel first, commands when needed">
     The web control panel is the everyday surface for seeing status, editing the registry, steering the fleet, and
-    handling escalations. Reach for the command surface when you are scripting, automating, or running headless — you
+    handling escalations. Reach for the command surface when you are scripting, automating, or running headless  -  you
     are driving the same operations either way.
   </Callout>
 
   <h2>Related</h2>
   <ul>
-    <li><a href="/docs/reference/configuration-reference">Configuration Reference</a> — the knobs behind fleet steering and the team registry.</li>
-    <li><a href="/docs/reference/limits-and-defaults">Limits &amp; Defaults</a> — the meaningful numbers to know.</li>
+    <li><a href="/docs/reference/configuration-reference">Configuration Reference</a>  -  the knobs behind fleet steering and the team registry.</li>
+    <li><a href="/docs/reference/limits-and-defaults">Limits &amp; Defaults</a>  -  the meaningful numbers to know.</li>
   </ul>
 </DocsLayout>

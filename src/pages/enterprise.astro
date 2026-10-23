@@ -1,0 +1,132 @@
+---
+import BaseLayout from '@/layouts/BaseLayout.astro';
+import styles from './Enterprise.module.css';
+// Keep the enterprise presentation and content in one route.
+---
+
+<BaseLayout
+  title="OpenFlows for engineering organizations | OpenFlows"
+  description="Evaluate OpenFlows for governed, self-hosted AI development. See the issue-to-PR workflow, runtime trust boundaries, deployment requirements, and what is available today."
+>
+  <main class={styles.page}>
+    <section class={styles.hero}>
+      <div class={styles.container}>
+        <p class={styles.eyebrow}>OpenFlows for engineering organizations</p>
+        <div class={styles.heroGrid}>
+          <div class={styles.heroCopy}>
+            <h1>Agent work your team can actually account for.</h1>
+            <p class={styles.lede}>Turn a GitHub issue into a reviewed pull request with clear ownership, isolated workspaces, scoped credentials, and a record of what happened along the way.</p>
+            <div class={styles.actions}>
+              <a class={styles.primary} href="#evaluation">Plan an evaluation <span aria-hidden="true">↗</span></a>
+              <a class={styles.secondary} href="/docs/architecture/components-and-interactions">Explore the architecture <span aria-hidden="true">→</span></a>
+            </div>
+            <p class={styles.heroNote}>Open source at the core. Customer-managed deployments can be evaluated today.</p>
+          </div>
+          <div class={styles.heroVisual} aria-label="An issue passes through OpenFlows Manager, tenant workspaces, and review before becoming a pull request">
+            <div class={styles.visualTopline}><span class={styles.pulse}></span> One governed run <span class={styles.visualId}>ISSUE → PR</span></div>
+            <div class={styles.visualStage}><span class={styles.stageNumber}>01</span><div><strong>Issue enters the queue</strong><small>Repository and tenant are known</small></div><span class={styles.stageState}>GitHub</span></div>
+            <div class={styles.visualConnector}></div>
+            <div class={styles.visualStage}><span class={styles.stageNumber}>02</span><div><strong>Manager authorizes work</strong><small>Identity, scope, capacity, credentials</small></div><span class={styles.stageState}>Control plane</span></div>
+            <div class={styles.visualConnector}></div>
+            <div class={styles.visualStage}><span class={styles.stageNumber}>03</span><div><strong>Agents work in Coder</strong><small>Nexus coordinates isolated workspaces</small></div><span class={styles.stageState}>Runtime</span></div>
+            <div class={styles.visualConnector}></div>
+            <div class={styles.visualStage}><span class={styles.stageNumber}>04</span><div><strong>Evidence reaches review</strong><small>Changes, verification, pull request</small></div><span class={styles.stageState}>Human gate</span></div>
+            <div class={styles.visualFooter}>The agent does the work. Your team keeps the decision.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class={styles.section} id="workflow">
+      <div class={styles.container}>
+        <div class={styles.sectionHead}>
+          <p class={styles.eyebrow}>From issue to review</p>
+          <h2>One workflow, with visible handoffs.</h2>
+          <p>OpenFlows separates product authority from execution. Manager decides what a runtime may do; Nexus coordinates work inside one tenant; Forge and Sentinel work in separate Coder workspaces.</p>
+        </div>
+        <div class={styles.workflowGrid}>
+          <article class={styles.workflowStep}><span>01 / Connect</span><h3>Choose a repository</h3><p>Sign in, connect a GitHub App installation, and create a tenant for a repository the installation can access.</p></article>
+          <article class={styles.workflowStep}><span>02 / Provision</span><h3>Start the runtime</h3><p>Manager records durable operations and asks Coder to create the tenant controller and scoped worker workspaces.</p></article>
+          <article class={styles.workflowStep}><span>03 / Execute</span><h3>Run the issue</h3><p>Nexus assigns ticket work. Agents use registered runtime sessions and request only the credentials their task permits.</p></article>
+          <article class={styles.workflowStep}><span>04 / Review</span><h3>Inspect the evidence</h3><p>Changes and verification return through the tenant workflow before a human decides whether to merge.</p></article>
+        </div>
+        <a class={styles.inlineLink} href="/docs/getting-started/first-issue">Walk through a first issue <span aria-hidden="true">→</span></a>
+      </div>
+    </section>
+
+    <section class={`${styles.section} ${styles.trustSection}`} id="security">
+      <div class={styles.container}>
+        <div class={styles.sectionHead}>
+          <p class={styles.eyebrow}>Trust boundaries</p>
+          <h2>Give each runtime the authority it needs, not the keys to the platform.</h2>
+          <p>The security model is defined by which system holds each credential and how a workspace proves its identity. We document these boundaries so your security team can inspect and test them.</p>
+        </div>
+        <div class={styles.boundaryGrid}>
+          <article class={styles.boundary}><span class={styles.boundaryLabel}>Trusted control plane</span><h3>Manager keeps platform authority</h3><p>GitHub App signing material, the Coder operator credential, and the encryption key remain outside agent workspaces. Manager resolves organization, tenant, workspace, and repository scope on privileged requests.</p><a href="/docs/architecture/security-by-design">Inspect the security model →</a></article>
+          <article class={styles.boundary}><span class={styles.boundaryLabel}>Tenant execution plane</span><h3>Workspaces receive limited access</h3><p>A workspace registers with a one-time bootstrap, then uses a runtime session. GitHub installation tokens are short-lived and repository-scoped. Tenant Redis uses a tenant credential and namespace.</p><a href="/docs/architecture/credentials">Inspect credential lifecycles →</a></article>
+          <article class={styles.boundary}><span class={styles.boundaryLabel}>Recovery and audit</span><h3>Work can be resumed and examined</h3><p>Provisioning operations use database leases and idempotency keys. Tenant coordination records include assignments, heartbeats, hooks, and A2A evidence. Operators remain responsible for securing the supporting services.</p><a href="/docs/guides/operations">Inspect operations →</a></article>
+        </div>
+      </div>
+    </section>
+
+    <section class={styles.section} id="deployment">
+      <div class={styles.container}>
+        <div class={styles.deploymentGrid}>
+          <div class={styles.sectionHead}>
+            <p class={styles.eyebrow}>Deploy with intent</p>
+            <h2>Run the control plane alongside your engineering systems.</h2>
+            <p>A customer-managed evaluation uses the same Manager-mediated runtime architecture described in the public docs. There is no separate, simplified enterprise runtime to trust.</p>
+            <a class={styles.inlineLink} href="/docs/architecture/deployment">See service connections <span aria-hidden="true">→</span></a>
+          </div>
+          <div class={styles.requirements}>
+            <p class={styles.requirementsTitle}>What you operate</p>
+            <ul>
+              <li><strong>OpenFlows Manager</strong><span>Product API, credential broker, hook ingress, and durable workers</span></li>
+              <li><strong>PostgreSQL and Redis</strong><span>Control-plane records and tenant coordination</span></li>
+              <li><strong>Coder and a provisioner</strong><span>Templates, builds, and workspace execution</span></li>
+              <li><strong>Secret provider and public HTTPS origin</strong><span>Platform credentials, runtime bundles, and GitHub callbacks</span></li>
+            </ul>
+            <a href="/docs/getting-started/installation">Review installation prerequisites →</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class={`${styles.section} ${styles.availabilitySection}`} id="editions">
+      <div class={styles.container}>
+        <div class={styles.sectionHead}>
+          <p class={styles.eyebrow}>Availability</p>
+          <h2>Start with the model you can run today.</h2>
+          <p>The open-source platform and customer-managed deployment are available to evaluate. Enterprise operating requirements need a direct conversation. An OpenFlows-operated service is planned, not available today.</p>
+        </div>
+        <div class={styles.availabilityGrid}>
+          <div><span class={styles.statusCurrent}>Available to evaluate</span><h3>Open source, customer-managed</h3><p>Deploy the documented services in your own environment and validate one repository and tenant end to end.</p></div>
+          <div><span class={styles.statusDiscuss}>Discuss requirements</span><h3>Enterprise operating needs</h3><p>Share identity, policy, support, and audit requirements with the project. Availability and scope require a direct conversation.</p></div>
+          <div><span class={styles.statusPlanned}>Not available yet</span><h3>OpenFlows-operated service</h3><p>A hosted operating model is planned. This page does not present it as a service you can sign up for today.</p></div>
+        </div>
+      </div>
+    </section>
+
+    <section class={styles.evaluation} id="evaluation">
+      <div class={styles.container}>
+        <div class={styles.evaluationGrid}>
+          <div>
+            <p class={styles.eyebrow}>Start with proof</p>
+            <h2>Evaluate one repository before you scale the platform.</h2>
+            <p>Use a contained pilot to test the real boundaries: GitHub connection, tenant provisioning, runtime registration, issue execution, review evidence, and recovery after a worker interruption.</p>
+            <div class={styles.actions}>
+              <a class={styles.primary} href="/docs/getting-started/installation">Read the setup guide <span aria-hidden="true">→</span></a>
+              <a class={styles.secondary} href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">Discuss your requirements <span aria-hidden="true">↗</span></a>
+            </div>
+          </div>
+          <ol class={styles.evaluationList}>
+            <li><span>01</span><p>Prepare Manager, Coder, PostgreSQL, Redis, secrets, and GitHub integration.</p></li>
+            <li><span>02</span><p>Connect one repository, create a tenant, and confirm runtime heartbeats.</p></li>
+            <li><span>03</span><p>Run a representative issue and inspect the resulting PR and verification evidence.</p></li>
+            <li><span>04</span><p>Review credential scope, operation recovery, and operator logs with your security team.</p></li>
+          </ol>
+        </div>
+      </div>
+    </section>
+  </main>
+</BaseLayout>

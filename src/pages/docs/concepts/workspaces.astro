@@ -9,9 +9,9 @@ const WORKER_WORKSPACE_ROWS = [
 ];
 
 const FORBIDDEN_ROWS = [
-  ['LLM API keys', 'Every AI call is routed centrally through the model gateway in the control plane.'],
-  ['Raw repository credentials', 'Git identity flows through a scoped OAuth link, not a shared token.'],
-  ['Agent frameworks', 'The intelligence runs centrally; the workspace only hosts the coordination surface.'],
+  ['GitHub App private key', 'Manager holds the signing key and brokers short-lived installation tokens.'],
+  ['Coder operator credential', 'Manager provisions workspaces through Coder on behalf of Nexus.'],
+  ['Other tenants\' Redis passwords', 'Each tenant receives its own Redis ACL identity and namespace.'],
 ];
 ---
 
@@ -38,9 +38,8 @@ const FORBIDDEN_ROWS = [
   </p>
   <DocsTable headers={['Never in a worker workspace', 'How it is handled instead']} rows={FORBIDDEN_ROWS} />
 
-  <Callout type="warning" title="No secrets in worker workspaces">
-    Worker workspaces hold no secrets and no credentials. Remove the secrets from the sandbox and an entire
-    class of "stolen key" attacks disappears. This is the foundation of the security model.
+  <Callout type="warning" title="Workspaces hold scoped credentials">
+    A running workspace has a bootstrap bundle, tenant Redis access, a runtime session, and possibly a short-lived GitHub token. Protect it as a credential-bearing environment. It does not receive platform signing or operator keys.
   </Callout>
 
   <h2>Workspaces are isolated from each other</h2>
@@ -61,25 +60,23 @@ const FORBIDDEN_ROWS = [
     <li>The internal relay used for delegated verification.</li>
   </ul>
   <p>
-    Everything else is denied. Combined with the absence of keys, this dramatically shrinks the surface an
-    attacker  -  or a misbehaving agent  -  could exploit.
+    Operators must enforce this network policy in their deployment. Scoped credentials limit authority;
+    they do not remove the need for isolation and monitoring.
   </p>
 
   <h2>Nobody is anonymous</h2>
   <p>
-    Every action an agent takes inherits a <strong>real identity</strong>. There are no shared, mysterious
-    accounts. When something is merged or commented on, it is attributable to the tenant's identity, and
-    the trail is auditable.
+    Hosted GitHub operations use a repository-scoped GitHub App installation token, so commits and API
+    actions appear under the App identity. Manager records the originating workspace and tenant for audit.
   </p>
 
   <h2>The orchestrator is different</h2>
   <p>
     One workspace is long-lived rather than disposable: the <strong>orchestrator</strong> workspace. This
-    is the trusted "brain" that runs the control loop and hosts the coordination relay. It is the one place
-    that legitimately holds the credentials the workers never see. The asymmetry is deliberate:
+    runs the tenant flow and hosts the coordination relay. Manager remains the trusted platform authority:
   </p>
   <ul>
-    <li>The trusted, long-lived component does the coordination.</li>
-    <li>The untrusted, disposable components do the work.</li>
+    <li>Nexus requests workers and coordinates their work.</li>
+    <li>Manager authenticates runtimes and creates Coder workspaces.</li>
   </ul>
 </DocsLayout>

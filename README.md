@@ -1,28 +1,28 @@
 # Openflows Website
 
-The official website for Openflows — An Autonomous AI Development Team.
+The official website for Openflows  -  An Autonomous AI Development Team.
 
 🌐 **Live Site**: [openflows.dev](https://openflows.dev)
 
 ## About Openflows
 
-Openflows is an autonomous software development team that runs itself. A squad of specialized AI agents written in Rust discovers GitHub issues, writes code, reviews it, opens pull requests, and merges them — all without human intervention.
+Openflows is an autonomous software development team that runs itself. A squad of specialized AI agents written in Rust discovers GitHub issues, writes code, reviews it, opens pull requests, and merges them  -  all without human intervention.
 
 ## Website Features
 
-- 🎨 **Precision Foundry Aesthetic** — warm espresso-charcoal backgrounds with copper/bronze accents, analog noise textures, and geometric grid backgrounds
-- 📚 **Developer Documentation Hub** — comprehensive guides, API reference, architecture docs, and FAQs
-- 💻 **Interactive Demos** — terminal simulation and step-by-step walkthroughs
-- 🔗 **Use Cases** — real-world before/after comparisons for web dev and DevOps teams
-- 📰 **Blog** — product updates and technical deep dives
-- 🔌 **Developer Resources** — interactive API explorer and integration guides
-- 📱 **Fully responsive** — works on all devices with hamburger navigation
-- ⚡ **Fast loading** — pure HTML/CSS/JS, no heavy frameworks or build steps
+- 🎨 **Precision Foundry Aesthetic**  -  warm espresso-charcoal backgrounds with copper/bronze accents, analog noise textures, and geometric grid backgrounds
+- 📚 **Developer Documentation Hub**  -  comprehensive guides, API reference, architecture docs, and FAQs
+- 💻 **Interactive Demos**  -  terminal simulation and step-by-step walkthroughs
+- 🔗 **Use Cases**  -  real-world before/after comparisons for web dev and DevOps teams
+- 📰 **Blog**  -  product updates and technical deep dives
+- 🔌 **Developer Resources**  -  interactive API explorer and integration guides
+- 📱 **Fully responsive**  -  works on all devices with hamburger navigation
+- ⚡ **Fast loading**  -  pure HTML/CSS/JS, no heavy frameworks or build steps
 - 🎯 **SEO optimized** with proper meta tags and OG image
-- ♿ **Accessible** — semantic HTML, noscript fallbacks for animations
-- ✨ **Scroll-triggered animations** — staggered reveals with scale transitions via Intersection Observer
-- 🔧 **Terminal-first visuals** — code blocks, live demo logs, crate diagrams as primary content with scanline effects and copper border glows
-- 🏗️ **Asymmetric spatial composition** — staggered architecture pillars, diagonal section separators, corner bracket decorations
+- ♿ **Accessible**  -  semantic HTML, noscript fallbacks for animations
+- ✨ **Scroll-triggered animations**  -  staggered reveals with scale transitions via Intersection Observer
+- 🔧 **Terminal-first visuals**  -  code blocks, live demo logs, crate diagrams as primary content with scanline effects and copper border glows
+- 🏗️ **Asymmetric spatial composition**  -  staggered architecture pillars, diagonal section separators, corner bracket decorations
 
 ## Local Development
 
@@ -116,24 +116,24 @@ The site is automatically deployed to GitHub Pages via GitHub Actions when chang
 
 ## Tech Stack
 
-- **Astro** — Static site generation with React islands for interactive components
-- **React** — Interactive components (docs components, admin UI, accordions, tab switchers, terminal simulations)
-- **HTML5** — Semantic markup
-- **CSS3** — Custom properties, Grid, Flexbox, clip-path, animations, Intersection Observer API
-- **Vanilla JS** — Smooth scroll, scroll-triggered animations, accordion, code copy, search, terminal simulation, tab switcher, API explorer
-- **Google Fonts** — Chakra Petch (display), Literata (body), IBM Plex Mono (code)
+- **Astro**  -  Static site generation with React islands for interactive components
+- **React**  -  Interactive components (docs components, admin UI, accordions, tab switchers, terminal simulations)
+- **HTML5**  -  Semantic markup
+- **CSS3**  -  Custom properties, Grid, Flexbox, clip-path, animations, Intersection Observer API
+- **Vanilla JS**  -  Smooth scroll, scroll-triggered animations, accordion, code copy, search, terminal simulation, tab switcher, API explorer
+- **Google Fonts**  -  Chakra Petch (display), Literata (body), IBM Plex Mono (code)
 
 ## Design System
 
 ### Aesthetic Direction
-**Precision Foundry** — inspired by precision metalwork, mechanical drawings, and warm industrial control panels. The design communicates craftsmanship, engineering precision, and autonomous operation through copper accents, corner bracket decorations, analog noise textures, and warm dark tones.
+**Precision Foundry**  -  inspired by precision metalwork, mechanical drawings, and warm industrial control panels. The design communicates craftsmanship, engineering precision, and autonomous operation through copper accents, corner bracket decorations, analog noise textures, and warm dark tones.
 
 ### Colors
 - Primary Background: `#0c0b09` (deep espresso charcoal)
 - Surface: `#181512` (warm dark brown)
 - Card Background: `#201c17` (warm brown)
 - Code Background: `#0f0e0c` (near-black warmth)
-- Accent Copper: `#c26d3d` (burnt copper — primary CTA, borders, highlights)
+- Accent Copper: `#c26d3d` (burnt copper  -  primary CTA, borders, highlights)
 - Accent Copper Glow: `rgba(194, 109, 61, 0.25)`
 - Accent Teal: `#4a9b8e` (muted teal for code/technical elements)
 - Accent Gold: `#c4a35a` (brass/gold for gradients and highlights)
@@ -148,9 +148,9 @@ The site is automatically deployed to GitHub Pages via GitHub Actions when chang
 - LORE Blue: `#6c8ebf`
 
 ### Typography
-- **Display Headlines**: Chakra Petch (600-700 weight) — geometric, tech-forward, distinctive Thai/Latin sans-serif
-- **Body Text**: Literata (400-600 weight) — beautiful serif bringing editorial warmth and unexpected elegance to a tech interface
-- **Code / Terminal / Labels**: IBM Plex Mono (400-600 weight) — classic technical monospace
+- **Display Headlines**: Chakra Petch (600-700 weight)  -  geometric, tech-forward, distinctive Thai/Latin sans-serif
+- **Body Text**: Literata (400-600 weight)  -  beautiful serif bringing editorial warmth and unexpected elegance to a tech interface
+- **Code / Terminal / Labels**: IBM Plex Mono (400-600 weight)  -  classic technical monospace
 
 ### Visual Language
 - **Corner bracket decorations** on interactive elements (mechanical drawing aesthetic)
@@ -168,7 +168,7 @@ This website is part of the [Openflows](https://github.com/The-AgenticFlow/Openf
 
 ## License
 
-MIT License — see [LICENSE](LICENSE) for details.
+MIT License  -  see [LICENSE](LICENSE) for details.
 
 ---
 

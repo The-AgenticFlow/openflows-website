@@ -109,7 +109,7 @@ export default function UseCaseTabs() {
           <div className={`${styles.content} ${animating ? styles.contentExit : styles.contentEnter}`} role="tabpanel">
             <h3 className={styles.contentTitle}>{activeCase.title}</h3>
             <p className={styles.contentDesc}>{activeCase.summary}</p>
-            
+
             <ul className={styles.itemList}>
               {activeCase.items.map((item, i) => (
                 <li key={i} className={styles.item}>{item}</li>
