@@ -2,15 +2,18 @@
 import '@/styles/global.css';
 import '@/styles/docs.css';
 import Navbar from '@/organisms/Navbar/Navbar.astro';
+import SiteFooter from '@/organisms/SiteFooter/SiteFooter.astro';
 
 interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  /** The page scrolls inside its own container (docs), so it gets no page footer reveal or smooth scrolling. */
+  appShell?: boolean;
 }
 
 const siteUrl = Astro.site?.toString() || 'https://openflows.ai';
-const { title, description = 'OpenFlows - Autonomous AI Development Team. Five specialized AI agents coordinate to take GitHub issues all the way to merged, documented pull requests.', ogImage } = Astro.props;
+const { title, description = 'OpenFlows - Autonomous AI Development Team. Five specialized AI agents coordinate to take GitHub issues all the way to merged, documented pull requests.', ogImage, appShell = false } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, siteUrl);
 const defaultOgImage = '/openlogo.png';
 ---
@@ -67,10 +70,25 @@ const defaultOgImage = '/openlogo.png';
     <!-- LinkedIn -->
     <meta property="og:image" content={ogImage || defaultOgImage} />
   </head>
-  <body>
+  <body id="top" data-app-shell={appShell ? '' : undefined}>
     <div class="scroll-progress" data-scroll-progress aria-hidden="true"></div>
     <Navbar />
-    <slot />
+    {appShell ? (
+      <slot />
+    ) : (
+      <>
+        <div class="site-sheet">
+          <slot />
+          <SiteFooter />
+        </div>
+        <div class="site-reveal" aria-hidden="true" data-site-reveal>
+          <div class="site-reveal-inner">
+            <img src="/openlogo-transparent.png" alt="" width="160" height="160" />
+            <span>OpenFlows</span>
+          </div>
+        </div>
+      </>
+    )}
     <script is:inline>
       if (typeof Prism !== 'undefined') {
         Prism.highlightAll();

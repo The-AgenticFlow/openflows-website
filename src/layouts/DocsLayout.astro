@@ -122,7 +122,7 @@ const currentPath = Astro.url.pathname;
 const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath.replace(/\/$/, ''));
 ---
 
-<BaseLayout title="Documentation - OpenFlows" description="Everything you need to install, configure, and operate the OpenFlows orchestration layer.">
+<BaseLayout title="Documentation - OpenFlows" description="Everything you need to install, configure, and operate the OpenFlows orchestration layer." appShell>
   <button class="docsMenuButton" type="button" aria-label="Open documentation navigation" aria-controls="docs-navigation" aria-expanded="false">☰ <span>Contents</span></button>
   {/* Sidebar  -  fixed position, always visible */}
   <aside class="sidebar" id="docs-navigation" aria-label="Documentation navigation">

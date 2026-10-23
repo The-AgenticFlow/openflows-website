@@ -255,6 +255,50 @@ html.lenis {
   pointer-events: none;
 }
 
+/* Page sheet lifts away at the end of every page to uncover the wordmark beneath it. */
+.site-sheet {
+  position: relative;
+  z-index: 1;
+  background-color: inherit;
+  box-shadow: 0 28px 44px -22px rgba(20, 19, 18, 0.18);
+}
+
+.site-reveal {
+  position: sticky;
+  bottom: 0;
+  z-index: 0;
+  overflow: hidden;
+  background: var(--color-parchment-canvas);
+}
+
+.site-reveal-inner {
+  --reveal: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.12em;
+  max-width: var(--max-width-7xl);
+  margin-inline: auto;
+  padding: clamp(2rem, 4vw, 3.5rem) var(--space-6);
+  font-size: clamp(3.5rem, 14vw, 13.5rem);
+  transform: translateY(calc((1 - var(--reveal)) * 35%));
+  opacity: calc(0.25 + 0.75 * var(--reveal));
+}
+
+.site-reveal-inner img {
+  width: 0.92em;
+  height: 0.92em;
+  object-fit: contain;
+}
+
+.site-reveal-inner span {
+  font-weight: 700;
+  line-height: 0.82;
+  letter-spacing: -0.06em;
+  color: var(--color-ink);
+  white-space: nowrap;
+}
+
 @keyframes izhub-hero-fade-slide-down {
   from {
     opacity: 0;

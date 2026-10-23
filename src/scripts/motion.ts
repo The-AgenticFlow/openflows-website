@@ -11,8 +11,9 @@ const NAV_HIDE_OFFSET = 160;
 const NAV_SCROLL_THRESHOLD = 6;
 
 const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+const isAppShell = document.body.hasAttribute('data-app-shell');
 
-if (!prefersReducedMotion) {
+if (!prefersReducedMotion && !isAppShell) {
   window.lenis = new Lenis({
     autoRaf: true,
     anchors: { offset: -80 },
@@ -21,6 +22,9 @@ if (!prefersReducedMotion) {
 }
 
 const progressBar = document.querySelector<HTMLElement>('[data-scroll-progress]');
+const reveal = document.querySelector<HTMLElement>('[data-site-reveal]');
+const revealInner = reveal?.firstElementChild as HTMLElement | null;
+const sheet = document.querySelector<HTMLElement>('.site-sheet');
 const navbar = document.getElementById('navbar');
 const mobileMenu = document.getElementById('mobileMenu');
 
@@ -41,6 +45,12 @@ const update = () => {
 
   if (progressBar) {
     progressBar.style.transform = `scaleX(${max > 0 ? Math.min(1, y / max) : 0})`;
+  }
+
+  if (!prefersReducedMotion && reveal && revealInner && sheet) {
+    const uncovered = window.innerHeight - sheet.getBoundingClientRect().bottom;
+    const amount = Math.min(1, Math.max(0, uncovered / reveal.offsetHeight));
+    revealInner.style.setProperty('--reveal', amount.toFixed(3));
   }
 
   if (navbar) {
