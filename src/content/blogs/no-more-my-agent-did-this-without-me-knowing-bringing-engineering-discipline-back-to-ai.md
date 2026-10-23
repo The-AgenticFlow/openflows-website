@@ -11,7 +11,7 @@ author_name: Nkwa Jude Tambe
 cover_image_url: blob:https://openflows.dev/e44b536a-3373-4bc4-8e30-1ea3ae2e09a1
 category_id: Architecture
 status: published
-published_at: ""
+published_at: 2026-10-23T15:01:00.000+01:00
 is_featured: true
 read_time_minutes: 5
 ---
