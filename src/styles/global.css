@@ -205,7 +205,6 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
   font-weight: 460;
 }
 
@@ -921,10 +920,10 @@ ol {
   }
 }
 
-/* Prevent horizontal overflow */
+/* Prevent horizontal overflow. clip, unlike hidden, keeps position: sticky working. */
 html,
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Ensure images never overflow */
