@@ -83,7 +83,7 @@
   word-break: break-word;
   color: var(--color-graphite);
   opacity: 1;
-  animation: izhub-hero-fade-slide-down var(--motion-duration) var(--ease-out-soft) 80ms both;
+  animation: var(--motion-rise-animation) var(--motion-duration) var(--ease-out-soft) 80ms both;
   margin-bottom: var(--space-3);
   max-width: 560px;
   margin-top: -16px; /* Keep existing negative margin */

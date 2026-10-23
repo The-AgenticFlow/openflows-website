@@ -183,6 +183,8 @@
   --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
   --motion-duration: 0.75s;
   --motion-rise: 14px;
+  /* CSS modules rename keyframe names they see; referencing this variable keeps the global one. */
+  --motion-rise-animation: izhub-hero-fade-slide-down;
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 

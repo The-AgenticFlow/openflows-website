@@ -165,8 +165,14 @@
 }
 
 .rise {
-  animation: izhub-hero-fade-slide-down 0.6s var(--ease-out-soft) both;
-  animation-delay: calc(var(--i, 0) * 70ms);
+  animation: var(--motion-rise-animation) 0.85s var(--ease-out-soft) both;
+  animation-delay: calc(80ms + var(--i, 0) * 95ms);
+}
+
+.leaving {
+  opacity: 0;
+  transform: translateY(-10px);
+  transition: opacity 0.32s ease, transform 0.32s ease;
 }
 
 .counter {

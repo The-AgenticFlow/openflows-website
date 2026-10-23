@@ -65,7 +65,8 @@ const USE_CASES = [
 ]
 
 const AUTO_ADVANCE_MS = 7000
-const COUNT_UP_MS = 900
+const COUNT_UP_MS = 1100
+const EXIT_MS = 320
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -101,6 +102,8 @@ function CountUp({ value }) {
 
 export default function UseCaseTabs() {
   const [active, setActive] = useState(0)
+  const [shownIndex, setShownIndex] = useState(0)
+  const [leaving, setLeaving] = useState(false)
   const [autoplay, setAutoplay] = useState(true)
   const [inView, setInView] = useState(false)
   const [paused, setPaused] = useState(false)
@@ -109,7 +112,7 @@ export default function UseCaseTabs() {
   const sectionRef = useRef(null)
   const tabsRef = useRef(null)
   const tabRefs = useRef([])
-  const activeCase = USE_CASES[active]
+  const activeCase = USE_CASES[shownIndex]
   const running = autoplay && inView && !paused && !reducedMotion
 
   useEffect(() => {
@@ -118,6 +121,21 @@ export default function UseCaseTabs() {
     if (sectionRef.current) observer.observe(sectionRef.current)
     return () => observer.disconnect()
   }, [])
+
+  // Let the current panel fade out before the next one rises in.
+  useEffect(() => {
+    if (active === shownIndex) return undefined
+    if (reducedMotion) {
+      setShownIndex(active)
+      return undefined
+    }
+    setLeaving(true)
+    const timer = window.setTimeout(() => {
+      setShownIndex(active)
+      setLeaving(false)
+    }, EXIT_MS)
+    return () => window.clearTimeout(timer)
+  }, [active, shownIndex, reducedMotion])
 
   const measure = useCallback(() => {
     const tab = tabRefs.current[active]
@@ -236,9 +254,9 @@ export default function UseCaseTabs() {
             aria-labelledby={`use-case-tab-${activeCase.id}`}
             aria-live={autoplay ? 'off' : 'polite'}
           >
-            <div key={activeCase.id} className={styles.contentInner}>
+            <div key={activeCase.id} className={`${styles.contentInner} ${leaving ? styles.leaving : ''}`}>
               <p className={`${styles.counter} ${styles.rise}`} style={{ '--i': 0 }}>
-                {pad(active + 1)} / {pad(USE_CASES.length)}
+                {pad(shownIndex + 1)} / {pad(USE_CASES.length)}
               </p>
               <h3 className={`${styles.contentTitle} ${styles.rise}`} style={{ '--i': 1 }}>
                 {activeCase.title}
