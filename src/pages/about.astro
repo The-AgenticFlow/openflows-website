@@ -160,7 +160,7 @@ const HEADLINE = 'The orchestration layer for autonomous AI development teams';
 
   .about-hero-inner {
     display: grid;
-    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
     gap: clamp(2rem, 4vw, 4rem);
     align-items: center;
     max-width: var(--max-width-6xl);
@@ -203,7 +203,52 @@ const HEADLINE = 'The orchestration layer for autonomous AI development teams';
   }
 
   .about-hero-live {
+    position: relative;
+    isolation: isolate;
+    padding: 2.25rem 1.75rem 2.75rem 1.5rem;
     animation: about-panel-in 1s var(--ease-out-soft) 0.45s both;
+  }
+
+  /* Two stepped panels sit behind the console, echoing the community band. */
+  .about-hero-live::before,
+  .about-hero-live::after {
+    content: '';
+    position: absolute;
+    z-index: -1;
+    border-radius: var(--radius-2xl);
+    animation: about-step-in 1.1s var(--ease-out-soft) both;
+  }
+
+  .about-hero-live::before {
+    top: 0;
+    left: 0;
+    width: 62%;
+    height: 70%;
+    border: 1px solid var(--color-driftwood);
+    background-color: #f8f7f3;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(13, 73, 67, 0.16) 0 1px, #0000 1px 5px),
+      linear-gradient(135deg, rgba(143, 184, 178, 0.55), rgba(207, 225, 221, 0.1));
+    animation-delay: 0.6s;
+  }
+
+  .about-hero-live::after {
+    right: 0;
+    bottom: 0;
+    width: 70%;
+    height: 72%;
+    background-color: var(--color-aubergine);
+    background-image:
+      repeating-linear-gradient(45deg, rgba(242, 240, 235, 0.22) 0 1px, #0000 1px 5px),
+      linear-gradient(90deg, #f1efe9 0%, rgba(143, 184, 178, 0.85) 30%, var(--color-aubergine) 75%, var(--color-aubergine-deep) 100%);
+    animation-delay: 0.75s;
+  }
+
+  @keyframes about-step-in {
+    from {
+      opacity: 0;
+      transform: translate(-14px, 14px);
+    }
   }
 
   @keyframes about-word-in {
