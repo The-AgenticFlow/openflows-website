@@ -7,7 +7,7 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "cms": "MODE=git decap-server"
+    "cms": "MODE=git PORT=8082 decap-server"
   },
   "dependencies": {
     "mermaid": "^12.2.0",
