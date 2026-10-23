@@ -1,3 +1,4 @@
+import WindowFrame from '@/molecules/WindowFrame/WindowFrame'
 import styles from './FlowVisual.module.css'
 
 export default function FlowVisual() {
@@ -18,25 +19,22 @@ export default function FlowVisual() {
         </div>
 
         <div className={styles.stage}>
-          <div className={styles.videoWrapper}>
-            <iframe
-              src="https://www.loom.com/embed/46d47c9e9291445a8eb9cc88b2a26627?hideOwner=true&hideTitle=true&hideEmbedTopBar=true"
-              title="OpenFlows agent flow demo"
-              frameBorder="0"
-              allow="fullscreen"
-              allowFullScreen
-              className={styles.videoEmbed}
-            />
-          </div>
+          <WindowFrame title="coder / openflows-nexus workspace">
+            {/* The recording includes the desktop and browser chrome; the crop shows only the Coder app. */}
+            <div className={styles.videoCrop}>
+              <iframe
+                src="https://www.loom.com/embed/46d47c9e9291445a8eb9cc88b2a26627?hideOwner=true&hideTitle=true&hideEmbedTopBar=true"
+                title="OpenFlows agent flow demo"
+                frameBorder="0"
+                allow="fullscreen"
+                allowFullScreen
+                loading="lazy"
+                className={styles.videoEmbed}
+              />
+            </div>
+          </WindowFrame>
         </div>
 
-        <div className={styles.agents}>
-          {['NEXUS', 'FORGE', 'SENTINEL', 'VESSEL', 'LORE'].map((agent) => (
-            <span key={agent} className={styles.agentBadge}>
-              {agent}
-            </span>
-          ))}
-        </div>
       </div>
     </section>
   )

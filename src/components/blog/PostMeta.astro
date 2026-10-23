@@ -1,0 +1,19 @@
+---
+import MetaLine from '@/components/content/MetaLine.astro';
+import { formatPostDate, getAuthorNames, getReadTime, type BlogPost } from './blog';
+
+interface Props {
+  post: BlogPost;
+}
+
+const { post } = Astro.props;
+const publishedAt = post.data.published_at;
+---
+
+<MetaLine
+  items={[
+    { label: getAuthorNames(post), emphasis: true },
+    publishedAt && { label: formatPostDate(publishedAt), datetime: publishedAt.toISOString() },
+    { label: `${getReadTime(post)} min read` },
+  ]}
+/>

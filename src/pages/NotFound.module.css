@@ -30,7 +30,7 @@
   text-wrap: balance;
   color: var(--color-graphite);
   opacity: 1;
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
+  animation: var(--motion-rise-animation) var(--motion-duration) var(--ease-out-soft) 80ms both;
   margin-bottom: var(--space-6);
 }
 
@@ -46,5 +46,11 @@
 }
 
 .link:hover {
+  color: var(--color-parchment);
   opacity: 0.85;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-aubergine);
+  outline-offset: 3px;
 }

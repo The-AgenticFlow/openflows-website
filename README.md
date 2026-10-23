@@ -42,6 +42,20 @@ npm run build
 npm run preview
 ```
 
+### Editing content locally (Decap CMS)
+
+Content lives in `src/content/` and is edited through Decap CMS at `/admin`. In production the CMS commits to GitHub; locally it talks to a proxy that commits to your local git repository instead. Run both in separate terminals:
+
+```bash
+npm run dev
+npm run cms
+```
+
+Then open `http://localhost:4321/admin/index.html` and click **Login**. No GitHub sign-in is needed.
+
+- `npm run cms` starts the proxy in git mode, which supports the same editorial workflow as production: **Save** creates a local `cms/...` branch; set the entry to **Ready**, then **Publish now** merges it into your local `master`. Commit or stash your own changes first, because the proxy switches branches in your working tree.
+- Publishing in the CMS and the post's **Status** field are separate. The website only lists entries whose Status is `published`; `draft` and `archived` entries stay hidden even after they are published in the CMS.
+
 ## Deployment
 
 The site is automatically deployed to GitHub Pages via GitHub Actions when changes are pushed to the `main` branch.

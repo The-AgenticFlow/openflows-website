@@ -1,0 +1,167 @@
+---
+interface Props {
+  principles: { title: string; desc: string }[];
+}
+
+const { principles } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class="principles" aria-labelledby="principles-title">
+  <div class="principles-inner">
+    <div class="principles-head">
+      <h2 id="principles-title">Built on clear principles</h2>
+      <p>What we stand for, and how it shows up in the way the agents work.</p>
+    </div>
+
+    <ol class="principles-grid">
+      {principles.map((principle, index) => (
+        <li class="principle" data-reveal>
+          <span class="principle-index">{pad(index + 1)}</span>
+          <h3>{principle.title}</h3>
+          <p>{principle.desc}</p>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .principles {
+    padding: clamp(5rem, 9vw, 8rem) 0;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .principles-inner {
+    max-width: var(--max-width-6xl);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .principles-head {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: end;
+    margin-bottom: 3rem;
+  }
+
+  .principles-head h2 {
+    margin: 0;
+    font-size: clamp(2.5rem, 5vw, 4.25rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .principles-head p {
+    margin: 0;
+    max-width: 26rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-graphite);
+  }
+
+  .principles-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    overflow: hidden;
+    border: 1px solid var(--color-driftwood);
+    border-radius: var(--radius-2xl);
+    background: var(--color-bone);
+  }
+
+  .principle {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding: 2rem 1.75rem 2.25rem;
+    border-right: 1px solid var(--color-driftwood);
+    border-bottom: 1px solid var(--color-driftwood);
+    transition: background-color 0.35s var(--ease-out-soft);
+  }
+
+  .principle:nth-child(4n) {
+    border-right: 0;
+  }
+
+  .principle:nth-last-child(-n + 4) {
+    border-bottom: 0;
+  }
+
+  .principle:hover {
+    background: #fbfaf7;
+  }
+
+  .principle-index {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-graphite);
+  }
+
+  .principle h3 {
+    margin: 0.5rem 0 0;
+    font-size: 1.375rem;
+    font-weight: 500;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  .principle p {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.6;
+    color: var(--color-graphite);
+  }
+
+  @media (max-width: 1100px) {
+    .principles-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .principle:nth-child(4n) {
+      border-right: 1px solid var(--color-driftwood);
+    }
+
+    .principle:nth-child(2n) {
+      border-right: 0;
+    }
+
+    .principle:nth-last-child(-n + 4) {
+      border-bottom: 1px solid var(--color-driftwood);
+    }
+
+    .principle:nth-last-child(-n + 2) {
+      border-bottom: 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .principles-head {
+      grid-template-columns: 1fr;
+    }
+
+    .principles-grid {
+      grid-template-columns: 1fr;
+    }
+
+    .principle,
+    .principle:nth-child(2n),
+    .principle:nth-child(4n) {
+      border-right: 0;
+    }
+
+    .principle:nth-last-child(-n + 2) {
+      border-bottom: 1px solid var(--color-driftwood);
+    }
+
+    .principle:last-child {
+      border-bottom: 0;
+    }
+  }
+</style>

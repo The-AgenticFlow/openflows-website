@@ -46,38 +46,34 @@
   padding: 32px;
   border-radius: var(--radius-xl);
   border: 1px solid var(--color-driftwood);
-  background: var(--color-fog);
-  transition: border-color var(--transition-fast), transform var(--transition-fast);
+  background: var(--color-bone);
+  transition: border-color var(--transition-fast);
   text-decoration: none;
 }
 
 .card:hover {
-  border-color: var(--color-fog);
-  transform: translateY(-4px);
+  border-color: var(--color-border-hover);
+}
+
+.card:focus-visible {
+  outline: 2px solid var(--color-aubergine);
+  outline-offset: 3px;
 }
 
 .iconWrap {
-  width: 56px;
-  height: 56px;
+  width: 52px;
+  height: 52px;
   display: flex;
   align-items: center;
   justify-content: center;
   border-radius: var(--radius-lg);
-  background: var(--color-fog);
+  background: var(--color-lavender-chip);
+  color: var(--color-aubergine);
 }
 
 .icon {
-  width: 28px;
-  height: 28px;
-  object-fit: contain;
-}
-
-.iconPlaceholder {
-  width: 28px;
-  height: 28px;
-  border-radius: var(--radius-sm);
-  background: var(--color-fog);
-  border: 1px dashed var(--color-fog);
+  width: 26px;
+  height: 26px;
 }
 
 .cardTitle {

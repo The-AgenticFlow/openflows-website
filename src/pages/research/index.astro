@@ -17,8 +17,8 @@ const categories = ['all', ...new Set(research.map(r => r.data.category).filter(
 ---
 
 <BaseLayout title="Research - OpenFlows" description="Papers, preprints, and technical reports on autonomous multi-agent software engineering.">
-  <section style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;">
-    <div style="margin-bottom: 3rem;">
+  <section style="max-width: 1200px; margin: 0 auto; padding: calc(var(--nav-height) + 4rem) 2rem 4rem;">
+    <div style="margin-bottom: 3rem;" data-intro>
       <p style="font-size: 0.875rem; text-transform: uppercase; letter-spacing: 0.05em; color: var(--color-aubergine); margin-bottom: 0.5rem;">Research</p>
       <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 1rem;">Publications</h1>
       <p style="font-size: 1.125rem; color: var(--color-graphite); max-width: 600px;">Papers, preprints, and technical reports on autonomous multi-agent software engineering and the OpenFlows architecture.</p>

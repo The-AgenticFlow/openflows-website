@@ -1,3 +1,6 @@
+local_backend:
+  url: http://localhost:8082/api/v1
+
 backend:
   name: github
   repo: The-AgenticFlow/openflows-website
@@ -10,6 +13,10 @@ publish_mode: editorial_workflow
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
+slug:
+  encoding: "ascii"
+  clean_accents: true
+
 collections:
   - name: "blogs"
     label: "Blog Posts"
@@ -21,15 +28,16 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Slug", name: "slug", widget: "string" }
-      - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
-      - { label: "Author Name", name: "author_name", widget: "string", required: false }
+      - { label: "Excerpt", name: "excerpt", widget: "text" }
+      - { label: "Author Name", name: "author_name", widget: "string" }
       - { label: "Cover Image URL", name: "cover_image_url", widget: "string", required: false }
       - { label: "Category", name: "category_id", widget: "string", required: false }
       - label: "Status"
         name: "status"
         widget: "select"
         options: ["published", "draft", "archived"]
-        default: "draft"
+        default: "published"
+        hint: "Controls visibility on the website. Choose draft or archived to hide this post even after it is published in the CMS."
       - { label: "Published At", name: "published_at", widget: "datetime", required: false }
       - { label: "Featured", name: "is_featured", widget: "boolean", default: false }
       - { label: "Read Time (minutes)", name: "read_time_minutes", widget: "number", required: false }
@@ -45,7 +53,7 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Slug", name: "slug", widget: "string", required: false }
-      - { label: "Abstract", name: "abstract", widget: "text", required: false }
+      - { label: "Abstract", name: "abstract", widget: "text" }
       - { label: "Category", name: "category", widget: "string" }
       - { label: "Publish Date", name: "publish_date", widget: "datetime" }
       - { label: "Venue", name: "venue", widget: "string", required: false }
@@ -71,6 +79,7 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Category", name: "category", widget: "string" }
+      - { label: "Summary", name: "excerpt", widget: "text", required: false, hint: "One or two sentences shown on the homepage. Leave empty to use the story's first paragraph." }
       - { label: "Date", name: "date", widget: "string", required: false }
       - { label: "URL", name: "href", widget: "string", required: false }
       - { label: "Image URL", name: "image", widget: "string", required: false }

@@ -1,5 +1,8 @@
 import { defineCollection, z } from 'astro:content';
 
+// The CMS saves a cleared date field as an empty string; treat it as no date.
+const optionalDate = z.preprocess((value) => (value === '' ? undefined : value), z.date().optional());
+
 const blogs = defineCollection({
   type: 'content',
   schema: z.object({
@@ -21,7 +24,7 @@ const blogs = defineCollection({
     })).optional(),
     category_id: z.string().optional(),
     status: z.enum(['draft', 'published', 'archived']).default('published'),
-    published_at: z.date().optional(),
+    published_at: optionalDate,
     meta_title: z.string().optional(),
     meta_description: z.string().optional(),
     view_count: z.number().optional(),
@@ -39,7 +42,7 @@ const research = defineCollection({
     abstract: z.string(),
     category: z.string(),
     venue: z.string().optional(),
-    publish_date: z.date().optional(),
+    publish_date: optionalDate,
     pdf_url: z.string().optional(),
     cover_image_url: z.string().optional(),
     tags: z.array(z.string()).optional(),

@@ -50,7 +50,7 @@
   word-break: break-word;
   color: var(--color-graphite);
   opacity: 1;
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
+  animation: var(--motion-rise-animation) var(--motion-duration) var(--ease-out-soft) 80ms both;
   margin-bottom: var(--space-3);
 }
 
@@ -69,44 +69,31 @@
 }
 
 .stage {
-  border-radius: var(--radius-xl);
+  padding: clamp(1rem, 4vw, 3.5rem);
   border: 1px solid var(--color-driftwood);
-  background: var(--color-fog);
-  overflow: hidden;
-  margin-bottom: 48px;
+  border-radius: var(--radius-xl);
+  background-color: #f8f7f3;
+  background-image: repeating-linear-gradient(45deg, #dcd7d3b3 0 1px, #0000 1px 5px);
 }
 
-.videoWrapper {
-  aspect-ratio: 16 / 9;
-  width: 100%;
-  background: var(--color-fog);
+/* Measured from the recording: the app fills the middle 90% horizontally,
+   and the desktop and browser chrome take the top 12.9%. */
+.videoCrop {
+  --crop-x: 0.05;
+  --crop-top: 0.129;
+
+  position: relative;
+  overflow: hidden;
+  aspect-ratio: 14.4 / 7.839;
 }
 
 .videoEmbed {
-  width: 100%;
-  height: 100%;
-  border-radius: var(--radius-lg);
-  border: none;
-}
-
-.agents {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-}
-
-.agentBadge {
-  font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: var(--font-weight-semibold);
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  padding: 8px 16px;
-  border-radius: 0;
-  border: 1px solid var(--color-driftwood);
-  color: var(--color-graphite);
-  background: var(--color-fog);
+  position: absolute;
+  top: calc(-100% * var(--crop-top) / (1 - var(--crop-top)));
+  left: calc(-100% * var(--crop-x) / (1 - 2 * var(--crop-x)));
+  width: calc(100% / (1 - 2 * var(--crop-x)));
+  height: calc(100% / (1 - var(--crop-top)));
+  border: 0;
 }
 
 @media (max-width: 900px) {

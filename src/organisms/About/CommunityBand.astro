@@ -1,0 +1,237 @@
+---
+const NODES = [
+  { name: 'NEXUS', x: 50, y: 40, color: 'var(--color-agent-nexus)' },
+  { name: 'FORGE', x: 150, y: 115, color: 'var(--color-agent-forge)' },
+  { name: 'SENTINEL', x: 55, y: 190, color: 'var(--color-agent-sentinel)' },
+  { name: 'VESSEL', x: 150, y: 265, color: 'var(--color-agent-vessel)' },
+  { name: 'LORE', x: 60, y: 340, color: 'var(--color-agent-lore)' },
+];
+const ROUTE = 'M50 40 C 110 40, 150 70, 150 115 S 60 150, 55 190 S 150 225, 150 265 S 60 300, 60 340';
+// The ticket travels the route in 85% of the cycle, then rests on LORE.
+const CYCLE_S = 10;
+const ARRIVE_STEP = (CYCLE_S * 0.85) / (NODES.length - 1);
+
+const LINKS = [
+  { label: 'Join Discord', href: 'https://discord.gg/gDhK2RQZpY', external: true, primary: true },
+  { label: 'Star on GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+  { label: 'Report an issue', href: 'https://github.com/The-AgenticFlow/OpenFlows/issues', external: true },
+  { label: 'Installation guide', href: '/docs/getting-started/installation' },
+];
+---
+
+<section class="community" aria-labelledby="community-title">
+  <div class="community-grid-panel" aria-hidden="true">
+    <svg viewBox="0 0 200 380" preserveAspectRatio="xMidYMid meet">
+      <path id="community-route" d={ROUTE} fill="none" stroke="currentColor" stroke-width="1.4" stroke-dasharray="3 4" opacity="0.55" />
+      {NODES.map((node, index) => (
+        <g class="net-node" style={`--delay: ${(index * ARRIVE_STEP).toFixed(3)}s; --agent: ${node.color}`}>
+          <circle class="net-pulse" cx={node.x} cy={node.y} r="9" />
+          <circle class="net-core" cx={node.x} cy={node.y} r="7" />
+          <text x={node.x + (node.x < 100 ? 14 : -14)} y={node.y + 3.5} text-anchor={node.x < 100 ? 'start' : 'end'}>{node.name}</text>
+        </g>
+      ))}
+      <g class="net-ticket">
+        <rect x="-15" y="-7" width="30" height="14" rx="7" />
+        <text x="0" y="3" text-anchor="middle">T-042</text>
+        <animateMotion dur={`${CYCLE_S}s`} repeatCount="indefinite" keyPoints="0;1;1" keyTimes="0;0.85;1" calcMode="linear">
+          <mpath href="#community-route" />
+        </animateMotion>
+      </g>
+    </svg>
+  </div>
+
+  <div class="community-body">
+    <h2 id="community-title" data-reveal>Help build the autonomous AI development team</h2>
+    <p data-reveal>
+      OpenFlows is MIT licensed and maintained by the AgenticFlow team. Contributions shape the agents, their
+      skills and MCP servers, new model integrations, and the flow graph that coordinates them.
+    </p>
+    <div class="community-actions" data-reveal>
+      {LINKS.map((link) => (
+        <a
+          href={link.href}
+          class:list={['community-action', { primary: link.primary }]}
+          target={link.external ? '_blank' : undefined}
+          rel={link.external ? 'noopener noreferrer' : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <div class="community-dots-panel" aria-hidden="true"></div>
+</section>
+
+<style>
+  .community {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.6fr) minmax(0, 0.9fr);
+    min-height: 34rem;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .community-grid-panel {
+    position: relative;
+    color: var(--color-aubergine);
+    background-color: #f8f7f3;
+    background-image:
+      repeating-linear-gradient(45deg, rgba(13, 73, 67, 0.16) 0 1px, #0000 1px 5px),
+      linear-gradient(90deg, rgba(143, 184, 178, 0.55), rgba(207, 225, 221, 0.15));
+    border-right: 1px solid var(--color-driftwood);
+  }
+
+  .community-grid-panel svg {
+    position: absolute;
+    inset: 8% 6%;
+    width: 88%;
+    height: 84%;
+    overflow: visible;
+  }
+
+  .net-core {
+    fill: var(--agent);
+    stroke: #fff;
+    stroke-width: 2;
+  }
+
+  .net-pulse {
+    fill: none;
+    stroke: var(--agent);
+    stroke-width: 2;
+    opacity: 0;
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: net-pulse 10s linear infinite;
+    animation-delay: var(--delay);
+  }
+
+  .net-node text,
+  .net-ticket text {
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    fill: var(--color-ink);
+  }
+
+  .net-ticket rect {
+    fill: var(--color-ink);
+  }
+
+  .net-ticket text {
+    fill: #fff;
+    font-size: 7.5px;
+  }
+
+  @keyframes net-pulse {
+    0% {
+      opacity: 0.9;
+      transform: scale(0.8);
+    }
+    12% {
+      opacity: 0;
+      transform: scale(2.6);
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .net-ticket {
+      display: none;
+    }
+  }
+
+  .community-dots-panel {
+    background-color: var(--color-aubergine);
+    background-image:
+      repeating-linear-gradient(45deg, rgba(242, 240, 235, 0.22) 0 1px, #0000 1px 5px),
+      linear-gradient(90deg, #f1efe9 0%, rgba(143, 184, 178, 0.85) 35%, var(--color-aubergine) 78%, var(--color-aubergine-deep) 100%);
+    border-left: 1px solid var(--color-driftwood);
+  }
+
+  .community-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4.5rem);
+  }
+
+  .community-body h2 {
+    margin: 0;
+    max-width: 16ch;
+    font-size: clamp(2.5rem, 4.8vw, 4.25rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .community-body p {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+  }
+
+  .community-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .community-action {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding: 0 1.375rem;
+    border: 1px solid var(--color-ink);
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s var(--ease-out-soft);
+  }
+
+  .community-action:hover {
+    background: var(--color-bone);
+    color: var(--color-ink);
+    transform: translateY(-1px);
+  }
+
+  .community-action.primary {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-parchment);
+  }
+
+  .community-action.primary:hover {
+    background: #000;
+    color: var(--color-parchment);
+  }
+
+  .community-action:focus-visible {
+    outline: 2px solid var(--color-aubergine);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 900px) {
+    .community {
+      grid-template-columns: 1fr;
+    }
+
+    .community-grid-panel,
+    .community-dots-panel {
+      min-height: 7rem;
+    }
+
+    .community-dots-panel {
+      display: none;
+    }
+  }
+</style>

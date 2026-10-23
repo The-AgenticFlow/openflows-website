@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react'
 import styles from './UseCaseTabs.module.css'
 
 const USE_CASES = [
@@ -64,22 +64,174 @@ const USE_CASES = [
   },
 ]
 
+const AUTO_ADVANCE_MS = 7000
+const COUNT_UP_MS = 1100
+const EXIT_MS = 320
+// Pin the section and drive the tabs by scroll only where the whole section fits on screen.
+const PINNED_QUERY = '(min-width: 1025px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)'
+const SCROLL_PER_CASE_VH = 80
+
+const prefersReducedMotion = () =>
+  typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
+
+const pad = (n) => String(n).padStart(2, '0')
+
+/** Counts the first number in a stat such as "< 2 min" or "10x" up from zero. */
+function CountUp({ value }) {
+  const match = value.match(/^(\D*)(\d+)(\D*)$/)
+  const [shown, setShown] = useState(match ? `${match[1]}0${match[3]}` : value)
+
+  useEffect(() => {
+    if (!match || prefersReducedMotion()) {
+      setShown(value)
+      return undefined
+    }
+    const [, before, digits, after] = match
+    const target = Number(digits)
+    let frame = 0
+    const start = performance.now()
+    const tick = (now) => {
+      const t = Math.min(1, (now - start) / COUNT_UP_MS)
+      const eased = 1 - Math.pow(1 - t, 3)
+      setShown(`${before}${Math.round(target * eased)}${after}`)
+      if (t < 1) frame = requestAnimationFrame(tick)
+    }
+    frame = requestAnimationFrame(tick)
+    return () => cancelAnimationFrame(frame)
+  }, [value])
+
+  return <span aria-label={value}>{shown}</span>
+}
+
 export default function UseCaseTabs() {
   const [active, setActive] = useState(0)
-  const [animating, setAnimating] = useState(false)
-  const activeCase = USE_CASES[active]
+  const [shownIndex, setShownIndex] = useState(0)
+  const [leaving, setLeaving] = useState(false)
+  const [autoplay, setAutoplay] = useState(true)
+  const [inView, setInView] = useState(false)
+  const [paused, setPaused] = useState(false)
+  const [reducedMotion, setReducedMotion] = useState(false)
+  const [indicator, setIndicator] = useState(null)
+  const [pinned, setPinned] = useState(false)
+  const sectionRef = useRef(null)
+  const tabsRef = useRef(null)
+  const tabRefs = useRef([])
+  const activeCase = USE_CASES[shownIndex]
+  const running = autoplay && inView && !paused && !reducedMotion && !pinned
 
-  const handleTabChange = (index) => {
-    if (index === active || animating) return
-    setAnimating(true)
-    setTimeout(() => {
-      setActive(index)
-      setAnimating(false)
-    }, 200)
+  useEffect(() => {
+    const query = window.matchMedia(PINNED_QUERY)
+    const apply = () => setPinned(query.matches)
+    apply()
+    query.addEventListener('change', apply)
+    return () => query.removeEventListener('change', apply)
+  }, [])
+
+  // In pinned mode the scroll position inside the section picks the use case.
+  useEffect(() => {
+    if (!pinned) return undefined
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const el = sectionRef.current
+      if (!el) return
+      const scrollable = el.offsetHeight - window.innerHeight
+      const p = scrollable > 0 ? Math.min(0.9999, Math.max(0, -el.getBoundingClientRect().top / scrollable)) : 0
+      setActive(Math.floor(p * USE_CASES.length))
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    update()
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(frame)
+    }
+  }, [pinned])
+
+  useEffect(() => {
+    setReducedMotion(prefersReducedMotion())
+    const observer = new IntersectionObserver(([entry]) => setInView(entry.isIntersecting), { threshold: 0.4 })
+    if (sectionRef.current) observer.observe(sectionRef.current)
+    return () => observer.disconnect()
+  }, [])
+
+  // Let the current panel fade out before the next one rises in.
+  useEffect(() => {
+    if (active === shownIndex) return undefined
+    if (reducedMotion) {
+      setShownIndex(active)
+      return undefined
+    }
+    setLeaving(true)
+    const timer = window.setTimeout(() => {
+      setShownIndex(active)
+      setLeaving(false)
+    }, EXIT_MS)
+    return () => window.clearTimeout(timer)
+  }, [active, shownIndex, reducedMotion])
+
+  const measure = useCallback(() => {
+    const tab = tabRefs.current[active]
+    if (!tab) return
+    setIndicator({ x: tab.offsetLeft, y: tab.offsetTop, width: tab.offsetWidth, height: tab.offsetHeight })
+  }, [active])
+
+  useLayoutEffect(() => {
+    measure()
+    window.addEventListener('resize', measure)
+    return () => window.removeEventListener('resize', measure)
+  }, [measure])
+
+  const scrollToCase = (index) => {
+    const el = sectionRef.current
+    if (!el) return
+    const scrollable = el.offsetHeight - window.innerHeight
+    const top = el.getBoundingClientRect().top + window.scrollY + scrollable * ((index + 0.5) / USE_CASES.length)
+    if (window.lenis) window.lenis.scrollTo(top)
+    else window.scrollTo({ top, behavior: 'smooth' })
+  }
+
+  const select = (index, { focus = false } = {}) => {
+    setAutoplay(false)
+    if (pinned) scrollToCase(index)
+    setActive(index)
+    if (focus) tabRefs.current[index]?.focus()
+  }
+
+  const advance = () => setActive((current) => (current + 1) % USE_CASES.length)
+
+  const onKeyDown = (event, index) => {
+    const last = USE_CASES.length - 1
+    const keys = {
+      ArrowDown: index === last ? 0 : index + 1,
+      ArrowRight: index === last ? 0 : index + 1,
+      ArrowUp: index === 0 ? last : index - 1,
+      ArrowLeft: index === 0 ? last : index - 1,
+      Home: 0,
+      End: last,
+    }
+    if (event.key in keys) {
+      event.preventDefault()
+      select(keys[event.key], { focus: true })
+    }
   }
 
   return (
-    <section className={styles.section} aria-labelledby="use-cases-title">
+    <section
+      ref={sectionRef}
+      className={`${styles.section} ${pinned ? styles.pinned : ''}`}
+      style={pinned ? { height: `${100 + SCROLL_PER_CASE_VH * USE_CASES.length}vh` } : undefined}
+      aria-labelledby="use-cases-title"
+      onMouseEnter={() => setPaused(true)}
+      onMouseLeave={() => setPaused(false)}
+      onFocus={() => setPaused(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false)
+      }}
+    >
+      <div className={styles.stage}>
       <div className={styles.container}>
         <div className={styles.header}>
           <p className={styles.eyebrow}>Use cases</p>
@@ -92,45 +244,101 @@ export default function UseCaseTabs() {
         </div>
 
         <div className={styles.layout}>
-          <div className={styles.tabs} role="tablist">
-            {USE_CASES.map((useCase, index) => (
-              <button
-                key={useCase.id}
-                role="tab"
-                aria-selected={active === index}
-                className={`${styles.tab} ${active === index ? styles.tabActive : ''}`}
-                onClick={() => handleTabChange(index)}
-              >
-                {useCase.label}
-              </button>
-            ))}
+          <div ref={tabsRef} className={styles.tabs} role="tablist" aria-label="Use cases" aria-orientation="vertical">
+            {indicator && (
+              <span
+                className={styles.indicator}
+                aria-hidden="true"
+                style={{
+                  width: indicator.width,
+                  height: indicator.height,
+                  transform: `translate(${indicator.x}px, ${indicator.y}px)`,
+                }}
+              />
+            )}
+            {USE_CASES.map((useCase, index) => {
+              const selected = active === index
+              return (
+                <button
+                  key={useCase.id}
+                  ref={(el) => {
+                    tabRefs.current[index] = el
+                  }}
+                  type="button"
+                  role="tab"
+                  id={`use-case-tab-${useCase.id}`}
+                  aria-selected={selected}
+                  aria-controls="use-case-panel"
+                  tabIndex={selected ? 0 : -1}
+                  className={`${styles.tab} ${selected ? styles.tabActive : ''}`}
+                  onClick={() => select(index)}
+                  onKeyDown={(event) => onKeyDown(event, index)}
+                >
+                  <span className={styles.tabIndex}>{pad(index + 1)}</span>
+                  <span>{useCase.label}</span>
+                  {selected && autoplay && !reducedMotion && !pinned && (
+                    <span className={styles.tabProgress} aria-hidden="true">
+                      <span
+                        key={active}
+                        className={styles.tabProgressFill}
+                        style={{
+                          animationDuration: `${AUTO_ADVANCE_MS}ms`,
+                          animationPlayState: running ? 'running' : 'paused',
+                        }}
+                        onAnimationEnd={advance}
+                      />
+                    </span>
+                  )}
+                </button>
+              )
+            })}
           </div>
 
-          <div className={`${styles.content} ${animating ? styles.contentExit : styles.contentEnter}`} role="tabpanel">
-            <h3 className={styles.contentTitle}>{activeCase.title}</h3>
-            <p className={styles.contentDesc}>{activeCase.summary}</p>
+          <div
+            className={styles.content}
+            role="tabpanel"
+            id="use-case-panel"
+            aria-labelledby={`use-case-tab-${activeCase.id}`}
+            aria-live={autoplay ? 'off' : 'polite'}
+          >
+            <div key={activeCase.id} className={`${styles.contentInner} ${leaving ? styles.leaving : ''}`}>
+              <p className={`${styles.counter} ${styles.rise}`} style={{ '--i': 0 }}>
+                {pad(shownIndex + 1)} / {pad(USE_CASES.length)}
+              </p>
+              <h3 className={`${styles.contentTitle} ${styles.rise}`} style={{ '--i': 1 }}>
+                {activeCase.title}
+              </h3>
+              <p className={`${styles.contentDesc} ${styles.rise}`} style={{ '--i': 2 }}>
+                {activeCase.summary}
+              </p>
 
-            <ul className={styles.itemList}>
-              {activeCase.items.map((item, i) => (
-                <li key={i} className={styles.item}>{item}</li>
-              ))}
-            </ul>
+              <ul className={styles.itemList}>
+                {activeCase.items.map((item, i) => (
+                  <li key={item} className={`${styles.item} ${styles.rise}`} style={{ '--i': 3 + i }}>
+                    {item}
+                  </li>
+                ))}
+              </ul>
 
-            <div className={styles.footer}>
-              <div className={styles.stat}>
-                <span className={styles.statValue}>{activeCase.stats.value}</span>
-                <span className={styles.statLabel}>{activeCase.stats.label}</span>
+              <div className={`${styles.footer} ${styles.rise}`} style={{ '--i': 3 + activeCase.items.length }}>
+                <div className={styles.stat}>
+                  <span className={styles.statValue}>
+                    <CountUp value={activeCase.stats.value} />
+                  </span>
+                  <span className={styles.statLabel}>{activeCase.stats.label}</span>
+                </div>
+                <a href={activeCase.href} className={styles.cta}>
+                  Learn more
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14" />
+                    <path d="m12 5 7 7-7 7" />
+                  </svg>
+                </a>
               </div>
-              <a href={activeCase.href} className={styles.cta}>
-                Learn more
-                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                  <path d="M5 12h14"/>
-                  <path d="m12 5 7 7-7 7"/>
-                </svg>
-              </a>
             </div>
           </div>
         </div>
+      </div>
       </div>
     </section>
   )

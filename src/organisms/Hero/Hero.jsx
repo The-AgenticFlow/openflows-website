@@ -13,18 +13,27 @@ export default function Hero() {
           </p>
 
           <h1 className={styles.heading}>
-            <span className={styles.line}><span className={styles.highlight}>Orchestrate</span> AI agents</span>
-            <span className={styles.line}>on top of your{' '}
-              <a
-                href="https://coder.com"
-                target="_blank"
-                rel="noopener noreferrer"
-                className={styles.coderLink}
-              >
-                Coder
-              </a>
+            <span className={styles.line}>
+              <span className={styles.lineInner} style={{ '--line': 0 }}>
+                <span className={styles.highlight}>Orchestrate</span> AI agents
+              </span>
             </span>
-            <span className={styles.line}>environment.</span>
+            <span className={styles.line}>
+              <span className={styles.lineInner} style={{ '--line': 1 }}>
+                on top of your{' '}
+                <a
+                  href="https://coder.com"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className={styles.coderLink}
+                >
+                  Coder
+                </a>
+              </span>
+            </span>
+            <span className={styles.line}>
+              <span className={styles.lineInner} style={{ '--line': 2 }}>environment.</span>
+            </span>
           </h1>
 
           <p className={styles.sub}>

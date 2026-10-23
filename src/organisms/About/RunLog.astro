@@ -1,0 +1,206 @@
+---
+// An illustrative run, timed to match the "~16 min issue to merged PR" figure on this page.
+const EVENTS = [
+  { time: '00:00', agent: 'NEXUS', color: 'var(--color-agent-nexus)', title: 'Issue #128 becomes ticket T-042', detail: 'Synced from GitHub, CI readiness checked, assigned to an idle FORGE worker in its own Coder workspace.' },
+  { time: '01:40', agent: 'FORGE', color: 'var(--color-agent-forge)', title: 'Plan posted, work paused', detail: 'PLAN.md is uploaded and the ticket moves to plan_ready. No code is written until the plan is approved.' },
+  { time: '02:30', agent: 'SENTINEL', color: 'var(--color-agent-sentinel)', title: 'Plan approved', detail: 'A fresh, read-only reviewer checks the plan against your standards before implementation starts.' },
+  { time: '09:10', agent: 'FORGE', color: 'var(--color-agent-forge)', title: 'Built segment by segment', detail: 'Conventional commits on forge-2/T-042, with the test suite run after each segment.' },
+  { time: '12:20', agent: 'SENTINEL', color: 'var(--color-agent-sentinel)', title: 'Pull request approved', detail: 'Correctness, security, test coverage, standards and regressions reviewed. Zero security flags.' },
+  { time: '14:50', agent: 'VESSEL', color: 'var(--color-agent-vessel)', title: 'CI green, merged', detail: 'Every check passed, so the approved pull request is squash-merged.' },
+  { time: '16:05', agent: 'LORE', color: 'var(--color-agent-lore)', title: 'Decision recorded', detail: 'CHANGELOG.md updated and an Architecture Decision Record written, with the PR and ticket referenced.' },
+];
+---
+
+<section class="runlog" aria-labelledby="runlog-title" data-runlog>
+  <div class="runlog-inner">
+    <div class="runlog-head">
+      <h2 id="runlog-title">One ticket, start to finish</h2>
+      <p>An example run of T-042, "Add rate limiting to the public API", as the agents log it.</p>
+    </div>
+
+    <div class="runlog-timeline">
+    <span class="runlog-track" aria-hidden="true"><span class="runlog-fill" data-runlog-fill></span></span>
+    <ol class="runlog-list">
+      {EVENTS.map((event) => (
+        <li class="runlog-event" data-reveal style={`--agent: ${event.color}`}>
+          <time class="runlog-time">T+{event.time}</time>
+          <span class="runlog-dot" aria-hidden="true"></span>
+          <div class="runlog-body">
+            <p class="runlog-agent">{event.agent}</p>
+            <h3>{event.title}</h3>
+            <p class="runlog-detail">{event.detail}</p>
+          </div>
+        </li>
+      ))}
+    </ol>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-runlog]');
+  const fill = root?.querySelector<HTMLElement>('[data-runlog-fill]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (root && fill) {
+    if (reduced) {
+      fill.style.transform = 'scaleY(1)';
+    } else {
+      let frame = 0;
+      const update = () => {
+        frame = 0;
+        const list = root.querySelector('ol');
+        if (!list) return;
+        const rect = list.getBoundingClientRect();
+        // The line reaches each event as it passes the middle of the screen.
+        const p = (window.innerHeight * 0.6 - rect.top) / rect.height;
+        fill.style.transform = `scaleY(${Math.min(1, Math.max(0, p)).toFixed(3)})`;
+      };
+      window.addEventListener('scroll', () => {
+        if (!frame) frame = requestAnimationFrame(update);
+      }, { passive: true });
+      update();
+    }
+  }
+</script>
+
+<style>
+  .runlog {
+    padding: clamp(5rem, 9vw, 8rem) 0;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .runlog-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+    gap: clamp(2.5rem, 6vw, 6rem);
+    max-width: var(--max-width-6xl);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .runlog-head {
+    align-self: start;
+    position: sticky;
+    top: calc(var(--nav-height) + 3rem);
+  }
+
+  .runlog-head h2 {
+    margin: 0 0 1.25rem;
+    font-size: clamp(2.5rem, 4.6vw, 4rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .runlog-head p {
+    margin: 0;
+    max-width: 24rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-graphite);
+  }
+
+  .runlog-timeline {
+    position: relative;
+  }
+
+  .runlog-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .runlog-track {
+    position: absolute;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    left: calc(5.5rem + 1.5rem + 0.375rem - 1px);
+    width: 2px;
+    background: var(--color-driftwood);
+  }
+
+  .runlog-fill {
+    display: block;
+    width: 100%;
+    height: 100%;
+    background: var(--color-aubergine);
+    transform: scaleY(0);
+    transform-origin: top;
+  }
+
+  .runlog-event {
+    position: relative;
+    display: grid;
+    grid-template-columns: 5.5rem 0.75rem minmax(0, 1fr);
+    gap: 0 1.5rem;
+    padding-bottom: 2.75rem;
+  }
+
+  .runlog-event:last-child {
+    padding-bottom: 0;
+  }
+
+  .runlog-time {
+    padding-top: 0.125rem;
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .runlog-dot {
+    position: relative;
+    z-index: 1;
+    width: 0.75rem;
+    height: 0.75rem;
+    margin-top: 0.3rem;
+    border: 2px solid var(--color-parchment-canvas);
+    border-radius: 50%;
+    background: var(--agent);
+    box-shadow: 0 0 0 1px var(--color-driftwood);
+  }
+
+  .runlog-agent {
+    margin: 0 0 0.375rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .runlog-body h3 {
+    margin: 0 0 0.5rem;
+    font-size: 1.375rem;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+  }
+
+  .runlog-detail {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-graphite);
+  }
+
+  @media (max-width: 860px) {
+    .runlog-inner {
+      grid-template-columns: 1fr;
+    }
+
+    .runlog-head {
+      position: static;
+    }
+
+    .runlog-event {
+      grid-template-columns: 4.25rem 0.75rem minmax(0, 1fr);
+      gap: 0 1rem;
+    }
+
+    .runlog-track {
+      left: calc(4.25rem + 1rem + 0.375rem - 1px);
+    }
+  }
+</style>

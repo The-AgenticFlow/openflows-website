@@ -1,0 +1,205 @@
+---
+interface Agent {
+  id: string;
+  name: string;
+  role: string;
+  desc: string;
+  color: string;
+}
+
+interface Props {
+  agents: Agent[];
+}
+
+const { agents } = Astro.props;
+const pad = (n: number) => String(n).padStart(2, '0');
+---
+
+<section class="team" aria-labelledby="team-title">
+  <div class="team-inner">
+    <div class="team-head">
+      <p class="team-label">The team</p>
+      <h2 id="team-title">Five agents, one pipeline</h2>
+    </div>
+
+    <ol class="team-list">
+      {agents.map((agent, index) => (
+        <li class="team-row" data-reveal style={`--agent: ${agent.color}`}>
+          <span class="team-index">{pad(index + 1)}</span>
+          <h3 class="team-name">
+            <a href={`/agents/${agent.id}`}>
+              <span class="team-dot" aria-hidden="true"></span>
+              {agent.name}
+            </a>
+          </h3>
+          <p class="team-role">{agent.role}</p>
+          <p class="team-desc">{agent.desc}</p>
+          <span class="team-arrow" aria-hidden="true">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M5 12h14" />
+              <path d="m13 6 6 6-6 6" />
+            </svg>
+          </span>
+        </li>
+      ))}
+    </ol>
+  </div>
+</section>
+
+<style>
+  .team {
+    padding: clamp(5rem, 9vw, 8rem) 0;
+  }
+
+  .team-inner {
+    max-width: var(--max-width-6xl);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .team-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 3rem;
+  }
+
+  .team-label {
+    order: 2;
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-graphite);
+  }
+
+  .team-head h2 {
+    margin: 0;
+    font-size: clamp(2.5rem, 5vw, 4.25rem);
+    font-weight: 400;
+    line-height: 1;
+    letter-spacing: -0.04em;
+  }
+
+  .team-list {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    border-top: 1px solid var(--color-ink);
+  }
+
+  .team-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: 3.5rem minmax(0, 15rem) minmax(0, 10rem) minmax(0, 1fr) 2rem;
+    gap: 1.5rem;
+    align-items: baseline;
+    padding: 1.75rem 0;
+    border-bottom: 1px solid var(--color-driftwood);
+    transition: background-color 0.35s var(--ease-out-soft), padding 0.35s var(--ease-out-soft);
+  }
+
+  .team-row:hover {
+    padding-inline: 1rem;
+    background: var(--color-bone);
+  }
+
+  .team-index {
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-graphite);
+  }
+
+  .team-name {
+    margin: 0;
+    font-family: var(--font-mono);
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-weight: 600;
+    letter-spacing: -0.02em;
+  }
+
+  .team-name a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.75rem;
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .team-name a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  .team-name a:focus-visible {
+    outline: none;
+  }
+
+  .team-name a:focus-visible::after {
+    outline: 2px solid var(--color-aubergine);
+    outline-offset: -2px;
+  }
+
+  .team-dot {
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background: var(--agent);
+    transition: transform 0.35s var(--ease-out-soft);
+  }
+
+  .team-row:hover .team-dot {
+    transform: scale(1.5);
+  }
+
+  .team-role {
+    margin: 0;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-aubergine);
+  }
+
+  .team-desc {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-graphite);
+  }
+
+  .team-arrow {
+    align-self: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    color: var(--color-ink);
+    opacity: 0.35;
+    transition: transform 0.35s var(--ease-out-soft), opacity 0.35s ease;
+  }
+
+  .team-row:hover .team-arrow {
+    opacity: 1;
+    transform: translateX(4px);
+  }
+
+  @media (max-width: 900px) {
+    .team-row {
+      grid-template-columns: 2.5rem minmax(0, 1fr) 1.5rem;
+      row-gap: 0.5rem;
+    }
+
+    .team-role,
+    .team-desc {
+      grid-column: 2;
+    }
+
+    .team-arrow {
+      grid-column: 3;
+      grid-row: 1;
+    }
+
+    .team-row:hover {
+      padding-inline: 0;
+    }
+  }
+</style>

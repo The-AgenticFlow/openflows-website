@@ -1,34 +1,258 @@
 ---
-import { getCollection } from 'astro:content';
-import RecentNews from '@/organisms/RecentNews/RecentNews.jsx';
+import Cover from '@/components/content/Cover.astro';
+import PostMeta from '@/components/blog/PostMeta.astro';
+import { formatPostDate, getPostHref, getPublishedPosts } from '@/components/blog/blog';
 
-const allBlogs = await getCollection('blogs');
+const RECENT_POSTS_COUNT = 3;
 
-// Filter to published, non-draft blogs and get last 3
-const posts = allBlogs
-  .filter(blog => !blog.data.is_draft && blog.data.status === 'published')
-  .sort((a, b) => {
-    const dateA = a.data.published_at ? new Date(a.data.published_at).getTime() : 0;
-    const dateB = b.data.published_at ? new Date(b.data.published_at).getTime() : 0;
-    return dateB - dateA;
-  })
-  .slice(0, 3)
-  .map(post => ({
-    id: post.id,
-    category: 'Blog',
-    date: post.data.published_at
-      ? new Date(post.data.published_at).toLocaleDateString('en-US', {
-          year: 'numeric',
-          month: 'short',
-          day: 'numeric',
-        })
-      : '',
-    title: post.data.title,
-    excerpt: post.data.excerpt,
-    href: `/blog/${(post.data.slug || post.slug).trim()}`,
-    image: post.data.cover_image_url || '',
-    featured: post.data.is_featured || false,
-  }));
+const [lead, ...others] = (await getPublishedPosts()).slice(0, RECENT_POSTS_COUNT);
 ---
 
-<RecentNews posts={posts} />
+{lead && (
+  <section class="recent-news" aria-labelledby="recent-news-title">
+    <div class="recent-news-container">
+      <div class="recent-news-header">
+        <h2 id="recent-news-title">Recent news</h2>
+        <a href="/blog" class="recent-news-all">All posts</a>
+      </div>
+
+      <div class="recent-news-grid">
+        <article class="recent-news-lead">
+          <Cover src={lead.data.cover_image_url} />
+          {lead.data.category_id && <p class="recent-news-category">{lead.data.category_id}</p>}
+          <h3 class="recent-news-lead-title">
+            <a href={getPostHref(lead)}>{lead.data.title}</a>
+          </h3>
+          {lead.data.excerpt && <p class="recent-news-excerpt">{lead.data.excerpt}</p>}
+          <PostMeta post={lead} />
+        </article>
+
+        {others.length > 0 && (
+          <div class="recent-news-side">
+            {others.map((post) => (
+              <article class="recent-news-item">
+                <Cover src={post.data.cover_image_url} />
+                <div class="recent-news-item-body">
+                  <h3 class="recent-news-item-title">
+                    <a href={getPostHref(post)}>{post.data.title}</a>
+                  </h3>
+                  {post.data.excerpt && <p class="recent-news-item-excerpt">{post.data.excerpt}</p>}
+                  {post.data.published_at && (
+                    <time datetime={post.data.published_at.toISOString()}>
+                      {formatPostDate(post.data.published_at)}
+                    </time>
+                  )}
+                </div>
+              </article>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .recent-news {
+    padding: var(--space-16) 0;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .recent-news-container {
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .recent-news-header {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: var(--space-8);
+  }
+
+  .recent-news-header h2 {
+    margin: 0;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .recent-news-all {
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-medium);
+    color: var(--color-aubergine);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color var(--transition-fast);
+  }
+
+  .recent-news-all:hover {
+    color: var(--color-aubergine-deep);
+    text-decoration-color: currentColor;
+  }
+
+  .recent-news-grid {
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(0, 1fr);
+    gap: 3.5rem;
+    align-items: start;
+  }
+
+  .recent-news-lead,
+  .recent-news-item {
+    position: relative;
+  }
+
+  .recent-news-lead {
+    display: flex;
+    flex-direction: column;
+    gap: 0.875rem;
+  }
+
+  .recent-news-lead :global(.cover) {
+    aspect-ratio: 16 / 9;
+    margin-bottom: 0.5rem;
+  }
+
+  .recent-news-category {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-aubergine);
+  }
+
+  .recent-news-lead-title,
+  .recent-news-item-title {
+    margin: 0;
+    font-weight: 600;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .recent-news-lead-title {
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.15;
+  }
+
+  .recent-news-item-title {
+    font-size: 1.125rem;
+    line-height: 1.3;
+  }
+
+  .recent-news-lead-title a,
+  .recent-news-item-title a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .recent-news-lead-title a::after,
+  .recent-news-item-title a::after {
+    content: '';
+    position: absolute;
+    inset: -0.5rem;
+    border-radius: var(--radius-xl);
+  }
+
+  .recent-news-lead-title a:hover,
+  .recent-news-item-title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .recent-news-lead-title a:focus-visible,
+  .recent-news-item-title a:focus-visible {
+    outline: none;
+  }
+
+  .recent-news-lead-title a:focus-visible::after,
+  .recent-news-item-title a:focus-visible::after {
+    outline: 2px solid var(--color-aubergine);
+  }
+
+  .recent-news-excerpt {
+    margin: 0;
+    max-width: 38rem;
+    font-size: 1.0625rem;
+    line-height: 1.55;
+    color: var(--color-graphite);
+  }
+
+  .recent-news-side {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .recent-news-item {
+    display: grid;
+    grid-template-columns: 12rem minmax(0, 1fr);
+    gap: 1.5rem;
+    align-items: start;
+    padding-block: 2rem;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .recent-news-item:first-child {
+    padding-top: 0;
+    border-top: 0;
+  }
+
+  .recent-news-item-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  .recent-news-item-excerpt {
+    margin: 0;
+    font-size: 0.9375rem;
+    line-height: 1.5;
+    color: var(--color-graphite);
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  .recent-news-item time {
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 900px) {
+    .recent-news-grid {
+      grid-template-columns: 1fr;
+      gap: 2.5rem;
+    }
+
+    .recent-news-item:first-child {
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--color-driftwood);
+    }
+  }
+
+  @media (max-width: 768px) {
+    .recent-news {
+      padding: var(--space-10) 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .recent-news-container {
+      padding-inline: var(--space-4);
+    }
+
+    .recent-news-item {
+      grid-template-columns: 6.5rem minmax(0, 1fr);
+      gap: 1rem;
+    }
+
+    .recent-news-item-excerpt {
+      display: none;
+    }
+  }
+</style>

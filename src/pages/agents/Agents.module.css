@@ -34,7 +34,7 @@
   text-wrap: balance;
   line-height: 1.05;
   margin-bottom: var(--space-6);
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) both izhub-hero-fade-slide-down;
+  animation: var(--motion-rise-animation) var(--motion-duration) var(--ease-out-soft) both;
 }
 
 .br {

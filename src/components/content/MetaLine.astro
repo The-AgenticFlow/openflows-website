@@ -1,0 +1,42 @@
+---
+export interface MetaItem {
+  label: string;
+  datetime?: string;
+  emphasis?: boolean;
+}
+
+interface Props {
+  items: (MetaItem | false | undefined | null)[];
+}
+
+const items = Astro.props.items.filter((item): item is MetaItem => Boolean(item && item.label));
+---
+
+{items.length > 0 && (
+  <p class="meta-line">
+    {items.map((item) =>
+      item.datetime ? (
+        <time datetime={item.datetime} class:list={{ emphasis: item.emphasis }}>{item.label}</time>
+      ) : (
+        <span class:list={{ emphasis: item.emphasis }}>{item.label}</span>
+      ),
+    )}
+  </p>
+)}
+
+<style>
+  .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .emphasis {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+</style>
