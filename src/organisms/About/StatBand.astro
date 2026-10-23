@@ -1,0 +1,107 @@
+---
+interface Props {
+  stats: { value: string; label: string }[];
+}
+
+const { stats } = Astro.props;
+---
+
+<section class="stat-band" aria-label="OpenFlows in numbers" data-stat-band>
+  <dl class="stat-band-grid">
+    {stats.map((stat) => (
+      <div class="stat-band-item">
+        <dt>{stat.label}</dt>
+        <dd data-count={stat.value}>{stat.value}</dd>
+      </div>
+    ))}
+  </dl>
+</section>
+
+<script>
+  const COUNT_UP_MS = 1200;
+  const band = document.querySelector<HTMLElement>('[data-stat-band]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (band && !reduced && 'IntersectionObserver' in window) {
+    const values = [...band.querySelectorAll<HTMLElement>('[data-count]')];
+    const parts = values.map((el) => (el.dataset.count ?? '').match(/^(\D*)(\d+)(\D*)$/));
+    parts.forEach((match, i) => {
+      if (match) values[i].textContent = `${match[1]}0${match[3]}`;
+    });
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting) return;
+        observer.disconnect();
+        const start = performance.now();
+        const tick = (now: number) => {
+          const t = Math.min(1, (now - start) / COUNT_UP_MS);
+          const eased = 1 - Math.pow(1 - t, 3);
+          parts.forEach((match, i) => {
+            if (match) values[i].textContent = `${match[1]}${Math.round(Number(match[2]) * eased)}${match[3]}`;
+          });
+          if (t < 1) requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      },
+      { threshold: 0.4 },
+    );
+    observer.observe(band);
+  }
+</script>
+
+<style>
+  .stat-band {
+    padding: clamp(3.5rem, 6vw, 5.5rem) 0;
+    background: #1d1c1b;
+    color: #f2f0eb;
+  }
+
+  .stat-band-grid {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    max-width: var(--max-width-6xl);
+    margin: 0 auto;
+    padding-inline: var(--space-6);
+  }
+
+  .stat-band-item {
+    display: flex;
+    flex-direction: column-reverse;
+    gap: 0.75rem;
+    padding: 0.5rem 2rem;
+    border-left: 1px solid rgba(242, 240, 235, 0.14);
+  }
+
+  .stat-band-item:first-child {
+    padding-left: 0;
+    border-left: 0;
+  }
+
+  .stat-band-item dd {
+    margin: 0;
+    font-size: clamp(2.5rem, 4.8vw, 4.25rem);
+    font-weight: 300;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .stat-band-item dt {
+    font-size: 0.9375rem;
+    color: rgba(242, 240, 235, 0.66);
+  }
+
+  @media (max-width: 760px) {
+    .stat-band-grid {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      row-gap: 2.5rem;
+    }
+
+    .stat-band-item:nth-child(3) {
+      padding-left: 0;
+      border-left: 0;
+    }
+  }
+</style>

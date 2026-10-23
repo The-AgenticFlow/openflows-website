@@ -1,0 +1,442 @@
+---
+const STEPS = [
+  {
+    statement: 'Coder governs where agents run.',
+    detail: 'Isolated workspaces defined in Terraform, with identity, network boundaries and audit built in.',
+    layer: 'Coder',
+    caption: 'Runtime',
+  },
+  {
+    statement: 'OpenFlows governs how they coordinate.',
+    detail: 'Five agents hand work to each other through gated steps and one shared state machine.',
+    layer: 'OpenFlows',
+    caption: 'Coordination',
+  },
+  {
+    statement: 'Code is the output. Architecture is the product.',
+    detail: 'You set the design and the constraints. The team ships against them.',
+    layer: 'Architecture',
+    caption: 'Your design',
+  },
+];
+
+const WORKSPACES = ['nexus', 'forge-T-042', 'forge-T-043', 'sentinel', 'forge-T-044', 'vessel', 'lore', 'forge-T-045', 'manager'];
+const AGENT_NODES = [
+  { name: 'NEXUS', x: 14, y: 22, color: 'var(--color-agent-nexus)' },
+  { name: 'FORGE', x: 50, y: 14, color: 'var(--color-agent-forge)' },
+  { name: 'SENTINEL', x: 84, y: 34, color: 'var(--color-agent-sentinel)' },
+  { name: 'VESSEL', x: 64, y: 78, color: 'var(--color-agent-vessel)' },
+  { name: 'LORE', x: 24, y: 72, color: 'var(--color-agent-lore)' },
+];
+---
+
+<section class="layers" aria-labelledby="layers-title" data-layers>
+  <div class="layers-stage">
+    <div class="layers-inner">
+      <div class="layers-copy">
+        <h2 id="layers-title" class="layers-label">Three layers, one stack</h2>
+        <ol class="layers-steps">
+          {STEPS.map((step, index) => (
+            <li class="layers-step" data-step={index}>
+              <span class="layers-step-layer">{step.layer}</span>
+              <p class="layers-statement">{step.statement}</p>
+              <p class="layers-detail">{step.detail}</p>
+            </li>
+          ))}
+        </ol>
+      </div>
+
+      <div class="layers-scene" aria-hidden="true">
+        <div class="layers-stack">
+          <div class="plane plane-coder" data-plane="0">
+            <div class="plane-surface">
+              {WORKSPACES.map((name) => (
+                <span class="workspace"><i></i>{name}</span>
+              ))}
+            </div>
+          </div>
+
+          <div class="plane plane-flow" data-plane="1">
+            <div class="plane-surface">
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none">
+                <polyline
+                  points={AGENT_NODES.map((node) => `${node.x},${node.y}`).join(' ') + ` ${AGENT_NODES[0].x},${AGENT_NODES[0].y}`}
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="0.6"
+                  stroke-dasharray="2 1.6"
+                  vector-effect="non-scaling-stroke"
+                />
+              </svg>
+              {AGENT_NODES.map((node) => (
+                <span class="agent-node" style={`left: ${node.x}%; top: ${node.y}%; --agent: ${node.color}`}>
+                  <i></i>{node.name}
+                </span>
+              ))}
+            </div>
+          </div>
+
+          <div class="plane plane-arch" data-plane="2">
+            <div class="plane-surface">
+              <span class="blueprint blueprint-a"></span>
+              <span class="blueprint blueprint-b"></span>
+              <span class="blueprint blueprint-c"></span>
+            </div>
+          </div>
+        </div>
+        {STEPS.map((step, index) => (
+          <span class="layer-label" data-label={index} style={`--slot: ${index}`}>
+            <b>{step.layer}</b> {step.caption}
+          </span>
+        ))}
+      </div>
+    </div>
+  </div>
+</section>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-layers]');
+  const pinnedQuery = window.matchMedia('(min-width: 960px) and (prefers-reduced-motion: no-preference)');
+
+  if (root) {
+    const steps = [...root.querySelectorAll<HTMLElement>('[data-step]')];
+    const planes = [...root.querySelectorAll<HTMLElement>('[data-plane]')];
+    const labels = [...root.querySelectorAll<HTMLElement>('[data-label]')];
+    const count = steps.length;
+    let frame = 0;
+
+    const update = () => {
+      frame = 0;
+      const scrollable = root.offsetHeight - window.innerHeight;
+      const p = scrollable > 0 ? Math.min(1, Math.max(0, -root.getBoundingClientRect().top / scrollable)) : 1;
+      const position = p * count;
+      const active = Math.min(count - 1, Math.floor(position));
+      steps.forEach((el, i) => el.classList.toggle('is-active', i === active));
+      planes.forEach((el, i) => {
+        // Each plane drops into place over the first 60% of its step.
+        const arrival = Math.min(1, Math.max(0, (position - i) / 0.6));
+        el.style.setProperty('--arrive', i === 0 ? '1' : arrival.toFixed(3));
+        el.classList.toggle('is-active', i === active);
+        labels[i]?.style.setProperty('--arrive', i === 0 ? '1' : arrival.toFixed(3));
+        labels[i]?.classList.toggle('is-active', i === active);
+      });
+    };
+
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+
+    const applyMode = () => {
+      const pinned = pinnedQuery.matches;
+      root.dataset.mode = pinned ? 'pinned' : 'static';
+      window.removeEventListener('scroll', onScroll);
+      if (pinned) {
+        window.addEventListener('scroll', onScroll, { passive: true });
+        update();
+      } else {
+        [...planes, ...labels].forEach((el) => el.style.setProperty('--arrive', '1'));
+      }
+    };
+
+    pinnedQuery.addEventListener('change', applyMode);
+    applyMode();
+  }
+</script>
+
+<style>
+  .layers {
+    position: relative;
+  }
+
+  .layers-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+    gap: clamp(2rem, 5vw, 5rem);
+    align-items: center;
+    width: 100%;
+    max-width: var(--max-width-6xl);
+    margin-inline: auto;
+    padding: clamp(4rem, 8vw, 7rem) var(--space-6);
+  }
+
+  .layers-label {
+    margin: 0 0 2rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    font-weight: 400;
+    color: var(--color-graphite);
+  }
+
+  .layers-steps {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .layers-step {
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .layers-step-layer {
+    display: block;
+    margin-bottom: 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-aubergine);
+  }
+
+  .layers-statement {
+    margin: 0 0 0.875rem;
+    font-size: clamp(2rem, 3.6vw, 3.25rem);
+    font-weight: 400;
+    line-height: 1.04;
+    letter-spacing: -0.035em;
+    color: var(--color-ink);
+    text-wrap: balance;
+  }
+
+  .layers-detail {
+    margin: 0;
+    max-width: 30rem;
+    font-size: 1.0625rem;
+    line-height: 1.6;
+    color: var(--color-graphite);
+  }
+
+  /* Isometric stack of planes */
+  .layers-scene {
+    position: relative;
+    display: grid;
+    place-items: center;
+    min-height: 32rem;
+    perspective: 1600px;
+  }
+
+  .layers-stack {
+    position: relative;
+    width: min(100%, 26rem);
+    aspect-ratio: 1;
+    transform: rotateX(58deg) rotateZ(-42deg);
+    transform-style: preserve-3d;
+  }
+
+  .plane {
+    --arrive: 1;
+    --lift: 0;
+
+    position: absolute;
+    inset: 0;
+    opacity: var(--arrive);
+    transform: translateZ(calc(var(--lift) + (1 - var(--arrive)) * 140px));
+    transform-style: preserve-3d;
+    transition: filter 0.4s ease;
+  }
+
+  .plane-coder {
+    --lift: 0px;
+  }
+
+  .plane-flow {
+    --lift: 90px;
+  }
+
+  .plane-arch {
+    --lift: 180px;
+  }
+
+  .plane-surface {
+    position: absolute;
+    inset: 0;
+    border-radius: 18px;
+    transition: box-shadow 0.4s ease, border-color 0.4s ease;
+  }
+
+  .plane-coder .plane-surface {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8%;
+    padding: 9%;
+    border: 1px solid #2b3a37;
+    background: #12211f;
+    box-shadow: 0 40px 60px -30px rgba(18, 33, 31, 0.6);
+  }
+
+  .workspace {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 6px;
+    padding: 8px;
+    overflow: hidden;
+    border: 1px solid rgba(143, 184, 178, 0.28);
+    border-radius: 8px;
+    background: rgba(143, 184, 178, 0.08);
+    font-family: var(--font-mono);
+    font-size: 8px;
+    color: rgba(242, 240, 235, 0.75);
+    white-space: nowrap;
+  }
+
+  .workspace i {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #3ecf8e;
+  }
+
+  .plane-flow .plane-surface {
+    border: 1px solid rgba(13, 73, 67, 0.35);
+    background: rgba(242, 240, 235, 0.55);
+    color: var(--color-aubergine);
+    backdrop-filter: blur(2px);
+  }
+
+  .plane-flow svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .agent-node {
+    position: absolute;
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 4px 8px;
+    border: 1px solid var(--color-driftwood);
+    border-radius: 999px;
+    background: var(--color-bone);
+    font-family: var(--font-mono);
+    font-size: 9px;
+    font-weight: 600;
+    color: var(--color-ink);
+    transform: translate(-50%, -50%);
+  }
+
+  .agent-node i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--agent);
+  }
+
+  .plane-arch .plane-surface {
+    border: 1.5px dashed var(--color-aubergine);
+    background: rgba(207, 225, 221, 0.14);
+  }
+
+  .blueprint {
+    position: absolute;
+    border: 1px solid rgba(13, 73, 67, 0.55);
+    border-radius: 6px;
+  }
+
+  .blueprint-a {
+    inset: 12% 52% 52% 12%;
+  }
+
+  .blueprint-b {
+    inset: 12% 12% 30% 54%;
+  }
+
+  .blueprint-c {
+    inset: 54% 12% 12% 12%;
+    border-style: dashed;
+  }
+
+  .layer-label {
+    --arrive: 1;
+
+    position: absolute;
+    right: 0;
+    top: calc(64% - var(--slot) * 9.5%);
+    display: inline-flex;
+    gap: 6px;
+    padding: 5px 12px;
+    border: 1px solid var(--color-driftwood);
+    border-radius: 999px;
+    background: var(--color-bone);
+    font-size: 12px;
+    color: var(--color-graphite);
+    white-space: nowrap;
+    opacity: var(--arrive);
+    transform: translateY(calc((1 - var(--arrive)) * -24px));
+    transition: border-color 0.3s ease, color 0.3s ease, background-color 0.3s ease;
+  }
+
+  .layer-label b {
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .layer-label.is-active {
+    border-color: var(--color-aubergine);
+    background: var(--color-aubergine);
+    color: rgba(255, 255, 255, 0.75);
+  }
+
+  .layer-label.is-active b {
+    color: #fff;
+  }
+
+  .plane.is-active .plane-surface {
+    box-shadow: 0 0 0 2px var(--color-aubergine), 0 40px 60px -30px rgba(18, 33, 31, 0.5);
+  }
+
+  /* Pinned mode: one statement at a time while the planes stack up. */
+  .layers[data-mode='pinned'] {
+    height: 300vh;
+  }
+
+  .layers[data-mode='pinned'] .layers-stage {
+    position: sticky;
+    top: 0;
+    display: flex;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+  }
+
+  .layers[data-mode='pinned'] .layers-steps {
+    display: grid;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .layers[data-mode='pinned'] .layers-step {
+    grid-area: 1 / 1;
+    border-top: 0;
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.5s ease, transform 0.5s var(--ease-out-soft);
+  }
+
+  .layers[data-mode='pinned'] .layers-step.is-active {
+    opacity: 1;
+    transform: none;
+  }
+
+  @media (max-width: 959px) {
+    .layers-inner {
+      grid-template-columns: 1fr;
+    }
+
+    .layers-scene {
+      order: -1;
+      min-height: 24rem;
+      padding-top: 6rem;
+    }
+
+    .layers-stack {
+      width: min(80%, 20rem);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .plane,
+    .plane-surface {
+      transition: none;
+    }
+  }
+</style>

@@ -75,7 +75,7 @@ const pad = (n) => String(n).padStart(2, '0')
 
 /** Counts the first number in a stat such as "< 2 min" or "10x" up from zero. */
 function CountUp({ value }) {
-  const match = value.match(/^(\D*)(\d+)(.*)$/)
+  const match = value.match(/^(\D*)(\d+)(\D*)$/)
   const [shown, setShown] = useState(match ? `${match[1]}0${match[3]}` : value)
 
   useEffect(() => {

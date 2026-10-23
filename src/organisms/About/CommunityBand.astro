@@ -1,0 +1,157 @@
+---
+const LINKS = [
+  { label: 'Join Discord', href: 'https://discord.gg/gDhK2RQZpY', external: true, primary: true },
+  { label: 'Star on GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+  { label: 'Report an issue', href: 'https://github.com/The-AgenticFlow/OpenFlows/issues', external: true },
+  { label: 'Installation guide', href: '/docs/getting-started/installation' },
+];
+---
+
+<section class="community" aria-labelledby="community-title">
+  <div class="community-grid-panel" aria-hidden="true">
+    <svg viewBox="0 0 200 400" preserveAspectRatio="none">
+      <path d="M0 360 C 60 340, 90 250, 120 180 S 170 60, 200 30" fill="none" stroke="currentColor" stroke-width="1.6" />
+      <path d="M0 390 C 70 370, 110 300, 140 240 S 180 130, 200 100" fill="none" stroke="currentColor" stroke-width="1" stroke-dasharray="4 5" opacity="0.6" />
+      <circle cx="120" cy="180" r="4" fill="currentColor" />
+    </svg>
+  </div>
+
+  <div class="community-body">
+    <h2 id="community-title" data-reveal>Help build the autonomous AI development team</h2>
+    <p data-reveal>
+      OpenFlows is MIT licensed and maintained by the AgenticFlow team. Contributions shape the agents, their
+      skills and MCP servers, new model integrations, and the flow graph that coordinates them.
+    </p>
+    <div class="community-actions" data-reveal>
+      {LINKS.map((link) => (
+        <a
+          href={link.href}
+          class:list={['community-action', { primary: link.primary }]}
+          target={link.external ? '_blank' : undefined}
+          rel={link.external ? 'noopener noreferrer' : undefined}
+        >
+          {link.label}
+        </a>
+      ))}
+    </div>
+  </div>
+
+  <div class="community-dots-panel" aria-hidden="true"></div>
+</section>
+
+<style>
+  .community {
+    display: grid;
+    grid-template-columns: minmax(0, 0.9fr) minmax(0, 2.6fr) minmax(0, 0.9fr);
+    min-height: 34rem;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .community-grid-panel {
+    position: relative;
+    color: var(--color-aubergine);
+    background-color: #cfe1dd;
+    background-image:
+      linear-gradient(rgba(13, 73, 67, 0.12) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(13, 73, 67, 0.12) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  .community-grid-panel svg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+  }
+
+  .community-dots-panel {
+    background-color: #12211f;
+    background-image: radial-gradient(rgba(143, 184, 178, 0.75) 1.2px, transparent 1.6px);
+    background-size: 12px 12px;
+    mask-image: linear-gradient(90deg, rgba(0, 0, 0, 0.35), #000 70%);
+  }
+
+  .community-body {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 1.5rem;
+    padding: clamp(3rem, 6vw, 5rem) clamp(1.5rem, 5vw, 4.5rem);
+  }
+
+  .community-body h2 {
+    margin: 0;
+    max-width: 16ch;
+    font-size: clamp(2.5rem, 4.8vw, 4.25rem);
+    font-weight: 400;
+    line-height: 1.02;
+    letter-spacing: -0.04em;
+    text-wrap: balance;
+  }
+
+  .community-body p {
+    margin: 0;
+    max-width: 34rem;
+    font-size: 1.0625rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+  }
+
+  .community-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+  }
+
+  .community-action {
+    display: inline-flex;
+    align-items: center;
+    min-height: 3rem;
+    padding: 0 1.375rem;
+    border: 1px solid var(--color-ink);
+    border-radius: 999px;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    text-decoration: none;
+    transition: background-color 0.25s ease, color 0.25s ease, transform 0.25s var(--ease-out-soft);
+  }
+
+  .community-action:hover {
+    background: var(--color-bone);
+    color: var(--color-ink);
+    transform: translateY(-1px);
+  }
+
+  .community-action.primary {
+    border-color: var(--color-ink);
+    background: var(--color-ink);
+    color: var(--color-parchment);
+  }
+
+  .community-action.primary:hover {
+    background: #000;
+    color: var(--color-parchment);
+  }
+
+  .community-action:focus-visible {
+    outline: 2px solid var(--color-aubergine);
+    outline-offset: 3px;
+  }
+
+  @media (max-width: 900px) {
+    .community {
+      grid-template-columns: 1fr;
+    }
+
+    .community-grid-panel,
+    .community-dots-panel {
+      min-height: 7rem;
+    }
+
+    .community-dots-panel {
+      display: none;
+    }
+  }
+</style>
