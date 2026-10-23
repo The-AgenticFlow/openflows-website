@@ -30,7 +30,7 @@ const morePosts = (await getPublishedPosts())
 >
   <main class="post-page">
     <article>
-      <header class="post-header">
+      <header class="post-header" data-intro>
         <a class="post-back" href="/blog">← All posts</a>
         {blog.data.category_id && <p class="post-category">{blog.data.category_id}</p>}
         <h1 class="post-title">{blog.data.title}</h1>

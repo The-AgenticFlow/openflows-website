@@ -2,6 +2,7 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import styles from './Enterprise.module.css';
 // Keep the enterprise presentation and content in one route.
+import WindowFrame from '@/molecules/WindowFrame/WindowFrame';
 ---
 
 <BaseLayout
@@ -13,7 +14,7 @@ import styles from './Enterprise.module.css';
       <div class={styles.container}>
         <p class={styles.eyebrow}>OpenFlows for engineering organizations</p>
         <div class={styles.heroGrid}>
-          <div class={styles.heroCopy}>
+          <div class={styles.heroCopy} data-intro>
             <h1>Agent work your team can actually account for.</h1>
             <p class={styles.lede}>Turn a GitHub issue into a reviewed pull request with clear ownership, isolated workspaces, scoped credentials, and a record of what happened along the way.</p>
             <div class={styles.actions}>
@@ -22,8 +23,8 @@ import styles from './Enterprise.module.css';
             </div>
             <p class={styles.heroNote}>Open source at the core. Customer-managed deployments can be evaluated today.</p>
           </div>
+          <WindowFrame title="openflows / one governed run" className={styles.heroWindow}>
           <div class={styles.heroVisual} aria-label="An issue passes through OpenFlows Manager, tenant workspaces, and review before becoming a pull request">
-            <div class={styles.visualTopline}><span class={styles.pulse}></span> One governed run <span class={styles.visualId}>ISSUE → PR</span></div>
             <div class={styles.visualStage}><span class={styles.stageNumber}>01</span><div><strong>Issue enters the queue</strong><small>Repository and tenant are known</small></div><span class={styles.stageState}>GitHub</span></div>
             <div class={styles.visualConnector}></div>
             <div class={styles.visualStage}><span class={styles.stageNumber}>02</span><div><strong>Manager authorizes work</strong><small>Identity, scope, capacity, credentials</small></div><span class={styles.stageState}>Control plane</span></div>
@@ -33,6 +34,7 @@ import styles from './Enterprise.module.css';
             <div class={styles.visualStage}><span class={styles.stageNumber}>04</span><div><strong>Evidence reaches review</strong><small>Changes, verification, pull request</small></div><span class={styles.stageState}>Human gate</span></div>
             <div class={styles.visualFooter}>The agent does the work. Your team keeps the decision.</div>
           </div>
+          </WindowFrame>
         </div>
       </div>
     </section>

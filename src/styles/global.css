@@ -178,6 +178,11 @@
   --transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-base: 200ms cubic-bezier(0.4, 0, 0.2, 1);
   --transition-slow: 500ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  /* Motion: one easing curve and rhythm for entrances and reveals site-wide. */
+  --ease-out-soft: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --motion-duration: 0.75s;
+  --motion-rise: 14px;
   --ease-out: cubic-bezier(0, 0, 0.2, 1);
   --ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
 
@@ -299,14 +304,46 @@ html.lenis {
   white-space: nowrap;
 }
 
+/* Shared entrance: content rises into place. The end state is the element's own styles,
+   so elements with a deliberate opacity keep it. Used by page intros across the site. */
 @keyframes izhub-hero-fade-slide-down {
   from {
     opacity: 0;
-    transform: translateY(-12px);
+    transform: translateY(var(--motion-rise));
   }
-  to {
-    opacity: 1;
-    transform: translateY(0);
+}
+
+/* Page intros: mark a header container with data-intro and its children rise in turn. */
+[data-intro] > * {
+  animation: izhub-hero-fade-slide-down var(--motion-duration) var(--ease-out-soft) both;
+}
+
+[data-intro] > :nth-child(2) { animation-delay: 80ms; }
+[data-intro] > :nth-child(3) { animation-delay: 160ms; }
+[data-intro] > :nth-child(4) { animation-delay: 240ms; }
+[data-intro] > :nth-child(n + 5) { animation-delay: 320ms; }
+
+/* Scroll reveal: motion.ts tags content below the fold and reveals it as it enters view. */
+.reveal-pending {
+  opacity: 0;
+  transform: translateY(calc(var(--motion-rise) * 1.7));
+}
+
+.reveal-pending.is-revealed {
+  opacity: 1;
+  transform: none;
+  transition:
+    opacity var(--motion-duration) var(--ease-out-soft) var(--reveal-delay, 0ms),
+    transform var(--motion-duration) var(--ease-out-soft) var(--reveal-delay, 0ms);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    animation-delay: 0ms !important;
   }
 }
 

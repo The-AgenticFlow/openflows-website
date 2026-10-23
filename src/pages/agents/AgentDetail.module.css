@@ -27,7 +27,7 @@
   letter-spacing: var(--tracking-tight);
   text-wrap: balance;
   color: var(--color-ink);
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) both izhub-hero-fade-slide-down;
+  animation: izhub-hero-fade-slide-down var(--motion-duration) var(--ease-out-soft) both;
 }
 
 .heroRole {

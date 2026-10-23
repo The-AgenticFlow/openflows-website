@@ -12,7 +12,8 @@
 .secondary { border:1px solid var(--color-driftwood); background:transparent; color:var(--color-ink); }
 .secondary:hover { border-color:var(--color-aubergine); color:var(--color-aubergine); transform:translateY(-2px); }
 .heroNote { margin:1.3rem 0 0; color:var(--color-graphite); font-size:.84rem; }
-.heroVisual { border:1px solid #395b52; border-radius:12px; background:#162922; box-shadow:0 32px 80px rgba(20,45,36,.14); padding:1.3rem; color:#f4f7f2; transform:rotate(1deg); }
+.heroWindow { align-self:center; }
+.heroVisual { background:#162922; padding:1.3rem; color:#f4f7f2; }
 .visualTopline { display:flex; align-items:center; gap:.55rem; padding:.15rem .2rem 1.2rem; border-bottom:1px solid rgba(219,239,225,.19); color:#d6eadc; font-size:.77rem; font-weight:650; letter-spacing:.04em; }
 .pulse { width:7px; height:7px; border-radius:50%; background:#a8dbc1; box-shadow:0 0 0 4px rgba(168,219,193,.13); }
 .visualId { margin-left:auto; color:#9bc0aa; font-size:.68rem; letter-spacing:.11em; }
@@ -22,7 +23,6 @@
 .stageNumber { color:#9bc0aa; font-size:.73rem; font-weight:750; }
 .stageState { color:#cde6d4; font-size:.65rem; text-align:right; text-transform:uppercase; letter-spacing:.09em; }
 .visualConnector { width:1px; height:18px; margin-left:1.5rem; background:#7baa8e; }
-.visualTopline + .visualStage { margin-top:1.15rem; }
 .visualFooter { margin:1.2rem .2rem .1rem; color:#bdd2c1; font-size:.73rem; }
 .section { padding:clamp(5rem,8vw,8rem) 0; border-top:1px solid var(--color-driftwood); }
 .sectionHead { max-width:780px; margin-bottom:2.75rem; }
@@ -75,7 +75,7 @@
 .evaluationList li p { margin:0; font-size:.94rem !important; }
 @media (max-width:1000px) {
   .heroGrid,.deploymentGrid,.evaluationGrid { grid-template-columns:1fr; }
-  .heroVisual { max-width:680px; transform:none; }
+  .heroWindow { max-width:680px; }
   .workflowGrid { grid-template-columns:repeat(2,minmax(0,1fr)); }
   .workflowStep:nth-child(2) { border-right:0; }
   .workflowStep:nth-child(n+3) { border-top:1px solid var(--color-driftwood); }

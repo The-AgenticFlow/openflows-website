@@ -41,7 +41,7 @@
   line-height: 1.05;
   margin-bottom: var(--space-6);
   color: var(--color-ink);
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) both izhub-hero-fade-slide-down;
+  animation: izhub-hero-fade-slide-down var(--motion-duration) var(--ease-out-soft) both;
 }
 
 .br {
@@ -62,7 +62,7 @@
   word-break: break-word;
   color: var(--color-graphite);
   opacity: 1;
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
+  animation: izhub-hero-fade-slide-down var(--motion-duration) var(--ease-out-soft) 80ms both;
   margin-bottom: var(--space-3);
   max-width: 640px;
   margin-inline: auto;
@@ -174,7 +174,7 @@
   word-break: break-word;
   color: var(--color-graphite);
   opacity: 1;
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
+  animation: izhub-hero-fade-slide-down var(--motion-duration) var(--ease-out-soft) 80ms both;
   margin-bottom: var(--space-3);
   margin: 0;
 }
@@ -303,7 +303,7 @@
   word-break: break-word;
   color: var(--color-graphite);
   opacity: 1;
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
+  animation: izhub-hero-fade-slide-down var(--motion-duration) var(--ease-out-soft) 80ms both;
   margin-bottom: var(--space-3);
   max-width: 820px;
   margin-inline: auto;
@@ -411,7 +411,7 @@
   word-break: break-word;
   color: var(--color-graphite);
   opacity: 0.7;
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
+  animation: izhub-hero-fade-slide-down var(--motion-duration) var(--ease-out-soft) 80ms both;
   margin-bottom: var(--space-2);
   margin: 0;
 }

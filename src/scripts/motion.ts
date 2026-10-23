@@ -74,3 +74,67 @@ window.addEventListener('scroll', requestUpdate, { passive: true });
 window.addEventListener('resize', requestUpdate, { passive: true });
 navbar?.addEventListener('focusin', () => navbar.classList.remove('nav-hidden'));
 update();
+
+// Scroll reveal: content below the fold rises into view, with a short stagger inside a group.
+const REVEAL_SELECTORS = [
+  '.site-sheet main h2',
+  '.site-sheet section h2',
+  '.site-sheet article h2',
+  '.site-sheet figure',
+  '.content-row',
+  '.recent-news-lead',
+  '.recent-news-item',
+  '.story-feature',
+  '.story-strip-item',
+  '.site-sheet [class*="_card_"]',
+  '.site-sheet [class*="Card_"]',
+  '.site-sheet [class*="Item_"]',
+  '.site-sheet .docCard',
+  '[data-reveal]',
+].join(',');
+const REVEAL_EXCLUDE = '.site-footer, [data-agent-flow], [data-intro], [data-no-reveal]';
+const REVEAL_STAGGER_MS = 70;
+const REVEAL_MAX_STEPS = 5;
+
+if (!prefersReducedMotion && !isAppShell && 'IntersectionObserver' in window) {
+  const foldLine = window.innerHeight * 0.92;
+  const candidates = [...document.querySelectorAll<HTMLElement>(REVEAL_SELECTORS)].filter(
+    (el) => !el.closest(REVEAL_EXCLUDE) && el.getBoundingClientRect().top > foldLine,
+  );
+  const candidateSet = new Set<Element>(candidates);
+  const targets = candidates.filter((el) => {
+    for (let parent = el.parentElement; parent; parent = parent.parentElement) {
+      if (candidateSet.has(parent)) return false;
+    }
+    return true;
+  });
+
+  const finish = (el: HTMLElement) => {
+    el.classList.remove('reveal-pending', 'is-revealed');
+    el.style.removeProperty('--reveal-delay');
+  };
+
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const el = entry.target as HTMLElement;
+        observer.unobserve(el);
+        el.classList.add('is-revealed');
+        el.addEventListener('transitionend', () => finish(el), { once: true });
+        window.setTimeout(() => finish(el), 1600);
+      });
+    },
+    { rootMargin: '0px 0px -10% 0px', threshold: 0.12 },
+  );
+
+  const groupIndex = new Map<Element, number>();
+  targets.forEach((el) => {
+    const parent = el.parentElement ?? document.body;
+    const index = groupIndex.get(parent) ?? 0;
+    groupIndex.set(parent, index + 1);
+    el.style.setProperty('--reveal-delay', `${Math.min(index, REVEAL_MAX_STEPS) * REVEAL_STAGGER_MS}ms`);
+    el.classList.add('reveal-pending');
+    observer.observe(el);
+  });
+}
