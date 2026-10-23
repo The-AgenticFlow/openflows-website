@@ -46,5 +46,11 @@
 }
 
 .link:hover {
+  color: var(--color-parchment);
   opacity: 0.85;
+}
+
+.link:focus-visible {
+  outline: 2px solid var(--color-aubergine);
+  outline-offset: 3px;
 }
