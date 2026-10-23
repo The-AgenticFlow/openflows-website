@@ -131,6 +131,7 @@ const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
 
 <div
   class={styles.mobileMenu}
+  data-lenis-prevent
   id="mobileMenu"
   data-open-class={styles.mobileMenuOpen}
 >
@@ -280,7 +281,10 @@ const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
     const btnOpenClass = hamburger?.dataset.openClass;
     if (menuOpenClass) mobileMenu?.classList.toggle(menuOpenClass);
     if (btnOpenClass) hamburger.classList.toggle(btnOpenClass);
-    document.body.style.overflow = mobileMenu?.classList.contains(menuOpenClass) ? 'hidden' : '';
+    const isOpen = Boolean(menuOpenClass && mobileMenu?.classList.contains(menuOpenClass));
+    document.body.style.overflow = isOpen ? 'hidden' : '';
+    if (isOpen) window.lenis?.stop();
+    else window.lenis?.start();
   });
 
   // Dropdown hover (desktop)

@@ -240,6 +240,21 @@ h3 {
   line-height: 1.333;
 }
 
+html.lenis {
+  scroll-behavior: auto;
+}
+
+.scroll-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: 2px;
+  background: var(--color-aubergine);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
+}
+
 @keyframes izhub-hero-fade-slide-down {
   from {
     opacity: 0;
