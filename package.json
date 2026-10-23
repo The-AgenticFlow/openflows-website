@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "astro dev",
     "build": "astro build",
-    "preview": "astro preview"
+    "preview": "astro preview",
+    "cms": "MODE=git PORT=8082 decap-server"
   },
   "dependencies": {
     "lenis": "^1.3.27",
@@ -25,6 +26,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "astro": "^5.18.2",
+    "decap-server": "^3.11.5",
     "prismjs": "^1.30.0"
   }
 }

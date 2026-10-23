@@ -20,7 +20,7 @@ jobs:
       - name: Detect new and updated content
         id: content
         run: |
-          CHANGED=$(git diff --name-only --diff-filter=ACMRT HEAD~1 HEAD \
+          CHANGED=$(git -c core.quotePath=false diff --name-only --diff-filter=ACMRT HEAD~1 HEAD \
             -- 'src/content/blogs/*.md' 'src/content/research/*.md' 'src/content/stories/*.md' || true)
           echo "changed<<EOF" >> "$GITHUB_OUTPUT"
           echo "$CHANGED" >> "$GITHUB_OUTPUT"
@@ -48,6 +48,13 @@ jobs:
             read_slug()     { awk 'BEGIN{FS=": "}/^slug:/     {gsub(/^[" \t]+|[" \t]+$/,"",$2); print $2; exit}' "$1"; }
             read_author()   { awk 'BEGIN{FS=": "}/^author_name:/{gsub(/^[" \t]+|[" \t]+$/,"",$2); print $2; exit}' "$1"; }
             read_excerpt()  { awk 'BEGIN{FS=": "}/^excerpt:|^abstract:/{gsub(/^[" \t]+|[" \t]+$/,"",$2); print $2; exit}' "$1"; }
+            read_status()   { awk 'BEGIN{FS=": "}/^status:/   {gsub(/^[" \t]+|[" \t]+$/,"",$2); print $2; exit}' "$1"; }
+
+            STATUS=$(read_status "$file")
+            if [ -n "$STATUS" ] && [ "$STATUS" != "published" ]; then
+              echo "  Skipped: status is $STATUS"
+              continue
+            fi
 
             TITLE=$(read_title "$file")
             SLUG=$(read_slug "$file")
