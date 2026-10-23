@@ -1,16 +1,13 @@
 ---
-import type { BlogPost } from './blog';
-
 interface Props {
-  post: BlogPost;
+  src?: string;
   eager?: boolean;
 }
 
-const { post, eager = false } = Astro.props;
-const src = post.data.cover_image_url;
+const { src, eager = false } = Astro.props;
 ---
 
-<div class="post-cover">
+<div class="cover">
   {src ? (
     <img
       src={src}
@@ -20,14 +17,14 @@ const src = post.data.cover_image_url;
       fetchpriority={eager ? 'high' : 'auto'}
     />
   ) : (
-    <div class="post-cover-fallback" aria-hidden="true">
+    <div class="cover-fallback" aria-hidden="true">
       <img src="/openlogo-transparent.png" alt="" width="48" height="48" />
     </div>
   )}
 </div>
 
 <style>
-  .post-cover {
+  .cover {
     aspect-ratio: 16 / 10;
     overflow: hidden;
     border-radius: var(--radius-lg);
@@ -36,14 +33,14 @@ const src = post.data.cover_image_url;
     outline-offset: -1px;
   }
 
-  .post-cover > img {
+  .cover > img {
     display: block;
     width: 100%;
     height: 100%;
     object-fit: cover;
   }
 
-  .post-cover-fallback {
+  .cover-fallback {
     display: grid;
     place-items: center;
     width: 100%;
@@ -51,7 +48,7 @@ const src = post.data.cover_image_url;
     background: var(--color-aubergine);
   }
 
-  .post-cover-fallback img {
+  .cover-fallback img {
     width: 22%;
     max-width: 64px;
     height: auto;

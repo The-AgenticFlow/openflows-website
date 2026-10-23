@@ -1,6 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import PostCover from '@/components/blog/PostCover.astro';
+import Cover from '@/components/content/Cover.astro';
 import PostMeta from '@/components/blog/PostMeta.astro';
 import PostRow from '@/components/blog/PostRow.astro';
 import { getPostHref, getPublishedPosts } from '@/components/blog/blog';
@@ -19,7 +19,7 @@ const rest = posts.filter((post) => post.id !== lead?.id);
 
     {lead && (
       <article class="blog-lead">
-        <PostCover post={lead} eager />
+        <Cover src={lead.data.cover_image_url} eager />
         <div class="blog-lead-body">
           {lead.data.category_id && <p class="blog-lead-category">{lead.data.category_id}</p>}
           <h2 class="blog-lead-title">

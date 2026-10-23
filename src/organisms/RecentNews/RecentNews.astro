@@ -1,5 +1,5 @@
 ---
-import PostCover from '@/components/blog/PostCover.astro';
+import Cover from '@/components/content/Cover.astro';
 import PostMeta from '@/components/blog/PostMeta.astro';
 import { formatPostDate, getPostHref, getPublishedPosts } from '@/components/blog/blog';
 
@@ -18,7 +18,7 @@ const [lead, ...others] = (await getPublishedPosts()).slice(0, RECENT_POSTS_COUN
 
       <div class="recent-news-grid">
         <article class="recent-news-lead">
-          <PostCover post={lead} />
+          <Cover src={lead.data.cover_image_url} />
           {lead.data.category_id && <p class="recent-news-category">{lead.data.category_id}</p>}
           <h3 class="recent-news-lead-title">
             <a href={getPostHref(lead)}>{lead.data.title}</a>
@@ -31,7 +31,7 @@ const [lead, ...others] = (await getPublishedPosts()).slice(0, RECENT_POSTS_COUN
           <div class="recent-news-side">
             {others.map((post) => (
               <article class="recent-news-item">
-                <PostCover post={post} />
+                <Cover src={post.data.cover_image_url} />
                 <div class="recent-news-item-body">
                   <h3 class="recent-news-item-title">
                     <a href={getPostHref(post)}>{post.data.title}</a>
@@ -112,7 +112,7 @@ const [lead, ...others] = (await getPublishedPosts()).slice(0, RECENT_POSTS_COUN
     gap: 0.875rem;
   }
 
-  .recent-news-lead :global(.post-cover) {
+  .recent-news-lead :global(.cover) {
     aspect-ratio: 16 / 9;
     margin-bottom: 0.5rem;
   }

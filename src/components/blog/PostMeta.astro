@@ -1,4 +1,5 @@
 ---
+import MetaLine from '@/components/content/MetaLine.astro';
 import { formatPostDate, getAuthorNames, getReadTime, type BlogPost } from './blog';
 
 interface Props {
@@ -6,29 +7,13 @@ interface Props {
 }
 
 const { post } = Astro.props;
-const author = getAuthorNames(post);
 const publishedAt = post.data.published_at;
 ---
 
-<p class="post-meta">
-  {author && <span>{author}</span>}
-  {publishedAt && <time datetime={publishedAt.toISOString()}>{formatPostDate(publishedAt)}</time>}
-  <span>{getReadTime(post)} min read</span>
-</p>
-
-<style>
-  .post-meta {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.25rem 1.25rem;
-    margin: 0;
-    font-size: 0.875rem;
-    color: var(--color-graphite);
-    font-variant-numeric: tabular-nums;
-  }
-
-  .post-meta span:first-child {
-    color: var(--color-ink);
-    font-weight: 500;
-  }
-</style>
+<MetaLine
+  items={[
+    { label: getAuthorNames(post), emphasis: true },
+    publishedAt && { label: formatPostDate(publishedAt), datetime: publishedAt.toISOString() },
+    { label: `${getReadTime(post)} min read` },
+  ]}
+/>
