@@ -1,0 +1,105 @@
+---
+import PostCover from './PostCover.astro';
+import PostMeta from './PostMeta.astro';
+import { getPostHref, type BlogPost } from './blog';
+
+interface Props {
+  post: BlogPost;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { post, headingLevel: Heading = 'h2' } = Astro.props;
+---
+
+<article class="post-row">
+  <PostCover post={post} />
+  <div class="post-row-body">
+    {post.data.category_id && <p class="post-row-category">{post.data.category_id}</p>}
+    <Heading class="post-row-title">
+      <a href={getPostHref(post)}>{post.data.title}</a>
+    </Heading>
+    {post.data.excerpt && <p class="post-row-excerpt">{post.data.excerpt}</p>}
+    <PostMeta post={post} />
+  </div>
+</article>
+
+<style>
+  .post-row {
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 15rem) minmax(0, 1fr);
+    gap: 2rem;
+    align-items: start;
+    padding-block: 2rem;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .post-row-body {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    max-width: 40rem;
+  }
+
+  .post-row-category {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-aubergine);
+  }
+
+  .post-row-title {
+    margin: 0;
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.3;
+    letter-spacing: -0.01em;
+    text-wrap: balance;
+  }
+
+  .post-row-title a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .post-row-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+  }
+
+  .post-row-title a:hover {
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+
+  .post-row-title a:focus-visible {
+    outline: none;
+  }
+
+  .post-row-title a:focus-visible::after {
+    outline: 2px solid var(--color-aubergine);
+    outline-offset: 4px;
+  }
+
+  .post-row-excerpt {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.55;
+    color: var(--color-graphite);
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  @media (max-width: 640px) {
+    .post-row {
+      grid-template-columns: 1fr;
+      gap: 1rem;
+      padding-block: 1.5rem;
+    }
+  }
+</style>

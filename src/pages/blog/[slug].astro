@@ -1,40 +1,26 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { getCollection, render } from 'astro:content';
+import PostMeta from '@/components/blog/PostMeta.astro';
+import PostRow from '@/components/blog/PostRow.astro';
+import { getPublishedPosts, toSafeSlug, type BlogPost } from '@/components/blog/blog';
+
+const MORE_POSTS_COUNT = 2;
 
 export async function getStaticPaths() {
   const blogs = await getCollection('blogs');
-  const toSafeSlug = (rawSlug) => rawSlug
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-
   return blogs.map((blog) => ({
     params: { slug: toSafeSlug(blog.data.slug || blog.slug) },
     props: { blog },
   }));
 }
 
-const { blog } = Astro.props;
+const { blog } = Astro.props as { blog: BlogPost };
 const { Content } = await render(blog);
 
-const formatDate = (d) => {
-  if (!d) return '';
-  return new Date(d).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
-
-const authors = blog.data.authors && blog.data.authors.length > 0
-  ? blog.data.authors
-  : [{ name: blog.data.author_name, avatar_url: blog.data.author_avatar_url }];
-
-const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body || '').split(/\s+/).length / 200));
+const morePosts = (await getPublishedPosts())
+  .filter((post) => post.id !== blog.id)
+  .slice(0, MORE_POSTS_COUNT);
 ---
 
 <BaseLayout
@@ -42,51 +28,47 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
   description={blog.data.meta_description || blog.data.excerpt}
   ogImage={blog.data.cover_image_url}
 >
-  <main class="blog-post-page">
-    <article class="blog-post-article">
-      <header class="blog-post-header">
-        <a href="/blog" style="font-size: 0.875rem; color: var(--color-graphite); display: inline-block; margin-bottom: 1rem;">← Back to Blog</a>
-        <h1 style="font-size: 1.9rem; font-weight: 700; line-height: 1.25; margin-bottom: 1rem;">{blog.data.title}</h1>
-        <p style="font-size: 1.125rem; color: var(--color-graphite); margin-bottom: 1.5rem;">{blog.data.excerpt}</p>
-        <div style="display: flex; align-items: center; gap: 1rem; flex-wrap: wrap; font-size: 0.875rem; color: var(--color-graphite);">
-          {authors.map((author, i) => (
-            <span style="display: flex; align-items: center; gap: 0.5rem;">
-              {author.avatar_url && <img src={author.avatar_url} alt={author.name} style="width: 32px; height: 32px; border-radius: 50%; object-fit: cover;" />}
-              <span>{author.name}</span>
-            </span>
-          ))}
-          <span>·</span>
-          <span>{formatDate(blog.data.published_at)}</span>
-          <span>·</span>
-          <span>{readTime} min read</span>
-        </div>
+  <main class="post-page">
+    <article>
+      <header class="post-header">
+        <a class="post-back" href="/blog">← All posts</a>
+        {blog.data.category_id && <p class="post-category">{blog.data.category_id}</p>}
+        <h1 class="post-title">{blog.data.title}</h1>
+        {blog.data.excerpt && <p class="post-excerpt">{blog.data.excerpt}</p>}
+        <PostMeta post={blog} />
       </header>
 
       {blog.data.cover_image_url && (
-        <div class="blog-cover-image">
-          <img src={blog.data.cover_image_url} alt={blog.data.cover_image_alt || blog.data.title} />
-        </div>
+        <figure class="post-cover">
+          <img
+            src={blog.data.cover_image_url}
+            alt={blog.data.cover_image_alt || ''}
+            fetchpriority="high"
+            decoding="async"
+          />
+        </figure>
       )}
 
-      <div class="blog-content">
+      <div class="post-content">
         <Content />
       </div>
-
-      <!-- Giscus Comments -->
-      <div id="comments" class="blog-comments">
-        <h2 style="font-size: 1.5rem; margin-bottom: 1.5rem;">Comments</h2>
-        <div style="background: var(--color-bone); padding: 1.5rem; border-radius: var(--radius-md);">
-          <p style="color: var(--color-graphite); margin-bottom: 1rem; font-size: 0.875rem;">
-            Questions, feedback, or thoughts? Comment below and join the discussion on GitHub.
-          </p>
-          <div id="giscus-container" style="min-height: 200px;"></div>
-        </div>
-      </div>
     </article>
+
+    {morePosts.length > 0 && (
+      <section class="post-more" aria-labelledby="post-more-heading">
+        <h2 id="post-more-heading">Keep reading</h2>
+        {morePosts.map((post) => <PostRow post={post} headingLevel="h3" />)}
+      </section>
+    )}
+
+    <section id="comments" class="post-comments" aria-labelledby="post-comments-heading">
+      <h2 id="post-comments-heading">Comments</h2>
+      <p>Questions or feedback? Comments are stored as GitHub Discussions on the OpenFlows website repository.</p>
+      <div id="giscus-container"></div>
+    </section>
   </main>
 
   <script>
-    // Initialize Giscus
     const loadGiscus = () => {
       const script = document.createElement('script');
       script.src = 'https://giscus.app/client.js';
@@ -101,12 +83,12 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
       script.setAttribute('data-input-position', 'bottom');
       script.setAttribute('data-theme', 'light');
       script.setAttribute('data-lang', 'en');
+      script.setAttribute('data-loading', 'lazy');
       script.setAttribute('crossorigin', 'anonymous');
       script.async = true;
       document.getElementById('giscus-container')?.appendChild(script);
     };
 
-    // Load Giscus after page is ready
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', loadGiscus);
     } else {
@@ -116,153 +98,264 @@ const readTime = blog.data.read_time_minutes || Math.max(1, Math.ceil((blog.body
 </BaseLayout>
 
 <style>
-  @import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,wght@0,400;0,700;1,400&display=swap");
+  @import url("https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,600;0,8..60,700;1,8..60,400&display=swap");
 
   :global(html),
   :global(body) {
-    background: #ffffff;
+    background: var(--color-bone);
   }
 
-  .blog-post-page {
-    min-height: 100vh;
-    background: #ffffff;
+  .post-page {
+    --post-text-width: 42rem;
+    --post-wide-width: 64rem;
+    --post-serif: "Source Serif 4", Georgia, Cambria, "Times New Roman", serif;
+
+    padding: calc(var(--nav-height) + 3.5rem) 1.5rem 6rem;
   }
 
-  .blog-post-article {
-    max-width: 900px;
-    margin: 0 auto;
-    padding: calc(3rem + var(--nav-height)) 2rem 3rem;
-  }
-
-  .blog-post-header,
-  .blog-cover-image,
-  .blog-comments {
+  .post-header,
+  .post-content,
+  .post-more,
+  .post-comments {
+    max-width: var(--post-text-width);
     margin-inline: auto;
   }
 
-  .blog-post-header {
-    margin-bottom: 2rem;
-    text-align: left;
+  .post-header {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 2.5rem;
   }
 
-  .blog-cover-image {
-    margin-bottom: 2rem;
-    border-radius: var(--radius-lg);
+  .post-back {
+    align-self: flex-start;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+    text-decoration: none;
+  }
+
+  .post-back:hover {
+    color: var(--color-ink);
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .post-category {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-aubergine);
+  }
+
+  .post-title {
+    margin: 0;
+    font-size: clamp(2rem, 4.5vw, 3rem);
+    font-weight: 600;
+    line-height: 1.1;
+    letter-spacing: -0.025em;
+    text-wrap: balance;
+  }
+
+  .post-excerpt {
+    margin: 0 0 0.5rem;
+    font-size: 1.25rem;
+    line-height: 1.5;
+    color: var(--color-graphite);
+    text-wrap: pretty;
+  }
+
+  .post-cover {
+    max-width: var(--post-wide-width);
+    margin: 0 auto 3.5rem;
     overflow: hidden;
+    border-radius: var(--radius-xl);
+    background: var(--color-fog);
   }
 
-  .blog-cover-image img {
+  .post-cover img {
     display: block;
     width: 100%;
     height: auto;
   }
 
-  .blog-content {
-    color: #242424;
-    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 31.2px;
-    letter-spacing: 0;
-    text-align: left;
-    text-rendering: optimizelegibility;
+  .post-content {
+    font-family: var(--post-serif);
+    font-size: 1.25rem;
+    line-height: 1.65;
+    color: var(--color-ink);
+    text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
   }
 
-  .blog-content :global(h2) {
-    color: #242424;
-    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
+  .post-content :global(p),
+  .post-content :global(li) {
+    color: inherit;
+  }
+
+  .post-content :global(p) {
+    margin: 0 0 1.4em;
+  }
+
+  .post-content :global(h2),
+  .post-content :global(h3) {
+    font-family: var(--post-serif);
+    font-weight: 700;
+    color: var(--color-ink);
+    text-wrap: balance;
+    scroll-margin-top: calc(var(--nav-height) + 1.5rem);
+  }
+
+  .post-content :global(h2) {
+    margin: 2.2em 0 0.6em;
     font-size: 1.75rem;
-    font-weight: 700;
     line-height: 1.25;
-    margin: 2.2em 0 0.7em;
-    text-align: left;
   }
-  .blog-content :global(h3) {
-    color: #242424;
-    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 1.5rem;
-    font-weight: 700;
+
+  .post-content :global(h3) {
+    margin: 1.8em 0 0.5em;
+    font-size: 1.375rem;
     line-height: 1.3;
-    margin: 1.8em 0 0.65em;
-    text-align: left;
   }
-  .blog-content :global(p) {
-    color: #242424;
-    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 20px;
-    font-weight: 400;
-    line-height: 31.2px;
-    margin: 1.56em 0 -0.46em;
-    text-align: left;
+
+  .post-content :global(ul),
+  .post-content :global(ol) {
+    margin: 0 0 1.4em;
+    padding-left: 1.4em;
   }
-  .blog-content :global(ul), .blog-content :global(ol) {
-    color: #242424;
-    font-family: source-serif-pro, "Source Serif 4", Georgia, Cambria, "Times New Roman", Times, serif;
-    font-size: 20px;
-    line-height: 31.2px;
-    margin: 1.56em 0 -0.46em;
-    padding-left: 1.5rem;
-    text-align: left;
+
+  .post-content :global(ul) {
+    list-style: disc;
   }
-  .blog-content :global(li) {
-    margin-bottom: 0.75em;
-    text-align: left;
+
+  .post-content :global(ol) {
+    list-style: decimal;
   }
-  .blog-content :global(pre) {
-    background: var(--color-ink);
-    color: var(--color-parchment);
-    padding: 1rem;
-    border-radius: var(--radius-md);
-    overflow-x: auto;
-    margin-bottom: 1rem;
+
+  .post-content :global(li) {
+    margin-bottom: 0.5em;
+    padding-left: 0.25em;
   }
-  .blog-content :global(code) {
-    font-family: 'SF Mono', Monaco, 'Cascadia Code', monospace;
-    font-size: 0.875rem;
+
+  .post-content :global(li::marker) {
+    color: var(--color-graphite);
   }
-  .blog-content :global(:not(pre) > code) {
-    background: var(--color-bone);
-    padding: 0.125rem 0.375rem;
-    border-radius: var(--radius-sm);
-  }
-  .blog-content :global(blockquote) {
-    border-left: 3px solid var(--color-aubergine);
-    color: #242424;
-    font-style: italic;
-    margin: 1.8em 0 0.4em;
-    padding-left: 1rem;
-    text-align: left;
-  }
-  .blog-content :global(img) {
-    max-width: 100%;
-    border-radius: var(--radius-md);
-    display: block;
-    margin: 2rem auto;
-  }
-  .blog-content :global(a) {
+
+  .post-content :global(a) {
     color: var(--color-aubergine);
     text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.18em;
   }
-  .blog-content :global(table) {
+
+  .post-content :global(blockquote) {
+    margin: 1.8em 0;
+    padding-left: 1.25rem;
+    border-left: 3px solid var(--color-aubergine);
+    font-style: italic;
+  }
+
+  .post-content :global(img) {
+    display: block;
+    max-width: 100%;
+    margin: 2rem auto;
+    border-radius: var(--radius-md);
+  }
+
+  .post-content :global(code) {
+    font-family: var(--font-mono);
+    font-size: 0.85em;
+  }
+
+  .post-content :global(:not(pre) > code) {
+    padding: 0.1em 0.35em;
+    border-radius: var(--radius-sm);
+    background: var(--color-parchment-canvas);
+  }
+
+  .post-content :global(pre) {
+    margin: 0 0 1.4em;
+    padding: 1.25rem;
+    overflow-x: auto;
+    border-radius: var(--radius-lg);
+    background: var(--color-ink);
+    color: var(--color-bone);
+    font-size: 0.85rem;
+    line-height: 1.6;
+  }
+
+  .post-content :global(pre code) {
+    font-size: inherit;
+  }
+
+  .post-content :global(table) {
     width: 100%;
+    margin: 2rem 0;
     border-collapse: collapse;
     font-family: var(--font-family);
     font-size: 0.95rem;
     line-height: 1.5;
-    margin: 2rem 0;
-    text-align: left;
   }
-  .blog-content :global(th), .blog-content :global(td) {
-    border: 1px solid var(--color-driftwood);
+
+  .post-content :global(th),
+  .post-content :global(td) {
     padding: 0.75rem;
+    border: 1px solid var(--color-driftwood);
     text-align: left;
     vertical-align: top;
   }
 
-  .blog-comments {
-    margin-top: 4rem;
+  .post-content :global(hr) {
+    margin: 3rem 0;
+    border: 0;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .post-more,
+  .post-comments {
+    margin-top: 5rem;
+  }
+
+  .post-more h2,
+  .post-comments h2 {
+    margin: 0 0 1rem;
+    font-size: 1.5rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+
+  .post-comments {
     padding-top: 2rem;
-    border-top: 1px solid var(--color-fog);
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .post-comments p {
+    margin: 0 0 1.5rem;
+    font-size: 0.9375rem;
+    color: var(--color-graphite);
+  }
+
+  #giscus-container {
+    min-height: 200px;
+  }
+
+  @media (max-width: 640px) {
+    .post-page {
+      padding: calc(var(--nav-height) + 2rem) 1rem 4rem;
+    }
+
+    .post-cover {
+      margin-bottom: 2.5rem;
+      border-radius: var(--radius-lg);
+    }
+
+    .post-excerpt {
+      font-size: 1.125rem;
+    }
+
+    .post-content {
+      font-size: 1.125rem;
+    }
   }
 </style>
