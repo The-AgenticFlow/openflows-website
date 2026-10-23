@@ -8,7 +8,7 @@ excerpt: 'Every developer now runs an ad-hoc AI agent on their laptop with zero
   way. OpenFlows restores the battle-tested engineering standards that made
   software reliable in the first place.'
 author_name: Nkwa Jude Tambe
-cover_image_url: blob:https://openflows.dev/e44b536a-3373-4bc4-8e30-1ea3ae2e09a1
+cover_image_url: https://openflows.dev/e44b536a-3373-4bc4-8e30-1ea3ae2e09a1
 category_id: Architecture
 status: published
 published_at: 2026-10-23T15:01:00.000+01:00
@@ -55,7 +55,6 @@ When things inevitably break, developers shrug: *"My agent did it without me kno
 
 That is not autonomous software engineering. That is chaos with a high token bill.
 
----
 
 ## The Trap of the Uncoordinated Local Agent
 
@@ -72,8 +71,6 @@ When every engineer runs an uncoordinated agent on their own laptop:
 If a human junior engineer worked this way (refactoring random modules without a ticket, skipping peer review, and running unvetted scripts with production keys), they would be removed from the repository within an hour. 
 
 Why are we holding AI agents to a lower standard than our interns?
-
----
 
 ## How OpenFlows Takes Us Back on Track
 
@@ -126,7 +123,5 @@ When your team has shared protocols, typed contracts, and governed execution:
 - You never have to worry about untrusted agents executing rogue bash scripts on developer laptops.
 
 The era of cowboy AI development is coming to an end. It is time to put engineering back in control.
-
----
 
 *Ready to bring governed, autonomous AI development to your team? Check out the [OpenFlows Documentation](https://openflows.dev) or explore the architecture on [GitHub](https://github.com/The-AgenticFlow/openflows).*
