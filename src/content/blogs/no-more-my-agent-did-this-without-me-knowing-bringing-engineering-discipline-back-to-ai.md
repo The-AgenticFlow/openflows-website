@@ -12,7 +12,7 @@ cover_image_url: https://openflows.dev/uploads/from-code-chaos-to-system-order.p
 category_id: Architecture
 status: published
 published_at: 2026-10-23T15:01:00.000+01:00
-is_featured: true
+is_featured: false
 read_time_minutes: 5
 ---
 Every software engineering team has experienced some version of this morning standup over the last six months:
@@ -32,8 +32,6 @@ Overnight, engineering organizations that spent decades building rigorous contin
 We call it "AI-assisted development," but let us be honest about what it really is: **shadow engineering without a protocol.**
 
 Software development has never been done this way before AI came along. And there is a very good reason for that.
-
----
 
 ## The 40 Years of Discipline We Conveniently Forgot
 
@@ -111,8 +109,6 @@ Coordination is not managed by passing loose conversational summaries back and f
 - Every ticket lease, file lock, and gate record is auditable and tenant-namespaced (`ns:{tenant}:...`).
 - If an agent crashes or stalls, NEXUS’s reconciliation loop detects the orphan, reclaims the slot, and recovers cleanly without manual intervention.
 
----
-
 ## Engineering Wins. Vibes Lose.
 
 The promise of AI was never to make software engineering sloppy. The promise of AI was to free engineers from repetitive boilerplate so they could focus on high-level architecture, system design, and product quality.
@@ -124,4 +120,3 @@ When your team has shared protocols, typed contracts, and governed execution:
 
 The era of cowboy AI development is coming to an end. It is time to put engineering back in control.
 
-*Ready to bring governed, autonomous AI development to your team? Check out the [OpenFlows Documentation](https://openflows.dev) or explore the architecture on [GitHub](https://github.com/The-AgenticFlow/openflows).*
