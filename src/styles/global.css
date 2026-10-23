@@ -205,7 +205,6 @@ body {
   line-height: 1.65;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
   font-weight: 460;
 }
 
@@ -238,6 +237,21 @@ h2 {
 h3 {
   font-size: var(--font-size-2xl);
   line-height: 1.333;
+}
+
+html.lenis {
+  scroll-behavior: auto;
+}
+
+.scroll-progress {
+  position: fixed;
+  inset: 0 0 auto;
+  z-index: 60;
+  height: 2px;
+  background: var(--color-aubergine);
+  transform: scaleX(0);
+  transform-origin: 0 50%;
+  pointer-events: none;
 }
 
 @keyframes izhub-hero-fade-slide-down {
@@ -906,10 +920,10 @@ ol {
   }
 }
 
-/* Prevent horizontal overflow */
+/* Prevent horizontal overflow. clip, unlike hidden, keeps position: sticky working. */
 html,
 body {
-  overflow-x: hidden;
+  overflow-x: clip;
 }
 
 /* Ensure images never overflow */

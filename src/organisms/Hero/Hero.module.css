@@ -91,6 +91,7 @@
   letter-spacing: var(--tracking-widest);
   color: var(--color-aubergine);
   align-self: flex-start;
+  animation: hero-fade-up 0.6s cubic-bezier(0.2, 0.7, 0.2, 1) both;
 }
 
 .heading {
@@ -101,11 +102,19 @@
   letter-spacing: 0;
   text-wrap: balance;
   color: var(--color-ink);
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) both izhub-hero-fade-slide-down;
 }
 
 .line {
   display: block;
+  overflow: hidden;
+  padding-bottom: 0.12em;
+  margin-bottom: -0.12em;
+}
+
+.lineInner {
+  display: inline-block;
+  animation: hero-line-rise 0.9s cubic-bezier(0.2, 0.7, 0.2, 1) both;
+  animation-delay: calc(80ms + var(--line, 0) * 90ms);
 }
 
 .highlight {
@@ -142,7 +151,7 @@
   color: var(--color-ink);
   opacity: 0.75;
   max-width: 800px;
-  animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
+  animation: hero-fade-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 420ms both;
   margin-bottom: var(--space-4);
 }
 
@@ -167,6 +176,7 @@
   gap: 12px;
   align-items: center;
   margin-top: var(--space-6);
+  animation: hero-fade-up 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) 540ms both;
 }
 
 /* Scroll-continue button  -  IZHUB izhub-scroll-continue, pinned to bottom */
@@ -221,5 +231,28 @@
 
   .ctaGroup > * {
     width: 100%;
+  }
+}
+
+@keyframes hero-line-rise {
+  from {
+    transform: translateY(105%);
+  }
+}
+
+@keyframes hero-fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .lineInner,
+  .eyebrow,
+  .sub,
+  .ctaGroup,
+  .scrollContinue {
+    animation: none;
   }
 }
