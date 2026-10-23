@@ -1,22 +1,314 @@
 ---
-import Stories from '@/organisms/Stories/Stories.jsx';
+interface StoryModule {
+  frontmatter: Record<string, string | undefined>;
+  rawContent: () => string;
+}
 
-const storyModules = import.meta.glob('/src/content/stories/*.md', { eager: true });
+interface Story {
+  id: string;
+  category: string;
+  date?: Date;
+  title: string;
+  summary: string;
+  href: string;
+  image: string;
+}
 
-const stories = Object.entries(storyModules)
+const SUMMARY_MAX_LENGTH = 240;
+
+const firstParagraph = (markdown: string): string => {
+  const paragraph = markdown
+    .split(/\n\s*\n/)
+    .map((block) =>
+      block
+        .split('\n')
+        .map((line) => line.replace(/^>\s?/, '').trim())
+        .filter(Boolean)
+        .join(' '),
+    )
+    .find((block) => block && !block.startsWith('#') && !block.startsWith('['));
+  if (!paragraph) return '';
+  return paragraph.length > SUMMARY_MAX_LENGTH
+    ? `${paragraph.slice(0, SUMMARY_MAX_LENGTH).replace(/\s+\S*$/, '')}…`
+    : paragraph;
+};
+
+const storyModules = import.meta.glob<StoryModule>('/src/content/stories/*.md', { eager: true });
+
+const stories: Story[] = Object.entries(storyModules)
   .map(([path, mod]) => {
     const slug = path.split('/').pop()!.replace('.md', '');
-    const { frontmatter } = mod as any;
+    const { frontmatter } = mod;
     return {
       id: slug,
       category: frontmatter.category || '',
-      date: frontmatter.date || '',
+      date: frontmatter.date ? new Date(frontmatter.date) : undefined,
       title: frontmatter.title || '',
+      summary: frontmatter.excerpt || firstParagraph(mod.rawContent()),
       href: frontmatter.href || `/stories/${slug}`,
       image: frontmatter.image || '',
     };
   })
-  .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime());
+  .sort((a, b) => (b.date?.getTime() ?? 0) - (a.date?.getTime() ?? 0));
+
+const formatDate = (date?: Date) =>
+  date ? date.toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : '';
+
+const isSingle = stories.length === 1;
 ---
 
-<Stories stories={stories} client:visible />
+{stories.length > 0 && (
+  <section class="stories" aria-labelledby="stories-title">
+    <div class="stories-container">
+      <div class="stories-header">
+        <h2 id="stories-title">Stories</h2>
+        <p>How teams put OpenFlows to work, and what they learned along the way.</p>
+      </div>
+
+      <div class:list={['stories-list', { 'stories-list-single': isSingle }]}>
+        {stories.map((story) => (
+          <article class="story">
+            <div class="story-image">
+              {story.image ? (
+                <img src={story.image} alt="" loading="lazy" decoding="async" />
+              ) : (
+                <div class="story-image-fallback" aria-hidden="true">
+                  <img src="/openlogo-transparent.png" alt="" width="48" height="48" />
+                </div>
+              )}
+            </div>
+            <div class="story-body">
+              {story.category && <p class="story-category">{story.category}</p>}
+              <h3 class="story-title">
+                <a href={story.href}>{story.title}</a>
+              </h3>
+              {story.summary && <p class="story-summary">{story.summary}</p>}
+              <p class="story-footer">
+                <span class="story-cta">Read the story</span>
+                {story.date && <time datetime={story.date.toISOString()}>{formatDate(story.date)}</time>}
+              </p>
+            </div>
+          </article>
+        ))}
+      </div>
+    </div>
+  </section>
+)}
+
+<style>
+  .stories {
+    padding: var(--space-16) 0;
+    border-top: 1px solid var(--color-driftwood);
+  }
+
+  .stories-container {
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding-inline: var(--space-6);
+  }
+
+  .stories-header {
+    max-width: 36rem;
+    margin-bottom: var(--space-8);
+  }
+
+  .stories-header h2 {
+    margin: 0 0 0.5rem;
+    font-size: var(--font-size-2xl);
+    font-weight: var(--font-weight-semibold);
+    letter-spacing: var(--tracking-tight);
+  }
+
+  .stories-header p {
+    margin: 0;
+    font-size: 1.0625rem;
+    line-height: 1.5;
+    color: var(--color-graphite);
+  }
+
+  .stories-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 22rem), 1fr));
+    gap: 2.5rem;
+  }
+
+  .story {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid var(--color-driftwood);
+    border-radius: var(--radius-xl);
+    background: var(--color-bone);
+    transition: border-color var(--transition-base);
+  }
+
+  .story:hover {
+    border-color: var(--color-border-hover);
+  }
+
+  .story-image {
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--color-fog);
+  }
+
+  .story-image > img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .story-image-fallback {
+    display: grid;
+    place-items: center;
+    width: 100%;
+    height: 100%;
+    background: var(--color-aubergine);
+  }
+
+  .story-image-fallback img {
+    width: 48px;
+    height: auto;
+    filter: brightness(0) invert(1);
+  }
+
+  .story-body {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 0.875rem;
+    padding: 1.75rem;
+  }
+
+  .story-category {
+    margin: 0;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--color-aubergine);
+  }
+
+  .story-title {
+    margin: 0;
+    font-size: 1.375rem;
+    font-weight: 600;
+    line-height: 1.25;
+    letter-spacing: -0.015em;
+    text-wrap: balance;
+  }
+
+  .story-title a {
+    color: var(--color-ink);
+    text-decoration: none;
+  }
+
+  .story-title a::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-xl);
+  }
+
+  .story-title a:focus-visible {
+    outline: none;
+  }
+
+  .story-title a:focus-visible::after {
+    outline: 2px solid var(--color-aubergine);
+    outline-offset: 3px;
+  }
+
+  .story-summary {
+    margin: 0;
+    font-size: 1rem;
+    line-height: 1.6;
+    color: var(--color-graphite);
+    text-wrap: pretty;
+  }
+
+  .story-footer {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: auto 0 0;
+    padding-top: 0.5rem;
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+  }
+
+  .story-cta {
+    font-weight: 600;
+    color: var(--color-aubergine);
+    text-decoration: underline;
+    text-decoration-color: transparent;
+    text-underline-offset: 0.2em;
+    transition: text-decoration-color var(--transition-fast);
+  }
+
+  .story:hover .story-cta {
+    text-decoration-color: currentColor;
+  }
+
+  .stories-list-single {
+    grid-template-columns: 1fr;
+  }
+
+  .stories-list-single .story {
+    display: grid;
+    grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+  }
+
+  .stories-list-single .story-image {
+    aspect-ratio: auto;
+    min-height: 100%;
+  }
+
+  .stories-list-single .story-body {
+    justify-content: center;
+    gap: 1rem;
+    padding: clamp(1.75rem, 4vw, 3rem);
+  }
+
+  .stories-list-single .story-title {
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    line-height: 1.15;
+  }
+
+  .stories-list-single .story-summary {
+    font-size: 1.0625rem;
+  }
+
+  .stories-list-single .story-footer {
+    margin-top: 0.5rem;
+  }
+
+  @media (max-width: 860px) {
+    .stories-list-single .story {
+      grid-template-columns: 1fr;
+    }
+
+    .stories-list-single .story-image {
+      aspect-ratio: 16 / 9;
+      min-height: 0;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .stories {
+      padding: var(--space-10) 0;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .stories-container {
+      padding-inline: var(--space-4);
+    }
+
+    .story-body,
+    .stories-list-single .story-body {
+      padding: 1.25rem;
+    }
+  }
+</style>

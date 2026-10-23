@@ -71,6 +71,7 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Category", name: "category", widget: "string" }
+      - { label: "Summary", name: "excerpt", widget: "text", required: false, hint: "One or two sentences shown on the homepage. Leave empty to use the story's first paragraph." }
       - { label: "Date", name: "date", widget: "string", required: false }
       - { label: "URL", name: "href", widget: "string", required: false }
       - { label: "Image URL", name: "image", widget: "string", required: false }
