@@ -1,0 +1,318 @@
+---
+const AGENTS = [
+  { name: 'NEXUS', role: 'Controller', color: 'var(--color-agent-nexus)' },
+  { name: 'FORGE', role: 'Builder', color: 'var(--color-agent-forge)' },
+  { name: 'SENTINEL', role: 'Reviewer', color: 'var(--color-agent-sentinel)' },
+  { name: 'VESSEL', role: 'Shipper', color: 'var(--color-agent-vessel)' },
+  { name: 'LORE', role: 'Documenter', color: 'var(--color-agent-lore)' },
+];
+
+// One example ticket, in the order the agents act on it. `agent` indexes AGENTS.
+const EVENTS = [
+  { agent: 0, text: 'T-042 created from issue #128, assigned to forge-2' },
+  { agent: 1, text: 'plan_ready, waiting for approval' },
+  { agent: 2, text: 'plan approved, implementation unlocked' },
+  { agent: 1, text: 'segment 3/3 committed, tests passing' },
+  { agent: 2, text: 'pull request approved, 0 security flags' },
+  { agent: 3, text: 'all checks green, merged pull request #312' },
+  { agent: 4, text: 'CHANGELOG.md and ADR-0042 written' },
+];
+---
+
+<div class="live" aria-hidden="true" data-live data-events={JSON.stringify(EVENTS)}>
+  <div class="live-bar">
+    <span class="live-lights"><i></i><i></i><i></i></span>
+    <span class="live-title">openflows / live</span>
+    <span class="live-status"><i></i>running</span>
+  </div>
+
+  <ul class="live-agents">
+    {AGENTS.map((agent, index) => (
+      <li class="live-agent" data-agent={index} style={`--agent: ${agent.color}`}>
+        <span class="live-dot"></span>
+        <span class="live-name">{agent.name}</span>
+        <span class="live-role">{agent.role}</span>
+        <span class="live-state">idle</span>
+      </li>
+    ))}
+  </ul>
+
+  <div class="live-log" data-live-log>
+    {EVENTS.map((event) => (
+      <p class="live-line is-shown" style={`--agent: ${AGENTS[event.agent].color}`}>
+        <b>{AGENTS[event.agent].name.toLowerCase()}</b>
+        <span>{event.text}</span>
+      </p>
+    ))}
+  </div>
+</div>
+
+<script>
+  const root = document.querySelector<HTMLElement>('[data-live]');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const NAMES = ['nexus', 'forge', 'sentinel', 'vessel', 'lore'];
+  const COLORS = ['nexus', 'forge', 'sentinel', 'vessel', 'lore'].map((n) => `var(--color-agent-${n})`);
+  const TYPE_MS = 22;
+  const HOLD_MS = 1100;
+  const MAX_LINES = 5;
+
+  if (root && !reduced) {
+    const events = JSON.parse(root.dataset.events ?? '[]') as { agent: number; text: string }[];
+    const agents = [...root.querySelectorAll<HTMLElement>('[data-agent]')];
+    const log = root.querySelector<HTMLElement>('[data-live-log]');
+    let index = 0;
+    let visible = true;
+
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+    }).observe(root);
+
+    const wait = (ms: number) => new Promise((resolve) => window.setTimeout(resolve, ms));
+
+    const setActive = (active: number) => {
+      agents.forEach((el, i) => {
+        el.classList.toggle('is-working', i === active);
+        const state = el.querySelector('.live-state');
+        if (state) state.textContent = i === active ? 'working' : 'idle';
+      });
+    };
+
+    const run = async () => {
+      if (!log) return;
+      log.innerHTML = '';
+      await wait(900);
+      for (;;) {
+        if (!visible) {
+          await wait(400);
+          continue;
+        }
+        const event = events[index];
+        setActive(event.agent);
+
+        const line = document.createElement('p');
+        line.className = 'live-line';
+        line.style.setProperty('--agent', COLORS[event.agent]);
+        const who = document.createElement('b');
+        who.textContent = NAMES[event.agent];
+        const text = document.createElement('span');
+        line.append(who, text);
+        log.append(line);
+        requestAnimationFrame(() => line.classList.add('is-shown'));
+
+        while (log.children.length > MAX_LINES) log.firstElementChild?.remove();
+        [...log.children].forEach((el, i, all) => {
+          (el as HTMLElement).style.setProperty('--age', String(all.length - 1 - i));
+        });
+
+        for (let i = 1; i <= event.text.length; i += 1) {
+          text.textContent = event.text.slice(0, i);
+          await wait(TYPE_MS);
+        }
+        await wait(HOLD_MS);
+
+        index = (index + 1) % events.length;
+        if (index === 0) {
+          setActive(-1);
+          await wait(1400);
+          log.innerHTML = '';
+        }
+      }
+    };
+
+    run();
+  }
+</script>
+
+<style>
+  .live {
+    overflow: hidden;
+    border: 1px solid var(--color-driftwood);
+    border-radius: var(--radius-2xl);
+    background: var(--color-bone);
+    box-shadow:
+      0 1px 2px rgba(20, 19, 18, 0.06),
+      0 40px 80px -40px rgba(20, 19, 18, 0.35);
+  }
+
+  .live-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    height: 2.75rem;
+    padding-inline: 1rem;
+    border-bottom: 1px solid var(--color-driftwood);
+    background: #f7f6f2;
+  }
+
+  .live-lights {
+    display: flex;
+    gap: 0.4rem;
+  }
+
+  .live-lights i {
+    width: 0.7rem;
+    height: 0.7rem;
+    border-radius: 50%;
+    background: #ff5f57;
+  }
+
+  .live-lights i:nth-child(2) {
+    background: #febc2e;
+  }
+
+  .live-lights i:nth-child(3) {
+    background: #28c840;
+  }
+
+  .live-title {
+    flex: 1;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-graphite);
+    text-align: center;
+  }
+
+  .live-status {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-aubergine);
+  }
+
+  .live-status i {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 50%;
+    background: #28c840;
+    animation: live-blink 1.6s ease-in-out infinite;
+  }
+
+  .live-agents {
+    display: grid;
+    gap: 0.25rem;
+    margin: 0;
+    padding: 0.875rem;
+    list-style: none;
+  }
+
+  .live-agent {
+    display: grid;
+    grid-template-columns: 1.25rem 5.5rem 1fr auto;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.55rem 0.75rem;
+    border-radius: var(--radius-lg);
+    transition: background-color 0.4s var(--ease-out-soft);
+  }
+
+  .live-dot {
+    position: relative;
+    width: 0.625rem;
+    height: 0.625rem;
+    border-radius: 50%;
+    background: var(--agent);
+  }
+
+  .live-dot::after {
+    content: '';
+    position: absolute;
+    inset: -5px;
+    border: 2px solid var(--agent);
+    border-radius: 50%;
+    opacity: 0;
+  }
+
+  .live-name {
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+
+  .live-role {
+    font-size: 0.8125rem;
+    color: var(--color-graphite);
+  }
+
+  .live-state {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--color-graphite);
+  }
+
+  .live-agent.is-working {
+    background: #f4f2ec;
+  }
+
+  .live-agent.is-working .live-dot::after {
+    animation: live-pulse 1.2s ease-out infinite;
+  }
+
+  .live-agent.is-working .live-state {
+    color: var(--color-aubergine);
+  }
+
+  .live-log {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 0.35rem;
+    height: 9.5rem;
+    padding: 1rem 1.25rem;
+    overflow: hidden;
+    border-top: 1px solid var(--color-driftwood);
+    background: #12211f;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    line-height: 1.5;
+  }
+
+  .live-log :global(.live-line) {
+    --age: 0;
+
+    display: flex;
+    gap: 0.75rem;
+    margin: 0;
+    color: rgba(242, 240, 235, 0.9);
+    min-width: 0;
+    white-space: nowrap;
+    opacity: calc(1 - var(--age) * 0.14);
+    transform: translateY(8px);
+    transition: opacity 0.4s ease, transform 0.4s var(--ease-out-soft);
+  }
+
+  .live-log :global(.live-line.is-shown) {
+    transform: none;
+  }
+
+  .live-log :global(.live-line b) {
+    flex-shrink: 0;
+    min-width: 4.75rem;
+    font-weight: 600;
+    color: var(--agent);
+  }
+
+  .live-log :global(.live-line span) {
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  @keyframes live-pulse {
+    from {
+      opacity: 0.8;
+      transform: scale(0.6);
+    }
+    to {
+      opacity: 0;
+      transform: scale(1.6);
+    }
+  }
+
+  @keyframes live-blink {
+    50% {
+      opacity: 0.35;
+    }
+  }
+</style>

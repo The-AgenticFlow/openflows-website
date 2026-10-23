@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import CommunityBand from '@/organisms/About/CommunityBand.astro';
+import LiveAgents from '@/organisms/About/LiveAgents.astro';
 import Layers from '@/organisms/About/Layers.astro';
 import PrinciplesGrid from '@/organisms/About/PrinciplesGrid.astro';
 import RunLog from '@/organisms/About/RunLog.astro';
@@ -86,22 +87,28 @@ const PRINCIPLES = [
     desc: 'LORE writes Architecture Decision Records and updates CHANGELOG.md after every successful merge, so technical decisions are captured as the work ships.',
   },
 ];
+const HEADLINE = 'The orchestration layer for autonomous AI development teams';
 ---
 
 <BaseLayout title="About - OpenFlows" description="Learn about OpenFlows - the autonomous AI development team orchestration layer that coordinates five specialized agents to take GitHub issues to merged pull requests.">
   <main class="about">
     <header class="about-hero">
-      <div class="about-hero-inner" data-intro>
-        <p class="about-label">About OpenFlows</p>
-        <h1>The orchestration layer for autonomous AI development teams</h1>
-        <p class="about-lede">
-          OpenFlows coordinates five specialized AI agents through a Redis-backed state machine, taking GitHub issues
-          all the way to merged, documented pull requests. You wake up to completed features, reviewed PRs, and
-          updated documentation.
-        </p>
-        <div class="about-hero-actions">
-          <a href="/docs/getting-started" class="about-button primary">Get started</a>
-          <a href="/docs/architecture" class="about-button">Read the architecture</a>
+      <div class="about-hero-inner">
+        <div class="about-hero-copy">
+          <p class="about-label">About OpenFlows</p>
+          <h1 aria-label={HEADLINE}>
+            {HEADLINE.split(' ').map((word, index) => (
+              <span class="about-word" aria-hidden="true" style={`--w: ${index}`}>{word} </span>
+            ))}
+          </h1>
+          <p class="about-lede">
+            OpenFlows coordinates five specialized AI agents through a Redis-backed state machine, taking GitHub
+            issues all the way to merged, documented pull requests. You wake up to completed features, reviewed PRs,
+            and updated documentation.
+          </p>
+        </div>
+        <div class="about-hero-live">
+          <LiveAgents />
         </div>
       </div>
     </header>
@@ -148,10 +155,14 @@ const PRINCIPLES = [
   }
 
   .about-hero {
-    padding: calc(var(--nav-height) + clamp(4rem, 9vw, 8rem)) 0 clamp(3rem, 6vw, 5rem);
+    padding: calc(var(--nav-height) + clamp(3.5rem, 8vw, 7rem)) 0 clamp(3rem, 6vw, 5rem);
   }
 
   .about-hero-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.35fr) minmax(0, 1fr);
+    gap: clamp(2rem, 4vw, 4rem);
+    align-items: center;
     max-width: var(--max-width-6xl);
     margin-inline: auto;
     padding-inline: var(--space-6);
@@ -162,66 +173,65 @@ const PRINCIPLES = [
     font-family: var(--font-mono);
     font-size: 0.8125rem;
     color: var(--color-graphite);
+    animation: about-fade-up 0.7s var(--ease-out-soft) both;
   }
 
   .about-hero h1 {
     margin: 0 0 2rem;
-    max-width: 15ch;
-    font-size: clamp(3rem, 7vw, 6.5rem);
+    font-size: clamp(2.75rem, 5.4vw, 5.25rem);
     font-weight: 400;
     line-height: 0.98;
     letter-spacing: -0.045em;
     text-wrap: balance;
   }
 
+  /* Each word rises out of a soft blur, one after another. */
+  .about-word {
+    display: inline-block;
+    white-space: pre;
+    animation: about-word-in 0.9s var(--ease-out-soft) both;
+    animation-delay: calc(120ms + var(--w) * 70ms);
+  }
+
   .about-lede {
-    margin: 0 0 2.5rem;
-    max-width: 38rem;
-    font-size: clamp(1.125rem, 1.6vw, 1.3125rem);
+    margin: 0;
+    max-width: 36rem;
+    font-size: clamp(1.125rem, 1.5vw, 1.25rem);
     line-height: 1.6;
     color: var(--color-graphite);
+    animation: about-fade-up 0.8s var(--ease-out-soft) 0.75s both;
   }
 
-  .about-hero-actions {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.75rem;
+  .about-hero-live {
+    animation: about-panel-in 1s var(--ease-out-soft) 0.45s both;
   }
 
-  .about-button {
-    display: inline-flex;
-    align-items: center;
-    min-height: 3rem;
-    padding: 0 1.375rem;
-    border: 1px solid var(--color-ink);
-    border-radius: 999px;
-    font-size: 0.9375rem;
-    font-weight: 500;
-    color: var(--color-ink);
-    text-decoration: none;
-    transition: background-color 0.25s ease, transform 0.25s var(--ease-out-soft);
+  @keyframes about-word-in {
+    from {
+      opacity: 0;
+      filter: blur(10px);
+      transform: translateY(0.3em);
+    }
   }
 
-  .about-button:hover {
-    background: var(--color-bone);
-    color: var(--color-ink);
-    transform: translateY(-1px);
+  @keyframes about-fade-up {
+    from {
+      opacity: 0;
+      transform: translateY(14px);
+    }
   }
 
-  .about-button.primary {
-    border-color: var(--color-aubergine);
-    background: var(--color-aubergine);
-    color: #fff;
+  @keyframes about-panel-in {
+    from {
+      opacity: 0;
+      transform: translateY(28px) scale(0.97);
+    }
   }
 
-  .about-button.primary:hover {
-    background: var(--color-aubergine-deep);
-    color: #fff;
-  }
-
-  .about-button:focus-visible {
-    outline: 2px solid var(--color-aubergine);
-    outline-offset: 3px;
+  @media (max-width: 1020px) {
+    .about-hero-inner {
+      grid-template-columns: 1fr;
+    }
   }
 
   .about > :global(.community) {
