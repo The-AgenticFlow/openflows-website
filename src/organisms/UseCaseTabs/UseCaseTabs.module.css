@@ -11,6 +11,26 @@
   border-bottom: 1px solid var(--color-driftwood);
 }
 
+.pinned {
+  padding-block: 0;
+}
+
+.pinned .stage {
+  position: sticky;
+  top: 0;
+  display: flex;
+  align-items: center;
+  height: 100vh;
+}
+
+.pinned .stage > .container {
+  width: 100%;
+}
+
+.pinned .header {
+  margin-bottom: 48px;
+}
+
 .container {
   max-width: var(--max-width);
   margin-inline: auto;

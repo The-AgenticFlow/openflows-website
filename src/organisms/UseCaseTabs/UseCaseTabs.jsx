@@ -67,6 +67,9 @@ const USE_CASES = [
 const AUTO_ADVANCE_MS = 7000
 const COUNT_UP_MS = 1100
 const EXIT_MS = 320
+// Pin the section and drive the tabs by scroll only where the whole section fits on screen.
+const PINNED_QUERY = '(min-width: 1025px) and (min-height: 760px) and (prefers-reduced-motion: no-preference)'
+const SCROLL_PER_CASE_VH = 80
 
 const prefersReducedMotion = () =>
   typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -109,11 +112,43 @@ export default function UseCaseTabs() {
   const [paused, setPaused] = useState(false)
   const [reducedMotion, setReducedMotion] = useState(false)
   const [indicator, setIndicator] = useState(null)
+  const [pinned, setPinned] = useState(false)
   const sectionRef = useRef(null)
   const tabsRef = useRef(null)
   const tabRefs = useRef([])
   const activeCase = USE_CASES[shownIndex]
-  const running = autoplay && inView && !paused && !reducedMotion
+  const running = autoplay && inView && !paused && !reducedMotion && !pinned
+
+  useEffect(() => {
+    const query = window.matchMedia(PINNED_QUERY)
+    const apply = () => setPinned(query.matches)
+    apply()
+    query.addEventListener('change', apply)
+    return () => query.removeEventListener('change', apply)
+  }, [])
+
+  // In pinned mode the scroll position inside the section picks the use case.
+  useEffect(() => {
+    if (!pinned) return undefined
+    let frame = 0
+    const update = () => {
+      frame = 0
+      const el = sectionRef.current
+      if (!el) return
+      const scrollable = el.offsetHeight - window.innerHeight
+      const p = scrollable > 0 ? Math.min(0.9999, Math.max(0, -el.getBoundingClientRect().top / scrollable)) : 0
+      setActive(Math.floor(p * USE_CASES.length))
+    }
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update)
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    update()
+    return () => {
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(frame)
+    }
+  }, [pinned])
 
   useEffect(() => {
     setReducedMotion(prefersReducedMotion())
@@ -149,8 +184,18 @@ export default function UseCaseTabs() {
     return () => window.removeEventListener('resize', measure)
   }, [measure])
 
+  const scrollToCase = (index) => {
+    const el = sectionRef.current
+    if (!el) return
+    const scrollable = el.offsetHeight - window.innerHeight
+    const top = el.getBoundingClientRect().top + window.scrollY + scrollable * ((index + 0.5) / USE_CASES.length)
+    if (window.lenis) window.lenis.scrollTo(top)
+    else window.scrollTo({ top, behavior: 'smooth' })
+  }
+
   const select = (index, { focus = false } = {}) => {
     setAutoplay(false)
+    if (pinned) scrollToCase(index)
     setActive(index)
     if (focus) tabRefs.current[index]?.focus()
   }
@@ -176,7 +221,8 @@ export default function UseCaseTabs() {
   return (
     <section
       ref={sectionRef}
-      className={styles.section}
+      className={`${styles.section} ${pinned ? styles.pinned : ''}`}
+      style={pinned ? { height: `${100 + SCROLL_PER_CASE_VH * USE_CASES.length}vh` } : undefined}
       aria-labelledby="use-cases-title"
       onMouseEnter={() => setPaused(true)}
       onMouseLeave={() => setPaused(false)}
@@ -185,6 +231,7 @@ export default function UseCaseTabs() {
         if (!event.currentTarget.contains(event.relatedTarget)) setPaused(false)
       }}
     >
+      <div className={styles.stage}>
       <div className={styles.container}>
         <div className={styles.header}>
           <p className={styles.eyebrow}>Use cases</p>
@@ -229,7 +276,7 @@ export default function UseCaseTabs() {
                 >
                   <span className={styles.tabIndex}>{pad(index + 1)}</span>
                   <span>{useCase.label}</span>
-                  {selected && autoplay && !reducedMotion && (
+                  {selected && autoplay && !reducedMotion && !pinned && (
                     <span className={styles.tabProgress} aria-hidden="true">
                       <span
                         key={active}
@@ -291,6 +338,7 @@ export default function UseCaseTabs() {
             </div>
           </div>
         </div>
+      </div>
       </div>
     </section>
   )
