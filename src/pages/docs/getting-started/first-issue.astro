@@ -20,19 +20,19 @@ import { Callout, StepHeading, DocCards } from '@/molecules/DocComponents/DocCom
 
   <StepHeading step="1" id="stand-up">Stand up the control plane</StepHeading>
   <p>
-    Start with Coder, the coordination store, and the database running together (see
-    <a href="/docs/getting-started/installation">Installation</a> for the topology). Once they are up,
-    confirm that Coder is reachable at your access URL.
+    Start Manager, PostgreSQL, Redis, Coder, and the secret provider (see
+    <a href="/docs/getting-started/installation">Installation</a>). Run Manager's setup and doctor checks,
+    then confirm the public Manager URL and Coder URL are reachable.
   </p>
 
   <StepHeading step="2" id="bootstrap">Bootstrap the environment</StepHeading>
   <p>
-    Run the bootstrap step. It:
+    Run Manager setup and verify the deployment. This:
   </p>
   <ul>
-    <li>Creates the initial administrator.</li>
-    <li>Registers the workspace templates for each agent role.</li>
-    <li>Verifies that your model gateway and GitHub authentication are configured.</li>
+    <li>Checks the operator identity and Coder integration.</li>
+    <li>Validates the template source and supported provisioner.</li>
+    <li>Checks GitHub configuration, secret references, PostgreSQL, and Redis.</li>
   </ul>
   <p>
     Bootstrap should complete cleanly. If it reports a missing integration - for example, GitHub
@@ -41,21 +41,20 @@ import { Callout, StepHeading, DocCards } from '@/molecules/DocComponents/DocCom
 
   <StepHeading step="3" id="tenant">Add a tenant for your repository</StepHeading>
   <p>
-    Add a tenant bound to the GitHub repository you want OpenFlows to work on. This creates the
-    long-lived orchestrator workspace for that repository and initializes a fresh agent team.
+    Sign into Manager, create or select an organization, install its GitHub App, and select an
+    accessible repository. Create a tenant for that repository and wait for its Nexus provisioning
+    operation and runtime heartbeat to succeed.
   </p>
   <p>
     A note on "tenant": in OpenFlows, one Coder server serves many teams. Each tenant is one team bound
     to one repository. If you only have one team, think of this simply as "setting up your project."
   </p>
 
-  <StepHeading step="4" id="oauth">Complete GitHub OAuth for that tenant</StepHeading>
+  <StepHeading step="4" id="oauth">Verify the GitHub App connection</StepHeading>
   <p>
-    OpenFlows acts on GitHub through a real identity, not a shared token. In the Coder dashboard (or the
-    OpenFlows control panel), link GitHub OAuth for the tenant you just created. This is how agents gain
-    the ability to push branches, open pull requests, and comment on issues - scoped to that identity.
-    No raw token ever sits inside a worker workspace. See the
-    <a href="/docs/getting-started/token-guide">Identity & OAuth</a> page for the full model.
+    Confirm the GitHub App installation can access the tenant repository. Runtimes request short-lived,
+    repository-scoped installation tokens from Manager's broker. Hosted GitHub actions use the App bot
+    identity. See <a href="/docs/getting-started/token-guide">Identity and tokens</a> for the full model.
   </p>
 
   <StepHeading step="5" id="notifications">(Optional) Turn on notifications</StepHeading>
@@ -110,6 +109,6 @@ import { Callout, StepHeading, DocCards } from '@/molecules/DocComponents/DocCom
   <DocCards cards={[
     { icon: '🔁', title: 'Ticket Lifecycle', desc: 'The phases from issue detection through merge.', href: '/docs/getting-started/lifecycle-steps' },
     { icon: '✅', title: 'Completion & Merge', desc: 'How work is reviewed, merged, and torn down.', href: '/docs/getting-started/completion-and-merge' },
-    { icon: '🔑', title: 'Identity & OAuth', desc: 'The scoped OAuth model behind every action.', href: '/docs/getting-started/token-guide' },
+    { icon: '🔑', title: 'Identity and Tokens', desc: 'User login, runtime registration, and brokered GitHub access.', href: '/docs/getting-started/token-guide' },
   ]} />
 </DocsLayout>

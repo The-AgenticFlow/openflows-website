@@ -49,9 +49,8 @@ import { Callout, StepHeading } from '@/molecules/DocComponents/DocComponents';
   <StepHeading step="3" id="teardown">Teardown</StepHeading>
   <p>
     After the merge, the worker workspace is torn down. No lingering source trees, cached build
-    artifacts, or stale state survive. This is deliberate: because worker workspaces hold no secrets or
-    credentials, there is nothing sensitive left behind to clean up - the GitHub identity and model
-    access live in the control plane, not in the workspace.
+    artifacts, or stale state should survive. Workspaces can hold short-lived runtime credentials
+    and GitHub installation tokens, so teardown and token expiry are part of the security lifecycle.
   </p>
 
   <StepHeading step="4" id="review-what-came-back">Review what came back</StepHeading>

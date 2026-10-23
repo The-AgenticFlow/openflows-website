@@ -20,7 +20,7 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   </ul>
   <p><strong>What to do.</strong></p>
   <ol>
-    <li>Check <strong>escalations</strong> first — if there's a pending decision, that's the ticket's state and it needs you (see <a href="/docs/concepts/human-escalation">Handling Human Escalations</a>).</li>
+    <li>Check <strong>escalations</strong> first  -  if there's a pending decision, that's the ticket's state and it needs you (see <a href="/docs/concepts/human-escalation">Handling Human Escalations</a>).</li>
     <li>Give it a cycle. The loop re-reads and re-advances every cycle, so many stuck states clear shortly.</li>
     <li>If it's still stuck after automatic recovery gave up, <strong>reset</strong> the team's stuck work back to the start and let it take a fresh pass.</li>
   </ol>
@@ -35,7 +35,7 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
 
   <h2>Symptom: an environment or integration looks off</h2>
   <p><strong>What it might be.</strong> A configuration drift in the Coder or control-plane integration.</p>
-  <p><strong>What to do.</strong> Run a <strong>diagnostics</strong> check against the integration and address whatever it reports — identity access, model gateway reachability, GitHub authentication. This is the tooling equivalent of "check under the hood."</p>
+  <p><strong>What to do.</strong> Run a <strong>diagnostics</strong> check against the integration and address whatever it reports  -  identity access, model gateway reachability, GitHub authentication. This is the tooling equivalent of "check under the hood."</p>
 
   <h2>Symptom: workspaces accumulating</h2>
   <p><strong>What it might be.</strong> Workspaces that should have been torn down.</p>
@@ -50,13 +50,13 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
     <li><strong>The system self-heals by default.</strong> A single bad step is logged and retried; it never kills the brain.</li>
     <li><strong>Recovery is bounded, then escalated.</strong> The loop retries a bounded number of times, then asks a human rather than spinning.</li>
     <li><strong>State is in the store, not a process.</strong> Restarts pick up cleanly; durability means nothing is lost.</li>
-    <li><strong>"When in doubt, don't approve."</strong> A missing artifact or result means the reviewer will not approve — which is a guardrail, not a bug.</li>
+    <li><strong>"When in doubt, don't approve."</strong> A missing artifact or result means the reviewer will not approve  -  which is a guardrail, not a bug.</li>
   </ul>
 
   <h2>When to escalate to a human (that's you)</h2>
   <p>
     If you've checked escalations, given it a cycle, verified steering, and the work is still
-    wedged, use a <strong>reset</strong> — and if the cause is an unclear requirement or a
+    wedged, use a <strong>reset</strong>  -  and if the cause is an unclear requirement or a
     security question, treat it as the decision it is.
   </p>
 </DocsLayout>

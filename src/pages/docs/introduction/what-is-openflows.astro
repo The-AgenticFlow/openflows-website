@@ -8,7 +8,7 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
 
   <p>
     OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
-    production-ready pull requests, all inside your own self-hosted Coder environment. Instead of a
+    production-ready pull requests using OpenFlows Manager and isolated Coder workspaces. Instead of a
     single chatbot that suggests snippets, OpenFlows stands up a small team of specialized AI agents,
     each with a clear role, that plan, write, test, and risk-review code on your behalf. You keep
     control of the architecture and the final decisions; the team handles the execution.
@@ -23,10 +23,8 @@ import { Callout, DocCards } from '@/molecules/DocComponents/DocComponents';
   <p>
     OpenFlows is built around one idea: Coder decides <em>where</em> work runs, and OpenFlows
     decides <em>how</em> agents work together. Coder provides the governed, isolated, disposable
-    workspaces and the model gateway where every AI call happens. OpenFlows provides the
-    coordination, including the plan, the review, the merge, and the guardrails. Neither replaces
-    the other: OpenFlows does not try to manage machines, and Coder does not try to write your
-    code.
+    workspaces. OpenFlows Manager handles product identity, GitHub connections, runtime credentials,
+    and workspace operations. The Nexus controller coordinates the plan, review, merge, and guardrails.
   </p>
 
   <h2>The problem it solves</h2>

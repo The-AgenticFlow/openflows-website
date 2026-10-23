@@ -35,7 +35,7 @@
   .section {
     padding-block: 80px;
   }
-  
+
   .section::before,
   .section::after {
     width: 16px;

@@ -7,7 +7,7 @@ Implement consistent IZHUB text styling for all sub-text elements across the Ope
 
 ### Design System
 From examining the codebase, the website uses a comprehensive IZHUB design system with:
-- **Font Families**: 
+- **Font Families**:
   - `--font-landing-display` (Phonic) for display/hero text
   - `--font-app-sans` (Inter) for body text
   - `--font-mono` for code/technical text

@@ -15,13 +15,13 @@ const LINKS = [
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Reference', href: '/docs/reference' }]}>
   <h1>Reference</h1>
   <p>
-    This section is the lookup part of the documentation — organized for quick answers rather than narrative. It’s
+    This section is the lookup part of the documentation  -  organized for quick answers rather than narrative. It’s
     written in plain language with no code.
   </p>
   <ul>
     {LINKS.map(({ title, desc, href }) => (
       <li style={{ marginBottom: '0.75rem' }}>
-        <strong><a href={href}>{title}</a></strong> — {desc}
+        <strong><a href={href}>{title}</a></strong>  -  {desc}
       </li>
     ))}
   </ul>

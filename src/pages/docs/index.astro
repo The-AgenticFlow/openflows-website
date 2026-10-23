@@ -1,5 +1,6 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DOCS_READING_PATH } from '@/data/docsReadingPath';
 
 const SECTIONS = [
   {
@@ -19,7 +20,7 @@ const SECTIONS = [
       { icon: '🚀', title: 'Quick Start', desc: 'The fast path from clone to a working OpenFlows stack.', href: '/docs/getting-started' },
       { icon: '⚙️', title: 'Installation', desc: 'What you need before you start and how the environment is put together.', href: '/docs/getting-started/installation' },
       { icon: '🎯', title: 'First Issue Walkthrough', desc: 'What happens when you create a GitHub issue and the agents take over.', href: '/docs/getting-started/first-issue' },
-      { icon: '🔑', title: 'Token Guide', desc: 'How OpenFlows acts on GitHub through a scoped OAuth identity.', href: '/docs/getting-started/token-guide' },
+      { icon: '🔑', title: 'Token Guide', desc: 'User sign-in, runtime sessions, and brokered GitHub access.', href: '/docs/getting-started/token-guide' },
       { icon: '🔁', title: 'Lifecycle Steps', desc: 'The phases every ticket travels through, from planning to merge.', href: '/docs/getting-started/lifecycle-steps' },
       { icon: '✅', title: 'Completion & Merge', desc: 'How work is reviewed, merged, and torn down.', href: '/docs/getting-started/completion-and-merge' },
     ],
@@ -41,8 +42,12 @@ const SECTIONS = [
   },
   {
     title: 'Architecture',
-    desc: 'Detailed design of the orchestration engine, state machine, recovery systems, and agent lifecycle - in plain language.',
+    desc: 'Manager-mediated runtime architecture, credential boundaries, agent coordination, recovery, and deployment  -  in plain language.',
     cards: [
+      { icon: '🧩', title: 'Components and Interactions', desc: 'A component map of Manager, Coder, Nexus, workers, storage, hooks, and GitHub.', href: '/docs/architecture/components-and-interactions' },
+      { icon: '🔐', title: 'Manager Runtime', desc: 'How workspaces register, receive runtime identity, and request lifecycle operations.', href: '/docs/architecture/manager-runtime' },
+      { icon: '🗝️', title: 'Credentials and Trust', desc: 'Where platform secrets stay, what a runtime receives, and how GitHub access is brokered.', href: '/docs/architecture/credentials' },
+      { icon: '🔁', title: 'Hooks and A2A', desc: 'How Coder lifecycle events, hooks, Nexus, and worker evidence flow together.', href: '/docs/architecture/hooks-and-a2a' },
       { icon: '🗺️', title: 'Big Picture', desc: 'The control plane and the work plane, and how they fit together.', href: '/docs/architecture/big-picture' },
       { icon: '🧠', title: 'The Controller', desc: 'The brain and its orchestration loop.', href: '/docs/architecture/controller' },
       { icon: '🏗️', title: 'The Workspace Fleet', desc: 'Ephemeral worker spaces and the long-lived NEXUS workspace.', href: '/docs/architecture/workspace-fleet' },
@@ -106,7 +111,7 @@ const SECTIONS = [
   <div class="docsHero">
     <h1 class="docsTitle">OpenFlows Documentation</h1>
     <p class="docsLead">
-      OpenFlows is a self-hosted orchestration layer for running autonomous AI development teams on top of Coder.
+      OpenFlows Manager governs users, runtimes, and workspace operations while Coder runs the agent workspaces.
       Read these docs to install, operate, extend, and contribute to the system.
     </p>
     <div class="docsCta">
@@ -114,6 +119,19 @@ const SECTIONS = [
       <a href="/docs/introduction/how-openflows-compares" class="docsCtaSecondary">How OpenFlows compares</a>
     </div>
   </div>
+
+  <section class="docsJourney" aria-labelledby="docs-journey-title">
+    <p class="docsJourneyEyebrow">Recommended path</p>
+    <h2 id="docs-journey-title">Read the system in order</h2>
+    <p>Start with the product, learn the component boundaries, then install and operate it. Each page links to the next.</p>
+    <ol class="docsPaths">
+      {DOCS_READING_PATH.map(({ label, href, summary }, index) => (
+        <li><a href={href} class="docsPath"><span>{String(index + 1).padStart(2, '0')}</span><strong>{label}</strong><small>{summary}</small></a></li>
+      ))}
+    </ol>
+  </section>
+
+  <h2 class="docsBrowseHeading">Browse by topic</h2>
 
   {SECTIONS.map(({ title, desc, cards }) => (
     <section class="docsSection">
@@ -134,10 +152,22 @@ const SECTIONS = [
 
 <style>
   .docsHero {
-    padding: 3rem 0 2rem;
+    padding: 2rem 0 2rem;
     border-bottom: 1px solid var(--color-fog);
     margin-bottom: 3rem;
   }
+
+  .docsJourney { margin-bottom:3.5rem; }
+  .docsJourneyEyebrow { color:var(--color-aubergine); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
+  .docsJourney h2 { margin:.3rem 0 .5rem; color:var(--color-ink); font-size:1.7rem; }
+  .docsJourney > p:not(.docsJourneyEyebrow) { color:var(--color-graphite); margin-bottom:1.5rem; }
+  .docsPaths { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:1rem; margin:0; padding:0; list-style:none; }
+  .docsBrowseHeading { margin-bottom:2rem; color:var(--color-ink); font-size:1.7rem; }
+  .docsPath { display:flex; flex-direction:column; gap:.5rem; min-height:150px; padding:1.25rem; border:1px solid var(--color-driftwood); border-radius:var(--radius-md); background:var(--color-bone); text-decoration:none; transition:border-color .2s, transform .2s; }
+  .docsPath:hover { border-color:var(--color-aubergine); transform:translateY(-2px); }
+  .docsPath span { color:var(--color-aubergine); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
+  .docsPath strong { color:var(--color-ink); font-size:1.05rem; }
+  .docsPath small { color:var(--color-graphite); font-size:.85rem; line-height:1.5; }
 
   .docsTitle {
     font-size: 2.5rem;
@@ -191,5 +221,6 @@ const SECTIONS = [
   @media (max-width: 768px) {
     .docsTitle { font-size: 2rem; }
     .docsGrid { grid-template-columns: 1fr; }
+    .docsPaths { grid-template-columns:1fr; }
   }
 </style>

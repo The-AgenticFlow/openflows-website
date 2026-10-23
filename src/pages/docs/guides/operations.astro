@@ -1,109 +1,30 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout } from '@/molecules/DocComponents/DocComponents';
+import { DocsTable, Callout } from '@/molecules/DocComponents/DocComponents';
+
+const SIGNALS = [
+  ['Manager doctor', 'Configuration, public origin, PostgreSQL, Redis, Coder, secrets, and template source'],
+  ['Operation status', 'Queued, running, retryable failure, permanent failure, or success with current step'],
+  ['Workspace status', 'Desired and observed state, last heartbeat, Coder build and agent state'],
+  ['Nexus logs', 'Issue sync, ticket flow, A2A relay, lifecycle hook delivery, and agent assignment'],
+  ['Manager logs', 'Request ID, operation lease, broker exchange, hook ingress, and provisioning errors'],
+];
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Operations & Monitoring' }]}>
-  <h1>Operations &amp; Monitoring</h1>
-
-  <p>
-    Once your team is running, most of your day-to-day control happens from the control panel.
-    This guide covers the core operating moves: seeing status, steering the fleet, and staying
-    reachable when a ticket needs a human.
-  </p>
-
-  <h2>Seeing the live status</h2>
-  <p>
-    The control panel shows you, at a glance:
-  </p>
-  <ul>
-    <li><strong>Tickets</strong> — what's open, in progress, awaiting a human, or merged.</li>
-    <li><strong>Workers</strong> — which roles are idle, busy, or assigned.</li>
-    <li><strong>Pull requests</strong> — what's awaiting merge and what's merged.</li>
-    <li><strong>Escalations</strong> — anything that needs a human.</li>
-  </ul>
-  <p>
-    This is the same machine-readable state the command-line surface exposes, rendered as a
-    dashboard. If you prefer the command surface, the two always agree.
-  </p>
-
-  <h2>Steering the fleet</h2>
-  <p>
-    OpenFlows lets you control <em>how much and what</em> the team works on, live:
-  </p>
-  <ul>
-    <li><strong>Pause.</strong> Let anything already in flight finish, but don't pick up new work. Useful when you want to hold the line before a release.</li>
-    <li><strong>Drain.</strong> Stop taking on new tickets entirely (while finishing what's active).</li>
-    <li><strong>Target.</strong> Focus the team on a specific repository, issue, or label — for example, "only work on the hotfix label right now."</li>
-    <li><strong>Resume / normal.</strong> Return to business as usual.</li>
-  </ul>
-  <p>
-    Because the controller re-reads its steering state every cycle, these take effect on the
-    very next cycle. No restart, no downtime.
-  </p>
-
-  <h2>Editing the team (the registry)</h2>
-  <p>
-    From the panel you can also edit the <strong>agent registry</strong> — how many workers each
-    role runs, which model, which skills and tools. Changes are validated (you can't
-    accidentally zero out a role) and take effect on the next cycle.
-  </p>
-
-  <h2>Recovering when something's stuck</h2>
-  <p>
-    Most problems are absorbed automatically. When they aren't, you have two levers:
-  </p>
-  <ul>
-    <li><strong>Wait.</strong> A persistent failure is retried every cycle; many "stuck" states clear themselves shortly.</li>
-    <li><strong>Reset.</strong> If a team's work is genuinely wedged and automatic recovery has already given up, reset that team back to a clean state. This returns stale or failed tickets to the start and clears the recovery counters, so the team can take a fresh pass.</li>
-  </ul>
-
-  <h2>What you should see</h2>
-  <ul>
-    <li>The new state appears in the panel's status view.</li>
-    <li>The team's next cycles honor the change — halting new work if paused, focusing if targeted, rescaling if you changed role counts.</li>
-    <li>No restart banner — the team just adjusts smoothly.</li>
-  </ul>
-
-  <h2>Best practices</h2>
-  <ul>
-    <li>Prefer <strong>pause or target</strong> over stopping the whole system when you only want to redirect work.</li>
-    <li>Check <strong>escalations</strong> first thing: a parked ticket is your queue of decisions that need a human.</li>
-    <li>Use <strong>reset</strong> sparingly and only after automatic recovery has given up — it restarts work, so it isn't free.</li>
-  </ul>
-
-  <h2>Wiring notifications: stay reachable</h2>
-  <p>
-    OpenFlows runs autonomously, but it is not unsupervised. When a ticket escalates to a human,
-    you want to know promptly. Notifications turn "check the panel later" into "you were told
-    now," and they include direct links to the workspace and pull request so you can act
-    immediately.
-  </p>
-  <p>
-    OpenFlows can notify you through <strong>Slack</strong>, <strong>Discord</strong>, or
-    <strong>WhatsApp</strong>, and they can be combined. Each channel needs its connection details
-    supplied at setup:
-  </p>
-  <ul>
-    <li><strong>Slack</strong> — a webhook URL for your workspace or channel.</li>
-    <li><strong>Discord</strong> — a webhook URL.</li>
-    <li><strong>WhatsApp</strong> — the Twilio account credentials and phone numbers (your sending number and the destination).</li>
-  </ul>
-  <p>
-    Notifications are engineered to be <strong>useful, not noisy</strong>: each one names the
-    ticket, the reason, the role involved, and includes links; they are rate-limited to at most
-    one per channel per ticket within a window; and they are fire-and-forget, so a down channel
-    is logged and never breaks the loop. For the full behavior reference, see
-    <a href="/docs/reference/notifications-reference">Notifications Reference</a>.
-  </p>
-  <p>
-    Wire at least one channel from the start so you never miss an escalation. Remember that
-    notifications are only one surface — escalations always also appear in the control panel,
-    so nothing is lost if a channel is briefly unavailable.
-  </p>
-
-  <Callout type="info" title="Awaiting next steps">
-    When a notification arrives, see <a href="/docs/concepts/human-escalation">Human
-    Escalation</a> for how to resolve a ticket that needs you.
-  </Callout>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Guides', href: '/docs/guides' }, { label: 'Operations and Monitoring' }]}>
+  <h1>Operations and monitoring</h1>
+  <p>Run Manager, Coder, PostgreSQL, Redis, and the secret provider as monitored services. Separate control-plane operation status from tenant agent progress when diagnosing a slow or stuck tenant.</p>
+  <DocsTable headers={['Signal', 'What it tells you']} rows={SIGNALS} />
+  <h2 id="stuck">Investigate a stuck operation</h2>
+  <ol>
+    <li>Read the Manager operation ID, state, current step, attempt count, and error code.</li>
+    <li>Check Manager provisioning logs using the operation and tenant IDs. A queued operation with no attempts points to worker or lease availability; repeated attempts point to a failing step.</li>
+    <li>Check Coder build and agent logs if workspace creation has started.</li>
+    <li>Use the operation retry control only after identifying and fixing the underlying dependency. Repeated retries do not repair a missing secret, unreachable service, or invalid template.</li>
+  </ol>
+  <h2 id="health">Monitor the runtime</h2>
+  <p>Watch Manager request failures, operation queue age, lease recovery, broker failures, Nexus and worker heartbeats, Redis connectivity, Coder provisioner health, and GitHub rate limits. A running Coder workspace without a Manager runtime heartbeat may still be unusable to OpenFlows.</p>
+  <h2 id="changes">Release and recovery</h2>
+  <p>Template releases are immutable. Publish a new release name and promote it before rebuilding workspaces. Back up PostgreSQL, Redis, and secret-provider material together. Test restore and credential rotation before production adoption.</p>
+  <Callout type="info" title="Operational reference">See the <a href="/docs/architecture/deployment">deployment architecture</a> and the versioned <a href="https://github.com/The-AgenticFlow/OpenFlows/tree/main/docs/implementation/centralized-deployment" target="_blank" rel="noopener noreferrer">operator guide</a> for exact commands.</Callout>
 </DocsLayout>

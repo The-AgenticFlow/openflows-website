@@ -1,0 +1,75 @@
+---
+interface Props {
+  title: string;
+  source: string;
+}
+
+const { title, source } = Astro.props;
+---
+
+<figure class="docsDiagram" aria-label={title}>
+  <div class="diagramCanvas"><pre class="mermaid">{source.trim()}</pre></div>
+  <figcaption>{title}</figcaption>
+  <details><summary>View diagram source</summary><pre><code>{source.trim()}</code></pre></details>
+</figure>
+
+<script>
+  import mermaid from 'mermaid';
+
+  const diagrams = document.querySelectorAll<HTMLElement>('.docsDiagram .mermaid');
+  if (diagrams.length) {
+    mermaid.initialize({
+      startOnLoad: false,
+      securityLevel: 'strict',
+      theme: 'base',
+      look: 'classic',
+      themeVariables: {
+        fontFamily: 'Inter, system-ui, sans-serif',
+        background: '#f2f0eb',
+        primaryColor: '#f2f0eb',
+        primaryTextColor: '#292827',
+        primaryBorderColor: '#76978b',
+        lineColor: '#648e80',
+        secondaryColor: '#e8eeea',
+        secondaryTextColor: '#292827',
+        tertiaryColor: '#f2f0eb',
+        tertiaryTextColor: '#292827',
+        actorBkg: '#f2f0eb',
+        actorBorder: '#76978b',
+        actorTextColor: '#292827',
+        signalColor: '#648e80',
+        signalTextColor: '#292827',
+        noteBkgColor: '#e8eeea',
+        noteTextColor: '#292827',
+      },
+    });
+    document.fonts.ready.then(async () => {
+      try {
+        await mermaid.run({ nodes: diagrams });
+      } catch (error) {
+        console.error('Could not render a documentation diagram', error);
+        diagrams.forEach(diagram => {
+          if (!diagram.querySelector('svg')) diagram.closest('.docsDiagram')?.classList.add('diagramError');
+        });
+      }
+    });
+  }
+</script>
+
+<style>
+  .docsDiagram { width:100%; margin:2.5rem 0; color:var(--color-ink); }
+  .diagramCanvas { width:100%; padding:0; }
+  .diagramCanvas :global(svg) { display:block; width:100%; max-width:100% !important; height:auto; margin-inline:auto; }
+  .diagramCanvas :global(svg p), .diagramCanvas :global(svg span), .diagramCanvas :global(svg text) { color:var(--color-ink) !important; fill:var(--color-ink) !important; }
+  .diagramCanvas :global(svg .cluster rect) { fill:transparent !important; stroke:#b7c8be !important; }
+  .diagramCanvas :global(svg .edgeLabel rect), .diagramCanvas :global(svg .labelBkg) { fill:var(--color-parchment-canvas) !important; }
+  .diagramCanvas pre { margin:0; white-space:pre-wrap; }
+  figcaption { margin-top:.75rem; color:var(--color-graphite); font-size:.83rem; line-height:1.5; }
+  details { margin-top:.35rem; color:var(--color-graphite); font-size:.78rem; }
+  summary { width:max-content; cursor:pointer; }
+  details pre { white-space:pre-wrap; overflow-wrap:anywhere; padding:1rem; border-left:2px solid var(--color-driftwood); color:var(--color-ink); }
+  .diagramError .diagramCanvas pre { color:var(--color-ink); }
+  @media (min-width:1100px) {
+    .docsDiagram { width:min(1100px, calc(100vw - 510px)); max-width:calc(100vw - 510px); margin-left:50%; transform:translateX(-50%); }
+  }
+</style>

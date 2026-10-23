@@ -11,7 +11,7 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
     <h1>Getting Started</h1>
     <p class="docLead">
       OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
-      production-ready pull requests, running entirely inside your own self-hosted Coder environment.
+      production-ready pull requests through OpenFlows Manager and isolated Coder workspaces.
       It stands up a small team of specialized agents that plan, write, test, and adversarially review
       code on your behalf. You stay in control of the important decisions; the team handles the
       execution.
@@ -34,8 +34,8 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
 
   <StepHeading step="1" id="who-it-is-for">Who it is for</StepHeading>
   <p>
-    OpenFlows is an <strong>enterprise-grade</strong> orchestration layer — self-hosted, governed,
-    auditable, and multi-tenant — that is just as at home for a <strong>solo developer</strong> who
+    OpenFlows is an <strong>enterprise-grade</strong> orchestration layer  -  self-hosted, governed,
+    auditable, and multi-tenant  -  that is just as at home for a <strong>solo developer</strong> who
     wants a personal AI team. Anyone who wants AI to execute end-to-end with guardrails inside
     their own environment fits here:
   </p>
@@ -56,12 +56,12 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
       detail="OpenFlows turns GitHub issues into pull requests, so it needs a repository and GitHub authentication for it."
     />
     <PrereqCard
-      name="A coordination store"
-      detail="A shared record of truth (Redis) that coordinates the team, plus a database for Coder itself."
+      name="PostgreSQL and Redis"
+      detail="PostgreSQL stores Manager authority and durable operations; Redis stores tenant coordination state."
     />
     <PrereqCard
-      name="GitHub OAuth"
-      detail="OpenFlows acts on GitHub through a real identity linked via GitHub OAuth, not a shared token."
+      name="GitHub OAuth App and GitHub App"
+      detail="OAuth signs people into Manager; the installed GitHub App brokers repository tokens for runtimes."
     />
   </div>
 
@@ -69,20 +69,19 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
     The two systems divide the work deliberately:
     <ul>
       <li><strong>Coder</strong> decides where work runs. It provides governed, isolated, disposable
-      workspaces and a central model gateway where every AI call happens. Worker workspaces hold no
-      model keys, no raw repository credentials, and no secrets.</li>
-      <li><strong>OpenFlows</strong> decides how the work is coordinated. It provides the team, the
-      planning gate, adversarial review, self-healing, and merges.</li>
+      workspaces and the execution environment.</li>
+      <li><strong>Manager</strong> authenticates users and runtimes, provisions workspaces through Coder,
+      and brokers repository-scoped GitHub credentials.</li>
+      <li><strong>Nexus</strong> coordinates planning, adversarial review, recovery, and merges for its tenant.</li>
     </ul>
     Neither replaces the other. OpenFlows does not manage machines; Coder does not write your code.
   </Callout>
 
   <StepHeading step="3" id="install">Install &amp; Set Up</StepHeading>
   <p>
-    Setting up OpenFlows means standing up the control plane (Coder, the coordination store, and a
-    database), running the installer to bootstrap the environment, adding a tenant for your repository,
-    and linking GitHub OAuth. From there you can open an issue and watch the team turn it into a merged
-    pull request.
+    Set up Manager, Coder, PostgreSQL, Redis, and the secret provider. Run Manager setup and doctor,
+    sign in, create an organization, install the GitHub App, and create a tenant for its repository.
+    Wait for Nexus to register and heartbeat before opening an issue.
   </p>
   <p>
     Step-by-step guidance lives on the <a href="/docs/getting-started/installation">Installation</a>
@@ -114,14 +113,14 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
   <StepHeading step="5" id="what-openflows-is-not">What OpenFlows is not</StepHeading>
   <ul>
     <li><strong>Not a chat assistant.</strong> It is not a tool you prompt and babysit; it is a team that plans, reviews, and merges under its own guardrails. You decide, it executes.</li>
-    <li><strong>Not a hosted cloud coder.</strong> It runs in your own Coder control plane. Code, prompts, and outputs stay in your environment, and worker workspaces hold no keys by design.</li>
+    <li><strong>Not a replacement for workspace security.</strong> Workspaces hold scoped runtime and temporary repository credentials and need isolation and monitoring.</li>
     <li><strong>Not a bare orchestrator you maintain.</strong> The planning gate, adversarial review, recovery, and human escalation are already built - you do not write the coordination logic.</li>
     <li><strong>Not a replacement for Coder.</strong> It is a layer on top. It needs your self-hosted Coder environment to run, and it favors governance over raw speed.</li>
   </ul>
 
   <StepHeading step="6" id="next-steps">Next Steps</StepHeading>
   <DocCards cards={[
-    { icon: '🔑', title: 'Identity & OAuth', desc: 'How OpenFlows acts on GitHub through a scoped OAuth link - no raw tokens in workspaces.', href: '/docs/getting-started/token-guide' },
+    { icon: '🔑', title: 'Identity and Tokens', desc: 'User login, workspace registration, and brokered GitHub access.', href: '/docs/getting-started/token-guide' },
     { icon: '🎯', title: 'Installation', desc: 'What you need before you start, the topology, and what the installer does.', href: '/docs/getting-started/installation' },
     { icon: '🚀', title: 'First Issue Walkthrough', desc: 'Step through one complete ticket from issue creation to merged PR.', href: '/docs/getting-started/first-issue' },
     { icon: '🔁', title: 'Ticket Lifecycle', desc: 'The phases every ticket travels through, from planning to merge.', href: '/docs/getting-started/lifecycle-steps' },
@@ -133,7 +132,7 @@ const breadcrumbs = [{ label: 'Docs', href: '/docs' }, { label: 'Getting Started
       <li><a href="/docs/concepts/coder-openflows-split">Coder Integration</a> - how OpenFlows and Coder split the work</li>
       <li><a href="/docs/concepts/architecture-first">Architecture-First</a> - why OpenFlows plans before coding</li>
       <li><a href="/docs/concepts/agent-team">The Agent Team</a> - who NEXUS, FORGE, SENTINEL, VESSEL, and LORE are</li>
-      <li><a href="/docs/architecture/security-by-design">Security Model</a> - how secrets stay out of worker workspaces</li>
+      <li><a href="/docs/architecture/security-by-design">Security Model</a> - runtime boundaries and scoped credentials</li>
       <li><a href="/docs/guides/operations">Operations</a> - managing the fleet at runtime</li>
       <li><a href="/docs/guides/multi-tenancy">Multi-Tenancy</a> - one Coder server, many teams</li>
     </ul>

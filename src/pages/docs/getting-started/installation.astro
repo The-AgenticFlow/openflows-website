@@ -3,113 +3,39 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { Callout, DocCards, StepHeading } from '@/molecules/DocComponents/DocComponents';
 ---
 
-<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Getting Started', href: '/docs/getting-started' }, { label: 'Installation' }]}>
+<DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Get Started', href: '/docs/getting-started' }, { label: 'Installation' }]}>
   <h1>Installation</h1>
+  <p>This is the deployment sequence for the Manager-mediated architecture. Use the release-specific configuration and operator guide in the <a href="https://github.com/The-AgenticFlow/OpenFlows/tree/main/docs/implementation/centralized-deployment" target="_blank" rel="noopener noreferrer">OpenFlows repository</a> for exact commands and supported infrastructure settings.</p>
 
-  <p>
-    This page describes what running OpenFlows requires and how a production environment is put
-    together. The goal is to give you the full picture before you start, so you can plan your
-    deployment.
-  </p>
-
-  <StepHeading step="1" id="what-you-need">What you need before you start</StepHeading>
-  <p>
-    OpenFlows is not a standalone tool - it is a system that orchestrates a fleet of workspaces. To
-    run it, you need:
-  </p>
+  <StepHeading step="1" id="prerequisites">Prepare services and domains</StepHeading>
   <ul>
-    <li><strong>A Coder server</strong> (self-hosted). This is the control plane that provides identity, model access, and the disposable workspaces where agents run.</li>
-    <li><strong>GitHub integration.</strong> OpenFlows turns GitHub issues into pull requests, so it needs a repository and GitHub authentication for it.</li>
-    <li><strong>A coordination store.</strong> OpenFlows uses a shared record of truth to coordinate the team.</li>
-    <li><strong>A database</strong> for the Coder server itself.</li>
+    <li>PostgreSQL for Manager state and a database for Coder.</li>
+    <li>Redis reachable from Manager and Coder workspaces; Manager needs administrative access to create tenant ACL identities.</li>
+    <li>Coder with a provisioner and a network path to workspace agents.</li>
+    <li>A public HTTPS origin for Manager so GitHub OAuth, App installation callbacks, and webhooks can reach it.</li>
+    <li>A GitHub OAuth App for sign-in and a GitHub App for repository installation and brokered runtime access.</li>
+    <li>A secret provider, encryption master key, Coder operator credential, and template release source.</li>
   </ul>
-  <p>
-    If you do not already operate Coder, the reference deployment stands up Coder, the coordination
-    store, and the database together, so you can start from a clean slate.
-  </p>
 
-  <StepHeading step="2" id="topology">The high-level topology</StepHeading>
-  <p>
-    The system is split into a <strong>control plane</strong> and a set of <strong>worker
-    workspaces</strong>.
-  </p>
-  <p>
-    The <strong>control plane</strong> is where the intelligence lives. It holds the Coder server
-    (identity, the model gateway, and workspace management), the long-lived orchestrator that runs the
-    coordination loop, the coordination store, and Coder's database. This is the only place that
-    legitimately holds credentials.
-  </p>
-  <p>
-    The <strong>worker workspaces</strong> are ephemeral and disposable - one per agent role per
-    ticket. They hold no model keys, no raw repository credentials, and no secrets. They have tight
-    network access because the intelligence and credentials they need live centrally, in the control
-    plane, rather than inside them.
-  </p>
-  <p>
-    The core idea that makes this safe is that <strong>Coder governs where agents run and OpenFlows
-    governs how they coordinate</strong>. See the <a href="/docs/concepts/coder-openflows-split">Coder
-    Integration</a> page for more on this split.
-  </p>
+  <StepHeading step="2" id="manager">Configure and validate Manager</StepHeading>
+  <p>Provide the Manager's typed deployment configuration and secret references. Run <code>openflows-manager setup</code> to bootstrap supported Coder integration, then <code>openflows-manager doctor</code> to validate secrets, PostgreSQL, Redis, Coder identity, public origin, template source, and the provisioner. Resolve failed checks before serving traffic.</p>
 
-  <StepHeading step="3" id="reference-deployment">The reference deployment</StepHeading>
-  <p>
-    The simplest supported path stands up the whole control plane as a set of containers:
-  </p>
-  <ul>
-    <li><strong>Coordination store</strong> - configured for durable storage so facts survive restarts.</li>
-    <li><strong>Database</strong> - Coder's database.</li>
-    <li><strong>Coder server</strong> - configured with the database, your access URL, a provisioner, and GitHub signups enabled.</li>
-  </ul>
-  <p>
-    You then run the OpenFlows installer against this environment to set up the initial state.
-  </p>
+  <StepHeading step="3" id="serve">Start the control plane</StepHeading>
+  <p>Run <code>openflows-manager serve</code> behind HTTPS. The Manager serves the product API and web UI, receives GitHub callbacks and Coder lifecycle hooks, and runs durable background workers. Coder executes the workspaces; Nexus is provisioned inside a tenant.</p>
 
-  <StepHeading step="4" id="installer">What the installer does</StepHeading>
-  <p>
-    After the control plane is standing, you complete a bootstrap sequence:
-  </p>
+  <StepHeading step="4" id="organization">Create the first tenant</StepHeading>
   <ol>
-    <li><strong>Bootstrap the environment</strong> - create the initial administrator, register the workspace templates each agent role uses, and verify that both the model integration and GitHub authentication are reachable. This also initializes the default agent team in the control plane.</li>
-    <li><strong>Add a tenant</strong> for a repository - this creates the tenant and its long-lived orchestrator workspace, bound to a specific GitHub repository.</li>
-    <li><strong>Complete GitHub OAuth</strong> for that tenant - the mechanism OpenFlows uses to act on GitHub on behalf of a real identity, rather than a shared credential.</li>
-    <li><strong>Configure notifications</strong> (optional) - wire up Slack, Discord, or WhatsApp so OpenFlows can reach you when a human decision is needed.</li>
-    <li><strong>Open an issue</strong> - and watch the team turn it into a reviewed, merged pull request.</li>
+    <li>Sign into Manager with GitHub.</li>
+    <li>Create an OpenFlows organization and wait for its provisioning operation to succeed.</li>
+    <li>Install the GitHub App for the intended account and repository. Verify that the connection appears in OpenFlows.</li>
+    <li>Create a tenant for an accessible repository. Manager creates the creator-owned Coder identity, tenant Redis access, and Nexus workspace.</li>
+    <li>Confirm that Nexus registers, heartbeats, and reports a running workspace before opening a test issue.</li>
   </ol>
 
-  <Callout type="info" title="A note on tenants">
-    One Coder server serves many teams. Each tenant is one team bound to one repository. If you only
-    have one team, think of this simply as "setting up your project." See
-    <a href="/docs/guides/multi-tenancy">Multi-Tenancy</a> for more.
-  </Callout>
-
-  <StepHeading step="5" id="runtime">Manageable at runtime</StepHeading>
-  <p>
-    OpenFlows ships a control panel (a web interface) plus a command-line surface that stay in sync.
-    From either, you can:
-  </p>
-  <ul>
-    <li>See the <strong>live status</strong> of tickets, workers, and pull requests.</li>
-    <li>Edit the <strong>agent registry</strong> (roles, models, skills) with no restart.</li>
-    <li><strong>Pause, drain, or target</strong> the fleet toward specific work.</li>
-    <li>Attend to <strong>human escalations</strong> and link GitHub OAuth.</li>
-  </ul>
-  <p>
-    Installation is a one-time setup; from then on, day-to-day control happens through the panel.
-  </p>
-
-  <Callout type="tip" title="Next steps">
-    With the environment understood, head to the
-    <a href="/docs/getting-started/first-issue">First Issue Walkthrough</a> for a step-by-step run of
-    your first issue-to-merge cycle, and the
-    <a href="/docs/getting-started/token-guide">Identity & OAuth</a> page to understand how
-    authentication works.
-  </Callout>
-
-  <h2 id="reference-links">Reference</h2>
+  <Callout type="warning" title="Template releases are immutable">After changing a template, publish a new release name, promote it to the organization, and update or rebuild affected workspaces. Restarting Manager alone does not replace an existing Coder template version.</Callout>
   <DocCards cards={[
-    { icon: '🔑', title: 'Identity & OAuth', desc: 'The scoped OAuth model and why no raw tokens live in workspaces.', href: '/docs/getting-started/token-guide' },
-    { icon: '🏢', title: 'Multi-Tenancy', desc: 'The tenant model and team isolation.', href: '/docs/guides/multi-tenancy' },
-    { icon: '🚀', title: 'First Issue', desc: 'One issue to a merged PR, end to end.', href: '/docs/getting-started/first-issue' },
-    { icon: '🏗️', title: 'How It Works', desc: 'The end-to-end flow and guardrails.', href: '/docs/concepts/architecture-first' },
+    { icon: '🔑', title: 'Token Guide', desc: 'Understand sign-in, runtime sessions, Redis, and GitHub App tokens.', href: '/docs/getting-started/token-guide' },
+    { icon: '🚀', title: 'First Issue', desc: 'Run the first ticket through the agent team.', href: '/docs/getting-started/first-issue' },
+    { icon: '🏗️', title: 'Deployment', desc: 'Review service connections and runtime topology.', href: '/docs/architecture/deployment' },
   ]} />
 </DocsLayout>

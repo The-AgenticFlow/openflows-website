@@ -20,13 +20,13 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <h2>Why "read everything, every time"</h2>
   <p>
     The Controller deliberately keeps almost no state of its own. On each beat it re-reads the entire system from the
-    coordination store — all tickets, all workers, all pull requests, all heartbeats — and figures out fresh
+    coordination store  -  all tickets, all workers, all pull requests, all heartbeats  -  and figures out fresh
     what needs to happen.
   </p>
   <p>This is not wasteful; it's the source of the system's correctness:</p>
   <ul>
     <li><strong>It converges.</strong> Even if a step failed halfway through the last beat, this beat sees the true state and sets it right.</li>
-    <li><strong>It self-heals.</strong> A workspace that went silent, a chat that errored, a pull request nobody merged — the loop rediscovers each and fixes it.</li>
+    <li><strong>It self-heals.</strong> A workspace that went silent, a chat that errored, a pull request nobody merged  -  the loop rediscovers each and fixes it.</li>
     <li><strong>It restarts cleanly.</strong> Nothing important depends on the Controller's memory surviving, because the memory lives in the store.</li>
   </ul>
 
@@ -36,8 +36,8 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   </p>
   <ol>
     <li><strong>NEXUS</strong> syncs GitHub issues and pull requests, reconciles the fleet, repairs broken pieces, and dispatches any ticket whose turn it is.</li>
-    <li><strong>FORGE</strong> advances any in-flight build — handling a plan awaiting approval, a build in progress, or a pull request just opened.</li>
-    <li><strong>SENTINEL</strong> reviews anything that's ready — an approved-plan check or a pull-request review — and records a verdict.</li>
+    <li><strong>FORGE</strong> advances any in-flight build  -  handling a plan awaiting approval, a build in progress, or a pull request just opened.</li>
+    <li><strong>SENTINEL</strong> reviews anything that's ready  -  an approved-plan check or a pull-request review  -  and records a verdict.</li>
     <li><strong>VESSEL</strong> watches pending pull requests through CI and merges the green ones.</li>
     <li><strong>LORE</strong> documents anything that just merged.</li>
   </ol>
@@ -50,8 +50,8 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <p>The most important safety rule in the loop:</p>
 
   <Callout type="warning" title="Log it and move on">
-    If one beat errors, log it and move on. Never let a bad beat take down the Controller. A one-off failure — a
-    slow API, a hiccup on the network, a workspace that failed to come up — is absorbed and forgotten by the next
+    If one beat errors, log it and move on. Never let a bad beat take down the Controller. A one-off failure  -  a
+    slow API, a hiccup on the network, a workspace that failed to come up  -  is absorbed and forgotten by the next
     beat. A persistent fault is retried every beat until it clears.
   </Callout>
 
@@ -59,13 +59,13 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <p>
     Recovery is powerful but not infinite. The loop repairs broken work <strong>up to a bounded number of
     attempts</strong>. If a ticket keeps failing past that limit, the loop stops retrying, parks the ticket, and
-    <strong>escalates it to a human</strong> — with a notification and links. It chooses "ask for help" over
+    <strong>escalates it to a human</strong>  -  with a notification and links. It chooses "ask for help" over
     "spin forever."
   </p>
   <p>
-    Roughly speaking, <strong>recoverable</strong> failures are infrastructure problems — a stopped workspace, a
+    Roughly speaking, <strong>recoverable</strong> failures are infrastructure problems  -  a stopped workspace, a
     pull request not yet merged, a misbehaving response that can be retried. <strong>Human-escalated</strong> failures
-    are judgment problems — an unclear requirement, work that contradicts the plan, or a security concern that
+    are judgment problems  -  an unclear requirement, work that contradicts the plan, or a security concern that
     needs a person's call.
   </p>
 
@@ -74,10 +74,10 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
     Because the loop re-reads state every beat, you can steer it <strong>without restarting</strong>:
   </p>
   <ul>
-    <li><strong>Pause</strong> — let in-flight work finish but don't pick up anything new.</li>
-    <li><strong>Drain</strong> — stop taking new tickets.</li>
-    <li><strong>Target</strong> — focus only on a specific repository, issue, or label.</li>
-    <li><strong>Resume / normal</strong> — back to business as usual.</li>
+    <li><strong>Pause</strong>  -  let in-flight work finish but don't pick up anything new.</li>
+    <li><strong>Drain</strong>  -  stop taking new tickets.</li>
+    <li><strong>Target</strong>  -  focus only on a specific repository, issue, or label.</li>
+    <li><strong>Resume / normal</strong>  -  back to business as usual.</li>
   </ul>
   <p>
     These are stored as state, read every beat, and applied on the very next pass. Live steering with zero downtime.
@@ -85,8 +85,8 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
 
   <h2>The takeaway</h2>
   <p>
-    OpenFlows doesn't try to be perfect in any single moment. It is built to <strong>keep trying</strong> —
-    to read reality, nudge it forward, absorb failures, and converge — which is exactly the behavior you want in an
+    OpenFlows doesn't try to be perfect in any single moment. It is built to <strong>keep trying</strong>  -
+    to read reality, nudge it forward, absorb failures, and converge  -  which is exactly the behavior you want in an
     autonomous system running around the clock.
   </p>
 </DocsLayout>

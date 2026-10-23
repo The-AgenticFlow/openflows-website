@@ -34,6 +34,19 @@ const NAV_DATA = [
     }
   },
   {
+    label: 'Enterprise',
+    href: '/enterprise',
+    dropdown: {
+      heading: 'Enterprise',
+      items: [
+        { label: 'Overview', href: '/enterprise' },
+        { label: 'Trust boundaries', href: '/enterprise#security' },
+        { label: 'Deployment', href: '/enterprise#deployment' },
+        { label: 'Availability', href: '/enterprise#editions' },
+      ]
+    }
+  },
+  {
     label: 'Resources',
     href: '/resources',
     dropdown: {
@@ -195,6 +208,18 @@ const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
           { label: 'Guides', href: '/docs/guides' },
           { label: 'Reference', href: '/docs/reference' },
           { label: 'FAQ', href: '/docs/resources/faq' },
+        ]
+      }
+    },
+    {
+      label: 'Enterprise',
+      dropdown: {
+        heading: 'Enterprise',
+        items: [
+          { label: 'Overview', href: '/enterprise' },
+          { label: 'Trust boundaries', href: '/enterprise#security' },
+          { label: 'Deployment', href: '/enterprise#deployment' },
+          { label: 'Availability', href: '/enterprise#editions' },
         ]
       }
     },

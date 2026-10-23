@@ -3,7 +3,7 @@ import DocsLayout from '@/layouts/DocsLayout.astro';
 import { DocsTable, Callout } from '@/molecules/DocComponents/DocComponents';
 
 const ROUTES = [
-  ['NEXUS \u2192 FORGE', 'A ticket\u2019s turn', 'NEXUS assigns a ticket to an idle builder and provisions its workspace.'],
+  ['NEXUS \u2192 FORGE', 'A ticket\u2019s turn', 'NEXUS assigns a ticket and requests a managed Forge workspace.'],
   ['FORGE \u2192 SENTINEL', 'Plan review', 'FORGE finishes a plan and hands it over; SENTINEL reviews and approves before any code is written.'],
   ['FORGE \u2192 SENTINEL', 'Review', 'FORGE implements against the approved plan and opens a pull request; SENTINEL reviews it.'],
   ['SENTINEL \u2192 VESSEL', 'Merge', 'An approved review routes the pull request to VESSEL to watch CI and merge.'],
@@ -16,15 +16,15 @@ const ROUTES = [
   <h1>Decision &amp; Routing</h1>
   <p>
     Routing is how work moves between roles. The Controller doesn't command agents with ad-hoc messages; it runs
-    a <strong>flow</strong> — an ordered map of steps and the allowed transitions between them — and it is
+    a <strong>flow</strong>  -  an ordered map of steps and the allowed transitions between them  -  and it is
     the single place those transitions are declared. This page explains how work is dispatched between roles and how
     each transition is routed.
   </p>
 
   <h2>The routing flow</h2>
   <p>
-    Work moves through the team in a fixed order — NEXUS dispatches, FORGE builds, SENTINEL reviews, VESSEL
-    merges, LORE documents — and then back around to NEXUS:
+    Work moves through the team in a fixed order  -  NEXUS dispatches, FORGE builds, SENTINEL reviews, VESSEL
+    merges, LORE documents  -  and then back around to NEXUS:
   </p>
   <DocsTable headers={['Transition', 'Stage', 'What routes']} rows={ROUTES} />
 
@@ -34,11 +34,11 @@ const ROUTES = [
   </p>
   <ol>
     <li><strong>Read</strong> the current state of the work.</li>
-    <li><strong>Act</strong> — do the external work called for (provisioning a workspace, writing code, running a review, opening or merging a pull request).</li>
-    <li><strong>Record and route</strong> — write the result and hand control to the next allowed step.</li>
+    <li><strong>Act</strong>  -  do the external work called for (provisioning a workspace, writing code, running a review, opening or merging a pull request).</li>
+    <li><strong>Record and route</strong>  -  write the result and hand control to the next allowed step.</li>
   </ol>
   <p>
-    A transition only happens when the previous step produced the required result — an approved plan, a reviewed
+    A transition only happens when the previous step produced the required result  -  an approved plan, a reviewed
     pull request, a successful merge. The Controller advances each piece of in-flight work by exactly one step on every
     beat of its orchestration loop.
   </p>
@@ -51,7 +51,7 @@ const ROUTES = [
   </p>
   <ul>
     <li><strong>FORGE can't build without an approved plan.</strong> A plan awaiting approval stays with the builder until SENTINEL approves it.</li>
-    <li><strong>SENTINEL only reviews what's ready</strong> — an approved-plan check or a pull-request review — and records a verdict.</li>
+    <li><strong>SENTINEL only reviews what's ready</strong>  -  an approved-plan check or a pull-request review  -  and records a verdict.</li>
     <li><strong>VESSEL won't merge an unapproved pull request.</strong> Merge is only offered to VESSEL after a review approves it.</li>
     <li><strong>LORE only documents merged work.</strong> Documentation is triggered by a successful merge.</li>
   </ul>
@@ -59,14 +59,14 @@ const ROUTES = [
   <h2>When a path can't continue</h2>
   <p>
     If an unexpected path is ever taken, the Controller treats it as an anomaly rather than silently ignoring it. And
-    if work can't advance because judgment is needed — an unclear requirement, a security concern, or
-    verification that keeps failing — the work is parked and escalated to a human instead of being routed onward
+    if work can't advance because judgment is needed  -  an unclear requirement, a security concern, or
+    verification that keeps failing  -  the work is parked and escalated to a human instead of being routed onward
     on a guess. The review posture stays strict: when in doubt, don't approve.
   </p>
 
   <Callout type="info" title="Routing is state, not conversation">
     Work is routed by writing results to the shared record of truth, not by sending ad-hoc messages. The Controller
-    re-reads that state on every beat, so a step's result is picked up and handed to the next role automatically —
+    re-reads that state on every beat, so a step's result is picked up and handed to the next role automatically  -
     and the routing can be steered live, without restarting.
   </Callout>
 </DocsLayout>

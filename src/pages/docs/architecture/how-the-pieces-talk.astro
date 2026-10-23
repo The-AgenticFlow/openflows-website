@@ -1,76 +1,24 @@
 ---
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { Callout } from '@/molecules/DocComponents/DocComponents';
+import { DocsTable } from '@/molecules/DocComponents/DocComponents';
+
+const CHANNELS = [
+  ['Nexus → Manager', 'Workspace runtime access token', 'Worker requests, status, heartbeats, and GitHub credential requests'],
+  ['Manager → Coder', 'Platform operator credential', 'Template publication and workspace creation or lifecycle'],
+  ['Runtime → Redis', 'Tenant Redis ACL credential', 'Ticket state, worker slots, heartbeats, A2A evidence'],
+  ['Coder → Manager → Nexus', 'Global then tenant hook JWT', 'Coder lifecycle events and policy responses'],
+  ['Forge / Sentinel → Nexus', 'Ticket pair token', 'A2A verification tasks, progress, and results'],
+  ['Runtime → GitHub', 'Brokered installation token', 'Repository API and Git operations'],
+];
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'How the Pieces Talk' }]}>
-  <h1>How the Pieces Talk</h1>
-  <p>
-    A distributed team only works if its members can stay in sync. OpenFlows uses
-    <strong>three distinct communication channels</strong>, each solving a different problem. Understanding them
-    clears up a lot of the "magic."
-  </p>
-
-  <h2>Channel A — The Controller talks to Coder</h2>
-  <p>
-    The Controller provisions workspaces and creates agent chat sessions over Coder's API. This is how the brain:
-  </p>
-  <ul>
-    <li>Hands a workspace to an agent ("this is your task"),</li>
-    <li>Starts and supervises the agent's session, and</li>
-    <li>Reads back progress.</li>
-  </ul>
-  <p>
-    This is the <em>command-and-control</em> channel: the brain assigns and supervises, Coder runs the machinery.
-  </p>
-
-  <h2>Channel B — The coordination store (durable state)</h2>
-  <p>
-    The <strong>coordination store</strong> is where durable facts live — tickets, worker availability, phases,
-    approvals, reviews, pull requests, liveness. It is the <strong>single source of truth</strong>.
-  </p>
-  <p>The important rule is about <strong>who may write</strong>:</p>
-  <ul>
-    <li>The <strong>Controller</strong> writes planning, assignment, and fleet state.</li>
-    <li>The <strong>worker command surface</strong> is the only way an agent inside a workspace records its own phase, approvals, reviews, and heartbeats.</li>
-  </ul>
-  <p>
-    Nothing else writes. Writes are validated so that bad or out-of-order data is rejected rather than accepted. This
-    is what lets every agent trust the store: there is exactly one consistent record, and only the right actors can
-    change it.
-  </p>
-
-  <h2>Channel C — The live task relay (evidence exchange)</h2>
-  <p>
-    The store is great at expressing <em>facts</em>, but some work is a <em>live task</em> — most importantly,
-    <strong>delegated verification</strong>: when SENTINEL (the reviewer) needs evidence that FORGE's tests pass,
-    without touching FORGE's filesystem.
-  </p>
-
-  <figure class="docFigure">
-    <img src="/images/a2a-relay.png" alt="Diagram of the A2A live task relay: the reviewer's workspace dials out to the relay in the control plane, which checks an allowlist and routes a safe command to the builder's workspace, then mirrors the evidence back into the coordination store." width="1536" height="1024" loading="lazy" />
-    <figcaption>The A2A relay exchanges live evidence between workspaces and mirrors it back into the store.</figcaption>
-  </figure>
-
-  <p>For that, OpenFlows uses a small internal <strong>relay</strong> inside the orchestrator workspace:</p>
-  <ol>
-    <li>SENTINEL submits a request: <em>"run this safe, allowlisted command; here's the timeout and what we expect."</em></li>
-    <li>The relay checks the command against an <strong>allowlist</strong> and routes it to FORGE's workspace.</li>
-    <li>FORGE runs it in isolation and sends the result back.</li>
-    <li>The relay <strong>mirrors the result into the coordination store</strong> before acknowledging — so the evidence becomes a durable fact that can gate an approval.</li>
-  </ol>
-  <p>
-    Coder workspaces are good at calling out and bad at being called <em>in</em>, so both sides dial <em>out</em> to
-    the relay. This makes the orchestrator the enforcement chokepoint: it knows who's allowed, what commands are
-    safe, and it keeps the audit trail.
-  </p>
-
-  <h2>Keeping "facts" and "tasks" straight</h2>
-  <p>The design rule that ties the channels together:</p>
-
-  <Callout type="info" title="Facts live in the store; the relay gathers evidence">
-    The coordination store is the single source of truth for durable facts. The live relay is used only for
-    in-flight task exchange — and every result of that exchange is written back into the store before the task
-    is treated as complete. The store stays authoritative; the relay is just a way to gather evidence to store.
-  </Callout>
+  <h1>How the pieces talk</h1>
+  <p>Manager owns privileged control-plane decisions. Nexus owns the tenant's agent workflow. Coder runs workspaces, and Redis stores tenant coordination state. The channel determines the credential and authority.</p>
+  <DocsTable headers={['Channel', 'Authentication', 'What travels over it']} rows={CHANNELS} />
+  <h2 id="runtime">Runtime API</h2>
+  <p>Each workspace registers using a one-time bootstrap and receives an access/refresh pair. Manager derives its tenant, role, and repository from the workspace record. Nexus asks Manager to create workers; Manager records a durable operation and talks to Coder.</p>
+  <h2 id="events">Hooks and A2A</h2>
+  <p>Coder lifecycle events enter through Manager, which authenticates and routes them to the tenant's Nexus hook server. Agent CLI hooks run locally inside worker workspaces. Sentinel and Forge exchange verification tasks through Nexus's A2A relay, which persists evidence to tenant Redis.</p>
+  <p>Read <a href="/docs/architecture/manager-runtime">Manager Runtime</a>, <a href="/docs/architecture/credentials">Credentials and Trust</a>, and <a href="/docs/architecture/hooks-and-a2a">Hooks and A2A</a> for the full request flows.</p>
 </DocsLayout>

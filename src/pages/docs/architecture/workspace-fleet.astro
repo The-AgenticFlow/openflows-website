@@ -4,88 +4,15 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
 ---
 
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Architecture', href: '/docs/architecture' }, { label: 'The Workspace Fleet' }]}>
-  <h1>The Workspace Fleet</h1>
-  <p>
-    The <strong>workspace fleet</strong> is the collection of Coder workspaces OpenFlows provisions and supervises to
-    actually get work done. It comes in two flavors: one long-lived orchestrator workspace and many short-lived worker
-    workspaces.
-  </p>
-
-  <h2>The two kinds of workspace</h2>
-  <p>
-    <strong>The NEXUS (orchestrator) workspace</strong> is long-lived and trusted. It runs the Controller brain. It
-    is the only workspace that legitimately holds credentials and talks to Coder&rsquo;s API. Think of it as
-    <strong>headquarters</strong>.
-  </p>
-  <p>
-    <strong>Worker workspaces</strong> are short-lived and disposable &mdash; one per agent per ticket. They are created
-    when work is assigned and <strong>torn down</strong> when it completes. Think of them as <strong>temporary job
-    sites</strong>.
-  </p>
-
-  <h2>Inside a worker workspace</h2>
-  <p>A worker workspace contains only what its one agent needs to do its one job:</p>
-
-  <figure class="docFigure">
-    <img src="/images/worker-workspace.png" alt="Diagram of a worker workspace: a thin, isolated, disposable Coder workspace holding one agent, one ticket, the repository checkout, and the role's skills — with no LLM keys and no raw credentials inside." width="1536" height="1024" loading="lazy" />
-    <figcaption>A worker workspace is thin, isolated, and disposable — one agent, one ticket, no secrets.</figcaption>
-  </figure>
-
-  <ul>
-    <li>The coordination command surface (how the agent reports progress and reads its task).</li>
-    <li>The repository checkout, on the branch the agent is working on.</li>
-    <li>The role&rsquo;s skills, standards, and persona.</li>
-  </ul>
-  <p>And deliberately nothing more:</p>
-  <ul>
-    <li><strong>No LLM API keys</strong> &mdash; all AI calls are routed through the central gateway in the control plane.</li>
-    <li><strong>No raw repository credentials</strong> &mdash; git identity comes from a scoped OAuth link.</li>
-    <li><strong>No agent framework</strong> &mdash; the intelligence runs centrally; the workspace hosts the surface.</li>
-  </ul>
-
-  <h2>Lifecycle of a worker workspace</h2>
-  <ol>
-    <li><strong>Provision.</strong> The Controller creates the workspace from the role&rsquo;s template.</li>
-    <li><strong>Boot.</strong> The workspace installs its coordination tooling, gets the repository, and starts a liveness beacon.</li>
-    <li><strong>Bind task.</strong> The Controller attaches the specific ticket and role to the workspace.</li>
-    <li><strong>Work.</strong> The agent does its job, reporting through the coordination surface.</li>
-    <li><strong>Record.</strong> Durable results are written to the coordination store.</li>
-    <li><strong>Tear down.</strong> On merge, the workspace is deleted and its liveness beacon removed.</li>
-  </ol>
-
-  <h2>Why workspaces are isolated</h2>
-  <p>
-    The isolation between workspaces is what makes the system&rsquo;s central promise &mdash; trustworthy adversarial
-    review &mdash; hold:
-  </p>
-  <ul>
-    <li><strong>FORGE and SENTINEL never share a filesystem.</strong> The reviewer cannot reach into the builder&rsquo;s tree.</li>
-    <li>The reviewer only interacts with the builder&rsquo;s code by <strong>requesting a safe command</strong> and reading the returned evidence.</li>
-    <li>Each tenant&rsquo;s workspaces are invisible to other tenants&rsquo;.</li>
-  </ul>
-
-  <h2>Liveness: knowing who&rsquo;s alive</h2>
-  <p>
-    Each worker keeps a <strong>liveness beacon</strong>: a small, self-expiring record refreshed on a cadence. If the
-    beacon stops updating, it expires on its own, which tells the Controller "this workspace has gone silent." No
-    external watcher needs to poke every container.
-  </p>
-  <p>
-    When a workspace goes silent, the Controller declares it stale and <strong>recovers</strong> it &mdash; tearing it
-    down, re-provisioning a replacement, and re-assigning the ticket &mdash; up to a bounded number of attempts before
-    escalating to a human.
-  </p>
-
-  <h2>The overall security posture</h2>
-  <p>Taken together, the workspace fleet embodies the security-by-design idea:</p>
-  <ul>
-    <li>Trusted, credential-holding component: <strong>one</strong> long-lived orchestrator workspace.</li>
-    <li>Everything else: disposable, keyless, credential-free, tightly firewalled.</li>
-    <li>No shared files, no shared keys, no anonymous identities.</li>
-  </ul>
-
-  <Callout type="info" title="Why it&rsquo;s governed: the fleet makes safety structural">
-    If you understand this fleet, you understand why OpenFlows can let AI agents run end-to-end and still be called
-    "governed."
-  </Callout>
+  <h1>The workspace fleet</h1>
+  <p>Each tenant has a Nexus controller workspace and may have Forge, Sentinel, Vessel, and Lore worker workspaces. Manager records their owner, role, tenant, desired state, Coder identity, and pinned template release. Coder builds and runs them.</p>
+  <h2 id="nexus">Nexus</h2>
+  <p>Nexus is long-running. It coordinates tickets and hosts the A2A relay and tenant lifecycle hook server. It calls Manager to request or supervise workers, and it accesses its repository through the GitHub credential broker.</p>
+  <h2 id="workers">Workers</h2>
+  <p>Workers are role-scoped and can be removed after their assignment. They have separate filesystems and use a ticket pair token when participating in A2A verification. Their startup uses a mounted runtime bundle and a brokered, short-lived GitHub installation token for repository access.</p>
+  <h2 id="credentials">Credential boundary</h2>
+  <p>A workspace can read its own tenant Redis credential, runtime session, and temporary GitHub token. It cannot read Manager's GitHub App private key, Coder operator token, or another tenant's Redis credential. Do not treat a running agent workspace as a credential-free sandbox.</p>
+  <h2 id="liveness">Liveness and cleanup</h2>
+  <p>Workspaces heartbeat to Manager, while agent progress and assignment heartbeats live in tenant Redis. Manager records lifecycle state durably. Nexus uses the coordination signals to detect stale agents and request recovery. Cleanup revokes runtime authority and releases capacity.</p>
+  <Callout type="info" title="Separate controls">Manager controls workspace identity and lifecycle. Nexus controls the tenant's workflow. Coder reports build and agent execution state.</Callout>
 </DocsLayout>

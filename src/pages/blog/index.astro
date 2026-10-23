@@ -42,7 +42,7 @@ const formatDate = (d) => {
 <BaseLayout title="Blog - OpenFlows" description="Latest news, releases, and insights from the OpenFlows team.">
   <section style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;">
     <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem;">Blog</h1>
-    
+
     {featured && (
       <article style="margin-bottom: 3rem; padding: 2rem; background: var(--color-bone); border-radius: var(--radius-lg);">
         <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
@@ -56,7 +56,7 @@ const formatDate = (d) => {
         <a href={getBlogHref(featured)} style="font-weight: 600;">Read more →</a>
       </article>
     )}
-    
+
     <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
       {rest.map((blog) => (
         <article style="padding: 1.5rem; background: var(--color-bone); border-radius: var(--radius-md);">
@@ -68,7 +68,7 @@ const formatDate = (d) => {
         </article>
       ))}
     </div>
-    
+
     {blogs.length === 0 && (
       <p style="text-align: center; color: var(--color-graphite); padding: 3rem;">No blog posts yet.</p>
     )}

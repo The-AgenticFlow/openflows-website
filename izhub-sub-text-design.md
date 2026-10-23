@@ -35,14 +35,14 @@ Based on the IZHUB design system and the provided `.izhub-hero-heading-copy` exa
   line-height: 1.3;
   letter-spacing: 0;
   text-wrap: balance;
-  
+
   /* Color */
   color: var(--color-ink);
   opacity: 0.7; /* Subtle contrast for secondary text */
-  
+
   /* Animation */
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
-  
+
   /* Spacing */
   margin-bottom: var(--space-4);
 }
@@ -73,14 +73,14 @@ Based on the IZHUB design system and the provided `.izhub-hero-heading-copy` exa
   line-height: 1.4;
   letter-spacing: 0;
   text-wrap: balance;
-  
+
   /* Different color for hierarchy */
   color: var(--color-graphite);
   opacity: 1; /* Full opacity for better readability */
-  
+
   /* Animation */
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
-  
+
   /* Spacing */
   margin-bottom: var(--space-3);
 }
@@ -95,14 +95,14 @@ Based on the IZHUB design system and the provided `.izhub-hero-heading-copy` exa
   font-size: var(--font-size-base); /* 17px */
   line-height: 1.5;
   letter-spacing: 0;
-  
+
   /* Muted appearance */
   color: var(--color-graphite);
   opacity: 0.5;
-  
+
   /* Animation */
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
-  
+
   /* Smaller spacing */
   margin-bottom: var(--space-2);
 }
@@ -117,14 +117,14 @@ Based on the IZHUB design system and the provided `.izhub-hero-heading-copy` exa
   font-size: var(--font-size-sm); /* 15px */
   line-height: 1.428;
   letter-spacing: 0;
-  
+
   /* Color */
   color: var(--color-graphite);
   opacity: 0.7;
-  
+
   /* Animation */
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
-  
+
   /* Minimal spacing */
   margin-bottom: var(--space-2);
 }
@@ -156,7 +156,7 @@ Current `.sub` class in `Hero.module.css` needs enhancement:
 .sub {
   /* Keep all existing properties */
   margin-bottom: var(--space-6); /* Add proper spacing */
-  
+
   /* Ensure it matches the global class */
   composes: izhub-sub-text; /* If CSS modules support composition */
 }
@@ -210,7 +210,7 @@ Keep component classes but extend global styles:
   font-weight: 400;
   /* ... etc ... */
   animation: 0.5s cubic-bezier(0.191, 0.703, 0.704, 0.952) 60ms both izhub-hero-fade-slide-down;
-  
+
   /* Component-specific additions */
   max-width: 760px;
 }

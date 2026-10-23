@@ -10,7 +10,7 @@ const CHANNEL_ROWS = [
 
 const GUARANTEE_ROWS = [
   ['Actionable', 'Includes enough context and links to jump in and decide.'],
-  ['Rate-limited', 'At most one notification per channel per ticket within a window — no floods.'],
+  ['Rate-limited', 'At most one notification per channel per ticket within a window  -  no floods.'],
   ['Safe', 'Fire-and-forget: a failing channel is logged and never breaks the orchestration loop.'],
   ['Not the only surface', 'Escalations always also appear in the control panel, so nothing is lost.'],
 ];
@@ -35,7 +35,7 @@ const GUARANTEE_ROWS = [
   </p>
   <ul>
     <li>The <strong>ticket</strong> involved.</li>
-    <li>The <strong>reason</strong> it needs a human — security, ambiguity, architecture, merge block, or exhausted retries.</li>
+    <li>The <strong>reason</strong> it needs a human  -  security, ambiguity, architecture, merge block, or exhausted retries.</li>
     <li>The <strong>role</strong> that flagged it.</li>
     <li><strong>Direct links</strong> to the workspace and the GitHub pull request, so you can act immediately.</li>
   </ul>
@@ -45,15 +45,15 @@ const GUARANTEE_ROWS = [
 
   <h2>What they are for</h2>
   <p>
-    Notifications exist to surface <strong>human escalations</strong> promptly. They are not a general event stream —
+    Notifications exist to surface <strong>human escalations</strong> promptly. They are not a general event stream  -
     the team’s routine progress is visible in the control panel, and you’re only pinged when the team needs your
     judgment.
   </p>
 
   <h2>Related</h2>
   <ul>
-    <li><a href="/docs/guides/operations">Wiring Notifications</a> — how to set them up.</li>
-    <li><a href="/docs/concepts/human-escalation">Handling Human Escalations</a> — what to do when one arrives.</li>
-    <li><a href="/docs/reference/limits-and-defaults">Limits &amp; Defaults</a> — the notification limits behind these guarantees.</li>
+    <li><a href="/docs/guides/operations">Wiring Notifications</a>  -  how to set them up.</li>
+    <li><a href="/docs/concepts/human-escalation">Handling Human Escalations</a>  -  what to do when one arrives.</li>
+    <li><a href="/docs/reference/limits-and-defaults">Limits &amp; Defaults</a>  -  the notification limits behind these guarantees.</li>
   </ul>
 </DocsLayout>

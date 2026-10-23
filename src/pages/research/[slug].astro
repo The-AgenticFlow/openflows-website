@@ -30,7 +30,7 @@ const formatDate = (d) => {
 >
   <article class="research-page" style="max-width: 900px; margin: 0 auto; padding: 3rem 2rem;">
     <a href="/research" style="font-size: 0.875rem; color: var(--color-graphite); display: inline-block; margin-bottom: 2rem;">← Back to Research</a>
-    
+
     <header class="research-header" style="margin-bottom: 3rem;">
       <div style="display: flex; gap: 0.75rem; margin-bottom: 1rem; font-size: 0.875rem; color: var(--color-graphite); flex-wrap: wrap; justify-content: center;">
         <span style="text-transform: uppercase; letter-spacing: 0.05em; font-weight: 600;">{item.data.category}</span>
@@ -39,7 +39,7 @@ const formatDate = (d) => {
         <span>{formatDate(item.data.publish_date)}</span>
       </div>
       <h1 style="font-size: 2.5rem; font-weight: 700; line-height: 1.2; margin-bottom: 1.5rem;">{item.data.title}</h1>
-      
+
       {item.data.authors && item.data.authors.length > 0 && (
         <div style="margin-bottom: 1.5rem;">
           {item.data.authors.map((author, i) => (
@@ -50,7 +50,7 @@ const formatDate = (d) => {
           ))}
         </div>
       )}
-      
+
       {item.data.tags && item.data.tags.length > 0 && (
         <div style="display: flex; gap: 0.5rem; flex-wrap: wrap; margin-bottom: 1.5rem; justify-content: center;">
           {item.data.tags.map((tag) => (
@@ -58,7 +58,7 @@ const formatDate = (d) => {
           ))}
         </div>
       )}
-      
+
       {item.data.pdf_url && (
         <a href={item.data.pdf_url} target="_blank" rel="noopener noreferrer" style="display: inline-block; padding: 0.75rem 1.5rem; background: var(--color-aubergine); color: white; border-radius: var(--radius-md); font-weight: 600; margin-bottom: 2rem;">View PDF</a>
       )}

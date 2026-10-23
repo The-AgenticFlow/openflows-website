@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import { DOCS_READING_PATH } from '@/data/docsReadingPath';
 
 interface Props {
   breadcrumbs?: Array<{ label: string; href?: string }>;
@@ -58,6 +59,10 @@ const SIDEBAR: SidebarSection[] = [
     title: 'Architecture',
     links: [
       { label: 'Overview', href: '/docs/architecture' },
+      { label: 'Components and Interactions', href: '/docs/architecture/components-and-interactions' },
+      { label: 'Manager Runtime', href: '/docs/architecture/manager-runtime' },
+      { label: 'Credentials and Trust', href: '/docs/architecture/credentials' },
+      { label: 'Hooks and A2A', href: '/docs/architecture/hooks-and-a2a' },
       { label: 'Big Picture', href: '/docs/architecture/big-picture' },
       { label: 'The Controller', href: '/docs/architecture/controller' },
       { label: 'The Workspace Fleet', href: '/docs/architecture/workspace-fleet' },
@@ -114,11 +119,26 @@ const SIDEBAR: SidebarSection[] = [
 ];
 
 const currentPath = Astro.url.pathname;
+const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath.replace(/\/$/, ''));
 ---
 
 <BaseLayout title="Documentation - OpenFlows" description="Everything you need to install, configure, and operate the OpenFlows orchestration layer.">
+  <button class="docsMenuButton" type="button" aria-label="Open documentation navigation" aria-controls="docs-navigation" aria-expanded="false">☰ <span>Contents</span></button>
   {/* Sidebar  -  fixed position, always visible */}
-  <aside class="sidebar">
+  <aside class="sidebar" id="docs-navigation" aria-label="Documentation navigation">
+    <a class="docsHomeLink" href="/docs">Documentation home</a>
+    <label class="docsFilterLabel" for="docs-filter">Find a page</label>
+    <input id="docs-filter" class="docsFilter" type="search" placeholder="Filter navigation..." autocomplete="off" />
+    <div class="docsReadingNav">
+      <p class="sidebarTitle">Read in order</p>
+      <ol>
+        {DOCS_READING_PATH.map(({ label, href }, index) => (
+          <li><a href={href} class:list={['sidebarLink', { active: pathIndex === index }]}><span>{String(index + 1).padStart(2, '0')}</span>{label}</a></li>
+        ))}
+      </ol>
+    </div>
+    <details class="docsBrowse" open={pathIndex === -1}>
+      <summary>Browse all topics</summary>
     {SIDEBAR.map(({ title, links }) => (
       <div class="sidebarSection">
         <p class="sidebarTitle">{title}</p>
@@ -163,10 +183,11 @@ const currentPath = Astro.url.pathname;
         </ul>
       </div>
     ))}
+    </details>
   </aside>
 
   {/* Main content  -  only this scrolls */}
-  <main class="content">
+  <main class:list={['content', { docsHomeContent: currentPath === '/docs' || currentPath === '/docs/' }]}>
     <div class="contentInner">
       {breadcrumbs && (
         <nav class="breadcrumbs" aria-label="Breadcrumb">
@@ -180,8 +201,23 @@ const currentPath = Astro.url.pathname;
         </nav>
       )}
       <slot />
+      {pathIndex >= 0 && (
+        <nav class="docsPageSequence" aria-label="Continue reading">
+          <p>Read in order · {pathIndex + 1} of {DOCS_READING_PATH.length}</p>
+          <div>
+            {pathIndex > 0 && <a href={DOCS_READING_PATH[pathIndex - 1].href}><span>Previous</span><strong>{DOCS_READING_PATH[pathIndex - 1].label}</strong></a>}
+            {pathIndex < DOCS_READING_PATH.length - 1 && <a href={DOCS_READING_PATH[pathIndex + 1].href}><span>Next</span><strong>{DOCS_READING_PATH[pathIndex + 1].label}</strong></a>}
+          </div>
+        </nav>
+      )}
     </div>
   </main>
+  {currentPath !== '/docs' && currentPath !== '/docs/' && (
+    <aside class="docsToc" aria-label="On this page">
+      <p class="docsTocTitle">On this page</p>
+      <nav id="docs-page-toc"></nav>
+    </aside>
+  )}
 </BaseLayout>
 
 <style is:global>
@@ -197,7 +233,7 @@ const currentPath = Astro.url.pathname;
     position: fixed;
     top: var(--nav-height);
     left: 0;
-    width: 240px;
+    width: 256px;
     height: calc(100vh - var(--nav-height));
     height: calc(100dvh - var(--nav-height));
     padding: 2rem 1.5rem 2rem 2rem;
@@ -208,6 +244,25 @@ const currentPath = Astro.url.pathname;
     scrollbar-width: thin;
     scrollbar-color: var(--color-driftwood) transparent;
   }
+
+  .docsHomeLink { display:block; color:var(--color-aubergine); font-weight:700; text-decoration:none; margin-bottom:1.25rem; }
+  .docsFilterLabel { display:block; color:var(--color-graphite); font-size:.75rem; font-weight:700; margin-bottom:.4rem; }
+  .docsFilter { width:100%; padding:.65rem .75rem; margin-bottom:1.5rem; border:1px solid var(--color-driftwood); border-radius:var(--radius-md); background:var(--color-bone); color:var(--color-ink); font:inherit; font-size:.875rem; }
+  .docsFilter:focus-visible { outline:2px solid var(--color-aubergine); outline-offset:2px; }
+  .docsReadingNav { padding:1rem 0; margin:0 0 1.5rem; border-top:1px solid var(--color-driftwood); border-bottom:1px solid var(--color-driftwood); }
+  .docsReadingNav ol { list-style:none; padding:0; margin:0; }
+  .docsReadingNav a { display:flex; gap:.6rem; align-items:baseline; }
+  .docsReadingNav a span { color:var(--color-graphite); font-size:.75rem; font-variant-numeric:tabular-nums; }
+  .docsReadingNav a.active span { color:inherit; }
+  .docsBrowse > summary { margin:0 0 1rem; color:var(--color-graphite); font-size:.75rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; cursor:pointer; }
+  .docsPageSequence { margin-top:4rem; padding-top:1.5rem; border-top:1px solid var(--color-driftwood); }
+  .docsPageSequence > p { margin:0 0 1rem; color:var(--color-graphite); font-size:.8rem; font-weight:700; text-transform:uppercase; letter-spacing:.04em; }
+  .docsPageSequence > div { display:flex; gap:1rem; justify-content:space-between; }
+  .docsPageSequence a { display:flex; flex:1; flex-direction:column; gap:.3rem; padding:1rem; border:1px solid var(--color-driftwood); border-radius:var(--radius-md); text-decoration:none; background:var(--color-bone); }
+  .docsPageSequence a:hover { border-color:var(--color-aubergine); }
+  .docsPageSequence a span { color:var(--color-graphite); font-size:.75rem; }
+  .docsPageSequence a strong { color:var(--color-ink); font-size:.95rem; }
+  .sidebarSection[hidden], .sidebarNav li[hidden] { display:none; }
 
   .sidebar::-webkit-scrollbar {
     width: 4px;
@@ -258,9 +313,9 @@ const currentPath = Astro.url.pathname;
 
   /* Content - offset by sidebar width, independently scrollable */
   .content {
-    margin-left: 240px;
+    margin-left: 256px;
     padding: calc(var(--nav-height) + 2rem) 2rem 2rem;
-    max-width: calc(100vw - 240px);
+    max-width: calc(100vw - 256px);
     height: 100vh;
     height: 100dvh;
     overflow-y: auto;
@@ -281,6 +336,20 @@ const currentPath = Astro.url.pathname;
     max-width: 800px;
     margin-inline: auto;
   }
+
+  .content :is(h2, h3, h4) { scroll-margin-top:1.5rem; }
+  .docsToc { position:fixed; top:var(--nav-height); right:0; width:220px; height:calc(100dvh - var(--nav-height)); padding:2rem 1.5rem; overflow-y:auto; border-left:1px solid var(--color-driftwood); background:var(--color-parchment-canvas); }
+  .docsTocTitle { margin:0 0 .9rem; color:var(--color-graphite); font-size:.75rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
+  .docsToc a { display:block; padding:.4rem .65rem; border-left:2px solid transparent; color:var(--color-graphite); font-size:.8rem; line-height:1.4; text-decoration:none; }
+  .docsToc a:hover, .docsToc a.active { color:var(--color-aubergine); border-left-color:var(--color-aubergine); }
+  .docsToc a.level-three { padding-left:1.25rem; }
+  .docsMenuButton { display:none; }
+
+  @media (min-width: 1201px) {
+    .content { max-width:calc(100vw - 476px); margin-right:220px; }
+    .content.docsHomeContent { max-width:calc(100vw - 256px); margin-right:0; }
+  }
+  @media (max-width: 1200px) { .docsToc { display:none; } }
 
   .breadcrumbs {
     display: flex;
@@ -311,6 +380,7 @@ const currentPath = Astro.url.pathname;
 
   /* Mobile: sidebar becomes a drawer */
   @media (max-width: 1024px) {
+    .docsMenuButton { display:flex; align-items:center; gap:.5rem; position:fixed; top:calc(var(--nav-height) + .75rem); left:1rem; z-index:50; padding:.55rem .8rem; border:1px solid var(--color-driftwood); border-radius:var(--radius-md); background:var(--color-parchment-canvas); color:var(--color-ink); box-shadow:var(--shadow-card); font:inherit; font-size:.85rem; cursor:pointer; }
     .sidebar {
       position: fixed;
       top: var(--nav-height);
@@ -334,7 +404,7 @@ const currentPath = Astro.url.pathname;
       max-width: 100vw;
       height: 100vh;
       height: 100dvh;
-      padding: calc(var(--nav-height) + 2rem) 1rem 2rem;
+      padding: calc(var(--nav-height) + 4.5rem) 1rem 2rem;
     }
 
     html.body-scroll-lock, body.body-scroll-lock {
@@ -418,25 +488,61 @@ const currentPath = Astro.url.pathname;
     });
   };
 
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', indexHeadingLinks);
-  } else {
+  const initializeDocs = () => {
     indexHeadingLinks();
-  }
+    const toc = document.querySelector('#docs-page-toc');
+    const headings = [...document.querySelectorAll('.content h2, .content h3')];
+    if (toc) {
+      for (const heading of headings) {
+        const link = document.createElement('a');
+        link.href = `#${heading.id}`;
+        link.textContent = heading.childNodes[0]?.textContent?.trim() || heading.textContent?.trim() || 'Section';
+        if (heading.tagName === 'H3') link.classList.add('level-three');
+        toc.appendChild(link);
+      }
+      if (!headings.length) toc.closest('.docsToc')?.setAttribute('hidden', '');
+    }
+    const content = document.querySelector('.content');
+    const updateActive = () => {
+      const current = [...headings].reverse().find(heading => heading.getBoundingClientRect().top <= 180);
+      toc?.querySelectorAll('a').forEach(link => link.classList.toggle('active', current && link.getAttribute('href') === `#${current.id}`));
+    };
+    content?.addEventListener('scroll', updateActive, { passive: true });
+    updateActive();
+  };
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initializeDocs);
+  else initializeDocs();
 
   // Mobile sidebar toggle
   const sidebar = document.querySelector('.sidebar');
-  const content = document.querySelector('.content');
-  
+  const menuBtn = document.querySelector('.docsMenuButton');
+  const filter = document.querySelector('#docs-filter');
+  filter?.addEventListener('input', () => {
+    const query = filter.value.trim().toLowerCase();
+    if (query) sidebar?.querySelector('.docsBrowse')?.setAttribute('open', '');
+    sidebar?.querySelectorAll('.docsReadingNav li').forEach(item => {
+      item.hidden = !item.textContent?.toLowerCase().includes(query);
+    });
+    sidebar?.querySelectorAll('.sidebarSection').forEach(section => {
+      let visible = 0;
+      section.querySelectorAll('.sidebarNav li').forEach(item => {
+        const matches = item.textContent?.toLowerCase().includes(query);
+        item.hidden = !matches;
+        if (matches) visible++;
+      });
+      section.hidden = visible === 0;
+    });
+  });
+
   // Collapsible sidebar: toggle children visibility
   document.querySelectorAll('.sidebarParent').forEach(button => {
     const parentLi = button.closest('li');
     const childrenList = parentLi?.querySelector('.sidebarChildren');
-    
+
     if (childrenList) {
       button.addEventListener('click', () => {
         const isExpanded = button.getAttribute('data-expanded') === 'true';
-        
+
         if (isExpanded) {
           button.setAttribute('data-expanded', 'false');
           button.setAttribute('aria-expanded', 'false');
@@ -449,41 +555,14 @@ const currentPath = Astro.url.pathname;
       });
     }
   });
-  
-  // Create mobile menu button
-  if (window.innerWidth <= 1024) {
-    const menuBtn = document.createElement('button');
-    menuBtn.className = 'mobile-menu-btn';
-    menuBtn.setAttribute('aria-label', 'Toggle navigation');
-    menuBtn.innerHTML = '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>';
-    
-    menuBtn.style.cssText = `
-      position: fixed;
-      top: calc(var(--nav-height) + 1rem);
-      left: 1rem;
-      z-index: 300;
-      background: var(--color-aubergine);
-      color: white;
-      border: none;
-      border-radius: var(--radius-md);
-      padding: 0.5rem;
-      cursor: pointer;
-      box-shadow: var(--shadow-card);
-    `;
-    
-    menuBtn.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
-      document.body.classList.toggle('body-scroll-lock');
-    });
-    
-    document.body.appendChild(menuBtn);
-    
-    // Close sidebar when clicking a link on mobile
-    sidebar.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => {
-        sidebar.classList.remove('open');
-        document.body.classList.remove('body-scroll-lock');
-      });
-    });
-  }
+
+  menuBtn?.addEventListener('click', () => {
+    const open = sidebar?.classList.toggle('open') ?? false;
+    menuBtn.setAttribute('aria-expanded', String(open));
+    menuBtn.setAttribute('aria-label', open ? 'Close documentation navigation' : 'Open documentation navigation');
+  });
+  sidebar?.querySelectorAll('a').forEach(link => link.addEventListener('click', () => {
+    sidebar.classList.remove('open');
+    menuBtn?.setAttribute('aria-expanded', 'false');
+  }));
 </script>

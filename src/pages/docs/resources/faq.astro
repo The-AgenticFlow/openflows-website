@@ -7,11 +7,9 @@ const FAQ_ITEMS = [
     title: 'What is OpenFlows, and how does it relate to Coder?',
     content: `
       <p>OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
-      production-ready pull requests, running entirely inside your own self-hosted Coder
-      environment. The founding idea: <strong>Coder governs <em>where</em> agents run; OpenFlows
-      governs <em>how</em> they coordinate.</strong> Coder provides the workspaces, identity, and
-      model gateway; OpenFlows provides the planning, review, and merge. Neither replaces the
-      other, and worker workspaces hold no keys or credentials.</p>
+      pull requests. Manager owns organization and tenant state, workspace lifecycle, runtime
+      identity, and credential brokerage. Coder hosts the isolated workspaces where agents run.
+      Nexus coordinates planning, review, and delivery inside a tenant.</p>
     `,
   },
   {
@@ -26,35 +24,35 @@ const FAQ_ITEMS = [
   {
     title: 'Where do AI calls happen?',
     content: `
-      <p>All AI calls happen through the model gateway in the control plane. Worker workspaces
-      contain no LLM keys, no raw repository credentials, and no agent framework — the
-      intelligence they need is served to them from the control plane. This is a core part of the
-      security-by-design model.</p>
+      <p>Model access follows the configured Coder and agent runtime settings. Manager brokers
+      infrastructure credentials; it does not imply that workspaces never handle secrets. A
+      workspace can receive a scoped bootstrap bundle and short-lived GitHub installation token.
+      See the <a href="/docs/architecture/credentials">credential flow</a>.</p>
     `,
   },
   {
     title: 'How does an agent act inside a workspace?',
     content: `
       <p>Each agent runs in its own isolated, disposable workspace provisioned from Coder. It
-      reports progress and coordinates with the team strictly through a small, typed command
-      surface — it never talks directly to the coordination store or the machine plane. That is
-      what keeps the whole system safe and auditable.</p>
+      registers with Manager, uses tenant-scoped runtime credentials, and exchanges task messages
+      with Nexus through the hook and A2A path. Its authority is bounded by tenant, workspace,
+      repository, and purpose.</p>
     `,
   },
   {
     title: 'Can I run OpenFlows on a private repository?',
     content: `
-      <p>Yes. OpenFlows acts on GitHub through a scoped OAuth link for each tenant — a real,
-      attributable identity rather than a shared token. No raw repository credentials ever sit in a
-      worker workspace.</p>
+      <p>Yes, when the GitHub App installation has access to that repository. Manager verifies
+      the repository belongs to the tenant's organization and brokers short-lived, scoped
+      installation tokens. Human GitHub OAuth is used for sign-in, not as the runtime Git token.</p>
     `,
   },
   {
     title: 'Can I run OpenFlows air-gapped or on-premises?',
     content: `
-      <p>Yes. OpenFlows is self-hosted in your own Coder control plane, so it runs in your VPC,
-      on-premises, or fully air-gapped. All AI calls go through your own model gateway, and each
-      step is a recorded, auditable event.</p>
+      <p>You can self-host Manager, PostgreSQL, Redis, and Coder in your infrastructure. The
+      current GitHub integration needs network access to GitHub for OAuth, App installation,
+      webhooks, and API calls, so a fully air-gapped deployment is not supported as described.</p>
     `,
   },
   {
@@ -71,15 +69,15 @@ const FAQ_ITEMS = [
     content: `
       <p>Recovery is built into the system. A central reconciliation loop retries failing work a
       bounded number of times. When retries are exhausted, the ticket is parked and escalated to a
-      human — with a notification and links — rather than failing silently or spinning forever.</p>
+      human  -  with a notification and links  -  rather than failing silently or spinning forever.</p>
     `,
   },
   {
     title: 'How much does OpenFlows cost to run?',
     content: `
       <p>OpenFlows itself is open-source and free to run; the cost is your own model usage through
-      your gateway. You control it by choosing a model suited to each role — for example, a more
-      careful, higher-cost model for the reviewer and a general coding model for the builder — and
+      your gateway. You control it by choosing a model suited to each role  -  for example, a more
+      careful, higher-cost model for the reviewer and a general coding model for the builder  -  and
       tuning from there.</p>
     `,
   },
@@ -94,9 +92,9 @@ const FAQ_ITEMS = [
   {
     title: 'Is my code sent to third parties?',
     content: `
-      <p>Code context is sent only to the model you configure, through your own model gateway in
-      the control plane. If you run fully self-hosted or air-gapped with a local or self-hosted
-      model, nothing leaves your infrastructure.</p>
+      <p>Code is available to the workspace and configured model provider. GitHub also receives
+      repository API and Git traffic. Review the provider, Coder, and GitHub data paths before
+      deploying sensitive repositories.</p>
     `,
   },
   {
@@ -111,25 +109,25 @@ const FAQ_ITEMS = [
     title: 'What happens to workspaces after a task completes?',
     content: `
       <p>Worker workspaces are short-lived and disposable. They are provisioned when work is
-      assigned and torn down when the pull request is merged — no lingering state, no stale
-      credentials, a clean slate every time.</p>
+      assigned and can be torn down when no longer needed. Tokens expire or rotate, but
+      workspace teardown and credential revocation should be verified in operations.</p>
     `,
   },
   {
     title: 'What is the coordination store?',
     content: `
-      <p>The coordination store is the single, durable record of truth for the whole team — every
+      <p>The coordination store is the single, durable record of truth for the whole team  -  every
       ticket, worker, approval, review, and pull request. Only the orchestrator and the worker
       command surface may write to it, and writes are validated. Because the whole team reads one
-      consistent store, no step can be skipped or forged, and the system can restart and pick up
-      exactly where it left off.</p>
+      consistent store, Manager can recover queued work after a process failure. Tenant isolation
+      still depends on correct runtime identity and authorization checks.</p>
     `,
   },
   {
     title: 'How does the system recover from failures?',
     content: `
       <p>A central reconciliation loop re-reads the whole system on a steady cadence, advances
-      every piece of work, and repairs what is broken — with bounded retries. When it hits
+      every piece of work, and repairs what is broken  -  with bounded retries. When it hits
       something that needs a human decision, it stops and escalates to you rather than guessing.</p>
     `,
   },
@@ -137,7 +135,7 @@ const FAQ_ITEMS = [
     title: 'How do I change the configuration or extend a role?',
     content: `
       <p>Add a skill, connect an MCP server, or enable a different model as a configuration-only
-      change through the control panel — no restart or redeploy. Adding a brand-new role is the one
+      change through the control panel  -  no restart or redeploy. Adding a brand-new role is the one
       extension that touches the system&rsquo;s internals. See the Guides and the Agent Registry
       concept page.</p>
     `,
@@ -174,8 +172,8 @@ const FAQ_ITEMS = [
     <ul>
       <li>Coder decides <em>where</em> work runs; OpenFlows decides <em>how</em> agents coordinate.</li>
       <li>Every AI call happens through your own model gateway in the control plane.</li>
-      <li>Worker workspaces contain no LLM keys, no raw repository credentials, and no agent framework.</li>
-      <li>Git identity is a scoped OAuth link — no shared tokens in workspaces.</li>
+      <li>Manager owns long-lived operator and GitHub App secrets; workspaces receive scoped runtime material.</li>
+      <li>GitHub OAuth signs in humans; GitHub App installation tokens authorize runtime repository access.</li>
       <li>Config and extension happen through the control panel, no restart required.</li>
     </ul>
   </Callout>
@@ -197,11 +195,11 @@ const FAQ_ITEMS = [
     header.addEventListener('click', () => {
       const item = header.closest('.accordionItem');
       const isOpen = item.classList.contains('open');
-      
+
       document.querySelectorAll('.accordionItem.open').forEach(openItem => {
         openItem.classList.remove('open');
       });
-      
+
       if (!isOpen) {
         item.classList.add('open');
       }

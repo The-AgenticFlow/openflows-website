@@ -8,23 +8,23 @@ import { DocCards } from '@/molecules/DocComponents/DocComponents';
 
   <p>
     OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed,
-    production-ready pull requests — running entirely inside your own self-hosted Coder
-    environment. This section is where you start, whether you are just exploring or deciding
+    production-ready pull requests using OpenFlows Manager and isolated Coder
+    workspaces. This section is where you start, whether you are just exploring or deciding
     whether it fits your team.
   </p>
 
   <p>
     The reason it exists: writing code is no longer the bottleneck in software teams. Agents can
     produce code faster than any person can review it, so the first-pass reviewer has to be
-    another agent and people have to move <strong>up the chain</strong> — to the architecture and
+    another agent and people have to move <strong>up the chain</strong>  -  to the architecture and
     product decisions only humans can own. OpenFlows automates the repetitive, low-judgment work
     in a single well-defined pipeline, from issue to merged pull request, so humans direct instead
     of babysit.
   </p>
 
   <p>
-    It is engineered as an <strong>enterprise tool</strong> — self-hosted, governed, auditable,
-    and multi-tenant — and it works just as well for a <strong>solo developer</strong> who wants a
+    It is engineered as an <strong>enterprise tool</strong>  -  self-hosted, governed, auditable,
+    and multi-tenant  -  and it works just as well for a <strong>solo developer</strong> who wants a
     personal AI team running their backlog. Whether you are one person or a company with many
     teams, humans stay at the architecture and product level while the agents coordinate the
     development.
@@ -34,16 +34,15 @@ import { DocCards } from '@/molecules/DocComponents/DocComponents';
     The founding idea runs through everything you will read:
     <strong>Coder governs <em>where</em> agents run; OpenFlows governs <em>how</em> they
     coordinate.</strong> Coder provides the governed, disposable workspaces and the model
-    gateway. OpenFlows provides the team, the planning gate, adversarial review, self-healing,
-    and merges. The guardrails that shape the product are constant: plan before code, when in
-    doubt don't approve, bounded recovery then human escalation, and no secrets in worker
-    workspaces.
+    gateway. Manager governs user and runtime identity, repository access, and provisioning;
+    Nexus coordinates the team, planning gate, review, recovery, and merges. The guardrails
+    are plan before code, evidence before approval, and bounded recovery with human escalation.
   </p>
 
   <DocCards cards={[
     { icon: '🧭', title: 'What is OpenFlows', desc: 'The core idea, whom it is for, and a quick tour of the team.', href: '/docs/introduction/what-is-openflows' },
     { icon: '🔁', title: 'How OpenFlows works', desc: 'The end-to-end flow from issue to merged pull request, in plain language.', href: '/docs/introduction/how-it-works' },
-    { icon: '🎯', title: 'Use cases', desc: 'The situations where OpenFlows shines — and a few where it is not the fit.', href: '/docs/introduction/use-cases' },
+    { icon: '🎯', title: 'Use cases', desc: 'The situations where OpenFlows shines  -  and a few where it is not the fit.', href: '/docs/introduction/use-cases' },
     { icon: '⚖️', title: 'How OpenFlows compares', desc: 'OpenFlows vs. chat assistants, hosted agents, bare orchestrators, and Coder alone.', href: '/docs/introduction/how-openflows-compares' },
   ]} />
 

@@ -33,7 +33,7 @@ slack: "@forge"
 ---
 ```
 
-The `cli` field controls which backend runs the agent: `claude`, `codex`, or `auto` (defer to registry default). The persona section that follows is the agent's character — the instructions, constraints, and behavioral guidelines injected into every session.
+The `cli` field controls which backend runs the agent: `claude`, `codex`, or `auto` (defer to registry default). The persona section that follows is the agent's character  -  the instructions, constraints, and behavioral guidelines injected into every session.
 
 ### 2. Team Registry (`orchestration/agent/registry.json`)
 
@@ -75,7 +75,7 @@ Hooks are shell scripts executed at specific lifecycle events. They are per-agen
 | Hook | When Fired | Purpose |
 |------|------------|---------|
 | `session_start` | Agent session begins | Initialize context, show directory structure |
-| `pre_bash_guard` | Before dangerous bash | Security gate — prevent destructive commands |
+| `pre_bash_guard` | Before dangerous bash | Security gate  -  prevent destructive commands |
 | `pre_write_check` | Before file write | Ownership/locking validation |
 | `post_write_lint` | After file write | Lint/format enforcement |
 | `pre_compact_handoff` | Before context reset | Write `HANDOFF.md` continuation document |
@@ -152,7 +152,7 @@ backends.insert(CliBackend::Codex, BackendConfig::codex(...));
 // backends.insert(CliBackend::Opencode, BackendConfig::opencode(...));
 ```
 
-The `Provisioner` (`crates/pair-harness/src/provision.rs`) deploys all configuration files into each agent's working directory before spawning. It generates settings, MCP configs, symlinks skills, installs hooks, and produces permission profiles — all driven by `BackendConfig` paths.
+The `Provisioner` (`crates/pair-harness/src/provision.rs`) deploys all configuration files into each agent's working directory before spawning. It generates settings, MCP configs, symlinks skills, installs hooks, and produces permission profiles  -  all driven by `BackendConfig` paths.
 
 The `ProcessManager` spawns agents by:
 
@@ -167,7 +167,7 @@ The `ProcessManager` spawns agents by:
 
 ## Two Independent Extension Paths
 
-OpenFlows supports two fundamentally different ways to extend the system. They are **independent** — you can do one without the other:
+OpenFlows supports two fundamentally different ways to extend the system. They are **independent**  -  you can do one without the other:
 
 | Path | What Changes | What Stays the Same |
 |------|-------------|---------------------|
@@ -178,7 +178,7 @@ OpenFlows supports two fundamentally different ways to extend the system. They a
 
 ## Path A: Adding a New CLI Backend (No New Agents)
 
-This path lets you make your existing agents (nexus, forge, sentinel, vessel, lore) run on a new CLI tool. No new agent roles are created. The team structure stays the same — only the execution engine changes.
+This path lets you make your existing agents (nexus, forge, sentinel, vessel, lore) run on a new CLI tool. No new agent roles are created. The team structure stays the same  -  only the execution engine changes.
 
 ### What You Touch
 - **Rust code**: `crates/config/src/registry.rs`, `crates/pair-harness/src/process.rs`, `crates/pair-harness/src/provision.rs`
@@ -391,7 +391,7 @@ That's it. The same 5 agents now run on OpenCode. No new roles, no new personas,
 
 ## Path B: Adding a New Agent Role (Optionally with a New Backend)
 
-This path extends the team by adding a 6th agent type. You can back it with any CLI — an existing one (`claude`, `codex`), or a newly added one from Path A.
+This path extends the team by adding a 6th agent type. You can back it with any CLI  -  an existing one (`claude`, `codex`), or a newly added one from Path A.
 
 ### What You Touch
 - **Config files**: `orchestration/agent/registry.json` (new entry), `orchestration/agent/agents/*.agent.md` (new persona), `orchestration/plugin/plugin.json` (new role mapping)
@@ -562,7 +562,7 @@ flow = flow.add_node("analyst", analyst, vec![
 
 ## Combined Path: New Backend + New Agent
 
-When you need both — a new CLI tool AND a new agent role — follow Path A first, then Path B. The OpenCode backend becomes available to all agents (existing and new). The analyst role from Path B can use `cli: "opencode"` in its registry entry.
+When you need both  -  a new CLI tool AND a new agent role  -  follow Path A first, then Path B. The OpenCode backend becomes available to all agents (existing and new). The analyst role from Path B can use `cli: "opencode"` in its registry entry.
 
 ---
 
@@ -593,7 +593,7 @@ Each backend follows a consistent env var convention:
 | Variable | Purpose | Default |
 |----------|---------|---------|
 | `{BACKEND}_PATH` | CLI binary location | Binary name in PATH |
-| `{BACKEND}_API_KEY` | Authentication | — |
+| `{BACKEND}_API_KEY` | Authentication |  -  |
 | `{BACKEND}_BASE_URL` | API endpoint/proxy | Vendor default |
 | `{BACKEND}_MODEL` | Model name override | Vendor default |
 | `{BACKEND}_HOME` | Isolated config directory | System home |

@@ -14,19 +14,19 @@ const MANAGE_ROWS = [
 <DocsLayout breadcrumbs={[{ label: 'Docs', href: '/docs' }, { label: 'Concepts', href: '/docs/concepts' }, { label: 'Tenants' }]}>
   <h1>Tenants</h1>
   <p>
-    OpenFlows is designed to serve <strong>many teams</strong> from a single server. Each team is called a
-    <strong>tenant</strong>, and tenants are kept strictly separate from one another.
+    OpenFlows Manager serves multiple organizations and tenants. A <strong>tenant</strong> is one
+    repository automation environment within an organization.
   </p>
   <p>
     If you only have one team, you still have "a tenant"  -  you just have one. Think of a tenant as "one
-    project, one team, one repository."
+    project and one repository."
   </p>
 
   <h2>What a tenant is</h2>
-  <p>A tenant is made up of three things bound together:</p>
+  <p>A tenant binds these records and resources:</p>
   <ul>
     <li>
-      A distinct <strong>user account</strong> on the server, with the workspace fleet that belongs to it.
+      An <strong>OpenFlows organization</strong> and its creator-owned Coder workspace identity.
     </li>
     <li>
       A <strong>repository binding</strong>  -  the GitHub repository that team works on.
@@ -40,18 +40,15 @@ const MANAGE_ROWS = [
   <p>Tenants are isolated in two independent ways at the same time:</p>
   <ol>
     <li>
-      <strong>Identity and access.</strong> Each tenant is a separate user with its own access controls. A
-      user allowed into one tenant's control plane cannot reach another tenant's workspaces.
+      <strong>Runtime identity.</strong> Manager derives tenant and repository scope from each authenticated workspace.
     </li>
     <li>
-      <strong>Coordination state.</strong> Every record in the coordination store is namespaced to its
-      tenant. One tenant simply cannot read or collide with another tenant's records, even on shared
-      infrastructure.
+      <strong>Coordination state.</strong> Each tenant has a Redis ACL credential and immutable namespace.
     </li>
   </ol>
   <p>
-    These two layers reinforce each other: even if access control were somehow misconfigured, the data
-    itself is still partitioned.
+    The Manager and Redis checks reinforce one another. Operators must still protect the shared services,
+    secrets, and network paths.
   </p>
 
   <h2>What this means in practice</h2>

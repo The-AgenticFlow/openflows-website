@@ -13,7 +13,7 @@ const AGENTS = [
   {
     name: 'NEXUS',
     role: 'Orchestrator',
-    desc: 'Polls GitHub for issues, provisions workspaces, assigns work to agents, and manages the entire pipeline lifecycle.',
+    desc: 'Syncs GitHub issues, assigns work to agents, and coordinates the tenant pipeline. Manager provisions and manages the workspaces.',
   },
   {
     name: 'FORGE',
@@ -40,15 +40,15 @@ const AGENTS = [
 const VALUES = [
   {
     title: 'Autonomous by default',
-    desc: 'The pipeline runs without human input. NEXUS polls GitHub, assigns tickets, provisions ephemeral Coder workspaces, and manages the full lifecycle. It only escalates to AwaitingHuman for spec ambiguity, security concerns, or resource limits.',
+    desc: 'NEXUS coordinates tickets and agents, while Manager provisions workspaces and brokers runtime credentials. The pipeline escalates decisions that require a person.',
   },
   {
     title: 'Each agent has an identity',
-    desc: 'Agent = CLI backend (muscle) + configuration harness (brain). Each agent has its own persona, skills, hooks, and permissions. GitHub identity is handled by Coder external auth  -  agents inherit identity from the logged-in Coder user via the git-config module. No personal access tokens needed.',
+    desc: 'Each agent has a role, skills, hooks, and a workspace runtime identity. Manager brokers short-lived GitHub App installation tokens scoped to the tenant repository; human GitHub OAuth remains separate.',
   },
   {
     title: 'Built for resilience',
-    desc: 'A five-layer crash recovery stack catches failures at every level, from malformed LLM output to crashed nodes. NEXUS reconcile() detects orphaned tickets, stale workers, and unmerged PRs on every cycle. Ephemeral Coder workspaces are torn down after merge  -  no lingering state, no stale credentials.',
+    desc: 'Manager persists operations and uses leases so another instance can resume queued work. Agent coordination and workspace reconciliation provide additional recovery paths.',
   },
   {
     title: 'Model-agnostic, adversarial by design',
@@ -84,7 +84,7 @@ const VALUES = [
       <p class={styles.heroSub}>
         OpenFlows coordinates five specialized AI agents through a Redis-backed state machine
         to take GitHub issues all the way to merged, documented pull requests. GitHub identity
-        is handled by Coder external auth  -  no personal access tokens. The entire pipeline runs
+        is brokered by Manager through a GitHub App installation. The pipeline can run
         autonomously - you wake up to completed features, reviewed PRs, and updated documentation.
       </p>
     </div>
@@ -138,7 +138,7 @@ const VALUES = [
           <p class={styles.eyebrow}>How it works</p>
           <h2 class={styles.splitHeading}>From issue to merged PR, autonomously</h2>
           <p class={styles.splitDesc}>
-            NEXUS polls GitHub for open issues and provisions ephemeral workspaces for each task.
+            NEXUS polls GitHub for open issues, while Manager provisions tenant workspaces.
             FORGE receives the ticket, writes a PLAN.md, and implements the code segment by segment.
             SENTINEL reviews every segment against five criteria before approval. VESSEL handles CI
             status and merges approved PRs. LORE documents everything with ADRs and CHANGELOG updates.

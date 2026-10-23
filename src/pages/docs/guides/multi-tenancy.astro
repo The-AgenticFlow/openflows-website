@@ -14,20 +14,20 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
 
   <h2>How one server serves many</h2>
   <ul>
-    <li>Each <strong>tenant</strong> is a distinct Coder user, a repository binding, and its own orchestrator workspace.</li>
-    <li>Tenants share the same Coder server and coordination store, but never see each other's work.</li>
-    <li>Isolation is enforced two ways at once: separate identity and access control, <strong>and</strong> separately namespaced coordination state. Even a misconfigured access control can't read another tenant's data.</li>
+    <li>Each <strong>tenant</strong> is a Manager record bound to one repository and a creator-owned Coder identity, with its own Nexus workspace.</li>
+    <li>Tenants can share Coder and Redis infrastructure while using distinct runtime identities and Redis ACL credentials.</li>
+    <li>Manager derives tenant scope from the authenticated workspace. Redis also restricts each tenant to its own namespace.</li>
   </ul>
 
   <h2>Steps to add another team</h2>
   <ol>
     <li><strong>Have the control plane running</strong> (from the Quickstart).</li>
-    <li><strong>Add the tenant</strong> for the new team's repository. This creates the tenant's user and its orchestrator workspace, and initializes a fresh agent team.</li>
-    <li><strong>Complete GitHub OAuth</strong> for that tenant, scoped to its repository.</li>
+    <li><strong>Install the GitHub App</strong> for the organization and select an accessible repository.</li>
+    <li><strong>Add the tenant</strong> for that repository. Manager provisions its Redis access and Nexus workspace.</li>
     <li><strong>Optionally configure notifications</strong> for that tenant's escalations.</li>
   </ol>
   <p>
-    That's it — the team is live and can start taking issues for its repository.
+    That's it  -  the team is live and can start taking issues for its repository.
   </p>
 
   <h2>Managing the team set</h2>
@@ -37,7 +37,7 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
   <ul>
     <li><strong>List</strong> the tenants running on the server.</li>
     <li><strong>Add</strong> more tenants as above.</li>
-    <li><strong>Clean</strong> a stuck tenant — reset stale or failed work to the start so its team can proceed.</li>
+    <li><strong>Clean</strong> a stuck tenant  -  reset stale or failed work to the start so its team can proceed.</li>
     <li><strong>Remove</strong> a tenant and tear down its fleet.</li>
   </ul>
 
@@ -50,8 +50,8 @@ import { Callout } from '@/molecules/DocComponents/DocComponents';
 
   <h2>Isolation guarantees, restated</h2>
   <ul>
-    <li><strong>Identity plane:</strong> each tenant is a separate user; access is controlled by role-based access control.</li>
-    <li><strong>Data plane:</strong> each tenant's coordination records live in its own namespace, structurally unreachable by other tenants' components.</li>
+    <li><strong>Identity plane:</strong> Manager binds runtime sessions to workspace, tenant, organization, and repository records.</li>
+    <li><strong>Data plane:</strong> each tenant has a Redis ACL identity and a separate namespace.</li>
     <li>These compose into strong, defense-in-depth isolation on shared infrastructure.</li>
   </ul>
 
