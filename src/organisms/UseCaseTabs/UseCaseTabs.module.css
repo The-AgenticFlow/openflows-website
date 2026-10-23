@@ -18,6 +18,7 @@
 .pinned .stage {
   position: sticky;
   top: 0;
+  background: inherit;
   display: flex;
   align-items: center;
   height: 100vh;
