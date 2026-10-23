@@ -8,7 +8,7 @@ excerpt: 'Every developer now runs an ad-hoc AI agent on their laptop with zero
   way. OpenFlows restores the battle-tested engineering standards that made
   software reliable in the first place.'
 author_name: Nkwa Jude Tambe
-cover_image_url: https://openflows.dev/e44b536a-3373-4bc4-8e30-1ea3ae2e09a1
+cover_image_url: https://openflows.dev/uploads/from-code-chaos-to-system-order.png
 category_id: Architecture
 status: published
 published_at: 2026-10-23T15:01:00.000+01:00
