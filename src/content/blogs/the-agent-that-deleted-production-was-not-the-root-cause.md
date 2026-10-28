@@ -7,7 +7,7 @@ excerpt: "An autonomous coding agent deletes a production database from a
 author_name: Christian Yemele
 cover_image_url: https://openflows.dev/uploads/agent-sandbox.png
 category_id: Design, Agent-Environment and permissions
-status: draft
+status: published
 published_at: 2026-10-28T17:52:00.000+01:00
 is_featured: true
 ---
