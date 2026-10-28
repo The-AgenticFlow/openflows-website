@@ -5,6 +5,7 @@ slug: Autonomous agents need least privilege, separation of duties, and
 excerpt: "An autonomous coding agent deletes a production database from a
   developer's machine. "
 author_name: Christian Yemele
+cover_image_url: https://openflows.dev/uploads/agent-sandbox.png
 category_id: Design, Agent-Environment and permissions
 status: draft
 published_at: 2026-10-28T17:52:00.000+01:00
