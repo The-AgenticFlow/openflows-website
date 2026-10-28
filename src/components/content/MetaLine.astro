@@ -1,8 +1,17 @@
 ---
+import Avatar from './Avatar.astro';
+
+export interface MetaAvatar {
+  name: string;
+  initials: string;
+  src?: string;
+}
+
 export interface MetaItem {
   label: string;
   datetime?: string;
   emphasis?: boolean;
+  avatars?: MetaAvatar[];
 }
 
 interface Props {
@@ -18,7 +27,16 @@ const items = Astro.props.items.filter((item): item is MetaItem => Boolean(item 
       item.datetime ? (
         <time datetime={item.datetime} class:list={{ emphasis: item.emphasis }}>{item.label}</time>
       ) : (
-        <span class:list={{ emphasis: item.emphasis }}>{item.label}</span>
+        <span class:list={{ emphasis: item.emphasis, 'with-avatars': Boolean(item.avatars?.length) }}>
+          {item.avatars?.length ? (
+            <span class="avatar-stack">
+              {item.avatars.map((avatar) => (
+                <Avatar name={avatar.name} initials={avatar.initials} src={avatar.src} size="sm" />
+              ))}
+            </span>
+          ) : null}
+          {item.label}
+        </span>
       ),
     )}
   </p>
@@ -33,6 +51,21 @@ const items = Astro.props.items.filter((item): item is MetaItem => Boolean(item 
     font-size: 0.875rem;
     color: var(--color-graphite);
     font-variant-numeric: tabular-nums;
+  }
+
+  .with-avatars {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .avatar-stack {
+    display: inline-flex;
+  }
+
+  .avatar-stack :global(.avatar + .avatar) {
+    margin-left: -0.375rem;
+    box-shadow: 0 0 0 2px var(--color-parchment-canvas);
   }
 
   .emphasis {

@@ -56,6 +56,10 @@ Then open `http://localhost:4321/admin/index.html` and click **Login**. No GitHu
 - `npm run cms` starts the proxy in git mode, which supports the same editorial workflow as production: **Save** creates a local `cms/...` branch; set the entry to **Ready**, then **Publish now** merges it into your local `master`. Commit or stash your own changes first, because the proxy switches branches in your working tree.
 - Publishing in the CMS and the post's **Status** field are separate. The website only lists entries whose Status is `published`; `draft` and `archived` entries stay hidden even after they are published in the CMS.
 
+### Author photos
+
+Posts name an author, and the photo comes from that person's profile under **Authors** in the CMS (`src/content/authors/`). A profile can have an uploaded **Photo** or a **GitHub username** (their public GitHub photo is used); with neither, the byline shows their initials in a circle. To credit someone new, add them under **Authors** first, then pick them in the post's **Author** field.
+
 ## Deployment
 
 The site is automatically deployed to GitHub Pages via GitHub Actions when changes are pushed to the `main` branch.

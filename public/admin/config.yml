@@ -18,6 +18,22 @@ slug:
   clean_accents: true
 
 collections:
+  - name: "authors"
+    label: "Authors"
+    label_singular: "Author"
+    folder: "src/content/authors"
+    create: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: "json"
+    identifier_field: "name"
+    summary: "{{name}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string", hint: "Shown on posts exactly as written here." }
+      - { label: "Photo", name: "avatar", widget: "image", required: false, hint: "Square photo, at least 200 px wide. Leave empty to use the GitHub photo below, or initials." }
+      - { label: "GitHub username", name: "github", widget: "string", required: false, hint: "Optional. Uses their public GitHub photo when no photo is uploaded." }
+      - { label: "Role", name: "role", widget: "string", required: false }
+
   - name: "blogs"
     label: "Blog Posts"
     folder: "src/content/blogs"
@@ -29,7 +45,14 @@ collections:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Slug", name: "slug", widget: "string" }
       - { label: "Excerpt", name: "excerpt", widget: "text" }
-      - { label: "Author Name", name: "author_name", widget: "string" }
+      - label: "Author"
+        name: "author_name"
+        widget: "relation"
+        collection: "authors"
+        search_fields: ["name"]
+        value_field: "name"
+        display_fields: ["name"]
+        hint: "Pick the author. Their photo comes from their profile under Authors; add the person there first if they are not listed."
       - { label: "Cover Image URL", name: "cover_image_url", widget: "string", required: false }
       - { label: "Category", name: "category_id", widget: "string", required: false }
       - label: "Status"
