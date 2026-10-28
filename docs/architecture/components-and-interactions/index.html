@@ -34,7 +34,7 @@ Get Started
     manager --&gt; secrets[&quot;Secret provider&quot;]
     manager --&gt; coder[&quot;Coder&quot;]
     manager --&gt; github[&quot;GitHub App&quot;]
-    coder --&gt; runtime[&quot;Nexus and worker workspaces&quot;]</code></pre></details> </figure> <script type="module" src="/_astro/MermaidDiagram.astro_astro_type_script_index_0_lang.ri9w2vdC.js"></script>  <p>Workspaces do not receive Manager's Coder operator credential or GitHub App private key. They authenticate as one registered runtime. Manager is the control plane for provisioning and credential scope, not a proxy for every agent message.</p> <h2 id="tenant-plane">Inside one tenant</h2> <figure class="docsDiagram" aria-label="Nexus coordinates workers inside one tenant" data-astro-cid-6vqylkyd> <div class="diagramCanvas" data-astro-cid-6vqylkyd><pre class="mermaid" data-astro-cid-6vqylkyd>flowchart TB
+    coder --&gt; runtime[&quot;Nexus and worker workspaces&quot;]</code></pre></details> </figure> <script type="module" src="/_astro/MermaidDiagram.astro_astro_type_script_index_0_lang.DloOkQ2W.js"></script>  <p>Workspaces do not receive Manager's Coder operator credential or GitHub App private key. They authenticate as one registered runtime. Manager is the control plane for provisioning and credential scope, not a proxy for every agent message.</p> <h2 id="tenant-plane">Inside one tenant</h2> <figure class="docsDiagram" aria-label="Nexus coordinates workers inside one tenant" data-astro-cid-6vqylkyd> <div class="diagramCanvas" data-astro-cid-6vqylkyd><pre class="mermaid" data-astro-cid-6vqylkyd>flowchart TB
     manager[&quot;Manager&quot;] --&gt; nexus[&quot;Nexus controller&quot;]
     nexus --&gt; forge[&quot;Forge&quot;]
     nexus --&gt; sentinel[&quot;Sentinel&quot;]

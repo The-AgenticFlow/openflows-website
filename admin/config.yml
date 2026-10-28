@@ -1,3 +1,6 @@
+local_backend:
+  url: http://localhost:8082/api/v1
+
 backend:
   name: github
   repo: The-AgenticFlow/openflows-website
@@ -10,7 +13,27 @@ publish_mode: editorial_workflow
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
+slug:
+  encoding: "ascii"
+  clean_accents: true
+
 collections:
+  - name: "authors"
+    label: "Authors"
+    label_singular: "Author"
+    folder: "src/content/authors"
+    create: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: "json"
+    identifier_field: "name"
+    summary: "{{name}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string", hint: "Shown on posts exactly as written here." }
+      - { label: "Photo", name: "avatar", widget: "image", required: false, hint: "Square photo, at least 200 px wide. Leave empty to use the GitHub photo below, or initials." }
+      - { label: "GitHub username", name: "github", widget: "string", required: false, hint: "Optional. Uses their public GitHub photo when no photo is uploaded." }
+      - { label: "Role", name: "role", widget: "string", required: false }
+
   - name: "blogs"
     label: "Blog Posts"
     folder: "src/content/blogs"
@@ -21,15 +44,23 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Slug", name: "slug", widget: "string" }
-      - { label: "Excerpt", name: "excerpt", widget: "text", required: false }
-      - { label: "Author Name", name: "author_name", widget: "string", required: false }
+      - { label: "Excerpt", name: "excerpt", widget: "text" }
+      - label: "Author"
+        name: "author_name"
+        widget: "relation"
+        collection: "authors"
+        search_fields: ["name"]
+        value_field: "name"
+        display_fields: ["name"]
+        hint: "Pick the author. Their photo comes from their profile under Authors; add the person there first if they are not listed."
       - { label: "Cover Image URL", name: "cover_image_url", widget: "string", required: false }
-      - { label: "Category", name: "category_id", widget: "string", required: false }
+      - { label: "Category", name: "category_id", widget: "string", required: false, hint: "One short topic, for example Architecture. It becomes a filter on the blog page." }
       - label: "Status"
         name: "status"
         widget: "select"
         options: ["published", "draft", "archived"]
-        default: "draft"
+        default: "published"
+        hint: "Visibility on the website. Defaults to published because the CMS workflow (Draft, Ready, Publish now) already gates when a post goes live. Choose draft or archived to keep a post hidden even after it is merged."
       - { label: "Published At", name: "published_at", widget: "datetime", required: false }
       - { label: "Featured", name: "is_featured", widget: "boolean", default: false }
       - { label: "Read Time (minutes)", name: "read_time_minutes", widget: "number", required: false }
@@ -45,7 +76,7 @@ collections:
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Slug", name: "slug", widget: "string", required: false }
-      - { label: "Abstract", name: "abstract", widget: "text", required: false }
+      - { label: "Abstract", name: "abstract", widget: "text" }
       - { label: "Category", name: "category", widget: "string" }
       - { label: "Publish Date", name: "publish_date", widget: "datetime" }
       - { label: "Venue", name: "venue", widget: "string", required: false }
