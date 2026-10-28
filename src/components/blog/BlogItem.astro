@@ -64,7 +64,7 @@ const searchText = [
   .item {
     position: relative;
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 15rem);
+    grid-template-columns: minmax(0, 1fr) minmax(0, 17rem);
     gap: clamp(1.5rem, 3vw, 2.5rem);
     align-items: start;
     padding-block: 2rem;
@@ -162,7 +162,8 @@ const searchText = [
   }
 
   .item-media :global(.cover) {
-    border-radius: 1rem;
+    aspect-ratio: 628 / 337;
+    border-radius: 0;
   }
 
   .go {
