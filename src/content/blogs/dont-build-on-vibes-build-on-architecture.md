@@ -6,7 +6,7 @@ excerpt: AI can generate code quickly, but reliable software needs more than
   secure, production-ready delivery.
 author_name: Christian Yemele
 cover_image_url: https://openflows.dev/uploads/build-on-architecture-cover.png
-category_id: Agentic Development AI Development DevSecOps Governace
+category_id: Agentic Development
 status: published
 published_at: 2026-10-20T15:02:00.000+01:00
 is_featured: true

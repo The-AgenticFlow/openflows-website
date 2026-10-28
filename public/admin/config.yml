@@ -54,7 +54,7 @@ collections:
         display_fields: ["name"]
         hint: "Pick the author. Their photo comes from their profile under Authors; add the person there first if they are not listed."
       - { label: "Cover Image URL", name: "cover_image_url", widget: "string", required: false }
-      - { label: "Category", name: "category_id", widget: "string", required: false }
+      - { label: "Category", name: "category_id", widget: "string", required: false, hint: "One short topic, for example Architecture. It becomes a filter on the blog page." }
       - label: "Status"
         name: "status"
         widget: "select"

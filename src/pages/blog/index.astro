@@ -1,79 +1,164 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import AuthorByline from '@/components/blog/AuthorByline.astro';
-import { getCollection } from 'astro:content';
+import BlogItem from '@/components/blog/BlogItem.astro';
+import BlogSidebar from '@/components/blog/BlogSidebar.astro';
+import LeadPost from '@/components/blog/LeadPost.astro';
+import { getPublishedPosts } from '@/components/blog/blog';
 
-const allBlogs = await getCollection('blogs');
+const posts = await getPublishedPosts();
+const lead = posts.find((post) => post.data.is_featured) ?? posts[0];
 
-// Filter to only published, non-draft blogs and sort by date
-const blogs = allBlogs
-  .filter((blog) => !blog.data.is_draft && blog.data.status === 'published')
-  .sort((a, b) => {
-    const dateA = a.data.published_at ? new Date(a.data.published_at).getTime() : 0;
-    const dateB = b.data.published_at ? new Date(b.data.published_at).getTime() : 0;
-    return dateB - dateA;
-  });
-
-const featured = blogs.find(b => b.data.is_featured) || blogs[0];
-const rest = blogs.filter(b => b.id !== featured?.id);
-
-const getSafeBlogSlug = (blog) => {
-  const rawSlug = blog.data.slug || blog.slug;
-  return rawSlug
-    .toString()
-    .trim()
-    .toLowerCase()
-    .replace(/&/g, ' and ')
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-};
-
-const getBlogHref = (blog) => `/blog/${getSafeBlogSlug(blog)}`;
-
-const formatDate = (d) => {
-  if (!d) return '';
-  return new Date(d).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
-  });
-};
+const topicCounts = new Map<string, number>();
+posts.forEach((post) => {
+  const topic = post.data.category_id?.trim();
+  if (topic) topicCounts.set(topic, (topicCounts.get(topic) ?? 0) + 1);
+});
+const topics = [...topicCounts.entries()]
+  .map(([name, count]) => ({ name, count }))
+  .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 ---
 
-<BaseLayout title="Blog - OpenFlows" description="Latest news, releases, and insights from the OpenFlows team.">
-  <section style="max-width: 1200px; margin: 0 auto; padding: 4rem 2rem;">
-    <h1 style="font-size: 2.5rem; font-weight: 700; margin-bottom: 2rem;">Blog</h1>
+<BaseLayout title="Blog - OpenFlows" description="Essays on building software with AI agents, from the OpenFlows team.">
+  <main class="blog" data-blog>
+    <header class="blog-head">
+      <h1>Blog</h1>
+      <p class="blog-sub">Essays on building software with AI agents, from the OpenFlows team.</p>
+    </header>
 
-    {featured && (
-      <article style="margin-bottom: 3rem; padding: 2rem; background: var(--color-bone); border-radius: var(--radius-lg);">
-        <div style="display: flex; gap: 1rem; margin-bottom: 0.5rem;">
-          <span style="font-size: 0.875rem; color: var(--color-graphite);">{formatDate(featured.data.published_at)}</span>
-          {featured.data.is_featured && <span style="font-size: 0.75rem; background: var(--color-aubergine); color: white; padding: 0.125rem 0.5rem; border-radius: 99px;">Featured</span>}
+    {posts.length > 0 ? (
+      <div class="blog-layout">
+        <BlogSidebar topics={topics} total={posts.length} />
+
+        <div class="blog-main">
+          <p class="blog-status" role="status" aria-live="polite" data-blog-status>
+            {posts.length} {posts.length === 1 ? 'post' : 'posts'}
+          </p>
+
+          {lead && <LeadPost post={lead} />}
+
+          <div class="blog-list">
+            {posts.map((post) => (
+              <BlogItem post={post} lead={post.id === lead?.id} hidden={post.id === lead?.id} />
+            ))}
+          </div>
+
+          <div class="blog-empty" hidden data-blog-empty>
+            <p>No posts match that search.</p>
+            <button type="button" data-blog-clear>Clear filters</button>
+          </div>
         </div>
-        <h2 style="font-size: 1.75rem; margin-bottom: 1rem; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-          <a href={getBlogHref(featured)} style="color: var(--color-ink);">{featured.data.title}</a>
-        </h2>
-        <p style="color: var(--color-graphite); margin-bottom: 1rem;">{featured.data.excerpt}</p>
-        <div style="margin-bottom: 1rem;"><AuthorByline post={featured} /></div>
-        <a href={getBlogHref(featured)} style="font-weight: 600;">Read more →</a>
-      </article>
+      </div>
+    ) : (
+      <p class="blog-none">No posts yet. New essays appear here as soon as they are published.</p>
     )}
+  </main>
 
-    <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 2rem;">
-      {rest.map((blog) => (
-        <article style="padding: 1.5rem; background: var(--color-bone); border-radius: var(--radius-md);">
-          <span style="font-size: 0.75rem; color: var(--color-graphite);">{formatDate(blog.data.published_at)}</span>
-          <h3 style="font-size: 1.25rem; margin: 0.5rem 0; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;">
-            <a href={getBlogHref(blog)} style="color: var(--color-ink);">{blog.data.title}</a>
-          </h3>
-          <p style="font-size: 0.875rem; color: var(--color-graphite);">{blog.data.excerpt}</p>
-          <div style="margin-top: 1rem;"><AuthorByline post={blog} /></div>
-        </article>
-      ))}
-    </div>
-
-    {blogs.length === 0 && (
-      <p style="text-align: center; color: var(--color-graphite); padding: 3rem;">No blog posts yet.</p>
-    )}
-  </section>
+  <script>
+    import '@/components/blog/blogFilter';
+  </script>
 </BaseLayout>
+
+<style>
+  .blog {
+    max-width: var(--max-width);
+    margin-inline: auto;
+    padding: calc(var(--nav-height) + clamp(2.5rem, 5vw, 4rem)) var(--space-6) 6rem;
+  }
+
+  .blog-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0.5rem 1.5rem;
+    margin-bottom: clamp(2rem, 4vw, 3rem);
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid var(--color-ink);
+  }
+
+  .blog-head h1 {
+    margin: 0;
+    font-size: clamp(2.25rem, 4vw, 3.25rem);
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: -0.035em;
+  }
+
+  .blog-sub {
+    margin: 0;
+    font-size: 1.0625rem;
+    color: var(--color-graphite);
+  }
+
+  .blog-layout {
+    display: grid;
+    grid-template-columns: 15.5rem minmax(0, 1fr);
+    gap: clamp(2rem, 5vw, 4.5rem);
+    align-items: start;
+  }
+
+  .blog-main {
+    min-width: 0;
+  }
+
+  .blog-status {
+    margin: 0 0 1.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-graphite);
+  }
+
+  .blog-list {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .blog-empty {
+    padding: 3rem 0;
+    text-align: center;
+    color: var(--color-graphite);
+  }
+
+  .blog-empty[hidden] {
+    display: none;
+  }
+
+  .blog-empty button {
+    margin-top: 0.5rem;
+    padding: 0.625rem 1.25rem;
+    border: 1px solid var(--color-ink);
+    border-radius: 999px;
+    background: none;
+    font: inherit;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    color: var(--color-ink);
+    cursor: pointer;
+  }
+
+  .blog-empty button:hover {
+    background: var(--color-bone);
+  }
+
+  .blog-empty button:focus-visible {
+    outline: 2px solid var(--color-aubergine);
+    outline-offset: 3px;
+  }
+
+  .blog-none {
+    padding-block: 3rem;
+    color: var(--color-graphite);
+  }
+
+  @media (max-width: 900px) {
+    .blog-layout {
+      grid-template-columns: minmax(0, 1fr);
+      gap: 1.5rem;
+    }
+  }
+
+  @media (max-width: 640px) {
+    .blog {
+      padding-inline: var(--space-4);
+    }
+  }
+</style>
