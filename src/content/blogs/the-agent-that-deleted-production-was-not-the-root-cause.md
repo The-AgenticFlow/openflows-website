@@ -2,8 +2,8 @@
 title: The Agent That Deleted Production Was Not the Root Cause
 slug: Autonomous agents need least privilege, separation of duties, and
   independent review, not the full authority of a human developer.
-excerpt: An autonomous coding agent deletes a production database from a
-  developer's machine.
+excerpt: "An autonomous coding agent deletes a production database from a
+  developer's machine. "
 author_name: Christian Yemele
 category_id: Design, Agent-Environment and permissions
 status: draft
