@@ -39,9 +39,9 @@ if (root) {
       const wasHidden = item.hidden;
       item.hidden = !visible;
       if (visible && wasHidden && animate) {
-        item.classList.remove('is-entering');
+        item.removeAttribute('data-entering');
         void item.offsetWidth;
-        item.classList.add('is-entering');
+        item.setAttribute('data-entering', '');
       }
       if (topicOk && queryOk) shown += 1;
     });

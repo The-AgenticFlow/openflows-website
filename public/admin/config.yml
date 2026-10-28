@@ -60,7 +60,7 @@ collections:
         widget: "select"
         options: ["published", "draft", "archived"]
         default: "published"
-        hint: "Controls visibility on the website. Choose draft or archived to hide this post even after it is published in the CMS."
+        hint: "Visibility on the website. Defaults to published because the CMS workflow (Draft, Ready, Publish now) already gates when a post goes live. Choose draft or archived to keep a post hidden even after it is merged."
       - { label: "Published At", name: "published_at", widget: "datetime", required: false }
       - { label: "Featured", name: "is_featured", widget: "boolean", default: false }
       - { label: "Read Time (minutes)", name: "read_time_minutes", widget: "number", required: false }
