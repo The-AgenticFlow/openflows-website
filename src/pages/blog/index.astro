@@ -6,7 +6,8 @@ import LeadPost from '@/components/blog/LeadPost.astro';
 import { getPublishedPosts } from '@/components/blog/blog';
 
 const posts = await getPublishedPosts();
-const lead = posts.find((post) => post.data.is_featured) ?? posts[0];
+// Posts arrive newest first, so the featured spot always shows the latest one.
+const lead = posts[0];
 
 const topicCounts = new Map<string, number>();
 posts.forEach((post) => {
