@@ -1,0 +1,62 @@
+---
+import Cover from '@/components/content/Cover.astro';
+import AuthorByline from './AuthorByline.astro';
+import { getPostAuthors } from './authors';
+import styles from './BlogItem.module.css';
+import { formatPostDate, getPostHref, getReadTime, type BlogPost } from './blog';
+
+interface Props {
+  post: BlogPost;
+  /** The featured post is also listed here, but hidden until a filter is applied. */
+  hidden?: boolean;
+  lead?: boolean;
+}
+
+const { post, hidden = false, lead = false } = Astro.props;
+const publishedAt = post.data.published_at;
+const authors = await getPostAuthors(post);
+
+const searchText = [
+  post.data.title,
+  post.data.excerpt,
+  post.data.category_id,
+  ...authors.map((author) => author.name),
+]
+  .filter(Boolean)
+  .join(' ')
+  .toLowerCase();
+---
+
+<article
+  class={styles.item}
+  hidden={hidden}
+  data-post
+  data-lead={lead ? 'true' : 'false'}
+  data-topic={post.data.category_id ?? ''}
+  data-search={searchText}
+>
+  <div class={styles.body}>
+    <p class={styles.meta}>
+      {post.data.category_id && <span class={styles.chip}>{post.data.category_id}</span>}
+      {publishedAt && <time datetime={publishedAt.toISOString()}>{formatPostDate(publishedAt)}</time>}
+      <span>{getReadTime(post)} min read</span>
+    </p>
+    <h3 class={styles.title}>
+      <a href={getPostHref(post)}>{post.data.title}</a>
+    </h3>
+    {post.data.excerpt && <p class={styles.excerpt}>{post.data.excerpt}</p>}
+    <div class={styles.foot}>
+      <AuthorByline post={post} />
+    </div>
+  </div>
+
+  <div class={styles.media}>
+    <Cover src={post.data.cover_image_url} />
+    <span class={styles.go} aria-hidden="true">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M7 17 17 7" />
+        <path d="M8 7h9v9" />
+      </svg>
+    </span>
+  </div>
+</article>

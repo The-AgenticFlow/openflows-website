@@ -1,0 +1,25 @@
+---
+import Avatar from '@/components/content/Avatar.astro';
+import { getPostAuthors } from './authors';
+import type { BlogPost } from './blog';
+import styles from './AuthorByline.module.css';
+
+interface Props {
+  post: BlogPost;
+  size?: 'sm' | 'md' | 'lg';
+}
+
+const { post, size = 'md' } = Astro.props;
+const authors = await getPostAuthors(post);
+---
+
+{authors.length > 0 && (
+  <ul class={styles.byline} aria-label={authors.length > 1 ? 'Authors' : 'Author'}>
+    {authors.map((author) => (
+      <li class={styles.person}>
+        <Avatar name={author.name} initials={author.initials} src={author.avatarUrl} size={size} />
+        <span class={styles.name}>{author.name}</span>
+      </li>
+    ))}
+  </ul>
+)}

@@ -1,0 +1,211 @@
+---
+interface Props {
+  topics: { name: string; count: number }[];
+  total: number;
+}
+
+const { topics, total } = Astro.props;
+---
+
+<aside class="blog-sidebar" aria-label="Find a post">
+  <form class="search" role="search" data-blog-search-form>
+    <label for="blog-search" class="sr-only">Search posts</label>
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="6.5" />
+      <path d="m16 16 4 4" />
+    </svg>
+    <input id="blog-search" type="search" name="q" placeholder="Search posts" autocomplete="off" spellcheck="false" data-blog-search />
+  </form>
+
+  <nav class="topics" aria-label="Topics">
+    <p class="topics-title">Topics</p>
+    <ul>
+      <li>
+        <button type="button" class="topic is-active" aria-pressed="true" data-topic-button="">
+          <span>All posts</span>
+          <span class="count">{total}</span>
+        </button>
+      </li>
+      {topics.map((topic) => (
+        <li>
+          <button type="button" class="topic" aria-pressed="false" data-topic-button={topic.name}>
+            <span>{topic.name}</span>
+            <span class="count">{topic.count}</span>
+          </button>
+        </li>
+      ))}
+    </ul>
+  </nav>
+</aside>
+
+<style>
+  .blog-sidebar {
+    position: sticky;
+    top: calc(var(--nav-height) + 2rem);
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+    align-self: start;
+    min-width: 0;
+  }
+
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    white-space: nowrap;
+  }
+
+  .search {
+    position: relative;
+  }
+
+  .search svg {
+    position: absolute;
+    top: 50%;
+    left: 1rem;
+    width: 1.125rem;
+    height: 1.125rem;
+    color: var(--color-graphite);
+    transform: translateY(-50%);
+    pointer-events: none;
+  }
+
+  .search input {
+    width: 100%;
+    height: 2.75rem;
+    padding: 0 1rem 0 2.75rem;
+    border: 1px solid var(--color-driftwood);
+    border-radius: 999px;
+    background: var(--color-bone);
+    font: inherit;
+    font-size: 0.9375rem;
+    color: var(--color-ink);
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .search input::placeholder {
+    color: var(--color-graphite);
+  }
+
+  .search input:focus-visible {
+    outline: none;
+    border-color: var(--color-aubergine);
+    box-shadow: 0 0 0 3px var(--color-lavender-chip);
+  }
+
+  .topics-title {
+    margin: 0 0 0.75rem;
+    font-family: var(--font-mono);
+    font-size: 0.8125rem;
+    color: var(--color-graphite);
+  }
+
+  .topics ul {
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  .topic {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    width: 100%;
+    padding: 0.5rem 0.75rem 0.5rem 1rem;
+    border: 0;
+    border-radius: 0.875rem;
+    background: none;
+    font: inherit;
+    font-size: 0.9375rem;
+    color: var(--color-graphite);
+    text-align: left;
+    cursor: pointer;
+    transition: color 0.2s ease, background-color 0.2s ease;
+  }
+
+  .topic::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 50%;
+    width: 2px;
+    height: 0;
+    background: var(--color-aubergine);
+    transform: translateY(-50%);
+    transition: height 0.25s ease;
+  }
+
+  .topic:hover {
+    color: var(--color-ink);
+  }
+
+  .topic.is-active {
+    color: var(--color-aubergine);
+    font-weight: 600;
+  }
+
+  .topic.is-active::before {
+    height: 1.25rem;
+  }
+
+  .topic:focus-visible {
+    outline: 2px solid var(--color-aubergine);
+    outline-offset: 2px;
+  }
+
+  .count {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    font-weight: 400;
+    color: var(--color-graphite);
+    font-variant-numeric: tabular-nums;
+  }
+
+  @media (max-width: 900px) {
+    .blog-sidebar {
+      position: static;
+      gap: 1rem;
+    }
+
+    .topics-title {
+      display: none;
+    }
+
+    .topics {
+      min-width: 0;
+    }
+
+    .topics ul {
+      flex-direction: row;
+      gap: 0.5rem;
+      overflow-x: auto;
+      padding-bottom: 0.25rem;
+      scrollbar-width: none;
+    }
+
+    .topic {
+      width: auto;
+      flex-shrink: 0;
+      padding: 0.5rem 0.875rem;
+      border: 1px solid var(--color-driftwood);
+      border-radius: 999px;
+      white-space: nowrap;
+    }
+
+    .topic::before {
+      display: none;
+    }
+
+    .topic.is-active {
+      border-color: var(--color-aubergine);
+    }
+  }
+</style>

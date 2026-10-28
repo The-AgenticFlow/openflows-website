@@ -1,0 +1,23 @@
+---
+import ContentRow from '@/components/content/ContentRow.astro';
+import PostMeta from './PostMeta.astro';
+import { getPostHref, type BlogPost } from './blog';
+
+interface Props {
+  post: BlogPost;
+  headingLevel?: 'h2' | 'h3';
+}
+
+const { post, headingLevel = 'h2' } = Astro.props;
+---
+
+<ContentRow
+  href={getPostHref(post)}
+  title={post.data.title}
+  category={post.data.category_id}
+  summary={post.data.excerpt}
+  image={post.data.cover_image_url}
+  headingLevel={headingLevel}
+>
+  <PostMeta post={post} />
+</ContentRow>

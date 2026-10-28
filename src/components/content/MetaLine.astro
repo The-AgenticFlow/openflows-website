@@ -1,0 +1,75 @@
+---
+import Avatar from './Avatar.astro';
+
+export interface MetaAvatar {
+  name: string;
+  initials: string;
+  src?: string;
+}
+
+export interface MetaItem {
+  label: string;
+  datetime?: string;
+  emphasis?: boolean;
+  avatars?: MetaAvatar[];
+}
+
+interface Props {
+  items: (MetaItem | false | undefined | null)[];
+}
+
+const items = Astro.props.items.filter((item): item is MetaItem => Boolean(item && item.label));
+---
+
+{items.length > 0 && (
+  <p class="meta-line">
+    {items.map((item) =>
+      item.datetime ? (
+        <time datetime={item.datetime} class:list={{ emphasis: item.emphasis }}>{item.label}</time>
+      ) : (
+        <span class:list={{ emphasis: item.emphasis, 'with-avatars': Boolean(item.avatars?.length) }}>
+          {item.avatars?.length ? (
+            <span class="avatar-stack">
+              {item.avatars.map((avatar) => (
+                <Avatar name={avatar.name} initials={avatar.initials} src={avatar.src} size="sm" />
+              ))}
+            </span>
+          ) : null}
+          {item.label}
+        </span>
+      ),
+    )}
+  </p>
+)}
+
+<style>
+  .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.25rem 1.25rem;
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--color-graphite);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .with-avatars {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+
+  .avatar-stack {
+    display: inline-flex;
+  }
+
+  .avatar-stack :global(.avatar + .avatar) {
+    margin-left: -0.375rem;
+    box-shadow: 0 0 0 2px var(--color-parchment-canvas);
+  }
+
+  .emphasis {
+    color: var(--color-ink);
+    font-weight: 500;
+  }
+</style>
