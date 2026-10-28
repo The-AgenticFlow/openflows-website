@@ -149,26 +149,8 @@ const publishedAt = post.data.published_at;
     transform: translate(2px, -2px);
   }
 
-  /* The cover sits on a hatched panel stepped out behind it, like the About page hero. */
   .lead-media {
     position: relative;
-    isolation: isolate;
-  }
-
-  .lead-media::before {
-    content: '';
-    position: absolute;
-    z-index: -1;
-    inset: 1rem -1rem -1rem 1rem;
-    border: 1px solid var(--color-driftwood);
-    border-radius: 0;
-    background-color: #f8f7f3;
-    background-image: repeating-linear-gradient(45deg, #dcd7d3b3 0 1px, #0000 1px 5px);
-    transition: transform 0.35s ease;
-  }
-
-  .lead:hover .lead-media::before {
-    transform: translate(4px, 4px);
   }
 
   .lead-media :global(.cover) {
@@ -185,11 +167,6 @@ const publishedAt = post.data.published_at;
 
     .lead-media {
       order: -1;
-      margin-right: 1rem;
-    }
-
-    .lead-media::before {
-      inset: 0.75rem -0.75rem -0.75rem 0.75rem;
     }
   }
 </style>
