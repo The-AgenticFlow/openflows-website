@@ -9,7 +9,7 @@ author_name: Nkwa Tambe
 cover_image_url: blob:https://openflows.dev/2371e47c-11dd-40af-bcbe-2e04775b9dc7
 category_id: Agentic Development
 status: published
-published_at: 2026-11-03T10:25:00.000+01:00
+published_at: 2026-11-03T10:40:00.000+01:00
 is_featured: true
 read_time_minutes: 5
 ---
