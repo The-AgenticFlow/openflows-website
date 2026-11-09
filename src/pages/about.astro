@@ -2,248 +2,215 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PixelField from '@/components/site/PixelField.astro';
 import CtaBanner from '@/components/site/CtaBanner.astro';
+import { getCollection } from 'astro:content';
 
-const STATS = [
-  { value: '5', label: 'Specialized agents' },
-  { value: '24/7', label: 'Autonomous operation' },
-  { value: '~16min', label: 'Issue to merged PR' },
-  { value: 'MIT', label: 'Open source license' },
-];
+const REPO = 'https://github.com/The-AgenticFlow/OpenFlows';
 
-const AGENTS = [
-  {
-    name: 'NEXUS',
-    role: 'Orchestrator',
-    desc: 'Syncs GitHub issues, assigns work to agents, and coordinates the tenant pipeline. Manager provisions and manages the workspaces.',
-  },
-  {
-    name: 'FORGE',
-    role: 'Builder',
-    desc: 'Receives tickets, writes PLAN.md, implements code segment by segment, and opens pull requests.',
-  },
-  {
-    name: 'SENTINEL',
-    role: 'Reviewer',
-    desc: 'Reviews every code segment against 5 criteria: correctness, security, test coverage, standards compliance, and no regressions.',
-  },
-  {
-    name: 'VESSEL',
-    role: 'Shipper',
-    desc: 'Handles CI status, resolves merge conflicts, and squash-merges approved PRs after SENTINEL approval.',
-  },
-  {
-    name: 'LORE',
-    role: 'Documenter',
-    desc: 'Writes ADRs (Architecture Decision Records) and updates CHANGELOG.md after each successful merge.',
-  },
-];
+const people = (await getCollection('authors'))
+  .map((entry) => entry.data as { name: string; github?: string; avatar?: string; role?: string })
+  .sort((a, b) => (a.role ? -1 : b.role ? 1 : a.name.localeCompare(b.name)));
 
-const VALUES = [
+const CHANNELS = [
   {
-    title: 'Autonomous by default',
-    desc: 'NEXUS coordinates tickets and agents, while Manager provisions workspaces and brokers runtime credentials. The pipeline escalates decisions that require a person.',
+    title: 'Discord',
+    desc: 'Chat with maintainers and other operators. The fastest place to get unstuck.',
+    href: 'https://discord.gg/gDhK2RQZpY',
+    cta: 'Join the server',
+    icon: '<path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.38-.44.86-.61 1.25a18.3 18.3 0 0 0-5.49 0 12.6 12.6 0 0 0-.62-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.52.07.07 0 0 0-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.05 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.23-1.99a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.89.08.08 0 0 1-.01-.13l.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01l.37.29a.08.08 0 0 1 0 .13c-.6.35-1.22.64-1.88.89a.08.08 0 0 0-.04.11c.36.7.77 1.36 1.23 1.99a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6-3.03.08.08 0 0 0 .03-.05c.5-5.18-.84-9.67-3.55-13.66a.06.06 0 0 0-.03-.03zM8.02 15.33c-1.18 0-2.16-1.09-2.16-2.42s.96-2.42 2.16-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.15-1.09-2.15-2.42s.95-2.42 2.15-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.95 2.42-2.16 2.42z"/>',
+    fill: true,
   },
   {
-    title: 'Each agent has an identity',
-    desc: 'Each agent has a role, skills, hooks, and a workspace runtime identity. Manager brokers short-lived GitHub App installation tokens scoped to the tenant repository; human GitHub OAuth remains separate.',
+    title: 'GitHub',
+    desc: 'Source, releases, issues and pull requests. Everything is MIT licensed.',
+    href: REPO,
+    cta: 'Star the repo',
+    icon: '<path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>',
+    fill: true,
   },
   {
-    title: 'Built for resilience',
-    desc: 'Manager persists operations and uses leases so another instance can resume queued work. Agent coordination and workspace reconciliation provide additional recovery paths.',
+    title: 'Discussions',
+    desc: 'Ask questions, share how you run OpenFlows, and propose ideas.',
+    href: `${REPO}/discussions`,
+    cta: 'Start a thread',
+    icon: '<path d="M4 5h11v8H8l-4 3z"/><path d="M15 9h5v8l-3-2h-6v-2"/>',
   },
   {
-    title: 'Model-agnostic, adversarial by design',
-    desc: 'Each agent\'s LLM provider and model are configured independently in registry.json. FORGE and SENTINEL can use different providers  -  Anthropic for the builder, OpenAI for the reviewer  -  so the reviewer\'s blind spots differ from the writer\'s. SENTINEL spawns fresh per evaluation, read-only and bias-free.',
-  },
-  {
-    title: 'Open source, MIT licensed',
-    desc: 'The orchestration engine  -  PocketFlow core, SharedStore, agent harnesses, and TUI setup wizard  -  is on GitHub under the MIT license. Install via npm, cargo, Docker, or a one-line curl installer. Self-hosted on your infrastructure, with Coder AI Gateway and LiteLLM fallback for any model provider.',
-  },
-  {
-    title: 'Ship faster, not harder',
-    desc: 'FORGE implements and opens PRs in 15–30 minutes. SENTINEL reviews every segment automatically. VESSEL merges when CI is green. A 2-person startup can ship 40 features in a month because the pipeline eliminates the PR review queue and founder context-switching.',
-  },
-  {
-    title: 'Conflict rework, not rebase churn',
-    desc: 'When VESSEL detects a merge conflict, it does not create a new branch or lose context. It writes CONFLICT_RESOLUTION.md and re-routes the ticket back to the same FORGE worker. FORGE reworks the implementation, re-commits, and VESSEL re-monitors CI  -  no manual rebase.',
-  },
-  {
-    title: 'Documentation as a byproduct',
-    desc: 'LORE writes Architecture Decision Records and updates CHANGELOG.md after every successful merge. Technical decisions are captured automatically, not as an afterthought. The team ships code and the paper trail writes itself.',
+    title: 'Blog',
+    desc: 'Engineering essays from the team on building trustworthy agents.',
+    href: '/blog',
+    cta: 'Read the blog',
+    icon: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
+    internal: true,
   },
 ];
 
-const COMMUNITY = [
-  { title: 'Discord', desc: 'Chat with maintainers and other operators', href: 'https://discord.gg/gDhK2RQZpY', external: true, fill: true, icon: '<path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.38-.44.86-.61 1.25a18.3 18.3 0 0 0-5.49 0 12.6 12.6 0 0 0-.62-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.52.07.07 0 0 0-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.05 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.23-1.99a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.89.08.08 0 0 1-.01-.13l.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01l.37.29a.08.08 0 0 1 0 .13c-.6.35-1.22.64-1.88.89a.08.08 0 0 0-.04.11c.36.7.77 1.36 1.23 1.99a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6-3.03.08.08 0 0 0 .03-.05c.5-5.18-.84-9.67-3.55-13.66a.06.06 0 0 0-.03-.03zM8.02 15.33c-1.18 0-2.16-1.09-2.16-2.42s.96-2.42 2.16-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.15-1.09-2.15-2.42s.95-2.42 2.15-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.95 2.42-2.16 2.42z"/>' },
-  { title: 'GitHub', desc: 'Source, releases and pull requests', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true, fill: true, icon: '<path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>' },
-  { title: 'Report an issue', desc: 'Found a bug or have a feature request?', href: 'https://github.com/The-AgenticFlow/OpenFlows/issues', external: true, icon: '<circle cx="12" cy="12" r="9"/><path d="M12 8v4M12 16h.01"/>' },
-  { title: 'Contributor guide', desc: 'Development setup, skills and testing', href: '/docs/contributing', icon: '<path d="M4 17l6-6-6-6M12 19h8"/>' },
+const CONTRIBUTE = [
+  { title: 'Add a skill', desc: 'Drop a SKILL.md into the plugin skills folder and register it for a role.', href: '/docs/contributing/adding-skills' },
+  { title: 'Plug in an MCP server', desc: 'Give an agent a new tool through the registry, no code change.', href: '/docs/guides/extending-mcp' },
+  { title: 'Integrate a model', desc: 'Route a role to a new provider through Coder AI settings.', href: '/docs/guides/extending-models' },
+  { title: 'Improve the docs', desc: 'Fix a gap, clarify a concept, or add a guide you wished existed.', href: '/docs/contributing' },
+  { title: 'Report a bug', desc: 'Open an issue with steps to reproduce. Small reports help a lot.', href: `${REPO}/issues` },
+  { title: 'Harden the core', desc: 'Planning gate, recovery, A2A relay: pick an issue and send a PR.', href: '/docs/contributing/development-setup' },
+];
+
+const PRINCIPLES = [
+  { title: 'Architecture first', desc: 'Engineers own the spec and the final say. Agents implement against it.' },
+  { title: 'Governed by default', desc: 'Every action is gated, attributed and auditable from issue to merge.' },
+  { title: 'Open and self-hosted', desc: 'MIT licensed, running on your infrastructure, with your models.' },
+  { title: 'Never guess', desc: 'When a spec is ambiguous, agents ask an exact question instead of improvising.' },
 ];
 ---
 
-<BaseLayout title="About & community · OpenFlows" description="Learn about OpenFlows, the open-source orchestration layer that coordinates five specialized AI agents to take GitHub issues to merged pull requests, and join the community building it.">
+<BaseLayout title="Community · OpenFlows" description="Join the OpenFlows community: chat on Discord, contribute on GitHub, and help build the open-source, governed AI dev team for Coder.">
   <main>
-    <section class="of-page-hero of-dark is-center">
+    <section class="of-page-hero of-dark">
       <PixelField cell={30} density={0.06} />
       <div class="of-container">
-        <span class="of-eyebrow fade-up">About OpenFlows</span>
-        <h1 class="fade-up" style="animation-delay:80ms">The orchestration layer for <span class="of-gradient-text">autonomous dev teams.</span></h1>
-        <p class="of-lede fade-up" style="animation-delay:160ms">
-          OpenFlows coordinates five specialized AI agents through a Redis-backed state machine to take GitHub issues all the way
-          to merged, documented pull requests. You wake up to completed features, reviewed PRs and updated documentation.
-        </p>
-        <div class="of-actions fade-up" style="animation-delay:240ms">
-          <a href="https://discord.gg/gDhK2RQZpY" target="_blank" rel="noopener noreferrer" class="of-btn of-btn-primary of-btn-lg">Join the Discord</a>
-          <a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer" class="of-btn of-btn-ghost of-btn-lg">Contribute on GitHub</a>
+        <span class="of-eyebrow fade-up">Community</span>
+        <h1 class="of-lines"><span><span style="--l:0">Build OpenFlows</span></span><span><span style="--l:1">with us.</span></span></h1>
+        <p class="of-lede fade-up" style="animation-delay:300ms">OpenFlows is open source and built in the open. Ask questions, share what you ship, and help shape how autonomous engineering teams should work.</p>
+        <div class="of-actions fade-up" style="animation-delay:400ms">
+          <a href="https://discord.gg/gDhK2RQZpY" target="_blank" rel="noopener noreferrer" class="of-btn of-btn-primary of-btn-lg"><span class="of-sq"></span>Join the Discord</a>
+          <a href="/docs/contributing" class="of-btn of-btn-ghost of-btn-lg">Contributor guide</a>
         </div>
       </div>
     </section>
 
-    <section class="of-section-tight">
+    <section class="of-section">
       <div class="of-container">
-        <div class="stats" data-reveal-group>
-          {STATS.map(({ value, label }) => (
-            <div class="stat" data-reveal>
-              <span class="stat-value">{value}</span>
-              <span class="stat-label">{label}</span>
-            </div>
+        <div class="channels" data-reveal-group>
+          {CHANNELS.map((c) => (
+            <a href={c.href} class="channel of-card" target={c.internal ? undefined : '_blank'} rel={c.internal ? undefined : 'noopener noreferrer'} data-reveal>
+              <span class="channel-icon"><svg viewBox="0 0 24 24" fill={c.fill ? 'currentColor' : 'none'} stroke={c.fill ? 'none' : 'currentColor'} stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={c.icon} /></span>
+              <h2>{c.title}</h2>
+              <p>{c.desc}</p>
+              <span class="channel-cta">{c.cta} <span aria-hidden="true">{c.internal ? '→' : '↗'}</span></span>
+            </a>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="of-section">
+    <section class="of-section" style="padding-top:0">
       <div class="of-container">
-        <figure class="quote" data-reveal="scale">
-          <svg class="quote-mark" viewBox="0 0 32 24" aria-hidden="true"><path d="M0 24V14C0 6 4 1 12 0l1 4c-4 1-6 4-6 8h5v12zm19 0V14c0-8 4-13 12-14l1 4c-4 1-6 4-6 8h5v12z" fill="currentColor"/></svg>
-          <blockquote>Coder governs where agents run. OpenFlows governs how they coordinate. Code is the output. <span class="of-gradient-text">Architecture is the product.</span></blockquote>
-          <figcaption>The OpenFlows design principle</figcaption>
-        </figure>
-      </div>
-    </section>
-
-    <section class="of-section">
-      <div class="of-container">
-        <div class="how">
-          <div class="of-head" data-reveal>
-            <span class="of-eyebrow">How it works</span>
-            <h2>From issue to merged PR, autonomously.</h2>
-            <p>NEXUS polls GitHub for open issues while Manager provisions tenant workspaces. FORGE writes a plan and implements segment by segment. SENTINEL reviews every segment against five criteria. VESSEL merges when CI is green. LORE documents everything.</p>
-            <p>NEXUS only reaches out when it genuinely needs you: spec ambiguity, security concerns, or resource limits.</p>
-            <div class="of-actions">
-              <a href="/docs/architecture" class="of-link">Architecture overview <span aria-hidden="true">→</span></a>
-              <a href="/agents" class="of-link">Meet the agents <span aria-hidden="true">→</span></a>
-            </div>
+        <div class="split-head" data-reveal>
+          <div>
+            <span class="of-eyebrow">Contribute</span>
+            <h2 class="of-h2">Ways to get involved.</h2>
           </div>
-          <ul class="team-list" data-reveal-group>
-            {AGENTS.map(({ name, role, desc }) => (
-              <li data-reveal data-agent={name.toLowerCase()}>
-                <div class="team-name"><span class="team-dot"></span><b>{name}</b><span>{role}</span></div>
-                <p>{desc}</p>
-              </li>
-            ))}
-          </ul>
+          <p class="of-lede">Most contributions need no deep knowledge of the core. The registry is designed so skills, tools and models plug in without touching orchestration code.</p>
         </div>
-      </div>
-    </section>
-
-    <section class="of-section">
-      <div class="of-container">
-        <div class="of-head is-center" data-reveal>
-          <span class="of-eyebrow">What we stand for</span>
-          <h2>Built on clear principles.</h2>
-        </div>
-        <div class="values" data-reveal-group>
-          {VALUES.map(({ title, desc }, i) => (
-            <article class="value of-card of-spotlight" data-reveal>
-              <span class="value-num">{String(i + 1).padStart(2, '0')}</span>
-              <h3>{title}</h3>
-              <p>{desc}</p>
-            </article>
+        <div class="contrib" data-reveal-group>
+          {CONTRIBUTE.map((c, i) => (
+            <a href={c.href} class="contrib-item" data-reveal>
+              <span class="contrib-num">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{c.title}</h3>
+              <p>{c.desc}</p>
+              <span class="contrib-arrow" aria-hidden="true">→</span>
+            </a>
           ))}
         </div>
       </div>
     </section>
 
-    <section class="of-section" id="community">
+    <section class="of-section" style="padding-top:0">
       <div class="of-container">
-        <div class="community">
-          <div class="of-head" data-reveal>
-            <span class="of-eyebrow">Community</span>
-            <h2>Help build the autonomous AI development team.</h2>
-            <p>Contributions shape every agent: NEXUS orchestration, FORGE implementation, SENTINEL review, VESSEL merge automation and LORE docs, through skills, MCP servers, model integrations and the PocketFlow flow graph.</p>
-            <p>Maintained by the AgenticFlow team. Whether you harden the planning gate, tune agent permissions, or document architecture, your work shapes how autonomous teams operate.</p>
+        <div class="split-head" data-reveal>
+          <div>
+            <span class="of-eyebrow">The team</span>
+            <h2 class="of-h2">People building OpenFlows.</h2>
           </div>
-          <div class="channels" data-reveal-group>
-            {COMMUNITY.map((c) => (
-              <a href={c.href} class="channel of-card of-spotlight" target={c.external ? '_blank' : undefined} rel={c.external ? 'noopener noreferrer' : undefined} data-reveal>
-                <span class="channel-icon"><svg viewBox="0 0 24 24" fill={c.fill ? 'currentColor' : 'none'} stroke={c.fill ? 'none' : 'currentColor'} stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={c.icon} /></span>
-                <span class="channel-text"><b>{c.title}</b><span>{c.desc}</span></span>
-                <span class="channel-arrow" aria-hidden="true">{c.external ? '↗' : '→'}</span>
+          <p class="of-lede">Maintained by the AgenticFlow team and contributors across the Rust and open-source communities.</p>
+        </div>
+        <ul class="people" data-reveal-group>
+          {people.map((person) => (
+            <li data-reveal>
+              <a href={person.github ? `https://github.com/${person.github}` : undefined} target="_blank" rel="noopener noreferrer" class="person">
+                <img src={person.avatar || `https://github.com/${person.github}.png?size=160`} alt="" width="64" height="64" loading="lazy" />
+                <span class="person-text">
+                  <span class="person-name">{person.name}</span>
+                  <span class="person-meta">{person.role || (person.github ? `@${person.github}` : 'Contributor')}</span>
+                </span>
               </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="principles-wrap">
+      <div class="principles of-panel of-dark">
+        <div class="of-container">
+          <div class="split-head" data-reveal>
+            <div>
+              <span class="of-eyebrow">What we believe</span>
+              <h2 class="of-h2">Code is the output. Architecture is the product.</h2>
+            </div>
+            <p class="of-lede">Coder governs where agents run. OpenFlows governs how they coordinate. These principles decide what we build and what we refuse to.</p>
+          </div>
+          <div class="principle-grid" data-reveal-group>
+            {PRINCIPLES.map((p, i) => (
+              <div class="principle" data-reveal>
+                <span class="contrib-num">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{p.title}</h3>
+                <p>{p.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </div>
     </section>
 
-    <CtaBanner />
+    <div style="height: clamp(4rem, 8vw, 6rem)"></div>
+    <CtaBanner title="Your first contribution starts here." body="Pick an issue, open a pull request, and the maintainers will help you land it." primary={{ label: 'Contributor guide', href: '/docs/contributing' }} secondary={{ label: 'Good first issues', href: `${REPO}/issues`, external: true }} />
   </main>
 </BaseLayout>
 
 <style>
-  .stats { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--of-line); border-radius: 20px; overflow: hidden; background: var(--of-surface); }
-  .stat { display: flex; flex-direction: column; gap: 0.5rem; padding: 1.75rem; }
-  .stat + .stat { border-left: 1px solid var(--of-line); }
-  .stat-value { font-size: clamp(2rem, 3.6vw, 2.9rem); font-weight: 600; letter-spacing: -0.05em; line-height: 1; background: linear-gradient(180deg, var(--of-text), var(--of-text)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-  .stat-label { font-size: 0.88rem; color: var(--of-text-2); }
-
-  .quote { position: relative; max-width: 920px; margin: 0 auto; padding: clamp(2.5rem, 6vw, 4rem); border-radius: 28px; border: 1px solid var(--of-line); background: var(--of-surface); text-align: center; }
-  .quote-mark { width: 40px; height: 30px; color: var(--of-mint); opacity: 0.8; }
-  .quote blockquote { margin-top: 1.5rem; font-size: clamp(1.5rem, 3.2vw, 2.4rem); font-weight: 500; line-height: 1.25; letter-spacing: -0.035em; text-wrap: balance; }
-  .quote figcaption { margin-top: 1.5rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-text-3); }
-
-  .how { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
-  .how .of-head { position: sticky; top: calc(var(--nav-height) + 2rem); }
-  .how .of-head p + p { margin-top: 0; }
-
-  .team-list { display: grid; gap: 0.75rem; }
-  .team-list li { --agent: var(--of-mint); padding: 1.25rem 1.4rem; border-radius: 16px; border: 1px solid var(--of-line); background: var(--of-surface); transition: border-color 0.2s; }
-  .team-list li:hover { border-color: color-mix(in srgb, var(--agent) 40%, transparent); }
-  .team-list li[data-agent='nexus'] { --agent: var(--color-agent-nexus); }
-  .team-list li[data-agent='forge'] { --agent: var(--color-agent-forge); }
-  .team-list li[data-agent='sentinel'] { --agent: var(--color-agent-sentinel); }
-  .team-list li[data-agent='vessel'] { --agent: var(--color-agent-vessel); }
-  .team-list li[data-agent='lore'] { --agent: var(--color-agent-lore); }
-  .team-name { display: flex; align-items: center; gap: 0.6rem; }
-  .team-name b { font-family: var(--font-mono); color: var(--agent); letter-spacing: 0.04em; }
-  .team-name span:last-child { font-size: 0.82rem; color: var(--of-text-3); }
-  .team-dot { width: 7px; height: 7px; border-radius: 2px; background: var(--agent); }
-  .team-list p { margin-top: 0.55rem; font-size: 0.92rem; color: var(--of-text-2); line-height: 1.6; }
-
-  .values { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; }
-  .value { padding: 1.75rem; }
-  .value-num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-mint); }
-  .value h3 { margin-top: 1rem; font-size: 1.15rem; }
-  .value p { margin-top: 0.6rem; font-size: 0.92rem; color: var(--of-text-2); line-height: 1.65; }
-
-  .community { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: center; }
-  .community .of-head { margin-bottom: 0; }
-  .channels { display: grid; gap: 0.75rem; }
-  .channel { display: flex; align-items: center; gap: 1rem; padding: 1.1rem 1.25rem; }
-  .channel-icon { display: grid; place-items: center; width: 42px; height: 42px; flex-shrink: 0; border-radius: 11px; border: 1px solid var(--of-line-strong); background: var(--of-surface-2); color: var(--of-text); }
+  .channels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .channel { display: flex; flex-direction: column; padding: 1.6rem; min-height: 250px; }
+  .channel-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--of-text); color: var(--of-invert); }
   .channel-icon svg { width: 20px; height: 20px; }
-  .channel-text { display: flex; flex-direction: column; flex: 1; }
-  .channel-text b { font-weight: 500; }
-  .channel-text span { font-size: 0.85rem; color: var(--of-text-2); }
-  .channel-arrow { color: var(--of-text-3); transition: transform 0.2s, color 0.2s; }
-  .channel:hover .channel-arrow { color: var(--of-mint); transform: translateX(3px); }
+  .channel h2 { margin-top: 1.5rem; font-size: 1.2rem; letter-spacing: -0.02em; }
+  .channel p { margin: 0.5rem 0 1.5rem; font-size: 0.9rem; line-height: 1.55; color: var(--of-text-2); }
+  .channel-cta { margin-top: auto; font-size: 0.88rem; font-weight: 500; }
 
-  @media (max-width: 960px) {
-    .how, .community, .values { grid-template-columns: 1fr; }
-    .how .of-head { position: static; }
-    .stats { grid-template-columns: 1fr 1fr; }
-    .stat:nth-child(3) { border-left: 0; }
-    .stat:nth-child(n + 3) { border-top: 1px solid var(--of-line); }
+  .split-head { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 4rem; align-items: end; margin-bottom: clamp(2.5rem, 5vw, 3.5rem); }
+  .split-head h2 { margin-top: 1rem; }
+
+  .contrib { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--of-line-strong); border-left: 1px solid var(--of-line-strong); }
+  .contrib-item { position: relative; display: flex; flex-direction: column; padding: 1.6rem 1.6rem 1.8rem; border-right: 1px solid var(--of-line-strong); border-bottom: 1px solid var(--of-line-strong); transition: background 0.3s; }
+  .contrib-item:hover { background: var(--of-surface); }
+  .contrib-num { font-family: var(--font-mono); font-size: 0.72rem; color: var(--of-text-3); }
+  .contrib-item h3, .principle h3 { margin-top: 1.75rem; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .contrib-item p, .principle p { margin-top: 0.45rem; font-size: 0.9rem; line-height: 1.55; color: var(--of-text-2); }
+  .contrib-arrow { position: absolute; top: 1.5rem; right: 1.6rem; color: var(--of-text-3); transition: transform 0.4s var(--ease-out), color 0.3s; }
+  .contrib-item:hover .contrib-arrow { transform: translateX(4px); color: var(--of-text); }
+
+  .people { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .person { display: flex; align-items: center; gap: 0.9rem; padding: 1rem; border-radius: 14px; border: 1px solid var(--of-line); background: var(--of-surface); transition: border-color 0.3s, transform 0.4s var(--ease-out); }
+  .person:hover { border-color: var(--of-line-strong); transform: translateY(-2px); }
+  .person img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--of-surface-2); filter: grayscale(1); transition: filter 0.4s; }
+  .person:hover img { filter: none; }
+  .person-name { display: block; font-size: 0.92rem; font-weight: 500; }
+  .person-meta { display: block; font-family: var(--font-mono); font-size: 0.7rem; color: var(--of-text-3); }
+  .person-text { display: flex; flex-direction: column; min-width: 0; }
+
+  .principles { padding: clamp(4rem, 8vw, 6.5rem) 0; }
+  .principle-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--of-line); }
+  .principle { padding: 1.6rem 1.5rem 0 0; }
+  .principle + .principle { padding-left: 1.5rem; border-left: 1px solid var(--of-line); }
+
+  @media (max-width: 1000px) {
+    .channels, .people { grid-template-columns: 1fr 1fr; }
+    .contrib { grid-template-columns: 1fr 1fr; }
+    .split-head { grid-template-columns: 1fr; }
+    .principle-grid { grid-template-columns: 1fr 1fr; }
+    .principle:nth-child(3) { padding-left: 0; border-left: 0; }
+  }
+
+  @media (max-width: 600px) {
+    .channels, .people, .contrib, .principle-grid { grid-template-columns: 1fr; }
+    .principle, .principle + .principle { padding-left: 0; border-left: 0; padding-bottom: 1.25rem; }
   }
 </style>

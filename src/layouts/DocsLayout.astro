@@ -127,66 +127,54 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
 <BaseLayout footer={false} smooth={false} title={pageTitle} description="Everything you need to install, configure, and operate the OpenFlows orchestration layer.">
   <button class="docsMenuButton" type="button" aria-label="Open documentation navigation" aria-controls="docs-navigation" aria-expanded="false">☰ <span>Contents</span></button>
   {/* Sidebar  -  fixed position, always visible */}
-  <aside class="sidebar" id="docs-navigation" aria-label="Documentation navigation">
-    <a class="docsHomeLink" href="/docs">Documentation home</a>
-    <label class="docsFilterLabel" for="docs-filter">Find a page</label>
-    <input id="docs-filter" class="docsFilter" type="search" placeholder="Filter navigation..." autocomplete="off" />
-    <div class="docsReadingNav">
-      <p class="sidebarTitle">Read in order</p>
-      <ol>
-        {DOCS_READING_PATH.map(({ label, href }, index) => (
-          <li><a href={href} class:list={['sidebarLink', { active: pathIndex === index }]}><span>{String(index + 1).padStart(2, '0')}</span>{label}</a></li>
-        ))}
-      </ol>
-    </div>
-    <details class="docsBrowse" open={pathIndex === -1}>
-      <summary>Browse all topics</summary>
-    {SIDEBAR.map(({ title, links }) => (
-      <div class="sidebarSection">
-        <p class="sidebarTitle">{title}</p>
-        <ul class="sidebarNav">
-          {links.map((link) => (
-            <li class:list={[{ 'hasChildren': link.children?.length }]}>
-              {link.children && link.children.length > 0 ? (
-                <>
-                  <button
-                    class="sidebarParent"
-                    data-expanded="true"
-                    aria-expanded="true"
-                  >
-                    <span class="sidebarParentLabel">{link.label}</span>
-                    <svg class="sidebarChevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </button>
-                  <ul class="sidebarChildren">
-                    {link.children.map((child) => (
-                      <li>
-                        <a
-                          href={child.href}
-                          class:list={['sidebarLink', { active: currentPath === child.href }]}
-                        >
-                          {child.label}
-                        </a>
-                      </li>
-                    ))}
-                  </ul>
-                </>
-              ) : (
-                <a
-                  href={link.href}
-                  class:list={['sidebarLink', { active: currentPath === link.href }]}
-                >
-                  {link.label}
-                </a>
-              )}
-            </li>
-          ))}
-        </ul>
-      </div>
-    ))}
-    </details>
+  <aside class="sidebar" id="docs-navigation" aria-label="Documentation navigation" data-lenis-prevent>
+    <button class="docsSearchTrigger" type="button" data-docs-search-open>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+      <span>Search docs</span>
+      <kbd>⌘K</kbd>
+    </button>
+    <a href="/docs" class:list={['docsOverview', { active: currentPath === '/docs' || currentPath === '/docs/' }]}>Overview</a>
+    {SIDEBAR.map(({ title, links }) => {
+      const containsCurrent = links.some((link) => link.href === currentPath || link.children?.some((c) => c.href === currentPath));
+      return (
+        <details class="navGroup" open={containsCurrent || title === 'Get Started'}>
+          <summary>
+            <span>{title}</span>
+            <svg viewBox="0 0 12 12" aria-hidden="true"><path d="M4.5 3l3 3-3 3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </summary>
+          <ul class="sidebarNav">
+            {links.map((link) => (
+              <li>
+                <a href={link.href} class:list={['sidebarLink', { active: currentPath === link.href }]}>{link.label}</a>
+              </li>
+            ))}
+          </ul>
+        </details>
+      );
+    })}
   </aside>
+
+  <div class="docsSearch" id="docs-search" hidden>
+    <div class="docsSearchBackdrop" data-docs-search-close></div>
+    <div class="docsSearchPanel" role="dialog" aria-modal="true" aria-label="Search documentation">
+      <div class="docsSearchField">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="M20 20l-3.5-3.5"/></svg>
+        <input id="docs-search-input" type="search" placeholder="Search the documentation…" autocomplete="off" spellcheck="false" />
+        <kbd data-docs-search-close>Esc</kbd>
+      </div>
+      <ul class="docsSearchResults" id="docs-search-results" data-lenis-prevent>
+        {SIDEBAR.flatMap(({ title, links }) => links.map((link) => (
+          <li>
+            <a href={link.href} data-search-item data-search-text={`${title} ${link.label}`.toLowerCase()}>
+              <span class="dsTitle">{link.label}</span>
+              <span class="dsSection">{title}</span>
+            </a>
+          </li>
+        )))}
+      </ul>
+      <p class="docsSearchEmpty" id="docs-search-empty" hidden>No pages match your search.</p>
+    </div>
+  </div>
 
   {/* Main content  -  only this scrolls */}
   <main class:list={['content', { docsHomeContent: currentPath === '/docs' || currentPath === '/docs/' }]}>
@@ -223,6 +211,58 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
 </BaseLayout>
 
 <style is:global>
+
+  /* --- Coder-style sidebar --- */
+  .docsSearchTrigger {
+    display: flex; align-items: center; gap: 0.6rem; width: 100%;
+    height: 38px; padding: 0 0.6rem 0 0.75rem; margin-bottom: 1.25rem;
+    border-radius: 10px; border: 1px solid var(--of-line-strong);
+    background: var(--of-bg); color: var(--of-text-3); font-size: 0.875rem;
+    transition: border-color 0.2s, color 0.2s;
+  }
+  .docsSearchTrigger:hover { border-color: color-mix(in srgb, var(--of-text) 30%, transparent); color: var(--of-text-2); }
+  .docsSearchTrigger svg { width: 15px; height: 15px; }
+  .docsSearchTrigger kbd, .docsSearchField kbd {
+    margin-left: auto; padding: 0.1rem 0.4rem; border-radius: 5px;
+    border: 1px solid var(--of-line-strong); font-family: var(--font-mono); font-size: 0.68rem; color: var(--of-text-3);
+  }
+  .docsOverview { display: block; padding: 0.45rem 0.75rem; margin-bottom: 0.5rem; border-radius: 8px; font-size: 0.875rem; font-weight: 500; color: var(--of-text); }
+  .docsOverview:hover { background: var(--of-surface-2); }
+  .docsOverview.active { background: var(--of-surface-2); }
+  .navGroup { margin-bottom: 0.25rem; }
+  .navGroup summary {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0.5rem 0.75rem; border-radius: 8px; cursor: pointer; list-style: none;
+    font-size: 0.875rem; font-weight: 500; color: var(--of-text);
+  }
+  .navGroup summary::-webkit-details-marker { display: none; }
+  .navGroup summary:hover { background: var(--of-surface-2); }
+  .navGroup summary svg { width: 12px; height: 12px; color: var(--of-text-3); transition: transform 0.25s var(--ease-out); }
+  .navGroup[open] summary svg { transform: rotate(90deg); }
+  .navGroup .sidebarNav { margin: 0.15rem 0 0.6rem 0.75rem; padding-left: 0.5rem; border-left: 1px solid var(--of-line); }
+  .navGroup .sidebarLink { font-size: 0.85rem; padding: 0.35rem 0.6rem; }
+
+  /* --- Search dialog --- */
+  .docsSearch { position: fixed; inset: 0; z-index: 300; display: grid; place-items: start center; padding: 12vh 1rem 1rem; }
+  .docsSearch[hidden] { display: none; }
+  .docsSearchBackdrop { position: absolute; inset: 0; background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(4px); animation: dsFade 0.2s ease both; }
+  .docsSearchPanel {
+    position: relative; width: min(640px, 100%); max-height: 70vh; display: flex; flex-direction: column;
+    border-radius: 16px; border: 1px solid var(--of-line-strong); background: var(--of-surface);
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.3); overflow: hidden; animation: dsIn 0.28s var(--ease-out) both;
+  }
+  @keyframes dsFade { from { opacity: 0; } }
+  @keyframes dsIn { from { opacity: 0; transform: translateY(-8px) scale(0.98); } }
+  .docsSearchField { display: flex; align-items: center; gap: 0.75rem; padding: 0 1rem; border-bottom: 1px solid var(--of-line); color: var(--of-text-3); }
+  .docsSearchField svg { width: 18px; height: 18px; flex-shrink: 0; }
+  .docsSearchField input { flex: 1; height: 56px; border: 0; outline: 0; background: none; font: inherit; font-size: 1rem; color: var(--of-text); }
+  .docsSearchField kbd { cursor: pointer; }
+  .docsSearchResults { overflow-y: auto; padding: 0.5rem; }
+  .docsSearchResults a { display: flex; justify-content: space-between; gap: 1rem; padding: 0.65rem 0.75rem; border-radius: 9px; text-decoration: none; }
+  .docsSearchResults a.is-active, .docsSearchResults a:hover { background: var(--of-surface-2); }
+  .dsTitle { font-size: 0.92rem; color: var(--of-text); }
+  .dsSection { font-family: var(--font-mono); font-size: 0.7rem; color: var(--of-text-3); white-space: nowrap; }
+  .docsSearchEmpty { padding: 2rem; text-align: center; color: var(--of-text-3); font-size: 0.9rem; }
   /* Full page layout - sidebar fixed, content scrolls */
   html, body {
     height: 100%;
@@ -396,7 +436,7 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
       transform: translateX(-100%);
       transition: transform 0.25s ease;
       box-shadow: var(--shadow-xl);
-      padding: 1.5rem;
+      padding: 4.5rem 1.25rem 1.5rem;
       z-index: 40;
     }
 
@@ -571,4 +611,44 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
     sidebar.classList.remove('open');
     menuBtn?.setAttribute('aria-expanded', 'false');
   }));
+
+  // ⌘K docs search
+  (() => {
+    const dialog = document.getElementById('docs-search');
+    const input = document.getElementById('docs-search-input') as HTMLInputElement | null;
+    const empty = document.getElementById('docs-search-empty');
+    if (!dialog || !input) return;
+    const items = [...dialog.querySelectorAll<HTMLAnchorElement>('[data-search-item]')];
+    let active = 0;
+    const visible = () => items.filter((i) => !i.parentElement!.hidden);
+    const highlight = () => {
+      const list = visible();
+      items.forEach((i) => i.classList.remove('is-active'));
+      if (list[active]) {
+        list[active].classList.add('is-active');
+        list[active].scrollIntoView({ block: 'nearest' });
+      }
+    };
+    const filter = () => {
+      const q = input.value.trim().toLowerCase();
+      items.forEach((i) => { i.parentElement!.hidden = !!q && !q.split(/\s+/).every((w) => (i.dataset.searchText || '').includes(w)); });
+      if (empty) empty.hidden = visible().length > 0;
+      active = 0;
+      highlight();
+    };
+    const open = () => { dialog.hidden = false; input.value = ''; filter(); setTimeout(() => input.focus(), 10); };
+    const close = () => { dialog.hidden = true; };
+    document.querySelectorAll('[data-docs-search-open]').forEach((b) => b.addEventListener('click', open));
+    dialog.querySelectorAll('[data-docs-search-close]').forEach((b) => b.addEventListener('click', close));
+    input.addEventListener('input', filter);
+    window.addEventListener('keydown', (e) => {
+      const typing = (e.target as HTMLElement)?.closest('input, textarea');
+      if ((e.key === 'k' && (e.metaKey || e.ctrlKey)) || (e.key === '/' && !typing)) { e.preventDefault(); open(); return; }
+      if (dialog.hidden) return;
+      if (e.key === 'Escape') close();
+      if (e.key === 'ArrowDown') { e.preventDefault(); active = Math.min(active + 1, visible().length - 1); highlight(); }
+      if (e.key === 'ArrowUp') { e.preventDefault(); active = Math.max(active - 1, 0); highlight(); }
+      if (e.key === 'Enter') { const t = visible()[active]; if (t) window.location.href = t.href; }
+    });
+  })();
 </script>

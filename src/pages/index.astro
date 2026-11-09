@@ -1,7 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import MissionControl from '@/organisms/MissionControl/MissionControl';
-import UseCaseTabs from '@/organisms/UseCaseTabs/UseCaseTabs';
 import FAQ from '@/organisms/FAQ/FAQ';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 import PixelField from '@/components/site/PixelField.astro';
@@ -160,7 +159,7 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
           </p>
           <div class="hero-cta fade-up" style="animation-delay:560ms">
             <a href="/docs/getting-started" class="of-btn of-btn-primary of-btn-lg"><span class="of-sq"></span>Install OpenFlows</a>
-            <a href="#how-it-works" class="of-btn of-btn-ghost of-btn-lg">See how it works</a>
+            <a href="/demos" class="of-btn of-btn-ghost of-btn-lg"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3.8v8.4L12 8z" fill="currentColor"/></svg>Watch the demo</a>
           </div>
           <div class="hero-command fade-up" style="animation-delay:660ms">
             <div class="of-command">
@@ -264,20 +263,6 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
       </div>
     </section>
 
-    <!-- ───────── STATEMENT ───────── -->
-    <section class="statement-wrap">
-      <div class="statement of-panel of-dark">
-        <div class="of-container">
-          <span class="of-eyebrow">Why OpenFlows</span>
-          <p class="statement-text" data-words>
-            AI can generate code against a spec, but it can’t write the spec. OpenFlows gives you an engineering team
-            that follows yours: a declared flow, typed contracts, a planning gate, adversarial review and recovery built into every step.
-            Engineering goes in. Software comes out.
-          </p>
-        </div>
-      </div>
-    </section>
-
     <!-- ───────── HOW IT WORKS (sticky story) ───────── -->
     <section class="of-section story" id="how-it-works">
       <div class="of-container">
@@ -312,20 +297,6 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
               </article>
             ))}
           </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ───────── FACTS ───────── -->
-    <section class="facts-wrap">
-      <div class="of-container">
-        <div class="facts" data-reveal-group>
-          {FACTS.map((f) => (
-            <div class="fact" data-reveal>
-              <p class="fact-value"><span data-count={f.value}>{f.value}</span>{f.suffix}</p>
-              <p class="fact-label">{f.label}</p>
-            </div>
-          ))}
         </div>
       </div>
     </section>
@@ -378,77 +349,6 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
                 <p>{c.body}</p>
               </article>
             ))}
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ───────── CODER SPLIT ───────── -->
-    <section class="of-section">
-      <div class="of-container">
-        <div class="layers">
-          <div class="layers-copy" data-reveal>
-            <span class="of-eyebrow">Built on Coder</span>
-            <h2 class="of-h2">Coder governs where agents run. OpenFlows governs how they coordinate.</h2>
-            <p class="of-lede">The split is deliberate. Coder provides governed, ephemeral workspaces with no AI software and no model keys inside. OpenFlows brings the engineering discipline on top.</p>
-            <div class="of-actions">
-              <a href="/docs/concepts/coder-openflows-split" class="of-link">Read about the split <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
-            </div>
-          </div>
-          <div class="stack" data-reveal="scale">
-            <div class="layer layer-top">
-              <div class="layer-head"><img src="/openlogo-light.png" alt="" width="22" height="22" loading="lazy" /><b>OpenFlows</b><span>how they coordinate</span></div>
-              <ul>{OPENFLOWS_LAYER.map((f) => <li>{f}</li>)}</ul>
-            </div>
-            <div class="layer-link" aria-hidden="true"><i></i><i></i><i></i></div>
-            <div class="layer">
-              <div class="layer-head"><span class="coder-mark">C</span><b>Coder</b><span>where agents run</span></div>
-              <ul>{CODER_LAYER.map((f) => <li>{f}</li>)}</ul>
-            </div>
-            <div class="layer-link" aria-hidden="true"><i></i><i></i><i></i></div>
-            <div class="layer layer-base">
-              <b>Your infrastructure</b>
-              <span class="base-chips"><span class="of-chip">GitHub</span><span class="of-chip">Redis</span><span class="of-chip">PostgreSQL</span><span class="of-chip">CI</span></span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- ───────── USE CASES ───────── -->
-    <section class="of-section" style="padding-top:0">
-      <div class="of-container">
-        <div class="of-head is-center" data-reveal>
-          <span class="of-eyebrow">Use cases</span>
-          <h2>Code at speed. Stay in control.</h2>
-        </div>
-        <div data-reveal>
-          <UseCaseTabs client:visible />
-        </div>
-      </div>
-    </section>
-
-    <!-- ───────── DEMO ───────── -->
-    <section class="demo-wrap" id="demo">
-      <div class="demo of-panel of-dark">
-        <div class="of-container">
-          <div class="of-head is-center" data-reveal>
-            <span class="of-eyebrow">See it run</span>
-            <h2>Watch the team ship a real issue.</h2>
-          </div>
-          <div class="player-frame" data-reveal="scale">
-            <div class="player" id="demo-player">
-              <button class="play" id="demo-play" aria-label="Play the OpenFlows demo video">
-                <img src="/images/howitworks.png" alt="" loading="lazy" />
-                <span class="play-shade"></span>
-                <span class="play-btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13L19 12z" fill="currentColor"/></svg></span>
-                <span class="play-label">Play walkthrough</span>
-              </button>
-            </div>
-          </div>
-          <div class="demo-links" data-reveal>
-            <a href="/demos/terminal" class="of-link">Terminal replay →</a>
-            <a href="/demos/walkthrough" class="of-link">Step-by-step walkthrough →</a>
           </div>
         </div>
       </div>
@@ -581,17 +481,6 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
     }, { passive: true });
   }
 
-  // Load the Loom player only on request.
-  document.getElementById('demo-play')?.addEventListener('click', () => {
-    const player = document.getElementById('demo-player');
-    if (!player) return;
-    const frame = document.createElement('iframe');
-    frame.src = 'https://www.loom.com/embed/46d47c9e9291445a8eb9cc88b2a26627?hideOwner=true&hideTitle=true&hideEmbedTopBar=true&autoplay=1';
-    frame.title = 'OpenFlows agent flow demo';
-    frame.allow = 'autoplay; fullscreen';
-    frame.allowFullscreen = true;
-    player.replaceChildren(frame);
-  });
 </script>
 
 <style>
@@ -658,12 +547,12 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
   :global([data-theme='dark']) .logo img { filter: grayscale(1) invert(1) contrast(1.1); mix-blend-mode: screen; }
 
   /* ── Product (feature rows) ── */
-  .product { padding: clamp(4rem, 9vw, 7rem) 0 clamp(5rem, 10vw, 8rem); }
+  .product { padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(3rem, 6vw, 4rem); }
   .product-head { text-align: center; margin-bottom: clamp(3.5rem, 8vw, 6rem); }
-  .product-head h2 { font-size: clamp(2.3rem, 4.8vw, 3.9rem); letter-spacing: -0.05em; line-height: 1.02; }
+  .product-head h2 { font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -0.05em; line-height: 1.02; }
   .product-head p { max-width: 520px; margin: 1.25rem auto 0; color: var(--of-text-2); font-size: 1.05rem; line-height: 1.6; }
 
-  .feature { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; margin-bottom: clamp(4rem, 9vw, 7rem); }
+  .feature { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; margin-bottom: clamp(3.5rem, 7vw, 5.5rem); }
   .feature.is-flipped .feature-copy { order: 2; }
   .feature-copy h3 { font-size: clamp(1.6rem, 2.6vw, 2.15rem); letter-spacing: -0.04em; }
   .feature-copy p { margin: 0.9rem 0 1.5rem; max-width: 46ch; color: var(--of-text-2); line-height: 1.65; }
@@ -762,9 +651,9 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
   .step-agent { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.06em; }
   .step-title { font-size: 1.05rem; font-weight: 500; letter-spacing: -0.02em; }
 
-  .story-stages { display: grid; gap: clamp(4rem, 12vh, 9rem); padding: 4rem 0; }
+  .story-stages { display: grid; gap: clamp(3rem, 9vh, 6rem); padding: 2rem 0; }
 
-  .stage-copy { opacity: 0.3; transition: opacity 0.6s var(--ease-out); }
+  .stage-copy { opacity: 0.45; transition: opacity 0.6s var(--ease-out); }
   .stage.is-active .stage-copy { opacity: 1; }
   .stage-window { transform: scale(0.97); transition: transform 0.8s var(--ease-out), box-shadow 0.8s var(--ease-out); }
   .stage.is-active .stage-window { transform: none; box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.6), 0 40px 90px -20px rgba(0, 0, 0, 0.35); }
@@ -834,7 +723,7 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
   .row:hover .row-arrow { transform: translateX(4px) rotate(-45deg); }
 
   /* ── Capabilities ── */
-  .caps { padding: clamp(5rem, 11vw, 9rem) 0; }
+  .caps { padding: clamp(4rem, 9vw, 7rem) 0; }
   .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--of-line); border-left: 1px solid var(--of-line); }
 
   .cap {
