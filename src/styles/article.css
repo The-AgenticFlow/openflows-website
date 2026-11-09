@@ -18,8 +18,7 @@
   max-width: 100%;
   height: 560px;
   transform: translateX(-50%);
-  background: radial-gradient(closest-side, rgba(62, 224, 161, 0.1), rgba(155, 123, 255, 0.05) 55%, transparent);
-  pointer-events: none;
+  display: none;
 }
 
 .of-article-inner { max-width: 760px; margin: 0 auto; }
@@ -44,9 +43,9 @@
   gap: 0.6rem;
   font-family: var(--font-mono);
   font-size: 0.72rem;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
-  color: var(--of-mint);
+  color: var(--of-text-2);
 }
 
 .of-article-kicker .sep { color: var(--of-text-3); }
@@ -88,7 +87,7 @@
   border-radius: 20px;
   overflow: hidden;
   border: 1px solid var(--of-line);
-  box-shadow: var(--shadow-xl);
+  box-shadow: var(--shadow-lg);
   background: var(--of-surface);
 }
 
@@ -100,7 +99,7 @@
 .of-prose {
   font-size: 1.125rem;
   line-height: 1.8;
-  color: #cfd3da;
+  color: #2e2f33;
 }
 
 .of-prose > * + * { margin-top: 1.3em; }
@@ -130,14 +129,14 @@
 .of-prose strong { color: var(--of-text); font-weight: 600; }
 
 .of-prose a {
-  color: var(--of-mint);
+  color: var(--of-text);
   text-decoration: underline;
-  text-decoration-color: rgba(62, 224, 161, 0.4);
+  text-decoration-color: var(--of-line-strong);
   text-underline-offset: 3px;
   transition: text-decoration-color 0.15s;
 }
 
-.of-prose a:hover { text-decoration-color: var(--of-mint); }
+.of-prose a:hover { text-decoration-color: var(--of-text); }
 
 .of-prose ul,
 .of-prose ol { padding-left: 1.4em; }
@@ -149,7 +148,7 @@
 .of-prose blockquote {
   margin: 2em 0;
   padding: 0.25em 0 0.25em 1.4em;
-  border-left: 2px solid var(--of-mint);
+  border-left: 2px solid var(--of-text);
   font-size: 1.2rem;
   font-style: normal;
   color: var(--of-text);
@@ -187,7 +186,8 @@
   padding: 1.15rem 1.25rem;
   border-radius: 14px;
   border: 1px solid var(--of-line-strong);
-  background: #0b0c0f !important;
+  background: #0e0e10 !important;
+  color: #d7d8dc;
   overflow-x: auto;
   font-size: 0.85rem;
   line-height: 1.7;
@@ -249,7 +249,7 @@
   padding: 1.5rem 1.75rem;
   border-radius: 18px;
   border: 1px solid var(--of-line-strong);
-  background: radial-gradient(80% 120% at 0% 0%, rgba(62, 224, 161, 0.1), transparent 60%), var(--of-surface);
+  background: var(--of-surface);
 }
 
 .of-read-cta b { display: block; font-size: 1.05rem; }

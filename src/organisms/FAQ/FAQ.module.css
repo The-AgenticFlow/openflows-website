@@ -20,14 +20,14 @@
   transition: color 0.2s;
 }
 
-.faqQuestion:hover { color: var(--of-mint); }
+.faqQuestion:hover { color: var(--of-text-2); }
 
 .faqToggle {
   position: relative;
   width: 28px;
   height: 28px;
   flex-shrink: 0;
-  border-radius: 8px;
+  border-radius: 50%;
   border: 1px solid var(--of-line-strong);
   transition: transform 0.3s var(--ease-out), border-color 0.2s, background 0.2s;
 }
@@ -48,7 +48,7 @@
 
 .faqToggle::after { transform: translate(-50%, -50%) rotate(90deg); }
 
-.faqItemOpen .faqToggle { border-color: var(--of-mint-line); background: var(--of-mint-soft); color: var(--of-mint); }
+.faqItemOpen .faqToggle { border-color: var(--of-text); background: var(--of-text); color: var(--of-invert); }
 .faqItemOpen .faqToggle::after { transform: translate(-50%, -50%) rotate(0deg); }
 
 .faqAnswer {

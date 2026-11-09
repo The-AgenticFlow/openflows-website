@@ -1,4 +1,6 @@
 ---
+import PixelField from './PixelField.astro';
+
 interface Props {
   title?: string;
   body?: string;
@@ -15,15 +17,14 @@ const {
 ---
 
 <section class="cta-wrap">
-  <div class="of-container">
-    <div class="cta" data-reveal="scale">
-      <div class="of-grid-bg" aria-hidden="true"></div>
-      <div class="cta-glow" aria-hidden="true"></div>
-      <img src="/openlogo-light.png" alt="" width="56" height="56" class="cta-logo" loading="lazy" />
+  <div class="cta of-panel of-dark" data-reveal="scale">
+    <PixelField cell={34} density={0.07} />
+    <div class="cta-inner of-container">
+      <span class="of-eyebrow">Get started</span>
       <h2>{title}</h2>
       <p>{body}</p>
       <div class="of-actions">
-        <a href={primary.href} class="of-btn of-btn-accent of-btn-lg">{primary.label}</a>
+        <a href={primary.href} class="of-btn of-btn-primary of-btn-lg"><span class="of-sq"></span>{primary.label}</a>
         <a
           href={secondary.href}
           class="of-btn of-btn-ghost of-btn-lg"
@@ -38,44 +39,9 @@ const {
 </section>
 
 <style>
-  .cta-wrap { padding: 2rem 0 clamp(4.5rem, 9vw, 7rem); }
-
-  .cta {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-    padding: clamp(3rem, 7vw, 5.5rem) clamp(1.5rem, 5vw, 4rem);
-    border-radius: 28px;
-    border: 1px solid var(--of-line-strong);
-    background: linear-gradient(180deg, #101216, #0a0b0e);
-    overflow: hidden;
-    isolation: isolate;
-  }
-
-  .cta .of-grid-bg {
-    mask-image: radial-gradient(ellipse 60% 70% at 50% 100%, #000 20%, transparent 75%);
-    -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 100%, #000 20%, transparent 75%);
-  }
-
-  .cta-glow {
-    position: absolute;
-    z-index: -1;
-    left: 50%;
-    bottom: -220px;
-    width: 820px;
-    max-width: 140%;
-    height: 420px;
-    transform: translateX(-50%);
-    background: var(--of-gradient);
-    filter: blur(100px);
-    opacity: 0.28;
-    border-radius: 50%;
-  }
-
-  .cta-logo { animation: of-float 6s ease-in-out infinite; }
-  .cta h2 { margin-top: 1.4rem; max-width: 20ch; font-size: clamp(1.9rem, 4.2vw, 3.1rem); letter-spacing: -0.045em; line-height: 1.05; }
-  .cta p { margin-top: 1rem; max-width: 560px; color: var(--of-text-2); font-size: 1.05rem; line-height: 1.6; }
-  .cta .of-actions { justify-content: center; }
+  .cta-wrap { padding: 0 0 clamp(0.5rem, 1.2vw, 1rem); }
+  .cta { padding: clamp(5rem, 12vw, 9rem) 0; text-align: left; }
+  .cta :global(.of-pixels) { z-index: -1; mask-image: radial-gradient(ellipse 80% 90% at 70% 50%, #000 30%, transparent 80%); -webkit-mask-image: radial-gradient(ellipse 80% 90% at 70% 50%, #000 30%, transparent 80%); }
+  .cta h2 { margin-top: 1.5rem; max-width: 17ch; font-size: clamp(2.4rem, 5.4vw, 4.6rem); letter-spacing: -0.05em; line-height: 1; }
+  .cta p { margin-top: 1.4rem; max-width: 540px; color: var(--of-text-2); font-size: 1.1rem; line-height: 1.6; }
 </style>

@@ -91,7 +91,7 @@ const PRINCIPLES = [
               </div>
 
               <dl class="spec">
-                <div class="spec-title"><span class="of-dot" style="background:var(--agent);box-shadow:0 0 10px var(--agent)"></span>{a.name.toLowerCase()}.spec</div>
+                <div class="spec-title"><span class="of-dot" style="background:var(--agent);"></span>{a.name.toLowerCase()}.spec</div>
                 <div><dt>Runs in</dt><dd>{a.spec.runs}</dd></div>
                 <div><dt>Writes</dt><dd>{a.spec.writes}</dd></div>
                 <div><dt>Never</dt><dd>{a.spec.never}</dd></div>
@@ -181,8 +181,7 @@ const PRINCIPLES = [
     padding: clamp(1.5rem, 3.5vw, 2.5rem);
     scroll-margin-top: calc(var(--nav-height) + 24px);
     background:
-      radial-gradient(60% 80% at 0% 0%, color-mix(in srgb, var(--agent) 9%, transparent), transparent 60%),
-      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+      linear-gradient(180deg, var(--of-surface), var(--of-surface));
   }
 
   .member:hover { border-color: color-mix(in srgb, var(--agent) 35%, transparent); }
@@ -199,7 +198,6 @@ const PRINCIPLES = [
     color: var(--agent);
     border: 1px solid color-mix(in srgb, var(--agent) 40%, transparent);
     background: color-mix(in srgb, var(--agent) 10%, transparent);
-    box-shadow: 0 0 36px -8px var(--agent);
   }
 
   .member-icon svg { width: 26px; height: 26px; }
@@ -216,7 +214,7 @@ const PRINCIPLES = [
     display: grid;
     border-radius: 14px;
     border: 1px solid var(--of-line-strong);
-    background: rgba(6, 7, 9, 0.7);
+    background: var(--of-surface);
     font-size: 0.85rem;
     overflow: hidden;
   }
@@ -231,7 +229,7 @@ const PRINCIPLES = [
     font-family: var(--font-mono);
     font-size: 0.75rem;
     color: var(--of-text-2);
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--of-surface);
   }
 
   .spec dt { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--of-text-3); padding-top: 2px; }

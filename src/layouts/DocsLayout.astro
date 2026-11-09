@@ -305,14 +305,13 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
   }
 
   .sidebarLink:hover {
-    background: rgba(255, 255, 255, 0.04);
+    background: rgba(0, 0, 0, 0.04);
     color: var(--of-text);
   }
 
   .sidebarLink.active {
-    background: var(--of-mint-soft);
-    color: var(--of-mint);
-    box-shadow: inset 2px 0 0 var(--of-mint);
+    background: var(--of-text);
+    color: var(--of-invert);
   }
 
   /* Content - offset by sidebar width, independently scrollable */
@@ -345,7 +344,7 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
   .docsToc { position:fixed; top:var(--nav-height); right:0; width:220px; height:calc(100dvh - var(--nav-height)); padding:2rem 1.5rem; overflow-y:auto; border-left:1px solid var(--of-line); background:var(--of-bg); }
   .docsTocTitle { margin:0 0 .9rem; color:var(--color-graphite); font-size:.75rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
   .docsToc a { display:block; padding:.4rem .65rem; border-left:2px solid var(--of-line); color:var(--of-text-3); font-size:.8rem; line-height:1.4; text-decoration:none; }
-  .docsToc a:hover { color:var(--of-text); } .docsToc a.active { color:var(--of-mint); border-left-color:var(--of-mint); }
+  .docsToc a:hover { color:var(--of-text); } .docsToc a.active { color:var(--of-text); border-left-color:var(--of-text); }
   .docsToc a.level-three { padding-left:1.25rem; }
   .docsMenuButton { display:none; }
 

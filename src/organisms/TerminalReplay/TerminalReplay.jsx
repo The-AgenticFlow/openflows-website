@@ -60,7 +60,7 @@ export default function TerminalReplay() {
   const done = count >= LINES.length
 
   return (
-    <div className={styles.window}>
+    <div className={`${styles.window} of-dark`}>
       <div className={styles.bar}>
         <span className={styles.dots} aria-hidden="true"><i /><i /><i /></span>
         <span>openflows · my-org/my-project</span>

@@ -94,7 +94,7 @@ export default function MissionControl() {
   const lastAgent = count > 0 ? EVENTS[count - 1].agent : 'nexus'
 
   return (
-    <div className={styles.root} ref={rootRef}>
+    <div className={`${styles.root} of-dark`} ref={rootRef}>
       <div className={styles.bar}>
         <div className={styles.dots} aria-hidden="true"><span /><span /><span /></div>
         <span className={styles.barTitle}>openflows · tenant <b>acme/web</b></span>

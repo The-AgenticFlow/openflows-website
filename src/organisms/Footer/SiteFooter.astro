@@ -1,4 +1,6 @@
 ---
+import PixelField from '@/components/site/PixelField.astro';
+
 const REPO = 'https://github.com/The-AgenticFlow/OpenFlows';
 
 const COLUMNS = [
@@ -47,8 +49,8 @@ const COLUMNS = [
 const year = new Date().getFullYear();
 ---
 
-<footer class="footer">
-  <div class="glow" aria-hidden="true"></div>
+<footer class="footer of-dark">
+  <PixelField cell={32} density={0.035} />
   <div class="of-container of-container-wide">
     <div class="top">
       <div class="brand-col">
@@ -110,7 +112,8 @@ const year = new Date().getFullYear();
     overflow: hidden;
     padding: 5rem 0 0;
     border-top: 1px solid var(--of-line);
-    background: linear-gradient(180deg, var(--of-bg), #060708);
+    background: var(--of-bg);
+    isolation: isolate;
   }
 
   .glow {
@@ -123,6 +126,8 @@ const year = new Date().getFullYear();
     background: radial-gradient(closest-side, rgba(62, 224, 161, 0.1), rgba(155, 123, 255, 0.06) 50%, transparent);
     pointer-events: none;
   }
+
+  .footer :global(.of-pixels) { z-index: -1; opacity: 0.35; mask-image: linear-gradient(180deg, transparent 30%, #000 85%); -webkit-mask-image: linear-gradient(180deg, transparent 30%, #000 85%); }
 
   .top {
     position: relative;

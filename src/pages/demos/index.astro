@@ -87,14 +87,14 @@ import CtaBanner from '@/components/site/CtaBanner.astro';
   .play { position: absolute; inset: 0; display: grid; place-items: center; width: 100%; overflow: hidden; }
   .play img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; transition: transform 0.8s var(--ease-out), opacity 0.4s; }
   .play:hover img { transform: scale(1.03); opacity: 0.7; }
-  .shade { position: absolute; inset: 0; background: radial-gradient(circle, rgba(8, 9, 11, 0.2), rgba(8, 9, 11, 0.85)); }
-  .btn { position: relative; display: grid; place-items: center; width: 80px; height: 80px; border-radius: 50%; background: var(--of-text); color: var(--of-bg); box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.08); transition: transform 0.3s var(--ease-out); }
+  .shade { position: absolute; inset: 0; background: radial-gradient(circle, var(--of-surface), var(--of-surface)); }
+  .btn { position: relative; display: grid; place-items: center; width: 80px; height: 80px; border-radius: 50%; background: #f2f2f0; color: #0b0b0c; box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.08); transition: transform 0.3s var(--ease-out); }
   .play:hover .btn { transform: scale(1.06); }
   .btn svg { width: 28px; height: 28px; margin-left: 4px; }
 
   .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 1000px; margin: 1.5rem auto 0; }
   .card { display: flex; flex-direction: column; overflow: hidden; }
-  .preview { height: 180px; padding: 1.25rem 1.4rem; border-bottom: 1px solid var(--of-line); background: rgba(6, 7, 9, 0.6); }
+  .preview { height: 180px; padding: 1.25rem 1.4rem; border-bottom: 1px solid var(--of-line); background: var(--of-surface); }
   .term { font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.9; color: var(--of-text-2); }
   .term .p, .term .ok { color: var(--of-mint); }
   .term .n { color: var(--color-agent-nexus); }

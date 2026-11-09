@@ -60,7 +60,7 @@ const splitPoint = (point: string) => {
           </div>
 
           <dl class="spec fade-up" style="animation-delay:300ms">
-            <div class="spec-title"><span class="of-dot is-live" style="background:var(--agent);box-shadow:0 0 10px var(--agent)"></span>{agent.name.toLowerCase()}.spec</div>
+            <div class="spec-title"><span class="of-dot is-live" style="background:var(--agent);"></span>{agent.name.toLowerCase()}.spec</div>
             <div><dt>Runs in</dt><dd>{summary.spec.runs}</dd></div>
             <div><dt>Writes</dt><dd>{summary.spec.writes}</dd></div>
             <div><dt>Never</dt><dd>{summary.spec.never}</dd></div>
@@ -181,7 +181,6 @@ const splitPoint = (point: string) => {
     color: var(--agent);
     border: 1px solid color-mix(in srgb, var(--agent) 40%, transparent);
     background: color-mix(in srgb, var(--agent) 10%, transparent);
-    box-shadow: 0 0 40px -6px var(--agent);
   }
 
   .hero-icon svg { width: 24px; height: 24px; }
@@ -192,7 +191,7 @@ const splitPoint = (point: string) => {
     font-weight: 600;
     letter-spacing: 0;
     font-size: clamp(3rem, 8vw, 6rem);
-    background: linear-gradient(180deg, #fff 20%, var(--agent));
+    background: linear-gradient(180deg, var(--of-text), var(--of-text-2));
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -202,7 +201,7 @@ const splitPoint = (point: string) => {
     display: grid;
     border-radius: 16px;
     border: 1px solid var(--of-line-strong);
-    background: rgba(10, 11, 14, 0.8);
+    background: var(--of-surface);
     backdrop-filter: blur(10px);
     font-size: 0.88rem;
     overflow: hidden;
@@ -211,7 +210,7 @@ const splitPoint = (point: string) => {
 
   .spec > div { display: grid; grid-template-columns: 86px 1fr; gap: 1rem; padding: 0.95rem 1.2rem; }
   .spec > div + div { border-top: 1px solid var(--of-line); }
-  .spec .spec-title { display: flex; align-items: center; gap: 0.55rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-text-2); background: rgba(255, 255, 255, 0.02); }
+  .spec .spec-title { display: flex; align-items: center; gap: 0.55rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-text-2); background: var(--of-surface); }
   .spec dt { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--of-text-3); padding-top: 2px; }
   .spec dd { color: var(--of-text); line-height: 1.45; }
   .spec-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
@@ -246,7 +245,7 @@ const splitPoint = (point: string) => {
     color: var(--agent);
   }
 
-  .tl-body { flex: 1; padding: 1.1rem 1.35rem 1.3rem; border-radius: 14px; border: 1px solid var(--of-line); background: rgba(255, 255, 255, 0.02); }
+  .tl-body { flex: 1; padding: 1.1rem 1.35rem 1.3rem; border-radius: 14px; border: 1px solid var(--of-line); background: var(--of-surface); }
   .tl-body h3 { font-size: 1.05rem; }
   .tl-body p { margin-top: 0.45rem; color: var(--of-text-2); line-height: 1.65; font-size: 0.94rem; }
 
@@ -257,7 +256,7 @@ const splitPoint = (point: string) => {
   .human { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
   .human .of-head { position: sticky; top: calc(var(--nav-height) + 2rem); }
   .human-list { display: grid; gap: 0.75rem; }
-  .human-item { padding: 1.35rem 1.5rem; border-radius: 16px; border: 1px solid var(--of-line); border-left: 2px solid var(--agent); background: rgba(255, 255, 255, 0.02); }
+  .human-item { padding: 1.35rem 1.5rem; border-radius: 16px; border: 1px solid var(--of-line); border-left: 2px solid var(--agent); background: var(--of-surface); }
   .human-item h3 { font-size: 1rem; margin-bottom: 0.4rem; }
   .human-item p { color: var(--of-text-2); line-height: 1.65; font-size: 0.93rem; }
 
