@@ -1,35 +1,45 @@
 ---
+import { getPublishedPosts, getPostHref } from '@/components/blog/blog';
+
 const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
+const REPO_URL = `https://github.com/${GITHUB_REPO}`;
 
-interface MenuItem {
-  label: string;
-  desc: string;
-  href: string;
-  icon: string;
-  external?: boolean;
-}
-
+interface MenuLink { label: string; href: string; external?: boolean }
+interface MenuColumn { heading: string; links: MenuLink[] }
+interface Feature { eyebrow: string; title: string; desc?: string; href: string; cta: string; image?: string }
 interface NavItem {
   label: string;
   href: string;
-  menu?: {
-    items: MenuItem[];
-    feature?: { eyebrow: string; title: string; desc: string; href: string; cta: string };
-  };
+  menu?: { columns: MenuColumn[]; feature?: Feature; side?: MenuColumn };
 }
+
+const latest = (await getPublishedPosts())[0];
+const blogFeature: Feature | undefined = latest && {
+  eyebrow: 'Blog',
+  title: latest.data.title,
+  href: getPostHref(latest),
+  cta: 'Read the blog',
+  image: latest.data.cover_image_url,
+};
 
 const NAV: NavItem[] = [
   {
     label: 'Product',
     href: '/agents',
     menu: {
-      items: [
-        { label: 'The agent team', desc: 'Five roles, one governed pipeline', href: '/agents', icon: 'team' },
-        { label: 'How it works', desc: 'From GitHub issue to merged PR', href: '/#how-it-works', icon: 'flow' },
-        { label: 'Planning gate', desc: 'No code until the plan is approved', href: '/docs/concepts/planning-gate', icon: 'gate' },
-        { label: 'Security model', desc: 'Zero LLM keys inside workspaces', href: '/docs/architecture/security-by-design', icon: 'shield' },
-        { label: 'Demos', desc: 'Terminal replay and walkthrough', href: '/demos', icon: 'play' },
-        { label: 'Enterprise', desc: 'Self-hosted, auditable delivery', href: '/enterprise', icon: 'building' },
+      columns: [
+        { heading: 'Platform', links: [
+          { label: 'The agent team', href: '/agents' },
+          { label: 'How it works', href: '/#how-it-works' },
+          { label: 'Planning gate', href: '/docs/concepts/planning-gate' },
+          { label: 'Security model', href: '/docs/architecture/security-by-design' },
+        ] },
+        { heading: 'See it run', links: [
+          { label: 'Demos', href: '/demos' },
+          { label: 'Terminal replay', href: '/demos/terminal' },
+          { label: 'Walkthrough', href: '/demos/walkthrough' },
+          { label: 'Enterprise', href: '/enterprise' },
+        ] },
       ],
       feature: {
         eyebrow: 'Live replay',
@@ -37,28 +47,46 @@ const NAV: NavItem[] = [
         desc: 'NEXUS assigns, FORGE builds, SENTINEL reviews, VESSEL ships.',
         href: '/demos/terminal',
         cta: 'Open the demo',
+        image: '/images/howitworks.png',
       },
+      side: { heading: 'Get started', links: [
+        { label: 'Quick start', href: '/docs/getting-started' },
+        { label: 'Installation', href: '/docs/getting-started/installation' },
+        { label: 'First issue', href: '/docs/getting-started/first-issue' },
+        { label: 'Talk to the team', href: '/contact' },
+      ] },
     },
   },
   {
     label: 'Docs',
     href: '/docs',
     menu: {
-      items: [
-        { label: 'Introduction', desc: 'What OpenFlows is and why', href: '/docs/introduction/what-is-openflows', icon: 'book' },
-        { label: 'Quick start', desc: 'One script, one repository', href: '/docs/getting-started', icon: 'bolt' },
-        { label: 'Core concepts', desc: 'Gates, tenants, workspaces', href: '/docs/concepts', icon: 'cube' },
-        { label: 'Architecture', desc: 'Controller, fleet, A2A relay', href: '/docs/architecture', icon: 'layers' },
-        { label: 'Guides', desc: 'Models, MCP, skills, operations', href: '/docs/guides', icon: 'map' },
-        { label: 'Reference', desc: 'States, commands, configuration', href: '/docs/reference', icon: 'code' },
+      columns: [
+        { heading: 'Learn', links: [
+          { label: 'What is OpenFlows', href: '/docs/introduction/what-is-openflows' },
+          { label: 'How it works', href: '/docs/introduction/how-it-works' },
+          { label: 'Use cases', href: '/docs/introduction/use-cases' },
+          { label: 'How it compares', href: '/docs/introduction/how-openflows-compares' },
+        ] },
+        { heading: 'Build', links: [
+          { label: 'Quick start', href: '/docs/getting-started' },
+          { label: 'Core concepts', href: '/docs/concepts' },
+          { label: 'Architecture', href: '/docs/architecture' },
+          { label: 'Guides', href: '/docs/guides' },
+        ] },
+        { heading: 'Operate', links: [
+          { label: 'Reference', href: '/docs/reference' },
+          { label: 'Operations', href: '/docs/guides/operations' },
+          { label: 'Troubleshooting', href: '/docs/guides/troubleshooting' },
+          { label: 'FAQ', href: '/docs/resources/faq' },
+        ] },
       ],
-      feature: {
-        eyebrow: 'Get started',
-        title: 'Run your first issue in minutes',
-        desc: './scripts/setup.sh owner/repo --compose',
-        href: '/docs/getting-started/installation',
-        cta: 'Installation guide',
-      },
+      side: { heading: 'Contribute', links: [
+        { label: 'Contributor guide', href: '/docs/contributing' },
+        { label: 'Development setup', href: '/docs/contributing/development-setup' },
+        { label: 'Adding skills', href: '/docs/contributing/adding-skills' },
+        { label: 'Community & support', href: '/docs/resources/community-and-support' },
+      ] },
     },
   },
   { label: 'Enterprise', href: '/enterprise' },
@@ -66,39 +94,31 @@ const NAV: NavItem[] = [
     label: 'Resources',
     href: '/resources',
     menu: {
-      items: [
-        { label: 'Blog', desc: 'Engineering essays and updates', href: '/blog', icon: 'pen' },
-        { label: 'Research', desc: 'State machines and system design', href: '/research', icon: 'flask' },
-        { label: 'Case studies', desc: 'How teams run OpenFlows', href: '/resources#stories', icon: 'star' },
-        { label: 'Developers', desc: 'Integrations and source', href: '/developers', icon: 'code' },
-        { label: 'Changelog', desc: 'Every release on GitHub', href: `https://github.com/${GITHUB_REPO}/releases`, icon: 'tag', external: true },
-        { label: 'Community', desc: 'Discord, discussions, contributing', href: '/about', icon: 'chat' },
+      columns: [
+        { heading: 'Read', links: [
+          { label: 'Blog', href: '/blog' },
+          { label: 'Research', href: '/research' },
+          { label: 'Case studies', href: '/resources#stories' },
+          { label: 'Developers', href: '/developers' },
+        ] },
+        { heading: 'Stay current', links: [
+          { label: 'Changelog', href: `${REPO_URL}/releases`, external: true },
+          { label: 'GitHub', href: REPO_URL, external: true },
+          { label: 'Discussions', href: `${REPO_URL}/discussions`, external: true },
+        ] },
       ],
+      feature: blogFeature,
+      side: { heading: 'Company', links: [
+        { label: 'Community', href: '/about' },
+        { label: 'Contact', href: '/contact' },
+        { label: 'Security', href: `${REPO_URL}/blob/HEAD/SECURITY.md`, external: true },
+        { label: 'Discord', href: 'https://discord.gg/gDhK2RQZpY', external: true },
+      ] },
     },
   },
   { label: 'Community', href: '/about' },
   { label: 'Contact', href: '/contact' },
 ];
-
-const ICONS: Record<string, string> = {
-  team: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"/><path d="M15 14.5c2.8 0 5 1.6 5 4.5"/>',
-  flow: '<circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 6h6a4 4 0 0 1 0 8h-2a4 4 0 0 0 0 8"/>',
-  gate: '<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
-  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
-  play: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/>',
-  building: '<rect x="4" y="3" width="12" height="18" rx="1"/><path d="M16 9h4v12h-4M8 7h4M8 11h4M8 15h4"/>',
-  book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/>',
-  bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
-  cube: '<path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 22V12M21 7l-9 5-9-5"/>',
-  layers: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',
-  map: '<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
-  code: '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
-  pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
-  flask: '<path d="M9 3h6M10 3v6L4 19a1.5 1.5 0 0 0 1.3 2h13.4A1.5 1.5 0 0 0 20 19l-6-10V3"/>',
-  star: '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
-  tag: '<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',
-  chat: '<path d="M4 5h16v11H9l-5 4z"/>',
-};
 
 const currentPath = Astro.url.pathname;
 const isActive = (href: string) =>
@@ -116,17 +136,14 @@ const isActive = (href: string) =>
     <nav class="links" aria-label="Main navigation">
       {NAV.map((item, i) => (
         <div class={`item ${item.menu ? 'has-menu' : ''}`} data-menu-trigger={item.menu ? i : undefined}>
-          <a
-            href={item.href}
-            class={`link ${isActive(item.href) ? 'is-active' : ''}`}
-            aria-haspopup={item.menu ? 'true' : undefined}
-            aria-expanded={item.menu ? 'false' : undefined}
-          >
-            {item.label}
-            {item.menu && (
+          {item.menu ? (
+            <button type="button" class={`link ${isActive(item.href) ? 'is-active' : ''}`} aria-haspopup="true" aria-expanded="false" aria-controls={`mega-${i}`}>
+              {item.label}
               <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            )}
-          </a>
+            </button>
+          ) : (
+            <a href={item.href} class={`link ${isActive(item.href) ? 'is-active' : ''}`}>{item.label}</a>
+          )}
         </div>
       ))}
     </nav>
@@ -157,43 +174,42 @@ const isActive = (href: string) =>
   <div class="nav-dim" id="nav-dim" aria-hidden="true"></div>
   <div class="mega" id="mega">
     <div class="mega-bg" id="mega-bg"></div>
-    <div class="mega-arrow" id="mega-arrow"></div>
     {NAV.map((item, i) => item.menu && (
-      <div class="mega-panel" data-menu-panel={i} role="menu" aria-label={item.label}>
-        <div class={`menu-card ${item.menu.feature ? 'has-feature' : ''}`}>
-          <div class="menu-grid">
-            {item.menu.items.map((sub, k) => (
-              <a
-                href={sub.href}
-                class="menu-link"
-                role="menuitem"
-                style={`--k:${k}`}
-                target={sub.external ? '_blank' : undefined}
-                rel={sub.external ? 'noopener noreferrer' : undefined}
-              >
-                <span class="menu-icon">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICONS[sub.icon]} />
-                </span>
-                <span class="menu-text">
-                  <span class="menu-label">{sub.label}{sub.external && <span aria-hidden="true"> ↗</span>}</span>
-                  <span class="menu-desc">{sub.desc}</span>
-                </span>
-              </a>
-            ))}
-          </div>
+      <div class="mega-panel" id={`mega-${i}`} data-menu-panel={i} role="menu" aria-label={item.label}>
+        <div class="mega-inner" style={`grid-template-columns: ${[...item.menu.columns.map(() => 'minmax(0, 1fr)'), ...(item.menu.feature ? ['minmax(0, 1.7fr)'] : []), ...(item.menu.side ? ['minmax(0, 1.15fr)'] : [])].join(' ')}`}>
+          {item.menu.columns.map((col, c) => (
+            <div class="mega-col" style={`--c:${c}`}>
+              <p class="mega-heading">{col.heading}</p>
+              <ul>
+                {col.links.map((link) => (
+                  <li><a href={link.href} role="menuitem" target={link.external ? '_blank' : undefined} rel={link.external ? 'noopener noreferrer' : undefined}>{link.label}{link.external && <span class="ext" aria-hidden="true">↗</span>}</a></li>
+                ))}
+              </ul>
+            </div>
+          ))}
           {item.menu.feature && (
-            <a href={item.menu.feature.href} class="menu-feature">
-              <span class="of-eyebrow">{item.menu.feature.eyebrow}</span>
-              <span class="feature-title">{item.menu.feature.title}</span>
-              <span class="feature-desc">{item.menu.feature.desc}</span>
-              <span class="feature-cta">{item.menu.feature.cta} <span aria-hidden="true">→</span></span>
+            <a href={item.menu.feature.href} class="mega-feature" style={`--c:${item.menu.columns.length}`}>
+              <p class="mega-heading">{item.menu.feature.eyebrow}</p>
+              {item.menu.feature.image && <span class="mf-img"><img src={item.menu.feature.image} alt="" decoding="async" /></span>}
+              <span class="mf-title">{item.menu.feature.title}</span>
+              {item.menu.feature.desc && <span class="mf-desc">{item.menu.feature.desc}</span>}
+              <span class="mf-cta">{item.menu.feature.cta} <span aria-hidden="true">→</span></span>
             </a>
+          )}
+          {item.menu.side && (
+            <div class="mega-side" style={`--c:${item.menu.columns.length + 1}`}>
+              <p class="mega-heading">{item.menu.side.heading}</p>
+              <ul>
+                {item.menu.side.links.map((link) => (
+                  <li><a href={link.href} role="menuitem" target={link.external ? '_blank' : undefined} rel={link.external ? 'noopener noreferrer' : undefined}>{link.label}{link.external && <span class="ext" aria-hidden="true">↗</span>}</a></li>
+                ))}
+              </ul>
+            </div>
           )}
         </div>
       </div>
     ))}
   </div>
-
   <div class="drawer" id="nav-drawer" hidden data-lenis-prevent>
     <nav aria-label="Mobile navigation">
       {NAV.map((item) => (
@@ -201,11 +217,15 @@ const isActive = (href: string) =>
           <details class="drawer-group">
             <summary>{item.label}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
             <div class="drawer-sub">
-              {item.menu.items.map((sub) => (
-                <a href={sub.href} target={sub.external ? '_blank' : undefined} rel={sub.external ? 'noopener noreferrer' : undefined}>
-                  <span>{sub.label}</span>
-                  <small>{sub.desc}</small>
-                </a>
+              {[...item.menu.columns, ...(item.menu.side ? [item.menu.side] : [])].map((col) => (
+                <>
+                  <p class="drawer-heading">{col.heading}</p>
+                  {col.links.map((sub) => (
+                    <a href={sub.href} target={sub.external ? '_blank' : undefined} rel={sub.external ? 'noopener noreferrer' : undefined}>
+                      <span>{sub.label}{sub.external && ' ↗'}</span>
+                    </a>
+                  ))}
+                </>
               ))}
             </div>
           </details>
@@ -291,17 +311,8 @@ const isActive = (href: string) =>
     const order = triggers.map((t) => t.dataset.menuTrigger!);
 
     const place = (key: string) => {
-      const trigger = triggers.find((t) => t.dataset.menuTrigger === key)!;
       const panel = panels.get(key)!;
-      const tr = trigger.getBoundingClientRect();
-      const w = panel.offsetWidth;
-      const h = panel.offsetHeight;
-      const center = tr.left + tr.width / 2;
-      const x = Math.max(16, Math.min(window.innerWidth - w - 16, tr.left - 18));
-      mega.style.setProperty('--x', `${x}px`);
-      mega.style.setProperty('--w', `${w}px`);
-      mega.style.setProperty('--h', `${h}px`);
-      mega.style.setProperty('--ax', `${center}px`);
+      mega.style.setProperty('--h', `${panel.offsetHeight}px`);
     };
 
     const open = (key: string) => {
@@ -360,7 +371,11 @@ const isActive = (href: string) =>
         openTimer = window.setTimeout(() => open(key), current ? 0 : 70);
       });
       t.addEventListener('mouseleave', scheduleClose);
-      t.addEventListener('focusin', () => open(key));
+      t.querySelector('button')?.addEventListener('click', () => {
+        clearTimeout(openTimer);
+        if (current === key && mega.classList.contains('is-open')) close();
+        else open(key);
+      });
     });
 
     document.querySelectorAll('.links .item:not(.has-menu)').forEach((item) => {
@@ -374,6 +389,10 @@ const isActive = (href: string) =>
       if (!mega.contains(e.relatedTarget as Node) && !(e.relatedTarget as HTMLElement)?.closest('[data-menu-trigger]')) close();
     });
     window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    document.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      if (current && !t.closest('#mega') && !t.closest('[data-menu-trigger]')) close();
+    });
     window.addEventListener('resize', () => current && place(current));
     window.addEventListener('scroll', () => current && close(), { passive: true });
   }
@@ -444,68 +463,6 @@ const isActive = (href: string) =>
   .caret { width: 12px; height: 12px; opacity: 0.6; transition: transform 0.2s; }
   .has-menu.is-open .caret { transform: rotate(180deg); }
   .has-menu.is-open > .link { color: var(--of-text); background: color-mix(in srgb, var(--of-text) 5%, transparent); }
-
-  .menu-card {
-    display: grid;
-    gap: 0.5rem;
-    padding: 0.5rem;
-  }
-
-  .menu-card.has-feature { grid-template-columns: 1fr 230px; }
-
-  .menu-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 250px);
-    gap: 2px;
-  }
-
-  .menu-link {
-    display: flex;
-    gap: 0.75rem;
-    padding: 0.7rem 0.75rem;
-    border-radius: 10px;
-    transition: background 0.15s;
-  }
-
-  .menu-link:hover { background: var(--of-surface-2); }
-
-  .menu-icon {
-    display: grid;
-    place-items: center;
-    width: 32px;
-    height: 32px;
-    flex-shrink: 0;
-    border-radius: 8px;
-    border: 1px solid var(--of-line-strong);
-    background: var(--of-surface-2);
-    color: var(--of-text-2);
-    transition: color 0.15s, border-color 0.15s;
-  }
-
-  .menu-icon svg { width: 16px; height: 16px; }
-  .menu-link:hover .menu-icon { color: var(--of-invert); background: var(--of-text); border-color: var(--of-text); }
-
-  .menu-text { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
-  .menu-label { font-size: 0.875rem; font-weight: 500; color: var(--of-text); }
-  .menu-desc { font-size: 0.78rem; color: var(--of-text-3); line-height: 1.4; }
-
-  .menu-feature {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
-    padding: 1.1rem;
-    border-radius: 12px;
-    overflow: hidden;
-    background: #0b0b0c;
-    color: #f2f2f0;
-  }
-
-  .feature-title { font-weight: 500; font-size: 1rem; line-height: 1.3; color: #f2f2f0; margin-top: auto; }
-  .feature-desc { font-size: 0.78rem; color: #a2a3a8; line-height: 1.45; word-break: break-word; }
-  .feature-cta { font-size: 0.8rem; color: #f2f2f0; font-weight: 500; }
-  .menu-feature .of-eyebrow { color: #a2a3a8; }
-  .menu-feature .of-eyebrow::before { background: #5fe3b0; }
 
   .actions { display: flex; align-items: center; gap: 0.6rem; margin-left: auto; }
 
@@ -630,103 +587,103 @@ const isActive = (href: string) =>
     .star > span:first-of-type { display: none; }
   }
 
-  /* --- Shared morphing dropdown --- */
+  /* --- Full-width mega menu --- */
   .mega {
     position: absolute;
-    top: calc(100% - 4px);
+    top: 100%;
     left: 0;
-    width: 0;
+    right: 0;
     height: 0;
     pointer-events: none;
-    --x: 0px;
-    --w: 0px;
     --h: 0px;
-    --ax: 0px;
   }
 
   .mega.is-open { pointer-events: auto; }
 
   .mega-bg {
     position: absolute;
-    top: 0;
-    left: 0;
-    width: var(--w);
+    inset: 0 0 auto 0;
     height: var(--h);
-    border-radius: 18px;
-    border: 1px solid var(--of-line);
-    background: var(--of-surface);
-    box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.05);
-    opacity: 0;
-    transform: translateX(var(--x)) translateY(-8px) scale(0.97);
-    transform-origin: 50% 0;
-    transition:
-      opacity 0.22s ease,
-      transform 0.45s var(--ease-out),
-      width 0.45s var(--ease-out),
-      height 0.45s var(--ease-out);
+    background: var(--of-bg);
+    border-bottom: 1px solid var(--of-line);
+    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.25);
+    clip-path: inset(0 0 100% 0);
+    transition: height 0.5s var(--ease-out), clip-path 0.5s var(--ease-out);
   }
 
-  .mega.is-open .mega-bg { opacity: 1; transform: translateX(var(--x)); }
-  .mega.no-morph .mega-bg, .mega.no-morph .mega-arrow { transition-property: opacity, transform; }
-
-  .mega-arrow {
-    position: absolute;
-    top: -6px;
-    left: 0;
-    width: 13px;
-    height: 13px;
-    border-radius: 3px 0 0 0;
-    border-left: 1px solid var(--of-line);
-    border-top: 1px solid var(--of-line);
-    background: var(--of-surface);
-    opacity: 0;
-    transform: translateX(calc(var(--ax) - 6.5px)) rotate(45deg) scale(0.6);
-    transition: opacity 0.2s ease, transform 0.45s var(--ease-out);
-    z-index: 1;
-  }
-
-  .mega.is-open .mega-arrow { opacity: 1; transform: translateX(calc(var(--ax) - 6.5px)) rotate(45deg); }
+  .mega.is-open .mega-bg { clip-path: inset(0 0 0 0); }
+  .mega.no-morph .mega-bg { transition: clip-path 0.5s var(--ease-out); }
 
   .mega-panel {
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
     z-index: 2;
     opacity: 0;
     visibility: hidden;
-    transform: translateX(calc(var(--x) + var(--dir, 0) * 28px));
+    transform: translateX(calc(var(--dir, 0) * 24px));
     transition: opacity 0.25s ease, transform 0.45s var(--ease-out), visibility 0s linear 0.25s;
   }
 
-  .mega-panel.is-active {
-    opacity: 1;
-    visibility: visible;
-    transform: translateX(var(--x));
-    transition: opacity 0.3s ease 0.05s, transform 0.45s var(--ease-out), visibility 0s;
+  .mega-panel.is-active { opacity: 1; visibility: visible; transform: none; transition: opacity 0.35s ease 0.06s, transform 0.5s var(--ease-out), visibility 0s; }
+
+  .mega-inner {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    max-width: var(--max-width-7xl);
+    margin: 0 auto;
+    padding: 2rem var(--gutter) 2.25rem;
   }
 
-  .mega-panel .menu-link,
-  .mega-panel .menu-feature { opacity: 0; transform: translateY(6px); transition: opacity 0.35s ease, transform 0.5s var(--ease-out), background 0.15s; }
-  .mega-panel.is-active .menu-link { opacity: 1; transform: none; transition-delay: calc(var(--k) * 25ms + 60ms), calc(var(--k) * 25ms + 60ms), 0s; }
-  .mega-panel.is-active .menu-feature { opacity: 1; transform: none; transition-delay: 140ms; }
+  .mega-col, .mega-feature, .mega-side { opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.6s var(--ease-out); }
+  .mega-panel.is-active .mega-col,
+  .mega-panel.is-active .mega-feature,
+  .mega-panel.is-active .mega-side { opacity: 1; transform: none; transition-delay: calc(var(--c) * 45ms + 80ms); }
 
-  .menu-feature { transition: transform 0.5s var(--ease-out); }
-  .menu-feature:hover .feature-cta span { display: inline-block; transform: translateX(3px); }
-  .feature-cta span { transition: transform 0.3s var(--ease-out); }
+  .mega-heading { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--of-text-3); margin-bottom: 1rem; }
+  .mega-col ul, .mega-side ul { display: grid; gap: 0.15rem; }
+  .mega-col a, .mega-side a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.32rem 0;
+    font-size: 1rem;
+    color: var(--of-text);
+    background: linear-gradient(currentColor, currentColor) 0 calc(100% - 4px) / 0 1px no-repeat;
+    transition: background-size 0.35s var(--ease-out), color 0.2s;
+  }
+  .mega-col a:hover, .mega-side a:hover { background-size: 100% 1px; }
+  .mega-col a .ext, .mega-side a .ext { font-size: 0.75em; color: var(--of-text-3); }
+
+  .mega-feature { display: flex; flex-direction: column; min-width: 0; }
+  .mf-img { display: block; aspect-ratio: 16 / 7; border-radius: 12px; overflow: hidden; background: var(--of-surface-2); border: 1px solid var(--of-line); }
+  .mf-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease-out); }
+  .mega-feature:hover .mf-img img { transform: scale(1.04); }
+  .mf-title { margin-top: 0.9rem; font-size: 1.02rem; font-weight: 500; line-height: 1.35; color: var(--of-text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .mf-desc { margin-top: 0.3rem; font-size: 0.86rem; color: var(--of-text-2); }
+  .mf-cta { margin-top: 0.8rem; font-size: 0.9rem; font-weight: 500; color: var(--of-text); }
+  .mf-cta span { display: inline-block; transition: transform 0.3s var(--ease-out); }
+  .mega-feature:hover .mf-cta span { transform: translateX(4px); }
+
+  .mega-side { padding: 1.25rem 1.4rem; border-radius: 14px; background: var(--of-surface); border: 1px solid var(--of-line); align-self: start; }
 
   .nav-dim {
     position: fixed;
     inset: var(--nav-height) 0 0 0;
-    background: rgba(10, 10, 12, 0.18);
-    backdrop-filter: blur(2px);
+    background: rgba(10, 10, 12, 0.22);
+    backdrop-filter: blur(3px);
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.35s ease;
+    transition: opacity 0.4s ease;
     z-index: -1;
   }
 
   .nav.menu-open .nav-dim { opacity: 1; }
-  .nav.menu-open { background: color-mix(in srgb, var(--of-bg) 92%, transparent); backdrop-filter: saturate(180%) blur(18px); border-bottom-color: var(--of-line); }
+  .nav.menu-open { background: var(--of-bg); backdrop-filter: none; border-bottom-color: var(--of-line); }
+
+  .drawer-heading { margin: 0.75rem 0 0.25rem 0.5rem; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--of-text-3); }
 
   @media (max-width: 1000px) { .mega, .nav-dim { display: none; } }
+  button.link { background: none; border: 0; font: inherit; cursor: pointer; }
 </style>
