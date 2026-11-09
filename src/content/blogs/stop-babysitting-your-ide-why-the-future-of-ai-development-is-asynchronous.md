@@ -6,7 +6,7 @@ excerpt: Interactive AI chat in your IDE is not autonomous engineering; it is
   work. OpenFlows replaces synchronous chat wrangling with an asynchronous,
   issue-driven AI team that works while you sleep.
 author_name: Nkwa Tambe
-cover_image_url: blob:https://openflows.dev/2371e47c-11dd-40af-bcbe-2e04775b9dc7
+cover_image_url: https://openflows.dev/uploads/asynchronous_ai_team_final_1793698197980.jpg
 category_id: Agentic Development
 status: published
 published_at: 2026-11-03T10:40:00.000+01:00

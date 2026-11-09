@@ -33,58 +33,39 @@ const FAQ_ITEMS = [
 ]
 
 export default function FAQ() {
-    const [openFaq, setOpenFaq] = useState(null)
+    const [openFaq, setOpenFaq] = useState(0)
 
     return (
-        <section className={styles.section} aria-labelledby="faq-title">
-            <div className={styles.container}>
-                <div className={styles.header}>
-                    <p className={styles.eyebrow}>FAQ</p>
-                    <h2 id="faq-title" className={styles.title}>Frequently asked questions</h2>
-                </div>
-                <div className={styles.faqGrid}>
-                    {FAQ_ITEMS.map((item, i) => {
-                        const isOpen = openFaq === i
-                        return (
-                            <div
-                                key={i}
-                                className={`${styles.faqItem} ${isOpen ? styles.faqItemOpen : ''}`}
+        <div className={styles.faqList}>
+            {FAQ_ITEMS.map((item, i) => {
+                const isOpen = openFaq === i
+                return (
+                    <div key={item.question} className={`${styles.faqItem} ${isOpen ? styles.faqItemOpen : ''}`}>
+                        <h3 className={styles.faqHeading}>
+                            <button
+                                className={styles.faqQuestion}
+                                onClick={() => setOpenFaq(isOpen ? null : i)}
+                                aria-expanded={isOpen}
+                                aria-controls={`faq-answer-${i}`}
+                                id={`faq-q-${i}`}
                             >
-                                <button
-                                    className={styles.faqQuestion}
-                                    onClick={() => setOpenFaq(isOpen ? null : i)}
-                                    aria-expanded={isOpen}
-                                >
-                                    <span>{item.question}</span>
-                                    <svg
-                                        className={`${styles.faqToggle} ${isOpen ? styles.faqToggleOpen : ''}`}
-                                        width="20"
-                                        height="20"
-                                        viewBox="0 0 24 24"
-                                        fill="none"
-                                        stroke="currentColor"
-                                        strokeWidth="2"
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                    >
-                                        {isOpen ? (
-                                            <path d="M5 12h14" />
-                                        ) : (
-                                            <>
-                                                <path d="M12 5v14" />
-                                                <path d="M5 12h14" />
-                                            </>
-                                        )}
-                                    </svg>
-                                </button>
-                                <div className={`${styles.faqAnswer} ${isOpen ? styles.faqAnswerOpen : ''}`}>
-                                    <p className={styles.faqText}>{item.answer}</p>
-                                </div>
+                                <span>{item.question}</span>
+                                <span className={styles.faqToggle} aria-hidden="true" />
+                            </button>
+                        </h3>
+                        <div
+                            id={`faq-answer-${i}`}
+                            role="region"
+                            aria-labelledby={`faq-q-${i}`}
+                            className={styles.faqAnswer}
+                        >
+                            <div className={styles.faqAnswerInner}>
+                                <p className={styles.faqText}>{item.answer}</p>
                             </div>
-                        )
-                    })}
-                </div>
-            </div>
-        </section>
+                        </div>
+                    </div>
+                )
+            })}
+        </div>
     )
 }

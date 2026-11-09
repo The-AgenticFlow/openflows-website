@@ -1,338 +1,516 @@
 ---
-import Logo from '@/atoms/Logo/Logo';
-import Button from '@/atoms/Button/Button';
-import styles from './Navbar.module.css';
+const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
 
-const NAV_DATA = [
+interface MenuItem {
+  label: string;
+  desc: string;
+  href: string;
+  icon: string;
+  external?: boolean;
+}
+
+interface NavItem {
+  label: string;
+  href: string;
+  menu?: {
+    items: MenuItem[];
+    feature?: { eyebrow: string; title: string; desc: string; href: string; cta: string };
+  };
+}
+
+const NAV: NavItem[] = [
   {
     label: 'Product',
     href: '/agents',
-    dropdown: {
-      heading: 'Product',
+    menu: {
       items: [
-        { label: 'Agents', href: '/agents' },
-        { label: 'How it works', href: '/#how-it-works' },
-        { label: 'Use cases', href: '/docs' },
-        { label: 'Demos', href: '/demos' },
-      ]
-    }
+        { label: 'The agent team', desc: 'Five roles, one governed pipeline', href: '/agents', icon: 'team' },
+        { label: 'How it works', desc: 'From GitHub issue to merged PR', href: '/#how-it-works', icon: 'flow' },
+        { label: 'Planning gate', desc: 'No code until the plan is approved', href: '/docs/concepts/planning-gate', icon: 'gate' },
+        { label: 'Security model', desc: 'Zero LLM keys inside workspaces', href: '/docs/architecture/security-by-design', icon: 'shield' },
+        { label: 'Demos', desc: 'Terminal replay and walkthrough', href: '/demos', icon: 'play' },
+        { label: 'Enterprise', desc: 'Self-hosted, auditable delivery', href: '/enterprise', icon: 'building' },
+      ],
+      feature: {
+        eyebrow: 'Live replay',
+        title: 'Watch an issue become a merged PR',
+        desc: 'NEXUS assigns, FORGE builds, SENTINEL reviews, VESSEL ships.',
+        href: '/demos/terminal',
+        cta: 'Open the demo',
+      },
+    },
   },
   {
     label: 'Docs',
     href: '/docs',
-    dropdown: {
-      heading: 'Documentation',
+    menu: {
       items: [
-        { label: 'Introduction', href: '/docs/introduction/what-is-openflows' },
-        { label: 'Get Started', href: '/docs/getting-started' },
-        { label: 'Core Concepts', href: '/docs/concepts/coder-openflows-split' },
-        { label: 'Architecture', href: '/docs/architecture' },
-        { label: 'Guides', href: '/docs/guides' },
-        { label: 'Reference', href: '/docs/reference' },
-        { label: 'FAQ', href: '/docs/resources/faq' },
-      ]
-    }
+        { label: 'Introduction', desc: 'What OpenFlows is and why', href: '/docs/introduction/what-is-openflows', icon: 'book' },
+        { label: 'Quick start', desc: 'One script, one repository', href: '/docs/getting-started', icon: 'bolt' },
+        { label: 'Core concepts', desc: 'Gates, tenants, workspaces', href: '/docs/concepts', icon: 'cube' },
+        { label: 'Architecture', desc: 'Controller, fleet, A2A relay', href: '/docs/architecture', icon: 'layers' },
+        { label: 'Guides', desc: 'Models, MCP, skills, operations', href: '/docs/guides', icon: 'map' },
+        { label: 'Reference', desc: 'States, commands, configuration', href: '/docs/reference', icon: 'code' },
+      ],
+      feature: {
+        eyebrow: 'Get started',
+        title: 'Run your first issue in minutes',
+        desc: './scripts/setup.sh owner/repo --compose',
+        href: '/docs/getting-started/installation',
+        cta: 'Installation guide',
+      },
+    },
   },
-  {
-    label: 'Enterprise',
-    href: '/enterprise',
-    dropdown: {
-      heading: 'Enterprise',
-      items: [
-        { label: 'Overview', href: '/enterprise' },
-        { label: 'Trust boundaries', href: '/enterprise#security' },
-        { label: 'Deployment', href: '/enterprise#deployment' },
-        { label: 'Availability', href: '/enterprise#editions' },
-      ]
-    }
-  },
+  { label: 'Enterprise', href: '/enterprise' },
   {
     label: 'Resources',
     href: '/resources',
-    dropdown: {
-      heading: 'Resources',
+    menu: {
       items: [
-        { label: 'All Resources', href: '/resources' },
-        { label: 'Blog', href: '/blog' },
-        { label: 'Research', href: '/research' },
-        { label: 'Case Studies', href: '/resources#stories' },
-        { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
-      ]
-    }
+        { label: 'Blog', desc: 'Engineering essays and updates', href: '/blog', icon: 'pen' },
+        { label: 'Research', desc: 'State machines and system design', href: '/research', icon: 'flask' },
+        { label: 'Case studies', desc: 'How teams run OpenFlows', href: '/resources#stories', icon: 'star' },
+        { label: 'Developers', desc: 'Integrations and source', href: '/developers', icon: 'code' },
+        { label: 'Changelog', desc: 'Every release on GitHub', href: `https://github.com/${GITHUB_REPO}/releases`, icon: 'tag', external: true },
+        { label: 'Community', desc: 'Discord, discussions, contributing', href: '/about', icon: 'chat' },
+      ],
+    },
   },
   { label: 'Community', href: '/about' },
 ];
 
-const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
+const ICONS: Record<string, string> = {
+  team: '<circle cx="9" cy="8" r="3"/><circle cx="17" cy="9" r="2.5"/><path d="M3 19c0-3 2.7-5 6-5s6 2 6 5"/><path d="M15 14.5c2.8 0 5 1.6 5 4.5"/>',
+  flow: '<circle cx="5" cy="6" r="2"/><circle cx="19" cy="18" r="2"/><path d="M7 6h6a4 4 0 0 1 0 8h-2a4 4 0 0 0 0 8"/>',
+  gate: '<rect x="4" y="10" width="16" height="10" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',
+  shield: '<path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="M9 12l2 2 4-4"/>',
+  play: '<circle cx="12" cy="12" r="9"/><path d="M10 8.5l5 3.5-5 3.5z"/>',
+  building: '<rect x="4" y="3" width="12" height="18" rx="1"/><path d="M16 9h4v12h-4M8 7h4M8 11h4M8 15h4"/>',
+  book: '<path d="M4 5a2 2 0 0 1 2-2h13v16H6a2 2 0 0 0-2 2z"/><path d="M4 19V5"/>',
+  bolt: '<path d="M13 2L4 14h7l-1 8 9-12h-7z"/>',
+  cube: '<path d="M12 2l9 5v10l-9 5-9-5V7z"/><path d="M12 22V12M21 7l-9 5-9-5"/>',
+  layers: '<path d="M12 3l9 5-9 5-9-5z"/><path d="M3 13l9 5 9-5"/>',
+  map: '<path d="M9 4L3 6v14l6-2 6 2 6-2V4l-6 2z"/><path d="M9 4v14M15 6v14"/>',
+  code: '<path d="M8 8l-4 4 4 4M16 8l4 4-4 4M14 5l-4 14"/>',
+  pen: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
+  flask: '<path d="M9 3h6M10 3v6L4 19a1.5 1.5 0 0 0 1.3 2h13.4A1.5 1.5 0 0 0 20 19l-6-10V3"/>',
+  star: '<path d="M12 3l2.8 5.7 6.2.9-4.5 4.4 1 6.2L12 17.3 6.5 20.2l1-6.2L3 9.6l6.2-.9z"/>',
+  tag: '<path d="M3 12V4a1 1 0 0 1 1-1h8l9 9-9 9z"/><circle cx="8" cy="8" r="1.5"/>',
+  chat: '<path d="M4 5h16v11H9l-5 4z"/>',
+};
+
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+  href !== '/' && !href.startsWith('http') && !href.includes('#') && currentPath.startsWith(href);
 ---
 
-<header
-  class={styles.navbar}
-  id="navbar"
-  data-scrolled-class={styles.scrolled}
-  data-dropdown-active-class={styles.dropdownActive}
->
-  <div class={styles.inner}>
-    <Logo />
+<header class="nav" id="site-nav">
+  <div class="nav-inner">
+    <a href="/" class="brand" aria-label="OpenFlows home">
+      <img src="/openlogo-light.png" alt="" width="30" height="30" />
+      <span>OpenFlows</span>
+    </a>
 
-    <nav class={styles.desktopNav} aria-label="Main navigation">
-      {NAV_DATA.map((item, index) => (
-        <div class={styles.navLinkWrapper} data-dropdown-index={index}>
+    <nav class="links" aria-label="Main navigation">
+      {NAV.map((item) => (
+        <div class={`item ${item.menu ? 'has-menu' : ''}`}>
           <a
             href={item.href}
-            class={styles.navLink}
-            target={item.external ? '_blank' : undefined}
-            rel={item.external ? 'noopener noreferrer' : undefined}
+            class={`link ${isActive(item.href) ? 'is-active' : ''}`}
+            aria-haspopup={item.menu ? 'true' : undefined}
           >
             {item.label}
+            {item.menu && (
+              <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            )}
           </a>
+          {item.menu && (
+            <div class="menu" role="menu">
+              <div class={`menu-card ${item.menu.feature ? 'has-feature' : ''}`}>
+                <div class="menu-grid">
+                  {item.menu.items.map((sub) => (
+                    <a
+                      href={sub.href}
+                      class="menu-link"
+                      role="menuitem"
+                      target={sub.external ? '_blank' : undefined}
+                      rel={sub.external ? 'noopener noreferrer' : undefined}
+                    >
+                      <span class="menu-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICONS[sub.icon]} />
+                      </span>
+                      <span class="menu-text">
+                        <span class="menu-label">{sub.label}{sub.external && <span aria-hidden="true"> ↗</span>}</span>
+                        <span class="menu-desc">{sub.desc}</span>
+                      </span>
+                    </a>
+                  ))}
+                </div>
+                {item.menu.feature && (
+                  <a href={item.menu.feature.href} class="menu-feature">
+                    <span class="of-eyebrow">{item.menu.feature.eyebrow}</span>
+                    <span class="feature-title">{item.menu.feature.title}</span>
+                    <span class="feature-desc">{item.menu.feature.desc}</span>
+                    <span class="feature-cta">{item.menu.feature.cta} →</span>
+                  </a>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       ))}
     </nav>
 
-    <div class={styles.actions}>
+    <div class="actions">
       <a
         href={`https://github.com/${GITHUB_REPO}`}
         target="_blank"
         rel="noopener noreferrer"
-        class={styles.starButton}
+        class="star"
+        aria-label="Star OpenFlows on GitHub"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-        </svg>
-        <span class={styles.starCount} id="starCount"> - </span>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>Star</span>
+        <span class="star-count" data-star-count>—</span>
       </a>
-      <Button variant="primary" size="sm" href="/docs/getting-started">
-        Get Started
-      </Button>
+      <a href="/docs/getting-started" class="of-btn of-btn-primary of-btn-sm">Get started</a>
+      <button class="burger" id="nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
+        <span></span><span></span>
+      </button>
     </div>
-
-    <button
-      class={styles.hamburger}
-      id="hamburgerBtn"
-      aria-label="Toggle menu"
-      data-open-class={styles.hamburgerOpen}
-    >
-      <span class={styles.bar}></span>
-      <span class={styles.bar}></span>
-      <span class={styles.bar}></span>
-    </button>
   </div>
 
-  <div
-    class={styles.megaPanel}
-    id="megaPanel"
-    data-visible-class={styles.panelVisible}
-  >
-    <div class={styles.panelContent} id="panelContent">
+  <div class="drawer" id="nav-drawer" hidden>
+    <nav aria-label="Mobile navigation">
+      {NAV.map((item) => (
+        item.menu ? (
+          <details class="drawer-group">
+            <summary>{item.label}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+            <div class="drawer-sub">
+              {item.menu.items.map((sub) => (
+                <a href={sub.href} target={sub.external ? '_blank' : undefined} rel={sub.external ? 'noopener noreferrer' : undefined}>
+                  <span>{sub.label}</span>
+                  <small>{sub.desc}</small>
+                </a>
+              ))}
+            </div>
+          </details>
+        ) : (
+          <a class="drawer-link" href={item.href}>{item.label}</a>
+        )
+      ))}
+    </nav>
+    <div class="drawer-actions">
+      <a href={`https://github.com/${GITHUB_REPO}`} class="of-btn of-btn-ghost" target="_blank" rel="noopener noreferrer">GitHub <span data-star-count></span></a>
+      <a href="/docs/getting-started" class="of-btn of-btn-primary">Get started</a>
     </div>
   </div>
 </header>
 
-<div
-  class={styles.mobileMenu}
-  id="mobileMenu"
-  data-open-class={styles.mobileMenuOpen}
->
-  <nav class={styles.mobileNav}>
-    {NAV_DATA.map((item) => (
-      <div>
-        <a
-          href={item.href}
-          class={styles.mobileNavLink}
-          target={item.external ? '_blank' : undefined}
-          rel={item.external ? 'noopener noreferrer' : undefined}
-        >
-          {item.label}
-          {item.external && <span class={styles.mobileNavLinkExternal}>↗</span>}
-        </a>
-        {item.dropdown && (
-          <div class={styles.mobileSubSection}>
-            <p class={styles.mobileSubHeading}>{item.dropdown.heading}</p>
-            {item.dropdown.items.map((subItem) => (
-              <a
-                href={subItem.href}
-                class={styles.mobileSubLink}
-                target={subItem.external ? '_blank' : undefined}
-                rel={subItem.external ? 'noopener noreferrer' : undefined}
-              >
-                {subItem.label}
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    ))}
-  </nav>
-  <div class={styles.mobileActions}>
-    <a
-      href={`https://github.com/${GITHUB_REPO}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      class={styles.starButton}
-    >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-      </svg>
-      <span class={styles.starCount} id="mobileStarCount"> - </span>
-    </a>
-    <Button variant="primary" size="md" href="/docs/getting-started" class={styles.mobileDemoButton}>
-      Get Started
-    </Button>
-  </div>
-</div>
-
 <script>
-  const NAV_DATA = [
-    {
-      label: 'Product',
-      dropdown: {
-        heading: 'Product',
-        items: [
-          { label: 'Agents', href: '/agents' },
-          { label: 'How it works', href: '/#how-it-works' },
-          { label: 'Use cases', href: '/docs' },
-          { label: 'Demos', href: '/demos' },
-        ]
-      }
-    },
-    {
-      label: 'Docs',
-      dropdown: {
-        heading: 'Documentation',
-        items: [
-          { label: 'Introduction', href: '/docs/introduction/what-is-openflows' },
-          { label: 'Get Started', href: '/docs/getting-started' },
-          { label: 'Core Concepts', href: '/docs/concepts/coder-openflows-split' },
-          { label: 'Architecture', href: '/docs/architecture' },
-          { label: 'Guides', href: '/docs/guides' },
-          { label: 'Reference', href: '/docs/reference' },
-          { label: 'FAQ', href: '/docs/resources/faq' },
-        ]
-      }
-    },
-    {
-      label: 'Enterprise',
-      dropdown: {
-        heading: 'Enterprise',
-        items: [
-          { label: 'Overview', href: '/enterprise' },
-          { label: 'Trust boundaries', href: '/enterprise#security' },
-          { label: 'Deployment', href: '/enterprise#deployment' },
-          { label: 'Availability', href: '/enterprise#editions' },
-        ]
-      }
-    },
-    {
-      label: 'Resources',
-      dropdown: {
-        heading: 'Resources',
-        items: [
-          { label: 'Developer Hub', href: '/developer' },
-          { label: 'Research', href: '/research' },
-          { label: 'Blog', href: '/blog' },
-          { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
-        ]
-      }
-    },
-  ];
+  const REPO = 'The-AgenticFlow/OpenFlows';
+  const nav = document.getElementById('site-nav');
+  const burger = document.getElementById('nav-burger');
+  const drawer = document.getElementById('nav-drawer');
 
-  const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
+  const format = (n: number) => (n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(n));
 
-  function formatStarCount(count: number): string {
-    if (count >= 1000) {
-      return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
-    }
-    return String(count);
-  }
+  const applyStars = (count: number) => {
+    document.querySelectorAll('[data-star-count]').forEach((el) => (el.textContent = format(count)));
+  };
 
-  // Fetch GitHub star count
-  fetch(`https://api.github.com/repos/${GITHUB_REPO}`)
+  try {
+    const cached = sessionStorage.getItem('of-stars');
+    if (cached) applyStars(Number(cached));
+  } catch {}
+
+  fetch(`https://api.github.com/repos/${REPO}`)
     .then((res) => res.json())
     .then((data) => {
       if (typeof data.stargazers_count === 'number') {
-        const starCount = formatStarCount(data.stargazers_count);
-        document.getElementById('starCount')!.textContent = starCount;
-        document.getElementById('mobileStarCount')!.textContent = starCount;
+        applyStars(data.stargazers_count);
+        try { sessionStorage.setItem('of-stars', String(data.stargazers_count)); } catch {}
       }
     })
     .catch(() => {});
 
-  // Scroll detection
-  let scrolled = false;
-  window.addEventListener('scroll', () => {
-    const navbar = document.getElementById('navbar');
-    if (!navbar) return;
-    if (window.scrollY > 8 && !scrolled) {
-      navbar.classList.add(navbar.dataset.scrolledClass);
-      scrolled = true;
-    } else if (window.scrollY <= 8 && scrolled) {
-      navbar.classList.remove(navbar.dataset.scrolledClass);
-      scrolled = false;
-    }
-  }, { passive: true });
+  const onScroll = () => nav?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
 
-  // Mobile menu toggle
-  const hamburger = document.getElementById('hamburgerBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  hamburger?.addEventListener('click', () => {
-    const menuOpenClass = mobileMenu?.dataset.openClass;
-    const btnOpenClass = hamburger?.dataset.openClass;
-    if (menuOpenClass) mobileMenu?.classList.toggle(menuOpenClass);
-    if (btnOpenClass) hamburger.classList.toggle(btnOpenClass);
-    document.body.style.overflow = mobileMenu?.classList.contains(menuOpenClass) ? 'hidden' : '';
+  const setOpen = (open: boolean) => {
+    if (!drawer || !burger) return;
+    drawer.hidden = !open;
+    burger.setAttribute('aria-expanded', String(open));
+    nav?.classList.toggle('is-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
+  burger?.addEventListener('click', () => setOpen(drawer?.hidden ?? true));
+  drawer?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
   });
-
-  // Dropdown hover (desktop)
-  const navLinkWrappers = document.querySelectorAll('.navLinkWrapper');
-  const megaPanel = document.getElementById('megaPanel');
-  const panelContent = document.getElementById('panelContent');
-  let dropdownTimer: number | null = null;
-
-  navLinkWrappers.forEach((wrapper, index) => {
-    wrapper.addEventListener('mouseenter', () => {
-      if (dropdownTimer) clearTimeout(dropdownTimer);
-      if (NAV_DATA[index]?.dropdown) {
-        const dropdown = NAV_DATA[index].dropdown;
-        panelContent!.innerHTML = `
-          <div class="dropdownGrid">
-            <div class="dropdownMain">
-              <p class="dropdownHeading">${dropdown.heading}</p>
-              <div class="dropdownLinks">
-                ${dropdown.items.map(item => `
-                  <a href="${item.href}" class="megaLink" ${item.external ? 'target="_blank" rel="noopener noreferrer"' : ''}>
-                    ${item.label}
-                    ${item.external ? '<span class="externalArrow">↗</span>' : ''}
-                  </a>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        `;
-        if (megaPanel && megaPanel.dataset.visibleClass) {
-          megaPanel.classList.add(megaPanel.dataset.visibleClass);
-        }
-        const navbar = document.getElementById('navbar');
-        if (navbar && navbar.dataset.dropdownActiveClass) {
-          navbar.classList.add(navbar.dataset.dropdownActiveClass);
-        }
-      }
-    });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
   });
-
-  document.getElementById('navbar')?.addEventListener('mouseleave', () => {
-    dropdownTimer = setTimeout(() => {
-      if (megaPanel && megaPanel.dataset.visibleClass) {
-        megaPanel.classList.remove(megaPanel.dataset.visibleClass);
-      }
-      const navbar = document.getElementById('navbar');
-      if (navbar && navbar.dataset.dropdownActiveClass) {
-        navbar.classList.remove(navbar.dataset.dropdownActiveClass);
-      }
-    }, 150);
-  });
-
-  megaPanel?.addEventListener('mouseenter', () => {
-    if (dropdownTimer) clearTimeout(dropdownTimer);
-  });
+  window.matchMedia('(min-width: 1001px)').addEventListener('change', (e) => e.matches && setOpen(false));
 </script>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 100;
+    height: var(--nav-height);
+    transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+
+  .nav.is-scrolled,
+  .nav.is-open {
+    background: rgba(8, 9, 11, 0.72);
+    backdrop-filter: saturate(160%) blur(16px);
+    -webkit-backdrop-filter: saturate(160%) blur(16px);
+    border-bottom-color: var(--of-line);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: 100%;
+    max-width: var(--max-width-7xl);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    color: var(--of-text);
+    flex-shrink: 0;
+  }
+
+  .brand img { width: 30px; height: 30px; }
+
+  .links { display: flex; align-items: center; gap: 0.15rem; flex: 1; }
+
+  .item { position: relative; }
+
+  .link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    height: 36px;
+    padding: 0 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--of-text-2);
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .link:hover,
+  .item:focus-within > .link,
+  .link.is-active { color: var(--of-text); }
+  .link:hover { background: rgba(255, 255, 255, 0.04); }
+
+  .caret { width: 12px; height: 12px; opacity: 0.6; transition: transform 0.2s; }
+  .has-menu:hover .caret,
+  .has-menu:focus-within .caret { transform: rotate(180deg); }
+
+  .menu {
+    position: absolute;
+    top: 100%;
+    left: -1rem;
+    padding-top: 12px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-6px) scale(0.985);
+    transform-origin: top left;
+    transition: opacity 0.18s ease, transform 0.22s var(--ease-out), visibility 0.18s;
+  }
+
+  .has-menu:hover > .menu,
+  .has-menu:focus-within > .menu {
+    opacity: 1;
+    visibility: visible;
+    transform: none;
+  }
+
+  .menu-card {
+    display: grid;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    border-radius: 16px;
+    border: 1px solid var(--of-line-strong);
+    background: rgba(17, 19, 23, 0.96);
+    backdrop-filter: blur(20px);
+    box-shadow: var(--shadow-xl);
+  }
+
+  .menu-card.has-feature { grid-template-columns: 1fr 230px; }
+
+  .menu-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 250px);
+    gap: 2px;
+  }
+
+  .menu-link {
+    display: flex;
+    gap: 0.75rem;
+    padding: 0.7rem 0.75rem;
+    border-radius: 10px;
+    transition: background 0.15s;
+  }
+
+  .menu-link:hover { background: rgba(255, 255, 255, 0.05); }
+
+  .menu-icon {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    border: 1px solid var(--of-line-strong);
+    background: var(--of-surface-2);
+    color: var(--of-text-2);
+    transition: color 0.15s, border-color 0.15s;
+  }
+
+  .menu-icon svg { width: 16px; height: 16px; }
+  .menu-link:hover .menu-icon { color: var(--of-mint); border-color: var(--of-mint-line); }
+
+  .menu-text { display: flex; flex-direction: column; gap: 0.1rem; min-width: 0; }
+  .menu-label { font-size: 0.875rem; font-weight: 500; color: var(--of-text); }
+  .menu-desc { font-size: 0.78rem; color: var(--of-text-3); line-height: 1.4; }
+
+  .menu-feature {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    padding: 1.1rem;
+    border-radius: 12px;
+    overflow: hidden;
+    border: 1px solid var(--of-line);
+    background:
+      radial-gradient(120% 80% at 100% 0%, rgba(62, 224, 161, 0.16), transparent 60%),
+      radial-gradient(90% 70% at 0% 100%, rgba(155, 123, 255, 0.14), transparent 60%),
+      var(--of-surface-2);
+  }
+
+  .feature-title { font-weight: 600; font-size: 0.95rem; line-height: 1.3; color: var(--of-text); margin-top: auto; }
+  .feature-desc { font-size: 0.78rem; color: var(--of-text-2); line-height: 1.45; word-break: break-word; }
+  .feature-cta { font-size: 0.8rem; color: var(--of-mint); font-weight: 500; }
+
+  .actions { display: flex; align-items: center; gap: 0.6rem; margin-left: auto; }
+
+  .star {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 34px;
+    padding: 0 0.7rem;
+    border-radius: 8px;
+    border: 1px solid var(--of-line-strong);
+    font-size: 0.85rem;
+    color: var(--of-text-2);
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+
+  .star:hover { color: var(--of-text); border-color: rgba(255, 255, 255, 0.22); background: rgba(255, 255, 255, 0.04); }
+  .star svg { width: 15px; height: 15px; }
+  .star-count {
+    padding-left: 0.45rem;
+    border-left: 1px solid var(--of-line-strong);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .burger {
+    display: none;
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid var(--of-line-strong);
+  }
+
+  .burger span {
+    position: absolute;
+    left: 11px;
+    right: 11px;
+    height: 1.5px;
+    background: var(--of-text);
+    border-radius: 2px;
+    transition: transform 0.25s var(--ease-out), top 0.25s var(--ease-out);
+  }
+
+  .burger span:first-child { top: 15px; }
+  .burger span:last-child { top: 21px; }
+  .is-open .burger span:first-child { top: 18px; transform: rotate(45deg); }
+  .is-open .burger span:last-child { top: 18px; transform: rotate(-45deg); }
+
+  .drawer {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding: 1rem var(--gutter) 2rem;
+    background: rgba(8, 9, 11, 0.98);
+    backdrop-filter: blur(20px);
+    animation: drawerIn 0.25s var(--ease-out);
+  }
+
+  @keyframes drawerIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .drawer nav { display: flex; flex-direction: column; }
+
+  .drawer-link,
+  .drawer-group summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0.25rem;
+    border-bottom: 1px solid var(--of-line);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--of-text);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .drawer-group summary::-webkit-details-marker { display: none; }
+  .drawer-group summary svg { width: 14px; height: 14px; transition: transform 0.2s; color: var(--of-text-3); }
+  .drawer-group[open] summary svg { transform: rotate(180deg); }
+
+  .drawer-sub { display: grid; gap: 0.15rem; padding: 0.5rem 0 0.75rem; }
+  .drawer-sub a { display: flex; flex-direction: column; padding: 0.6rem 0.5rem; border-radius: 8px; }
+  .drawer-sub a:hover { background: rgba(255, 255, 255, 0.04); }
+  .drawer-sub span { font-size: 0.95rem; color: var(--of-text); }
+  .drawer-sub small { font-size: 0.8rem; color: var(--of-text-3); }
+
+  .drawer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem; }
+
+  @media (max-width: 1000px) {
+    .links, .star { display: none; }
+    .burger { display: block; }
+    .actions .of-btn { display: none; }
+  }
+
+  @media (max-width: 1180px) and (min-width: 1001px) {
+    .star > span:first-of-type { display: none; }
+  }
+</style>

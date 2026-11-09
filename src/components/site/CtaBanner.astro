@@ -1,0 +1,81 @@
+---
+interface Props {
+  title?: string;
+  body?: string;
+  primary?: { label: string; href: string };
+  secondary?: { label: string; href: string; external?: boolean };
+}
+
+const {
+  title = 'Give your team an AI dev team it can audit.',
+  body = 'Install on your Coder environment, point it at a repository, and let the agents ship while your engineers own the architecture.',
+  primary = { label: 'Get started', href: '/docs/getting-started' },
+  secondary = { label: 'Star on GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+} = Astro.props;
+---
+
+<section class="cta-wrap">
+  <div class="of-container">
+    <div class="cta" data-reveal="scale">
+      <div class="of-grid-bg" aria-hidden="true"></div>
+      <div class="cta-glow" aria-hidden="true"></div>
+      <img src="/openlogo-light.png" alt="" width="56" height="56" class="cta-logo" loading="lazy" />
+      <h2>{title}</h2>
+      <p>{body}</p>
+      <div class="of-actions">
+        <a href={primary.href} class="of-btn of-btn-accent of-btn-lg">{primary.label}</a>
+        <a
+          href={secondary.href}
+          class="of-btn of-btn-ghost of-btn-lg"
+          target={secondary.external ? '_blank' : undefined}
+          rel={secondary.external ? 'noopener noreferrer' : undefined}
+        >
+          {secondary.label}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-wrap { padding: 2rem 0 clamp(4.5rem, 9vw, 7rem); }
+
+  .cta {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: clamp(3rem, 7vw, 5.5rem) clamp(1.5rem, 5vw, 4rem);
+    border-radius: 28px;
+    border: 1px solid var(--of-line-strong);
+    background: linear-gradient(180deg, #101216, #0a0b0e);
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .cta .of-grid-bg {
+    mask-image: radial-gradient(ellipse 60% 70% at 50% 100%, #000 20%, transparent 75%);
+    -webkit-mask-image: radial-gradient(ellipse 60% 70% at 50% 100%, #000 20%, transparent 75%);
+  }
+
+  .cta-glow {
+    position: absolute;
+    z-index: -1;
+    left: 50%;
+    bottom: -220px;
+    width: 820px;
+    max-width: 140%;
+    height: 420px;
+    transform: translateX(-50%);
+    background: var(--of-gradient);
+    filter: blur(100px);
+    opacity: 0.28;
+    border-radius: 50%;
+  }
+
+  .cta-logo { animation: of-float 6s ease-in-out infinite; }
+  .cta h2 { margin-top: 1.4rem; max-width: 20ch; font-size: clamp(1.9rem, 4.2vw, 3.1rem); letter-spacing: -0.045em; line-height: 1.05; }
+  .cta p { margin-top: 1rem; max-width: 560px; color: var(--of-text-2); font-size: 1.05rem; line-height: 1.6; }
+  .cta .of-actions { justify-content: center; }
+</style>

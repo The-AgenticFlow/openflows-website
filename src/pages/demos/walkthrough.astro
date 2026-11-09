@@ -1,11 +1,12 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { Callout, CodeBlock } from '@/molecules/DocComponents/DocComponents';
-import styles from './Demos.module.css';
+import { CodeBlock } from '@/molecules/DocComponents/DocComponents';
+import CtaBanner from '@/components/site/CtaBanner.astro';
 
 const STEPS = [
   {
-    title: '1. Issue Discovery',
+    agent: 'nexus',
+    title: 'Issue Discovery',
     description: 'NEXUS polls GitHub for open issues and creates tickets in the SharedStore',
     code: `// NEXUS discovers open issues
 const issues = await github.listIssues({ state: 'open' });
@@ -18,7 +19,8 @@ for (const issue of issues) {
 }`
   },
   {
-    title: '2. Task Assignment',
+    agent: 'nexus',
+    title: 'Task Assignment',
     description: 'NEXUS assigns tickets to idle FORGE workers based on availability',
     code: `// NEXUS assigns work
 const worker = await sharedStore.getIdleWorker();
@@ -26,7 +28,8 @@ const ticket = await sharedStore.getNextTicket();
 await sharedStore.assignTicket(ticket.id, worker.id);`
   },
   {
-    title: '3. Planning Phase',
+    agent: 'forge',
+    title: 'Planning Phase',
     description: 'FORGE creates a PLAN.md file outlining the implementation approach',
     code: `# PLAN.md
 
@@ -43,7 +46,8 @@ Fix pagination offset calculation in API endpoint
 - Need to verify with integration tests`
   },
   {
-    title: '4. Code Implementation',
+    agent: 'forge',
+    title: 'Code Implementation',
     description: 'FORGE writes the actual code changes based on the plan',
     code: `// src/api/pagination.rs
 pub fn calculate_offset(page: u32, per_page: u32) -> u32 {
@@ -65,7 +69,8 @@ mod tests {
 }`
   },
   {
-    title: '5. Code Review',
+    agent: 'sentinel',
+    title: 'Code Review',
     description: 'SENTINEL reviews the code for correctness, security, and style',
     code: `// SENTINEL review results
 {
@@ -81,7 +86,8 @@ mod tests {
 }`
   },
   {
-    title: '6. Pull Request',
+    agent: 'forge',
+    title: 'Pull Request',
     description: 'FORGE creates a pull request with all changes',
     code: `# Pull Request: Fix pagination offset calculation
 
@@ -98,7 +104,8 @@ mod tests {
 Fixes #142`
   },
   {
-    title: '7. CI/CD & Merge',
+    agent: 'vessel',
+    title: 'CI/CD & Merge',
     description: 'VESSEL monitors CI status and merges when all checks pass',
     code: `// VESSEL monitors CI
 while (!ci.complete) {
@@ -114,7 +121,8 @@ while (!ci.complete) {
 }`
   },
   {
-    title: '8. Documentation',
+    agent: 'lore',
+    title: 'Documentation',
     description: 'LORE updates documentation and creates an ADR for the change',
     code: `# ADR-001: Pagination Offset Fix
 
@@ -137,35 +145,62 @@ matching expected API behavior.
 ];
 ---
 
-<BaseLayout title="Step-by-Step Walkthrough - OpenFlows Demos" description="See how OpenFlows transforms a GitHub issue into a merged pull request">
-  <div class={styles.walkthroughPage}>
-    <p class={styles.eyebrow}>Demos</p>
-    <h1 class={styles.title}>Step-by-Step Walkthrough</h1>
-    <p class={styles.description}>
-      Follow the complete journey from GitHub issue to merged pull request.
-      See how each agent contributes to the autonomous development workflow.
-    </p>
+<BaseLayout title="Step-by-step walkthrough · OpenFlows demos" description="Follow a GitHub issue through OpenFlows to a merged pull request, with the artifact each agent produces at every step.">
+  <main>
+    <section class="of-page-hero">
+      <div class="of-grid-bg" aria-hidden="true"></div>
+      <div class="of-container">
+        <a href="/demos" class="of-back fade-up">← All demos</a>
+        <span class="of-eyebrow fade-up" style="display:flex">Walkthrough</span>
+        <h1 class="fade-up" style="animation-delay:80ms">From issue to merged PR, step by step.</h1>
+        <p class="of-lede fade-up" style="animation-delay:160ms">Follow one ticket through the whole pipeline and see the artifact each agent produces along the way: the ticket, the plan, the code, the review, the PR, the merge and the ADR.</p>
+      </div>
+    </section>
 
-    <div class={styles.timeline}>
-      {STEPS.map((step, index) => (
-        <div class={styles.timelineItem}>
-          <div class={styles.timelineMarker}>{index + 1}</div>
-          <div class={styles.timelineContent}>
-            <h3 class={styles.timelineTitle}>{step.title}</h3>
-            <p class={styles.timelineDescription}>{step.description}</p>
-            <CodeBlock lang={step.code.includes('pub fn') ? 'rust' : step.code.includes('#') ? 'markdown' : 'javascript'}>
-              {step.code}
-            </CodeBlock>
-          </div>
-        </div>
-      ))}
-    </div>
+    <section style="padding-bottom: clamp(3rem, 6vw, 5rem)">
+      <div class="of-container of-container-narrow">
+        <ol class="steps">
+          {STEPS.map((step, index) => (
+            <li class="step" data-agent={step.agent} data-reveal>
+              <div class="marker"><span>{String(index + 1).padStart(2, '0')}</span></div>
+              <div class="body">
+                <span class="agent">{step.agent.toUpperCase()}</span>
+                <h2>{step.title}</h2>
+                <p>{step.description}</p>
+                <CodeBlock lang={step.code.includes('pub fn') ? 'rust' : step.code.includes('#') ? 'markdown' : 'javascript'}>
+                  {step.code}
+                </CodeBlock>
+              </div>
+            </li>
+          ))}
+        </ol>
+        <p class="disclaimer">Snippets are illustrative. The real system is written in Rust and coordinates through the SharedStore; see the <a href="/docs/architecture">architecture docs</a> for the exact contracts.</p>
+      </div>
+    </section>
 
-    <Callout type="tip" title="Try it yourself">
-      Ready to see this in action with your own repository?
-      <a href="/docs/getting-started">Get started with OpenFlows</a> and watch your autonomous development team in action.
-    </Callout>
-  </div>
+    <CtaBanner title="Ready to try it on your repository?" body="Install OpenFlows on your Coder environment and watch your own issues move through these steps." />
+  </main>
 </BaseLayout>
 
-<style src="./Demos.module.css" />
+<style>
+  .of-back { margin-bottom: 1.5rem; }
+  .steps { position: relative; display: grid; gap: 1.25rem; }
+  .steps::before { content: ''; position: absolute; left: 21px; top: 20px; bottom: 20px; width: 1px; background: linear-gradient(180deg, var(--of-line-strong), transparent); }
+  .step { --agent: var(--of-mint); position: relative; display: flex; gap: 1.5rem; }
+  .step[data-agent='nexus'] { --agent: var(--color-agent-nexus); }
+  .step[data-agent='forge'] { --agent: var(--color-agent-forge); }
+  .step[data-agent='sentinel'] { --agent: var(--color-agent-sentinel); }
+  .step[data-agent='vessel'] { --agent: var(--color-agent-vessel); }
+  .step[data-agent='lore'] { --agent: var(--color-agent-lore); }
+  .marker span { position: relative; display: grid; place-items: center; width: 43px; height: 43px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--agent) 45%, transparent); background: var(--of-bg); box-shadow: inset 0 0 0 100px color-mix(in srgb, var(--agent) 9%, transparent); font-family: var(--font-mono); font-size: 0.78rem; color: var(--agent); }
+  .body { flex: 1; min-width: 0; padding: 1.4rem 1.5rem 1.5rem; border-radius: 16px; border: 1px solid var(--of-line); background: rgba(255, 255, 255, 0.02); }
+  .agent { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; color: var(--agent); }
+  .body h2 { margin-top: 0.4rem; font-size: 1.25rem; }
+  .body p { margin: 0.4rem 0 1rem; color: var(--of-text-2); font-size: 0.95rem; }
+  .disclaimer { margin-top: 2rem; font-size: 0.85rem; color: var(--of-text-3); }
+  .disclaimer a { color: var(--of-text-2); text-decoration: underline; }
+  @media (max-width: 560px) {
+    .step { gap: 0.85rem; }
+    .body { padding: 1.1rem; }
+  }
+</style>

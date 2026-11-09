@@ -7,6 +7,8 @@ interface Props {
 }
 
 const { breadcrumbs } = Astro.props;
+const pageLabel = breadcrumbs?.length ? breadcrumbs[breadcrumbs.length - 1].label : '';
+const pageTitle = pageLabel && !['Docs', 'Documentation'].includes(pageLabel) ? `${pageLabel} · OpenFlows Docs` : 'Documentation · OpenFlows';
 
 // Sidebar navigation tree with nested support
 interface SidebarLink {
@@ -122,7 +124,7 @@ const currentPath = Astro.url.pathname;
 const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath.replace(/\/$/, ''));
 ---
 
-<BaseLayout title="Documentation - OpenFlows" description="Everything you need to install, configure, and operate the OpenFlows orchestration layer.">
+<BaseLayout footer={false} title={pageTitle} description="Everything you need to install, configure, and operate the OpenFlows orchestration layer.">
   <button class="docsMenuButton" type="button" aria-label="Open documentation navigation" aria-controls="docs-navigation" aria-expanded="false">☰ <span>Contents</span></button>
   {/* Sidebar  -  fixed position, always visible */}
   <aside class="sidebar" id="docs-navigation" aria-label="Documentation navigation">
@@ -238,8 +240,8 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
     height: calc(100dvh - var(--nav-height));
     padding: 2rem 1.5rem 2rem 2rem;
     overflow-y: auto;
-    background: var(--color-parchment-canvas);
-    border-right: 1px solid var(--color-driftwood);
+    background: var(--of-bg-raised);
+    border-right: 1px solid var(--of-line);
     z-index: 40;
     scrollbar-width: thin;
     scrollbar-color: var(--color-driftwood) transparent;
@@ -294,21 +296,23 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
 
   .sidebarLink {
     display: block;
-    padding: 0.5rem 0.75rem;
+    padding: 0.45rem 0.75rem;
     font-size: 0.875rem;
-    color: var(--color-ink);
+    color: var(--of-text-2);
     text-decoration: none;
     border-radius: var(--radius-md);
     transition: all var(--transition-fast);
   }
 
   .sidebarLink:hover {
-    background: var(--color-bone);
+    background: rgba(255, 255, 255, 0.04);
+    color: var(--of-text);
   }
 
   .sidebarLink.active {
-    background: var(--color-aubergine);
-    color: white;
+    background: var(--of-mint-soft);
+    color: var(--of-mint);
+    box-shadow: inset 2px 0 0 var(--of-mint);
   }
 
   /* Content - offset by sidebar width, independently scrollable */
@@ -338,10 +342,10 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
   }
 
   .content :is(h2, h3, h4) { scroll-margin-top:1.5rem; }
-  .docsToc { position:fixed; top:var(--nav-height); right:0; width:220px; height:calc(100dvh - var(--nav-height)); padding:2rem 1.5rem; overflow-y:auto; border-left:1px solid var(--color-driftwood); background:var(--color-parchment-canvas); }
+  .docsToc { position:fixed; top:var(--nav-height); right:0; width:220px; height:calc(100dvh - var(--nav-height)); padding:2rem 1.5rem; overflow-y:auto; border-left:1px solid var(--of-line); background:var(--of-bg); }
   .docsTocTitle { margin:0 0 .9rem; color:var(--color-graphite); font-size:.75rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
-  .docsToc a { display:block; padding:.4rem .65rem; border-left:2px solid transparent; color:var(--color-graphite); font-size:.8rem; line-height:1.4; text-decoration:none; }
-  .docsToc a:hover, .docsToc a.active { color:var(--color-aubergine); border-left-color:var(--color-aubergine); }
+  .docsToc a { display:block; padding:.4rem .65rem; border-left:2px solid var(--of-line); color:var(--of-text-3); font-size:.8rem; line-height:1.4; text-decoration:none; }
+  .docsToc a:hover { color:var(--of-text); } .docsToc a.active { color:var(--of-mint); border-left-color:var(--of-mint); }
   .docsToc a.level-three { padding-left:1.25rem; }
   .docsMenuButton { display:none; }
 
@@ -496,7 +500,8 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
       for (const heading of headings) {
         const link = document.createElement('a');
         link.href = `#${heading.id}`;
-        link.textContent = heading.childNodes[0]?.textContent?.trim() || heading.textContent?.trim() || 'Section';
+        const label = heading.querySelector('.stepTitle') ?? heading.childNodes[0];
+        link.textContent = label?.textContent?.trim() || heading.textContent?.trim() || 'Section';
         if (heading.tagName === 'H3') link.classList.add('level-three');
         toc.appendChild(link);
       }

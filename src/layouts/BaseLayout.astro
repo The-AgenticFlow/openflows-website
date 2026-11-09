@@ -1,18 +1,27 @@
 ---
 import '@/styles/global.css';
 import '@/styles/docs.css';
+import '@/styles/article.css';
 import Navbar from '@/organisms/Navbar/Navbar.astro';
+import SiteFooter from '@/organisms/Footer/SiteFooter.astro';
 
 interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  footer?: boolean;
 }
 
-const siteUrl = Astro.site?.toString() || 'https://openflows.ai';
-const { title, description = 'OpenFlows - Autonomous AI Development Team. Five specialized AI agents coordinate to take GitHub issues all the way to merged, documented pull requests.', ogImage } = Astro.props;
+const siteUrl = Astro.site?.toString() || 'https://openflows.dev';
+const {
+  title,
+  description = 'OpenFlows - Autonomous AI Development Team. Five specialized AI agents coordinate to take GitHub issues all the way to merged, documented pull requests.',
+  ogImage,
+  footer = true,
+} = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, siteUrl);
 const defaultOgImage = '/openlogo.png';
+const prismLanguages = ['bash', 'javascript', 'typescript', 'python', 'rust', 'yaml', 'docker'];
 ---
 
 <!DOCTYPE html>
@@ -20,32 +29,28 @@ const defaultOgImage = '/openlogo.png';
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#08090b" />
     <link rel="icon" type="image/png" href="/openlogo.png" />
-    <link rel="icon" sizes="any" href="/openlogo.png" />
     <link rel="apple-touch-icon" href="/openlogo.png" />
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" as="script" crossorigin="anonymous" />
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" as="script" crossorigin="anonymous" />
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js" as="script" crossorigin="anonymous" />
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js" as="script" crossorigin="anonymous" />
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" as="script" crossorigin="anonymous" />
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js" as="script" crossorigin="anonymous" />
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js" as="script" crossorigin="anonymous" />
-    <link rel="preload" href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js" as="script" crossorigin="anonymous" />
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-bash.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-typescript.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-python.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-rust.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-yaml.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-docker.min.js" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap"
+    />
+
+    <script is:inline>document.documentElement.classList.add('of-js');</script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+    {prismLanguages.map((lang) => (
+      <script src={`https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-${lang}.min.js`} crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
+    ))}
 
     <title>{title}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonicalURL} />
 
-    <!-- Open Graph / Facebook -->
     <meta property="og:type" content="website" />
     <meta property="og:site_name" content="OpenFlows" />
     <meta property="og:url" content={canonicalURL} />
@@ -56,44 +61,73 @@ const defaultOgImage = '/openlogo.png';
     <meta property="og:image:height" content="630" />
     <meta property="og:locale" content="en_US" />
 
-    <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:site" content="@openflows" />
     <meta name="twitter:creator" content="@openflows" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage || defaultOgImage} />
-
-    <!-- LinkedIn -->
-    <meta property="og:image" content={ogImage || defaultOgImage} />
   </head>
   <body>
+    <a class="of-skip" href="#main-content">Skip to content</a>
     <Navbar />
-    <slot />
+    <div id="main-content">
+      <slot />
+    </div>
+    {footer && <SiteFooter />}
+
     <script is:inline>
-      if (typeof Prism !== 'undefined') {
-        Prism.highlightAll();
+      window.addEventListener('load', function () {
+        if (typeof Prism !== 'undefined') Prism.highlightAll();
+      });
+    </script>
+
+    <script>
+      // Scroll reveal: [data-reveal] elements fade up once they enter the viewport.
+      // Children of [data-reveal-group] get a staggered delay.
+      const groups = document.querySelectorAll<HTMLElement>('[data-reveal-group]');
+      groups.forEach((group) => {
+        group.querySelectorAll<HTMLElement>(':scope > [data-reveal]').forEach((el, i) => {
+          el.style.setProperty('--reveal-i', String(i));
+        });
+      });
+
+      const revealables = document.querySelectorAll<HTMLElement>('[data-reveal]');
+      if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('is-revealed');
+                observer.unobserve(entry.target);
+              }
+            });
+          },
+          { rootMargin: '0px 0px -8% 0px', threshold: 0.08 }
+        );
+        revealables.forEach((el) => observer.observe(el));
+      } else {
+        revealables.forEach((el) => el.classList.add('is-revealed'));
       }
+
+      // Cursor spotlight on cards.
+      document.addEventListener('pointermove', (event) => {
+        const target = (event.target as HTMLElement | null)?.closest<HTMLElement>('.of-spotlight');
+        if (!target) return;
+        const rect = target.getBoundingClientRect();
+        target.style.setProperty('--mx', `${event.clientX - rect.left}px`);
+        target.style.setProperty('--my', `${event.clientY - rect.top}px`);
+      }, { passive: true });
+
+      // Copy-to-clipboard buttons: <button class="of-copy" data-copy="...">
+      document.addEventListener('click', (event) => {
+        const button = (event.target as HTMLElement | null)?.closest<HTMLButtonElement>('[data-copy]');
+        if (!button) return;
+        navigator.clipboard?.writeText(button.dataset.copy ?? '').then(() => {
+          button.classList.add('is-copied');
+          setTimeout(() => button.classList.remove('is-copied'), 1600);
+        });
+      });
     </script>
   </body>
 </html>
-
-<style is:global>
-  /* Base styles - colors come from global.css */
-  * {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-  }
-
-  body {
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-    line-height: 1.6;
-    -webkit-font-smoothing: antialiased;
-    -moz-osx-font-smoothing: grayscale;
-  }
-
-  a {
-    text-decoration: none;
-  }
-</style>

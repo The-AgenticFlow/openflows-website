@@ -1,19 +1,30 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import { CodeBlock, Callout } from '@/molecules/DocComponents/DocComponents';
-import styles from './Developers.module.css';
+import CtaBanner from '@/components/site/CtaBanner.astro';
 ---
 
 <BaseLayout title="Integration Guides - OpenFlows" description="Connect OpenFlows to your existing development tools and workflows.">
-  <div class={styles.page}>
-    <p class={styles.eyebrow}>Developers</p>
-    <h1 class={styles.title}>Integration Guides</h1>
-    <p style={{ color: 'var(--color-graphite)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
-      Connect OpenFlows to your existing development tools and workflows. Each guide provides step-by-step instructions with code samples.
-    </p>
-
-    <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>GitHub Integration</h2>
-    <p style={{ color: 'var(--color-graphite)', marginBottom: '1rem' }}>OpenFlows integrates deeply with GitHub. Here's how to set up the connection:</p>
+  <main>
+  <section class="of-page-hero">
+    <div class="of-grid-bg" aria-hidden="true"></div>
+    <div class="of-container">
+      <a href="/developers" class="of-back fade-up">← Developers</a>
+      <span class="of-eyebrow fade-up" style="display:flex">Integrations</span>
+      <h1 class="fade-up" style="animation-delay:80ms">Connect OpenFlows to your stack.</h1>
+      <p class="of-lede fade-up" style="animation-delay:160ms">GitHub, model routing, containers and the CLI. Each guide gives you the commands and config to get running.</p>
+      <nav class="jump fade-up" style="animation-delay:220ms" aria-label="On this page">
+        <a href="#github" class="of-chip">GitHub</a>
+        <a href="#litellm" class="of-chip">LiteLLM proxy</a>
+        <a href="#compose" class="of-chip">Docker Compose</a>
+        <a href="#cli" class="of-chip">CLI</a>
+      </nav>
+    </div>
+  </section>
+  <section style="padding-bottom: clamp(3rem, 6vw, 5rem)">
+  <div class="of-container of-container-narrow guide">
+    <h2 id="github">GitHub Integration</h2>
+    <p>OpenFlows integrates deeply with GitHub. Here's how to set up the connection:</p>
     <CodeBlock lang="bash">{`# 1. Configure GitHub external auth in your Coder deployment
 # Go to: Coder dashboard → External Auth → Add GitHub provider
 # This lets each workspace inherit its GitHub identity from the logged-in user
@@ -27,8 +38,8 @@ export GITHUB_REPOSITORY="my-org/my-project"
 # 4. Run the setup wizard
 openflows-setup`}</CodeBlock>
 
-    <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>LiteLLM Proxy Integration</h2>
-    <p style={{ color: 'var(--color-graphite)', marginBottom: '1rem' }}>Route each agent to a different model backend using a LiteLLM proxy:</p>
+    <h2 id="litellm">LiteLLM Proxy Integration</h2>
+    <p>Route each agent to a different model backend using a LiteLLM proxy:</p>
     <CodeBlock lang="yaml">{`# litellm_config.yaml
 model_list:
   - model_name: forge-key
@@ -46,8 +57,8 @@ model_list:
       model: groq/llama-3.3-70b-versatile
       api_key: os.environ/GROQ_API_KEY`}</CodeBlock>
 
-    <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>Docker Compose</h2>
-    <p style={{ color: 'var(--color-graphite)', marginBottom: '1rem' }}>Run OpenFlows with Redis and LiteLLM proxy via Docker Compose:</p>
+    <h2 id="compose">Docker Compose</h2>
+    <p>Run OpenFlows with Redis and LiteLLM proxy via Docker Compose:</p>
     <CodeBlock lang="yaml">{`# docker-compose.yml
 services:
   openflows:
@@ -65,7 +76,7 @@ services:
     ports: ["4000:4000"]
     command: ["--config", "/app/config.yaml"]`}</CodeBlock>
 
-    <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)', borderBottom: '1px solid var(--color-driftwood)', paddingBottom: '0.5rem' }}>CLI Reference</h2>
+    <h2 id="cli">CLI Reference</h2>
     <CodeBlock lang="bash">{`openflows              # Start the autonomous team
 openflows-setup        # Interactive TUI configuration wizard
 openflows-dashboard    # Live worker monitoring dashboard
@@ -75,6 +86,16 @@ openflows-doctor       # Diagnose environment issues`}</CodeBlock>
       We're working on integrations for Jira, Linear, GitLab, and Bitbucket. <a href="https://github.com/The-AgenticFlow/OpenFlows/issues" target="_blank" rel="noopener noreferrer">Request an integration ↗</a> on GitHub.
     </Callout>
   </div>
+  </section>
+  <CtaBanner title="Need an integration we don't have?" body="Jira, Linear, GitLab and Bitbucket are on the roadmap. Tell us what your team needs." primary={{ label: 'Request an integration', href: 'https://github.com/The-AgenticFlow/OpenFlows/issues' }} secondary={{ label: 'Read the docs', href: '/docs' }} />
+  </main>
 </BaseLayout>
 
-<style src="./Developers.module.css" />
+<style>
+  .of-back { margin-bottom: 1.5rem; }
+  .jump { display: flex; flex-wrap: wrap; gap: 0.5rem; margin-top: 2rem; }
+  .jump a:hover { color: var(--of-text); border-color: var(--of-mint-line); }
+  .guide h2 { margin: 3rem 0 0.75rem; padding-top: 1rem; font-size: 1.5rem; scroll-margin-top: calc(var(--nav-height) + 24px); }
+  .guide h2:first-child { margin-top: 0; }
+  .guide > p { color: var(--of-text-2); margin-bottom: 1rem; }
+</style>

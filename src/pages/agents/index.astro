@@ -1,48 +1,262 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import CtaBanner from '@/components/site/CtaBanner.astro';
 import { AGENT_DATA } from '@/data/agents';
-import styles from './Agents.module.css';
+import { AGENT_SUMMARY } from '@/data/agentSummary';
 
-const agents = Object.entries(AGENT_DATA);
+const agents = AGENT_SUMMARY.map((summary) => ({ ...summary, detail: AGENT_DATA[summary.id] }));
+
+const PRINCIPLES = [
+  {
+    title: 'Separate identities',
+    body: 'Each agent has its own role, skills, hooks and workspace runtime identity. Every action inherits a real Coder and GitHub identity you can audit.',
+  },
+  {
+    title: 'Separate models',
+    body: 'Each role’s provider and model is set independently in registry.json, so the reviewer’s blind spots differ from the builder’s.',
+  },
+  {
+    title: 'Least privilege',
+    body: 'SENTINEL is read-only. LORE writes only to docs/. Only VESSEL merges to main. Workspaces never hold LLM keys.',
+  },
+  {
+    title: 'Never guess',
+    body: 'When a spec is ambiguous or a merge is stuck, the agent parks the ticket as awaiting_human and asks an exact question.',
+  },
+];
 ---
 
-<BaseLayout title="Agents - OpenFlows" description="Meet the five specialized AI agents that make up the OpenFlows autonomous development team.">
-  {/* Hero Section */}
-  <section class={styles.hero}>
-    <div class={styles.container}>
-      <p class={styles.eyebrow}>The Team</p>
-      <h1 class={styles.heroTitle}>Five agents. One pipeline.<br/> Zero manual steps.</h1>
-      <p class={styles.heroSub}>
-        OpenFlows orchestrates five specialized AI agents on top of your Coder environment
-        through a deterministic, event-driven pipeline. Coder governs where each agent runs;
-        OpenFlows governs how they coordinate. Each agent has a distinct architecture, isolated
-        permissions, and its own GitHub identity  -  just like a real development team, but
-        coordinated, governed, and auditable from end to end.
-      </p>
-    </div>
-  </section>
-
-  {/* Agent Grid */}
-  <section class={styles.gridSection}>
-    <div class={styles.container}>
-      <h2 class={styles.sectionHeading}>Meet the Team</h2>
-      <div class={styles.agentGrid}>
-        {agents.map(([id, data]) => (
-          <a key={id} href={`/agents/${id}`} class={styles.agentCard}>
-            <div class={styles.agentContent}>
-              <p class={styles.agentRole}>{data.role}</p>
-              <h3 class={styles.agentName}>{data.name}</h3>
-              <p class={styles.agentMission}>{data.mission.slice(0, 120)}...</p>
-              <span class={styles.learnMore}>Explore {data.name} ›</span>
-            </div>
-            <div class={styles.agentImageWrap}>
-              <img src={data.image} alt={data.name} class={styles.agentImage} />
-            </div>
-          </a>
-        ))}
+<BaseLayout
+  title="The agent team · OpenFlows"
+  description="Meet NEXUS, FORGE, SENTINEL, VESSEL and LORE: the five specialised AI agents that take GitHub issues to merged, documented pull requests inside your Coder environment."
+>
+  <main>
+    <section class="of-page-hero is-center">
+      <div class="of-grid-bg" aria-hidden="true"></div>
+      <div class="of-container">
+        <span class="of-eyebrow fade-up">The team</span>
+        <h1 class="fade-up" style="animation-delay:80ms">Five agents. <span class="of-gradient-text">One governed pipeline.</span></h1>
+        <p class="of-lede fade-up" style="animation-delay:160ms">
+          Each agent has a distinct job, isolated permissions and its own GitHub identity, just like a real engineering team.
+          Coder governs where each one runs; OpenFlows governs how they coordinate.
+        </p>
       </div>
-    </div>
-  </section>
+
+      <div class="of-container">
+        <div class="flow fade-up" style="animation-delay:260ms" aria-label="Issue flows from NEXUS to FORGE, SENTINEL, VESSEL and LORE">
+          <span class="flow-end">GitHub issue</span>
+          {agents.map((a) => (
+            <>
+              <span class="flow-wire" aria-hidden="true"><i></i></span>
+              <a href={`#${a.id}`} class="flow-node" style={`--agent:${a.color}`}>
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={a.icon} />
+                {a.name}
+              </a>
+            </>
+          ))}
+          <span class="flow-wire" aria-hidden="true"><i></i></span>
+          <span class="flow-end is-done">Merged PR</span>
+        </div>
+      </div>
+    </section>
+
+    <section class="of-section" style="padding-top:2rem">
+      <div class="of-container">
+        <div class="roster">
+          {agents.map((a, i) => (
+            <article id={a.id} class="member of-card" style={`--agent:${a.color}`} data-reveal>
+              <div class="member-main">
+                <div class="member-head">
+                  <span class="member-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={a.icon} />
+                  </span>
+                  <div>
+                    <p class="member-step">Stage {String(i + 1).padStart(2, '0')} · {a.detail.role}</p>
+                    <h2>{a.name}</h2>
+                  </div>
+                </div>
+                <p class="member-mission">{a.detail.mission}</p>
+                <ul class="member-caps">
+                  {a.detail.capabilities.slice(0, 4).map((cap) => (
+                    <li>
+                      <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                      {cap}
+                    </li>
+                  ))}
+                </ul>
+                <a href={`/agents/${a.id}`} class="of-btn of-btn-ghost">
+                  Explore {a.name}
+                  <svg class="of-arrow" viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                </a>
+              </div>
+
+              <dl class="spec">
+                <div class="spec-title"><span class="of-dot" style="background:var(--agent);box-shadow:0 0 10px var(--agent)"></span>{a.name.toLowerCase()}.spec</div>
+                <div><dt>Runs in</dt><dd>{a.spec.runs}</dd></div>
+                <div><dt>Writes</dt><dd>{a.spec.writes}</dd></div>
+                <div><dt>Never</dt><dd>{a.spec.never}</dd></div>
+                <div><dt>Focus</dt><dd class="spec-tags">{a.tags.map((t) => <span class="of-chip">{t}</span>)}</dd></div>
+              </dl>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <section class="of-section">
+      <div class="of-container">
+        <div class="of-head is-center" data-reveal>
+          <span class="of-eyebrow">Design principles</span>
+          <h2>A team, not five copies of one assistant.</h2>
+        </div>
+        <div class="principles" data-reveal-group>
+          {PRINCIPLES.map((p, i) => (
+            <div class="principle" data-reveal>
+              <span class="principle-num">0{i + 1}</span>
+              <h3>{p.title}</h3>
+              <p>{p.body}</p>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <CtaBanner title="Put the team to work on your repo." body="Install OpenFlows on your Coder environment, connect one repository, and watch the first issue move through all five agents." />
+  </main>
 </BaseLayout>
 
-<style src="./Agents.module.css"></style>
+<style>
+  .of-page-hero h1 { max-width: 18ch; }
+
+  .flow {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+    row-gap: 0.75rem;
+    margin-top: 3.5rem;
+  }
+
+  .flow-end,
+  .flow-node {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 38px;
+    padding: 0 0.85rem;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    white-space: nowrap;
+  }
+
+  .flow-end { border: 1px dashed var(--of-line-strong); color: var(--of-text-2); }
+  .flow-end.is-done { border-style: solid; border-color: var(--of-mint-line); color: var(--of-mint); background: var(--of-mint-soft); }
+
+  .flow-node {
+    color: var(--agent);
+    border: 1px solid color-mix(in srgb, var(--agent) 40%, transparent);
+    background: color-mix(in srgb, var(--agent) 9%, transparent);
+    transition: transform 0.2s, box-shadow 0.2s;
+  }
+
+  .flow-node:hover { transform: translateY(-2px); box-shadow: 0 8px 24px -8px var(--agent); }
+  .flow-node svg { width: 15px; height: 15px; }
+
+  .flow-wire { position: relative; width: 34px; height: 1px; background: var(--of-line-strong); overflow: hidden; }
+  .flow-wire i { position: absolute; top: 0; left: -40%; width: 40%; height: 1px; background: var(--of-mint); box-shadow: 0 0 6px var(--of-mint); animation: wire 2.4s linear infinite; }
+  .flow-wire:nth-of-type(2n) i { animation-delay: -1.2s; }
+
+  @keyframes wire {
+    from { left: -40%; }
+    to { left: 100%; }
+  }
+
+  .roster { display: grid; gap: 1.25rem; }
+
+  .member {
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 2.5rem;
+    padding: clamp(1.5rem, 3.5vw, 2.5rem);
+    scroll-margin-top: calc(var(--nav-height) + 24px);
+    background:
+      radial-gradient(60% 80% at 0% 0%, color-mix(in srgb, var(--agent) 9%, transparent), transparent 60%),
+      linear-gradient(180deg, rgba(255, 255, 255, 0.03), rgba(255, 255, 255, 0.01));
+  }
+
+  .member:hover { border-color: color-mix(in srgb, var(--agent) 35%, transparent); }
+
+  .member-head { display: flex; align-items: center; gap: 1rem; }
+
+  .member-icon {
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    flex-shrink: 0;
+    border-radius: 14px;
+    color: var(--agent);
+    border: 1px solid color-mix(in srgb, var(--agent) 40%, transparent);
+    background: color-mix(in srgb, var(--agent) 10%, transparent);
+    box-shadow: 0 0 36px -8px var(--agent);
+  }
+
+  .member-icon svg { width: 26px; height: 26px; }
+  .member-step { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--of-text-3); }
+  .member h2 { font-family: var(--font-mono); font-size: 1.6rem; letter-spacing: 0.03em; color: var(--agent); margin-top: 0.15rem; }
+  .member-mission { margin-top: 1.25rem; color: var(--of-text-2); line-height: 1.7; font-size: 0.98rem; }
+
+  .member-caps { display: grid; grid-template-columns: 1fr 1fr; gap: 0.55rem 1.25rem; margin: 1.5rem 0 1.75rem; }
+  .member-caps li { display: flex; gap: 0.55rem; font-size: 0.87rem; line-height: 1.45; color: var(--of-text); }
+  .member-caps svg { width: 15px; height: 15px; margin-top: 2px; flex-shrink: 0; color: var(--agent); }
+
+  .spec {
+    align-self: start;
+    display: grid;
+    border-radius: 14px;
+    border: 1px solid var(--of-line-strong);
+    background: rgba(6, 7, 9, 0.7);
+    font-size: 0.85rem;
+    overflow: hidden;
+  }
+
+  .spec > div { display: grid; grid-template-columns: 82px 1fr; gap: 1rem; padding: 0.85rem 1.1rem; }
+  .spec > div + div { border-top: 1px solid var(--of-line); }
+
+  .spec .spec-title {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    color: var(--of-text-2);
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .spec dt { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--of-text-3); padding-top: 2px; }
+  .spec dd { color: var(--of-text); line-height: 1.45; }
+  .spec-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+  .principles { display: grid; grid-template-columns: repeat(4, 1fr); border: 1px solid var(--of-line); border-radius: 20px; overflow: hidden; }
+  .principle { padding: 1.75rem; }
+  .principle + .principle { border-left: 1px solid var(--of-line); }
+  .principle-num { font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-mint); }
+  .principle h3 { margin-top: 1.25rem; font-size: 1.1rem; }
+  .principle p { margin-top: 0.6rem; font-size: 0.9rem; color: var(--of-text-2); line-height: 1.6; }
+
+  @media (max-width: 960px) {
+    .member { grid-template-columns: 1fr; gap: 1.75rem; }
+    .principles { grid-template-columns: 1fr 1fr; }
+    .principle:nth-child(3) { border-left: 0; }
+    .principle:nth-child(n + 3) { border-top: 1px solid var(--of-line); }
+  }
+
+  @media (max-width: 640px) {
+    .member-caps { grid-template-columns: 1fr; }
+    .principles { grid-template-columns: 1fr; }
+    .principle + .principle { border-left: 0; border-top: 1px solid var(--of-line); }
+    .flow { gap: 0.5rem; }
+    .flow-wire { display: none; }
+  }
+</style>
