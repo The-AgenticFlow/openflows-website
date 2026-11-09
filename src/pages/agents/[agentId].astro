@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 import { AGENT_DATA } from '@/data/agents';
 import { AGENT_SUMMARY } from '@/data/agentSummary';
@@ -35,8 +36,8 @@ const splitPoint = (point: string) => {
 
 <BaseLayout title={`${agent.name} · ${agent.role} · OpenFlows`} description={agent.mission}>
   <main style={`--agent:${summary.color}`}>
-    <section class="of-page-hero detail-hero">
-      <div class="of-grid-bg" aria-hidden="true"></div>
+    <section class="of-page-hero of-dark detail-hero" style={`--agent:${summary.color}`}>
+      <PixelField cell={30} density={0.06} />
       <div class="agent-glow" aria-hidden="true"></div>
       <div class="of-container">
         <nav class="crumbs fade-up" aria-label="Breadcrumb">

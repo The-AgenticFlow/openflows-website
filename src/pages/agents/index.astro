@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 import { AGENT_DATA } from '@/data/agents';
 import { AGENT_SUMMARY } from '@/data/agentSummary';
@@ -31,8 +32,8 @@ const PRINCIPLES = [
   description="Meet NEXUS, FORGE, SENTINEL, VESSEL and LORE: the five specialised AI agents that take GitHub issues to merged, documented pull requests inside your Coder environment."
 >
   <main>
-    <section class="of-page-hero is-center">
-      <div class="of-grid-bg" aria-hidden="true"></div>
+    <section class="of-page-hero of-dark is-center">
+      <PixelField cell={30} density={0.06} />
       <div class="of-container">
         <span class="of-eyebrow fade-up">The team</span>
         <h1 class="fade-up" style="animation-delay:80ms">Five agents. <span class="of-gradient-text">One governed pipeline.</span></h1>

@@ -1,12 +1,13 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 ---
 
 <BaseLayout title="Demos · OpenFlows" description="Watch the OpenFlows pipeline in action, from an open GitHub issue to a merged, documented pull request.">
   <main>
-    <section class="of-page-hero is-center">
-      <div class="of-grid-bg" aria-hidden="true"></div>
+    <section class="of-page-hero of-dark is-center">
+      <PixelField cell={30} density={0.06} />
       <div class="of-container">
         <span class="of-eyebrow fade-up">Demos</span>
         <h1 class="fade-up" style="animation-delay:80ms">See OpenFlows <span class="of-gradient-text">in action.</span></h1>

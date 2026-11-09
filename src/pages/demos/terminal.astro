@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 import TerminalReplay from '@/organisms/TerminalReplay/TerminalReplay';
 
@@ -16,8 +17,8 @@ const RECAP = [
 
 <BaseLayout title="Terminal replay · OpenFlows demos" description="Watch OpenFlows autonomously discover, plan, implement, review, and merge code in a replay of a real run.">
   <main>
-    <section class="of-page-hero">
-      <div class="of-grid-bg" aria-hidden="true"></div>
+    <section class="of-page-hero of-dark">
+      <PixelField cell={30} density={0.06} />
       <div class="of-container">
         <a href="/demos" class="of-back fade-up">← All demos</a>
         <span class="of-eyebrow fade-up" style="display:flex">Terminal replay</span>

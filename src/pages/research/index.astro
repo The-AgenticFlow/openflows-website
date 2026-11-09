@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import { getCollection } from 'astro:content';
 
 const research = await getCollection('research');
@@ -18,8 +19,8 @@ const categories = ['all', ...new Set(research.map(r => r.data.category).filter(
 
 <BaseLayout title="Research · OpenFlows" description="Papers, preprints, and technical reports on autonomous multi-agent software engineering and the OpenFlows architecture.">
   <main>
-    <section class="of-page-hero">
-      <div class="of-grid-bg" aria-hidden="true"></div>
+    <section class="of-page-hero of-dark">
+      <PixelField cell={30} density={0.06} />
       <div class="of-container">
         <span class="of-eyebrow fade-up">Research</span>
         <h1 class="fade-up" style="animation-delay:80ms">Publications</h1>

@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import { CodeBlock } from '@/molecules/DocComponents/DocComponents';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 
@@ -147,8 +148,8 @@ matching expected API behavior.
 
 <BaseLayout title="Step-by-step walkthrough · OpenFlows demos" description="Follow a GitHub issue through OpenFlows to a merged pull request, with the artifact each agent produces at every step.">
   <main>
-    <section class="of-page-hero">
-      <div class="of-grid-bg" aria-hidden="true"></div>
+    <section class="of-page-hero of-dark">
+      <PixelField cell={30} density={0.06} />
       <div class="of-container">
         <a href="/demos" class="of-back fade-up">← All demos</a>
         <span class="of-eyebrow fade-up" style="display:flex">Walkthrough</span>

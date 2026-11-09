@@ -1,13 +1,14 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import { CodeBlock, Callout } from '@/molecules/DocComponents/DocComponents';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 ---
 
 <BaseLayout title="Integration Guides - OpenFlows" description="Connect OpenFlows to your existing development tools and workflows.">
   <main>
-  <section class="of-page-hero">
-    <div class="of-grid-bg" aria-hidden="true"></div>
+  <section class="of-page-hero of-dark">
+    <PixelField cell={30} density={0.06} />
     <div class="of-container">
       <a href="/developers" class="of-back fade-up">← Developers</a>
       <span class="of-eyebrow fade-up" style="display:flex">Integrations</span>

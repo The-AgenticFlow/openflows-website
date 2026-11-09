@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 
 const CARDS = [
@@ -51,8 +52,8 @@ const CARDS = [
 
 <BaseLayout title="Developers · OpenFlows" description="Everything you need to integrate with and extend OpenFlows: integration guides, architecture docs, and the full source code on GitHub.">
   <main>
-    <section class="of-page-hero is-center">
-      <div class="of-grid-bg" aria-hidden="true"></div>
+    <section class="of-page-hero of-dark is-center">
+      <PixelField cell={30} density={0.06} />
       <div class="of-container">
         <span class="of-eyebrow fade-up">Developers</span>
         <h1 class="fade-up" style="animation-delay:80ms">Build on <span class="of-gradient-text">OpenFlows.</span></h1>

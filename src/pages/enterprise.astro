@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 
 const RUN_STAGES = [
@@ -69,8 +70,8 @@ const PILOT = [
   description="Evaluate OpenFlows for governed, self-hosted AI development. See the issue-to-PR workflow, runtime trust boundaries, deployment requirements, and what is available today."
 >
   <main>
-    <section class="of-page-hero">
-      <div class="of-grid-bg" aria-hidden="true"></div>
+    <section class="of-page-hero of-dark">
+      <PixelField cell={30} density={0.06} />
       <div class="of-container">
         <div class="hero-grid">
           <div>
