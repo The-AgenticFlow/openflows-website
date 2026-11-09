@@ -124,7 +124,7 @@ const currentPath = Astro.url.pathname;
 const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath.replace(/\/$/, ''));
 ---
 
-<BaseLayout footer={false} title={pageTitle} description="Everything you need to install, configure, and operate the OpenFlows orchestration layer.">
+<BaseLayout footer={false} smooth={false} title={pageTitle} description="Everything you need to install, configure, and operate the OpenFlows orchestration layer.">
   <button class="docsMenuButton" type="button" aria-label="Open documentation navigation" aria-controls="docs-navigation" aria-expanded="false">☰ <span>Contents</span></button>
   {/* Sidebar  -  fixed position, always visible */}
   <aside class="sidebar" id="docs-navigation" aria-label="Documentation navigation">
@@ -240,7 +240,7 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
     height: calc(100dvh - var(--nav-height));
     padding: 2rem 1.5rem 2rem 2rem;
     overflow-y: auto;
-    background: var(--of-bg-raised);
+    background: var(--of-surface);
     border-right: 1px solid var(--of-line);
     z-index: 40;
     scrollbar-width: thin;
@@ -310,12 +310,14 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
   }
 
   .sidebarLink.active {
-    background: var(--of-text);
-    color: var(--of-invert);
+    background: var(--of-surface-2);
+    color: var(--of-text);
+    font-weight: 500;
   }
 
   /* Content - offset by sidebar width, independently scrollable */
   .content {
+    background: var(--of-surface);
     margin-left: 256px;
     padding: calc(var(--nav-height) + 2rem) 2rem 2rem;
     max-width: calc(100vw - 256px);
@@ -341,7 +343,7 @@ const pathIndex = DOCS_READING_PATH.findIndex(({ href }) => href === currentPath
   }
 
   .content :is(h2, h3, h4) { scroll-margin-top:1.5rem; }
-  .docsToc { position:fixed; top:var(--nav-height); right:0; width:220px; height:calc(100dvh - var(--nav-height)); padding:2rem 1.5rem; overflow-y:auto; border-left:1px solid var(--of-line); background:var(--of-bg); }
+  .docsToc { position:fixed; top:var(--nav-height); right:0; width:220px; height:calc(100dvh - var(--nav-height)); padding:2rem 1.5rem; overflow-y:auto; border-left:1px solid var(--of-line); background:var(--of-surface); }
   .docsTocTitle { margin:0 0 .9rem; color:var(--color-graphite); font-size:.75rem; font-weight:700; letter-spacing:.05em; text-transform:uppercase; }
   .docsToc a { display:block; padding:.4rem .65rem; border-left:2px solid var(--of-line); color:var(--of-text-3); font-size:.8rem; line-height:1.4; text-decoration:none; }
   .docsToc a:hover { color:var(--of-text); } .docsToc a.active { color:var(--of-text); border-left-color:var(--of-text); }

@@ -2,6 +2,7 @@
 import '@/styles/global.css';
 import '@/styles/docs.css';
 import '@/styles/article.css';
+import 'lenis/dist/lenis.css';
 import Navbar from '@/organisms/Navbar/Navbar.astro';
 import SiteFooter from '@/organisms/Footer/SiteFooter.astro';
 
@@ -10,6 +11,7 @@ interface Props {
   description?: string;
   ogImage?: string;
   footer?: boolean;
+  smooth?: boolean;
 }
 
 const siteUrl = Astro.site?.toString() || 'https://openflows.dev';
@@ -18,6 +20,7 @@ const {
   description = 'OpenFlows - Autonomous AI Development Team. Five specialized AI agents coordinate to take GitHub issues all the way to merged, documented pull requests.',
   ogImage,
   footer = true,
+  smooth = true,
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, siteUrl);
 const defaultOgImage = '/openlogo.png';
@@ -29,7 +32,8 @@ const prismLanguages = ['bash', 'javascript', 'typescript', 'python', 'rust', 'y
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f6f5f2" />
+    <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#09090a" media="(prefers-color-scheme: dark)" />
     <link rel="icon" type="image/png" href="/openlogo-dark.png" />
     <link rel="apple-touch-icon" href="/openlogo.png" />
 
@@ -40,7 +44,18 @@ const prismLanguages = ['bash', 'javascript', 'typescript', 'python', 'rust', 'y
       href="https://fonts.googleapis.com/css2?family=Geist:wght@300..700&family=Geist+Mono:wght@400..600&display=swap"
     />
 
-    <script is:inline>document.documentElement.classList.add('of-js');</script>
+    <script is:inline>
+      (function () {
+        var root = document.documentElement;
+        root.classList.add('of-js');
+        var theme;
+        try { theme = localStorage.getItem('of-theme'); } catch (e) {}
+        if (theme !== 'light' && theme !== 'dark') {
+          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+        }
+        root.setAttribute('data-theme', theme);
+      })();
+    </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
     {prismLanguages.map((lang) => (
@@ -68,7 +83,7 @@ const prismLanguages = ['bash', 'javascript', 'typescript', 'python', 'rust', 'y
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={ogImage || defaultOgImage} />
   </head>
-  <body>
+  <body data-smooth={smooth ? 'on' : 'off'}>
     <a class="of-skip" href="#main-content">Skip to content</a>
     <Navbar />
     <div id="main-content">
@@ -83,6 +98,39 @@ const prismLanguages = ['bash', 'javascript', 'typescript', 'python', 'rust', 'y
     </script>
 
     <script>
+      import Lenis from 'lenis';
+
+      // Smooth, inertial scrolling (skipped for reduced motion and for pages
+      // that manage their own scroll containers, like the docs).
+      const prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+      if (!prefersReduced && document.body.dataset.smooth === 'on') {
+        const lenis = new Lenis({ duration: 1.15, easing: (t) => 1 - Math.pow(1 - t, 4), anchors: { offset: -80 } });
+        const raf = (time: number) => {
+          lenis.raf(time);
+          requestAnimationFrame(raf);
+        };
+        requestAnimationFrame(raf);
+        (window as any).__lenis = lenis;
+        document.documentElement.style.scrollBehavior = 'auto';
+      }
+
+      // Gentle parallax: [data-parallax="0.08"] drifts against the scroll.
+      const parallax = [...document.querySelectorAll<HTMLElement>('[data-parallax]')];
+      if (!prefersReduced && parallax.length) {
+        const tick = () => {
+          const vh = window.innerHeight;
+          parallax.forEach((el) => {
+            const rect = el.getBoundingClientRect();
+            if (rect.bottom < -200 || rect.top > vh + 200) return;
+            const speed = Number(el.dataset.parallax) || 0.08;
+            const offset = (rect.top + rect.height / 2 - vh / 2) * -speed;
+            el.style.transform = `translate3d(0, ${offset.toFixed(1)}px, 0)`;
+          });
+          requestAnimationFrame(tick);
+        };
+        requestAnimationFrame(tick);
+      }
+
       // Scroll reveal: [data-reveal] elements fade up once they enter the viewport.
       // Children of [data-reveal-group] get a staggered delay.
       const groups = document.querySelectorAll<HTMLElement>('[data-reveal-group]');

@@ -99,7 +99,7 @@
 .of-prose {
   font-size: 1.125rem;
   line-height: 1.8;
-  color: #2e2f33;
+  color: color-mix(in srgb, var(--of-text) 82%, var(--of-bg));
 }
 
 .of-prose > * + * { margin-top: 1.3em; }

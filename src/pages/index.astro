@@ -135,7 +135,7 @@ const codeHtml = (lines: string[][][]) =>
   lines.map((line) => line.map(([cls, text]) => `<span class="t-${cls}">${escapeHtml(text)}</span>`).join('')).join('\n');
 
 const SETUP_COMMAND = './scripts/setup.sh owner/repo --compose';
-const HEADLINE = ['GitHub issues in.', 'Reviewed, merged', 'pull requests out.'];
+const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.'];
 ---
 
 <BaseLayout
@@ -149,13 +149,14 @@ const HEADLINE = ['GitHub issues in.', 'Reviewed, merged', 'pull requests out.']
         <PixelField cell={30} density={0.09} />
         <div class="hero-shade" aria-hidden="true"></div>
         <div class="of-container hero-inner">
-          <span class="of-eyebrow fade-up">Autonomous engineering team · built on Coder</span>
+          <span class="of-eyebrow fade-up">OpenFlows · Open source · Self-hosted</span>
           <h1 class="hero-title of-lines">
             {HEADLINE.map((line, i) => <span><span style={`--l:${i}`}>{line}</span></span>)}
           </h1>
           <p class="hero-sub fade-up" style="animation-delay:450ms">
-            OpenFlows plans, codes, reviews, ships and documents inside your self-hosted Coder environment.
-            Every step is gated, attributed and auditable. Your engineers keep the architecture and the final say.
+            OpenFlows sits on top of Coder so your team can focus on architecture while an AI dev team runs
+            safely, securely and with full governance. Every agent action is auditable from issue to merge,
+            for a single developer or a whole company.
           </p>
           <div class="hero-cta fade-up" style="animation-delay:560ms">
             <a href="/docs/getting-started" class="of-btn of-btn-primary of-btn-lg"><span class="of-sq"></span>Install OpenFlows</a>
@@ -183,32 +184,83 @@ const HEADLINE = ['GitHub issues in.', 'Reviewed, merged', 'pull requests out.']
 
     <!-- ───────── LOGOS ───────── -->
     <section class="logos" aria-label="Supporters">
-      <p class="logos-label">Built with engineering teams and communities at</p>
-      <div class="marquee">
-        <div class="marquee-track">
-          {[...LOGOS, ...LOGOS, ...LOGOS, ...LOGOS].map((logo, i) => (
-            <div class="logo" aria-hidden={i >= LOGOS.length ? 'true' : undefined}>
+      <div class="of-container">
+        <p class="logos-label">Built with engineering teams and communities at</p>
+        <ul class="logo-row" data-reveal-group>
+          {LOGOS.map((logo) => (
+            <li class="logo" data-reveal="fade">
               <img src={logo.src} alt="" loading="lazy" />
               <span>{logo.name}</span>
-            </div>
+            </li>
           ))}
-        </div>
+        </ul>
       </div>
     </section>
 
     <!-- ───────── PRODUCT ───────── -->
     <section class="product">
       <div class="of-container">
-        <div class="of-head is-center" data-reveal>
-          <span class="of-eyebrow">The control plane</span>
-          <h2>Watch a ticket go from issue to main.</h2>
-          <p>A live view of one OpenFlows tenant. Every handoff is recorded, every agent is accountable, and nothing merges without passing its gates.</p>
+        <div class="product-head" data-reveal>
+          <h2>Your agents.<br />Your infrastructure.<br />Your rules.</h2>
+          <p>Run a governed AI dev team on self-hosted Coder workspaces, with every handoff, approval and merge on the record.</p>
         </div>
-      </div>
-      <div class="of-container of-container-wide">
-        <div class="console" data-scroll-scale>
-          <MissionControl client:visible />
-        </div>
+
+        <article class="feature feature-wide" data-reveal>
+          <div class="feature-copy">
+            <h3>OpenFlows control plane</h3>
+            <p>Connect a repository, provision a tenant and watch every ticket move through planning, build, review and merge, with the agent responsible for each step in plain view.</p>
+            <a href="/docs/introduction/how-it-works" class="of-btn of-btn-ghost of-btn-sm">Explore how it works</a>
+          </div>
+          <div class="shot shot-wide">
+            <div class="shot-light" aria-hidden="true"></div>
+            <div class="shot-inner console" data-scroll-scale>
+              <MissionControl client:visible />
+            </div>
+          </div>
+        </article>
+
+        <article class="feature" data-reveal>
+          <div class="feature-copy">
+            <h3>Agent workspaces on Coder</h3>
+            <p>Every agent runs in its own ephemeral, governed Coder workspace on its own branch. Model keys stay in the Coder AI Gateway; workspaces only get short-lived, repository-scoped tokens.</p>
+            <a href="/docs/concepts/workspaces" class="of-btn of-btn-ghost of-btn-sm">Explore workspaces</a>
+          </div>
+          <div class="shot">
+            <div class="shot-light" aria-hidden="true"></div>
+            <img class="shot-img" src="/images/howitworks.png" alt="Coder dashboard listing the OpenFlows forge, sentinel and nexus workspaces, all running" loading="lazy" data-parallax="0.05" />
+          </div>
+        </article>
+
+        <article class="feature is-flipped" data-reveal>
+          <div class="feature-copy">
+            <h3>Gated planning and adversarial review</h3>
+            <p>FORGE writes a plan and stops. SENTINEL approves it with a single-use approval, reviews the diff on a different model if you like, and verifies by running tests through the audited A2A relay.</p>
+            <a href="/docs/concepts/planning-gate" class="of-btn of-btn-ghost of-btn-sm">Explore the planning gate</a>
+          </div>
+          <div class="shot">
+            <div class="shot-light" aria-hidden="true"></div>
+            <div class="shot-card of-window" data-parallax="0.05">
+              <div class="of-window-bar"><span class="of-window-dots"><span></span><span></span><span></span></span>review · PR #318</div>
+              <pre class="shot-code"><span class="t-h">## Plan · T-142</span>
+<span class="t-p">1. Token-bucket middleware on POST /login</span>
+<span class="t-p">2. Redis counters keyed by IP + account</span>
+<span class="t-p">3. 429 + Retry-After, tests for both paths</span>
+
+<span class="t-c">plan gate  </span><span class="t-g">APPROVED</span><span class="t-c">  · single-use</span>
+<span class="t-c">verify     </span><span class="t-p">forge-1 → npm test -- auth</span>
+<span class="t-g">           ✓ 12 passed</span><span class="t-c">  (a2a, allowlisted)</span>
+<span class="t-c">verdict    </span><span class="t-g">APPROVE</span><span class="t-c">  · 0 blocking, 2 nits</span></pre>
+            </div>
+          </div>
+        </article>
+
+        <a class="brief" href="/docs/architecture" data-reveal>
+          <div>
+            <h3>Learn how OpenFlows keeps agent work governed and auditable</h3>
+            <span class="of-btn of-btn-primary of-btn-sm"><span class="of-sq"></span>Read the architecture</span>
+          </div>
+          <img src="/images/system-architecture.png" alt="" loading="lazy" />
+        </a>
       </div>
     </section>
 
@@ -597,17 +649,89 @@ const HEADLINE = ['GitHub issues in.', 'Reviewed, merged', 'pull requests out.']
   .strip-meta { margin-left: auto; font-family: var(--font-mono); font-size: 0.72rem; color: var(--of-text-3); white-space: nowrap; }
 
   /* ── Logos ── */
-  .logos { padding: clamp(3rem, 6vw, 4.5rem) 0; }
-  .logos-label { text-align: center; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--of-text-3); margin-bottom: 2rem; padding: 0 var(--gutter); }
-  .marquee { overflow: hidden; mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); -webkit-mask-image: linear-gradient(90deg, transparent, #000 12%, #000 88%, transparent); }
-  .marquee-track { display: flex; gap: clamp(2.5rem, 5vw, 4.5rem); width: max-content; animation: of-marquee 45s linear infinite; }
-  .logo { display: flex; align-items: center; gap: 0.7rem; font-size: 1.1rem; font-weight: 500; letter-spacing: -0.02em; color: var(--of-text); white-space: nowrap; opacity: 0.75; transition: opacity 0.3s; }
+  .logos { padding: clamp(3rem, 6vw, 4.5rem) 0 clamp(2rem, 4vw, 3rem); }
+  .logos-label { text-align: center; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--of-text-3); margin-bottom: 2.25rem; }
+  .logo-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.25rem clamp(2rem, 5vw, 4rem); }
+  .logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.05rem; font-weight: 500; letter-spacing: -0.02em; color: var(--of-text); white-space: nowrap; opacity: 0.7; transition: opacity 0.3s; }
   .logo:hover { opacity: 1; }
   .logo img { width: 30px; height: 30px; border-radius: 7px; object-fit: contain; filter: grayscale(1) contrast(1.1); mix-blend-mode: multiply; }
+  :global([data-theme='dark']) .logo img { filter: grayscale(1) invert(1) contrast(1.1); mix-blend-mode: screen; }
 
-  /* ── Product ── */
-  .product { padding: clamp(3rem, 6vw, 5rem) 0 clamp(5rem, 10vw, 8rem); }
-  .console { max-width: 1120px; margin: 0 auto; transform-origin: 50% 0; will-change: transform; }
+  /* ── Product (feature rows) ── */
+  .product { padding: clamp(4rem, 9vw, 7rem) 0 clamp(5rem, 10vw, 8rem); }
+  .product-head { text-align: center; margin-bottom: clamp(3.5rem, 8vw, 6rem); }
+  .product-head h2 { font-size: clamp(2.3rem, 4.8vw, 3.9rem); letter-spacing: -0.05em; line-height: 1.02; }
+  .product-head p { max-width: 520px; margin: 1.25rem auto 0; color: var(--of-text-2); font-size: 1.05rem; line-height: 1.6; }
+
+  .feature { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; margin-bottom: clamp(4rem, 9vw, 7rem); }
+  .feature.is-flipped .feature-copy { order: 2; }
+  .feature-copy h3 { font-size: clamp(1.6rem, 2.6vw, 2.15rem); letter-spacing: -0.04em; }
+  .feature-copy p { margin: 0.9rem 0 1.5rem; max-width: 46ch; color: var(--of-text-2); line-height: 1.65; }
+
+  .feature-wide { grid-template-columns: 1fr; gap: 2rem; }
+  .feature-wide .feature-copy { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 4rem; align-items: end; }
+  .feature-wide .feature-copy p { margin: 0; }
+  .feature-wide .feature-copy a { grid-column: 2; justify-self: start; }
+
+  /* Monochrome light-streak frame, the product shot bleeds off its edge */
+  .shot {
+    position: relative;
+    aspect-ratio: 1.12;
+    border-radius: 20px;
+    overflow: hidden;
+    isolation: isolate;
+    background: #0d0d0f;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  }
+
+  .shot-light {
+    position: absolute;
+    inset: -30%;
+    z-index: -1;
+    background:
+      linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.28) 42%, rgba(255, 255, 255, 0.05) 50%, transparent 58%),
+      linear-gradient(115deg, transparent 52%, rgba(255, 255, 255, 0.14) 60%, transparent 68%),
+      radial-gradient(50% 40% at 15% 95%, rgba(255, 255, 255, 0.12), transparent 70%);
+    filter: blur(18px);
+    animation: shotLight 16s ease-in-out infinite alternate;
+  }
+
+  @keyframes shotLight {
+    from { transform: translateX(-6%) rotate(0deg); }
+    to { transform: translateX(6%) rotate(6deg); }
+  }
+
+  .shot-img {
+    position: absolute;
+    left: 9%;
+    top: 11%;
+    width: 112%;
+    max-width: none;
+    border-radius: 12px 0 0 0;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  }
+
+  .shot-card { position: absolute; left: 9%; top: 13%; width: 100%; border-radius: 12px 0 0 12px; }
+  .shot-code { margin: 0; padding: 1.25rem 1.4rem 1.5rem; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.85; color: #c8c9ce; white-space: pre; }
+
+  .shot-wide { aspect-ratio: auto; padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 3.5rem) 0; }
+  .shot-wide .console { max-width: 1080px; margin: 0 auto; transform-origin: 50% 0; will-change: transform; }
+  .shot-wide .console :global(> div) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+
+  .brief {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.75rem 0;
+    border-top: 1px solid var(--of-line-strong);
+    border-bottom: 1px solid var(--of-line-strong);
+  }
+
+  .brief h3 { max-width: 26ch; font-size: clamp(1.2rem, 2vw, 1.5rem); letter-spacing: -0.03em; margin-bottom: 1.1rem; }
+  .brief img { width: 200px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; border: 1px solid var(--of-line); transition: transform 0.6s var(--ease-out); }
+  .brief:hover img { transform: scale(1.04) rotate(-1deg); }
 
   /* ── Statement ── */
   .statement { padding: clamp(6rem, 13vw, 11rem) 0; }
@@ -653,6 +777,7 @@ const HEADLINE = ['GitHub issues in.', 'Reviewed, merged', 'pull requests out.']
   .stage-window { margin-top: 1.75rem; }
   .stage-window pre { margin: 0; padding: 1.25rem 1.4rem 1.5rem; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.85; white-space: pre-wrap; word-break: break-word; color: #c8c9ce; }
 
+  .shot-code .t-p { color: #c8c9ce; } .shot-code .t-c { color: #66676d; } .shot-code .t-g { color: #5fe3b0; } .shot-code .t-h { color: #fff; font-weight: 500; }
   .t-k, .stage-window :global(.t-k) { color: #f2f2f0; }
   .t-p, .stage-window :global(.t-p) { color: #c8c9ce; }
   .t-s, .stage-window :global(.t-s) { color: #a7a8ae; }
@@ -807,7 +932,10 @@ const HEADLINE = ['GitHub issues in.', 'Reviewed, merged', 'pull requests out.']
 
   /* ── Responsive ── */
   @media (max-width: 1000px) {
-    .story-grid, .layers, .quick, .faq, .split-head { grid-template-columns: 1fr; }
+    .story-grid, .layers, .quick, .faq, .split-head, .feature, .feature-wide .feature-copy { grid-template-columns: 1fr; }
+    .feature.is-flipped .feature-copy { order: 0; }
+    .feature-wide .feature-copy a { grid-column: auto; }
+    .brief img { display: none; }
     .split-head > a { justify-self: start; }
     .story-nav { position: static; }
     .story-steps { display: none; }
