@@ -113,51 +113,19 @@ const isActive = (href: string) =>
     </a>
 
     <nav class="links" aria-label="Main navigation">
-      {NAV.map((item) => (
-        <div class={`item ${item.menu ? 'has-menu' : ''}`}>
+      {NAV.map((item, i) => (
+        <div class={`item ${item.menu ? 'has-menu' : ''}`} data-menu-trigger={item.menu ? i : undefined}>
           <a
             href={item.href}
             class={`link ${isActive(item.href) ? 'is-active' : ''}`}
             aria-haspopup={item.menu ? 'true' : undefined}
+            aria-expanded={item.menu ? 'false' : undefined}
           >
             {item.label}
             {item.menu && (
               <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
             )}
           </a>
-          {item.menu && (
-            <div class="menu" role="menu">
-              <div class={`menu-card ${item.menu.feature ? 'has-feature' : ''}`}>
-                <div class="menu-grid">
-                  {item.menu.items.map((sub) => (
-                    <a
-                      href={sub.href}
-                      class="menu-link"
-                      role="menuitem"
-                      target={sub.external ? '_blank' : undefined}
-                      rel={sub.external ? 'noopener noreferrer' : undefined}
-                    >
-                      <span class="menu-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICONS[sub.icon]} />
-                      </span>
-                      <span class="menu-text">
-                        <span class="menu-label">{sub.label}{sub.external && <span aria-hidden="true"> ↗</span>}</span>
-                        <span class="menu-desc">{sub.desc}</span>
-                      </span>
-                    </a>
-                  ))}
-                </div>
-                {item.menu.feature && (
-                  <a href={item.menu.feature.href} class="menu-feature">
-                    <span class="of-eyebrow">{item.menu.feature.eyebrow}</span>
-                    <span class="feature-title">{item.menu.feature.title}</span>
-                    <span class="feature-desc">{item.menu.feature.desc}</span>
-                    <span class="feature-cta">{item.menu.feature.cta} →</span>
-                  </a>
-                )}
-              </div>
-            </div>
-          )}
         </div>
       ))}
     </nav>
@@ -183,6 +151,46 @@ const isActive = (href: string) =>
         <span></span><span></span>
       </button>
     </div>
+  </div>
+
+  <div class="nav-dim" id="nav-dim" aria-hidden="true"></div>
+  <div class="mega" id="mega">
+    <div class="mega-bg" id="mega-bg"></div>
+    <div class="mega-arrow" id="mega-arrow"></div>
+    {NAV.map((item, i) => item.menu && (
+      <div class="mega-panel" data-menu-panel={i} role="menu" aria-label={item.label}>
+        <div class={`menu-card ${item.menu.feature ? 'has-feature' : ''}`}>
+          <div class="menu-grid">
+            {item.menu.items.map((sub, k) => (
+              <a
+                href={sub.href}
+                class="menu-link"
+                role="menuitem"
+                style={`--k:${k}`}
+                target={sub.external ? '_blank' : undefined}
+                rel={sub.external ? 'noopener noreferrer' : undefined}
+              >
+                <span class="menu-icon">
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={ICONS[sub.icon]} />
+                </span>
+                <span class="menu-text">
+                  <span class="menu-label">{sub.label}{sub.external && <span aria-hidden="true"> ↗</span>}</span>
+                  <span class="menu-desc">{sub.desc}</span>
+                </span>
+              </a>
+            ))}
+          </div>
+          {item.menu.feature && (
+            <a href={item.menu.feature.href} class="menu-feature">
+              <span class="of-eyebrow">{item.menu.feature.eyebrow}</span>
+              <span class="feature-title">{item.menu.feature.title}</span>
+              <span class="feature-desc">{item.menu.feature.desc}</span>
+              <span class="feature-cta">{item.menu.feature.cta} <span aria-hidden="true">→</span></span>
+            </a>
+          )}
+        </div>
+      </div>
+    ))}
   </div>
 
   <div class="drawer" id="nav-drawer" hidden data-lenis-prevent>
@@ -269,6 +277,105 @@ const isActive = (href: string) =>
     if (e.key === 'Escape') setOpen(false);
   });
   window.matchMedia('(min-width: 1001px)').addEventListener('change', (e) => e.matches && setOpen(false));
+
+  // Shared dropdown: one panel morphs between menus with hover intent.
+  const mega = document.getElementById('mega');
+  if (mega && nav) {
+    const triggers = [...document.querySelectorAll<HTMLElement>('[data-menu-trigger]')];
+    const panels = new Map([...mega.querySelectorAll<HTMLElement>('[data-menu-panel]')].map((p) => [p.dataset.menuPanel!, p]));
+    let current: string | null = null;
+    let openTimer = 0;
+    let closeTimer = 0;
+
+    const order = triggers.map((t) => t.dataset.menuTrigger!);
+
+    const place = (key: string) => {
+      const trigger = triggers.find((t) => t.dataset.menuTrigger === key)!;
+      const panel = panels.get(key)!;
+      const tr = trigger.getBoundingClientRect();
+      const w = panel.offsetWidth;
+      const h = panel.offsetHeight;
+      const center = tr.left + tr.width / 2;
+      const x = Math.max(16, Math.min(window.innerWidth - w - 16, tr.left - 18));
+      mega.style.setProperty('--x', `${x}px`);
+      mega.style.setProperty('--w', `${w}px`);
+      mega.style.setProperty('--h', `${h}px`);
+      mega.style.setProperty('--ax', `${center}px`);
+    };
+
+    const open = (key: string) => {
+      clearTimeout(closeTimer);
+      if (current === key) return;
+      const wasOpen = current !== null;
+      const from = current ? order.indexOf(current) : -1;
+      const to = order.indexOf(key);
+      mega.classList.toggle('no-morph', !wasOpen);
+      panels.forEach((p, k) => {
+        if (k === key) {
+          p.style.setProperty('--dir', String(wasOpen ? (to > from ? 1 : -1) : 0));
+          p.getBoundingClientRect();
+          p.classList.add('is-active');
+          p.style.setProperty('--dir', '0');
+        } else {
+          if (p.classList.contains('is-active')) p.style.setProperty('--dir', String(to > from ? -1 : 1));
+          p.classList.remove('is-active');
+        }
+      });
+      place(key);
+      triggers.forEach((t) => {
+        const on = t.dataset.menuTrigger === key;
+        t.classList.toggle('is-open', on);
+        t.querySelector('.link')?.setAttribute('aria-expanded', String(on));
+      });
+      current = key;
+      mega.classList.add('is-open');
+      nav.classList.add('menu-open');
+      requestAnimationFrame(() => mega.classList.remove('no-morph'));
+    };
+
+    const close = () => {
+      clearTimeout(openTimer);
+      current = null;
+      mega.classList.remove('is-open');
+      nav.classList.remove('menu-open');
+      panels.forEach((p) => p.classList.remove('is-active'));
+      triggers.forEach((t) => {
+        t.classList.remove('is-open');
+        t.querySelector('.link')?.setAttribute('aria-expanded', 'false');
+      });
+    };
+
+    const scheduleClose = () => {
+      clearTimeout(openTimer);
+      clearTimeout(closeTimer);
+      closeTimer = window.setTimeout(close, 180);
+    };
+
+    triggers.forEach((t) => {
+      const key = t.dataset.menuTrigger!;
+      t.addEventListener('mouseenter', () => {
+        clearTimeout(closeTimer);
+        clearTimeout(openTimer);
+        openTimer = window.setTimeout(() => open(key), current ? 0 : 70);
+      });
+      t.addEventListener('mouseleave', scheduleClose);
+      t.addEventListener('focusin', () => open(key));
+    });
+
+    document.querySelectorAll('.links .item:not(.has-menu)').forEach((item) => {
+      item.addEventListener('mouseenter', scheduleClose);
+      item.addEventListener('focusin', close);
+    });
+
+    mega.addEventListener('mouseenter', () => clearTimeout(closeTimer));
+    mega.addEventListener('mouseleave', scheduleClose);
+    mega.addEventListener('focusout', (e) => {
+      if (!mega.contains(e.relatedTarget as Node) && !(e.relatedTarget as HTMLElement)?.closest('[data-menu-trigger]')) close();
+    });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    window.addEventListener('resize', () => current && place(current));
+    window.addEventListener('scroll', () => current && close(), { passive: true });
+  }
 </script>
 
 <style>
@@ -334,36 +441,13 @@ const isActive = (href: string) =>
   .link:hover { background: color-mix(in srgb, var(--of-text) 5%, transparent); }
 
   .caret { width: 12px; height: 12px; opacity: 0.6; transition: transform 0.2s; }
-  .has-menu:hover .caret,
-  .has-menu:focus-within .caret { transform: rotate(180deg); }
-
-  .menu {
-    position: absolute;
-    top: 100%;
-    left: -1rem;
-    padding-top: 12px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-6px) scale(0.985);
-    transform-origin: top left;
-    transition: opacity 0.18s ease, transform 0.22s var(--ease-out), visibility 0.18s;
-  }
-
-  .has-menu:hover > .menu,
-  .has-menu:focus-within > .menu {
-    opacity: 1;
-    visibility: visible;
-    transform: none;
-  }
+  .has-menu.is-open .caret { transform: rotate(180deg); }
+  .has-menu.is-open > .link { color: var(--of-text); background: color-mix(in srgb, var(--of-text) 5%, transparent); }
 
   .menu-card {
     display: grid;
     gap: 0.5rem;
     padding: 0.5rem;
-    border-radius: 16px;
-    border: 1px solid var(--of-line);
-    background: var(--of-surface);
-    box-shadow: 0 24px 60px rgba(0, 0, 0, 0.12), 0 2px 6px rgba(0, 0, 0, 0.04);
   }
 
   .menu-card.has-feature { grid-template-columns: 1fr 230px; }
@@ -544,4 +628,104 @@ const isActive = (href: string) =>
   @media (max-width: 1180px) and (min-width: 1001px) {
     .star > span:first-of-type { display: none; }
   }
+
+  /* --- Shared morphing dropdown --- */
+  .mega {
+    position: absolute;
+    top: calc(100% - 4px);
+    left: 0;
+    width: 0;
+    height: 0;
+    pointer-events: none;
+    --x: 0px;
+    --w: 0px;
+    --h: 0px;
+    --ax: 0px;
+  }
+
+  .mega.is-open { pointer-events: auto; }
+
+  .mega-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: var(--w);
+    height: var(--h);
+    border-radius: 18px;
+    border: 1px solid var(--of-line);
+    background: var(--of-surface);
+    box-shadow: 0 30px 70px -10px rgba(0, 0, 0, 0.18), 0 2px 8px rgba(0, 0, 0, 0.05);
+    opacity: 0;
+    transform: translateX(var(--x)) translateY(-8px) scale(0.97);
+    transform-origin: 50% 0;
+    transition:
+      opacity 0.22s ease,
+      transform 0.45s var(--ease-out),
+      width 0.45s var(--ease-out),
+      height 0.45s var(--ease-out);
+  }
+
+  .mega.is-open .mega-bg { opacity: 1; transform: translateX(var(--x)); }
+  .mega.no-morph .mega-bg, .mega.no-morph .mega-arrow { transition-property: opacity, transform; }
+
+  .mega-arrow {
+    position: absolute;
+    top: -6px;
+    left: 0;
+    width: 13px;
+    height: 13px;
+    border-radius: 3px 0 0 0;
+    border-left: 1px solid var(--of-line);
+    border-top: 1px solid var(--of-line);
+    background: var(--of-surface);
+    opacity: 0;
+    transform: translateX(calc(var(--ax) - 6.5px)) rotate(45deg) scale(0.6);
+    transition: opacity 0.2s ease, transform 0.45s var(--ease-out);
+    z-index: 1;
+  }
+
+  .mega.is-open .mega-arrow { opacity: 1; transform: translateX(calc(var(--ax) - 6.5px)) rotate(45deg); }
+
+  .mega-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(calc(var(--x) + var(--dir, 0) * 28px));
+    transition: opacity 0.25s ease, transform 0.45s var(--ease-out), visibility 0s linear 0.25s;
+  }
+
+  .mega-panel.is-active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateX(var(--x));
+    transition: opacity 0.3s ease 0.05s, transform 0.45s var(--ease-out), visibility 0s;
+  }
+
+  .mega-panel .menu-link,
+  .mega-panel .menu-feature { opacity: 0; transform: translateY(6px); transition: opacity 0.35s ease, transform 0.5s var(--ease-out), background 0.15s; }
+  .mega-panel.is-active .menu-link { opacity: 1; transform: none; transition-delay: calc(var(--k) * 25ms + 60ms), calc(var(--k) * 25ms + 60ms), 0s; }
+  .mega-panel.is-active .menu-feature { opacity: 1; transform: none; transition-delay: 140ms; }
+
+  .menu-feature { transition: transform 0.5s var(--ease-out); }
+  .menu-feature:hover .feature-cta span { display: inline-block; transform: translateX(3px); }
+  .feature-cta span { transition: transform 0.3s var(--ease-out); }
+
+  .nav-dim {
+    position: fixed;
+    inset: var(--nav-height) 0 0 0;
+    background: rgba(10, 10, 12, 0.18);
+    backdrop-filter: blur(2px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s ease;
+    z-index: -1;
+  }
+
+  .nav.menu-open .nav-dim { opacity: 1; }
+  .nav.menu-open { background: color-mix(in srgb, var(--of-bg) 92%, transparent); backdrop-filter: saturate(180%) blur(18px); border-bottom-color: var(--of-line); }
+
+  @media (max-width: 1000px) { .mega, .nav-dim { display: none; } }
 </style>
