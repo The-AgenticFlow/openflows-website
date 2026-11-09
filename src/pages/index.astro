@@ -10,11 +10,11 @@ import { getPublishedPosts, getPostHref, formatPostDate, getReadTime } from '@/c
 const posts = (await getPublishedPosts()).slice(0, 3);
 
 const LOGOS = [
-  { name: 'Adorsys', src: '/images/logo-adorsys.png' },
-  { name: 'Clemios', src: '/images/logo-clemios.jpeg' },
-  { name: 'Rust Cameroon', src: '/images/logo-rust-cameroon.jpeg' },
-  { name: 'Rust Nigeria', src: '/images/logo-rust-nigeria.png' },
-  { name: 'Rust Africa', src: '/images/logo-rust-africa.jpeg' },
+  { name: 'Adorsys', src: '/images/mono-logo-adorsys.png', h: 26 },
+  { name: 'Clemios', src: '/images/mono-logo-clemios.png', h: 40 },
+  { name: 'Rust Cameroon', src: '/images/mono-logo-rust-cameroon.png', h: 42 },
+  { name: 'Rust Nigeria', src: '/images/mono-logo-rust-nigeria.png', h: 42 },
+  { name: 'Rust Africa', src: '/images/mono-logo-rust-africa.png', h: 40 },
 ];
 
 // Each stage of the ticket lifecycle, with the artifact that stage produces.
@@ -188,8 +188,7 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
         <ul class="logo-row" data-reveal-group>
           {LOGOS.map((logo) => (
             <li class="logo" data-reveal="fade">
-              <img src={logo.src} alt="" loading="lazy" />
-              <span>{logo.name}</span>
+              <img src={logo.src} alt={logo.name} title={logo.name} style={`height:${logo.h}px`} loading="lazy" />
             </li>
           ))}
         </ul>
@@ -540,11 +539,11 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
   /* ── Logos ── */
   .logos { padding: clamp(3rem, 6vw, 4.5rem) 0 clamp(2rem, 4vw, 3rem); }
   .logos-label { text-align: center; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--of-text-3); margin-bottom: 2.25rem; }
-  .logo-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 1.25rem clamp(2rem, 5vw, 4rem); }
-  .logo { display: flex; align-items: center; gap: 0.65rem; font-size: 1.05rem; font-weight: 500; letter-spacing: -0.02em; color: var(--of-text); white-space: nowrap; opacity: 0.7; transition: opacity 0.3s; }
+  .logo-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2rem clamp(2.5rem, 6vw, 5.5rem); }
+  .logo { display: flex; align-items: center; opacity: 0.55; transition: opacity 0.4s var(--ease-out); }
   .logo:hover { opacity: 1; }
-  .logo img { width: 30px; height: 30px; border-radius: 7px; object-fit: contain; filter: grayscale(1) contrast(1.1); mix-blend-mode: multiply; }
-  :global([data-theme='dark']) .logo img { filter: grayscale(1) invert(1) contrast(1.1); mix-blend-mode: screen; }
+  .logo img { width: auto; max-width: 180px; object-fit: contain; }
+  :global([data-theme='dark']) .logo img { filter: invert(1); }
 
   /* ── Product (feature rows) ── */
   .product { padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(3rem, 6vw, 4rem); }
