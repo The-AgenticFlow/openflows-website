@@ -609,6 +609,16 @@ a.of-card:hover, .of-card.is-hoverable:hover {
 .fade-up { animation: fadeUp 1s var(--ease-out) both; }
 .fade-in { animation: fadeIn 0.8s ease both; }
 
+/* Headings whose words rise out of a mask when they enter the viewport */
+[data-split] .sw { display: inline-block; overflow: hidden; vertical-align: top; padding-bottom: 0.1em; margin-bottom: -0.1em; }
+[data-split] .sw > span { display: inline-block; }
+.of-js [data-split] .sw > span { transform: translateY(105%); transition: transform 1s var(--ease-out); transition-delay: calc(var(--wi, 0) * 45ms); }
+.of-js [data-split].is-split .sw > span { transform: none; }
+
+/* Media that wipes open as it enters */
+.of-js .feature .shot { clip-path: inset(10% 6% 10% 6% round 20px); transition: clip-path 1.3s var(--ease-out); }
+.of-js .feature.is-revealed .shot { clip-path: inset(0 0 0 0 round 20px); }
+
 /* Words that brighten as the reader scrolls (driven from BaseLayout) */
 [data-words] .w { opacity: 0.16; transition: opacity 0.3s linear; }
 [data-words] .w.on { opacity: 1; }
@@ -630,6 +640,8 @@ a.of-card:hover, .of-card.is-hoverable:hover {
   html { scroll-behavior: auto; }
   *, *::before, *::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
   .of-js [data-reveal] { opacity: 1; transform: none; }
+  .of-js [data-split] .sw > span { transform: none; }
+  .of-js .feature .shot { clip-path: none; }
   [data-words] .w { opacity: 1; }
 }
 

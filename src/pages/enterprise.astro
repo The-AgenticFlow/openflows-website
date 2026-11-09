@@ -3,6 +3,17 @@ import BaseLayout from '@/layouts/BaseLayout.astro';
 import PixelField from '@/components/site/PixelField.astro';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 
+const CAPABILITIES = [
+  { title: 'Planning gate', body: 'No code until a reviewer approves the plan. Approvals are single-use and bound to a plan revision.', art: ['plan_ready', '──▶ APPROVED'] },
+  { title: 'Adversarial review', body: 'Builder and reviewer can run on different model providers, so their blind spots differ.', art: ['forge    model A', 'sentinel model B'] },
+  { title: 'A2A verification', body: 'SENTINEL runs allowlisted tests inside FORGE’s workspace. Timeouts never count as a pass.', art: ['sentinel ─▶ forge-1', '✓ 12 passed'] },
+  { title: 'Self-healing', body: 'reconcile() repairs stale workers, orphaned tickets and unmerged PRs, then escalates after 3 attempts.', art: ['stale_worker', '──▶ recovered'] },
+  { title: 'Human escalation', body: 'Ambiguous specs and stuck merges are parked as awaiting_human and sent to Slack, Discord or WhatsApp.', art: ['T-147', 'awaiting_human'] },
+  { title: 'Zero keys in workspaces', body: 'Model keys stay in the Coder AI Gateway. Workspaces get short-lived, repository-scoped tokens.', art: ['LLM keys   0', 'scope    repo'] },
+  { title: 'Multi-tenant', body: 'One Coder server, many teams, isolated by Coder RBAC and per-tenant Redis keyspaces.', art: ['ns:web:*', 'ns:infra:*'] },
+  { title: 'Plug-and-play registry', body: 'Add skills, MCP servers and models in registry.json. No code change, no restart.', art: ['"skills": [', '  "rust", "react" ]'] },
+];
+
 const RUN_STAGES = [
   { n: '01', title: 'Issue enters the queue', sub: 'Repository and tenant are known', tag: 'GitHub' },
   { n: '02', title: 'Manager authorizes work', sub: 'Identity, scope, capacity, credentials', tag: 'Control plane' },
@@ -119,6 +130,30 @@ const PILOT = [
           ))}
         </div>
         <a class="of-link wf-link" href="/docs/getting-started/first-issue">Walk through a first issue <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
+      </div>
+    </section>
+
+    <section class="caps-wrap" id="guardrails">
+      <div class="caps of-panel of-dark">
+        <div class="of-container">
+          <div class="caps-head" data-reveal>
+            <div>
+              <span class="of-eyebrow">Guardrails</span>
+              <h2 class="of-h2" data-split>Guardrails are the product.</h2>
+            </div>
+            <p class="of-lede">Speed without control is how agents delete production. OpenFlows encodes the discipline around the code, so you get both.</p>
+          </div>
+          <div class="cap-grid" data-reveal-group>
+            {CAPABILITIES.map((c, i) => (
+              <article class="cap" data-reveal>
+                <span class="cap-num">{String(i + 1).padStart(2, '0')}</span>
+                <pre class="cap-art" aria-hidden="true">{c.art.join('\n')}</pre>
+                <h3>{c.title}</h3>
+                <p>{c.body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
       </div>
     </section>
 
@@ -313,4 +348,18 @@ const PILOT = [
     .run-stages li { grid-template-columns: 32px 1fr; }
     .run-tag { display: none; }
   }
+
+  .caps { padding: clamp(4rem, 8vw, 6.5rem) 0; }
+  .caps-head { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 4rem; align-items: end; margin-bottom: clamp(2.5rem, 5vw, 3.5rem); }
+  .caps-head h2 { margin-top: 1rem; }
+  .cap-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--of-line); border-left: 1px solid var(--of-line); }
+  .cap { display: flex; flex-direction: column; min-height: 270px; padding: 1.5rem; border-right: 1px solid var(--of-line); border-bottom: 1px solid var(--of-line); transition: background 0.4s; }
+  .cap:hover { background: rgba(255, 255, 255, 0.03); }
+  .cap-num { font-family: var(--font-mono); font-size: 0.72rem; color: var(--of-text-3); }
+  .cap-art { margin: 1.5rem 0 auto; font-family: var(--font-mono); font-size: 0.74rem; line-height: 1.7; color: var(--of-text-3); white-space: pre; transition: color 0.4s; }
+  .cap:hover .cap-art { color: var(--of-accent); }
+  .cap h3 { margin-top: 1.75rem; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .cap p { margin-top: 0.5rem; font-size: 0.88rem; line-height: 1.6; color: var(--of-text-2); }
+  @media (max-width: 1000px) { .caps-head { grid-template-columns: 1fr; } .cap-grid { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .cap-grid { grid-template-columns: 1fr; } .cap { min-height: 0; } }
 </style>
