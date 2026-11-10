@@ -1388,3 +1388,22 @@
 .content a:not([class]) { color: var(--of-text); text-decoration: underline; text-decoration-color: var(--of-line-strong); text-underline-offset: 3px; }
 .content a:not([class]):hover { text-decoration-color: var(--of-text); }
 .content :not(pre) > code { font-family: var(--font-mono); font-size: 0.86em; padding: 0.12em 0.35em; border-radius: 5px; background: var(--of-surface-2); border: 1px solid var(--of-line); color: var(--of-text); }
+
+/* Callouts in the style of the Coder docs: tinted panel, accent rule, plain title */
+.callout { --c: var(--of-text-2); border: 1px solid color-mix(in srgb, var(--c) 28%, transparent) !important; border-left: 3px solid var(--c) !important; border-radius: 12px !important; background: color-mix(in srgb, var(--c) 7%, var(--of-surface)) !important; padding: 1rem 1.15rem !important; }
+.callout.tip { --c: #2f9e6d; }
+.callout.warning { --c: #c27a1a; }
+.callout.info { --c: #4a78c4; }
+[data-theme='dark'] .callout.tip { --c: #5fe3b0; }
+[data-theme='dark'] .callout.warning { --c: #e8b46a; }
+[data-theme='dark'] .callout.info { --c: #7aa7ff; }
+.callout .calloutIcon { color: var(--c) !important; }
+.callout .calloutTitle { text-transform: none !important; letter-spacing: -0.01em !important; font-family: var(--font-family) !important; font-size: 0.95rem !important; font-weight: 600 !important; color: var(--c) !important; }
+.callout .calloutText, .callout .calloutText p { font-size: 0.93rem !important; color: var(--of-text-2) !important; }
+
+/* Tables: bordered, rounded, quiet header */
+.content table { width: 100%; border-collapse: separate !important; border-spacing: 0; border: 1px solid var(--of-line-strong); border-radius: 12px; overflow: hidden; margin: 1.5rem 0; font-size: 0.9rem; }
+.content th { background: var(--of-surface-2); font-weight: 600; text-align: left; }
+.content th, .content td { padding: 0.7rem 0.9rem !important; border: 0 !important; border-bottom: 1px solid var(--of-line) !important; vertical-align: top; }
+.content tr:last-child td { border-bottom: 0 !important; }
+.content td + td, .content th + th { border-left: 1px solid var(--of-line) !important; }

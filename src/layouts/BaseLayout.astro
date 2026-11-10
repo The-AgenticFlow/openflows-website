@@ -12,6 +12,7 @@ interface Props {
   ogImage?: string;
   footer?: boolean;
   smooth?: boolean;
+  nav?: boolean;
 }
 
 const siteUrl = Astro.site?.toString() || 'https://openflows.dev';
@@ -21,6 +22,7 @@ const {
   ogImage,
   footer = true,
   smooth = true,
+  nav = true,
 } = Astro.props;
 const canonicalURL = new URL(Astro.url.pathname, siteUrl);
 const defaultOgImage = '/openlogo.png';
@@ -85,7 +87,7 @@ const prismLanguages = ['bash', 'javascript', 'typescript', 'python', 'rust', 'y
   </head>
   <body data-smooth={smooth ? 'on' : 'off'}>
     <a class="of-skip" href="#main-content">Skip to content</a>
-    <Navbar />
+    {nav && <Navbar />}
     <div id="main-content">
       <slot />
     </div>
