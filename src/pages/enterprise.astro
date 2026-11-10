@@ -1,13 +1,12 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PixelField from '@/components/site/PixelField.astro';
-import CtaBanner from '@/components/site/CtaBanner.astro';
 
 const CAPABILITIES = [
   { title: 'Planning gate', body: 'No code until a reviewer approves the plan. Approvals are single-use and bound to a plan revision.', art: ['plan_ready', '──▶ APPROVED'] },
   { title: 'Adversarial review', body: 'Builder and reviewer can run on different model providers, so their blind spots differ.', art: ['forge    model A', 'sentinel model B'] },
   { title: 'A2A verification', body: 'SENTINEL runs allowlisted tests inside FORGE’s workspace. Timeouts never count as a pass.', art: ['sentinel ─▶ forge-1', '✓ 12 passed'] },
-  { title: 'Self-healing', body: 'reconcile() repairs stale workers, orphaned tickets and unmerged PRs, then escalates after 3 attempts.', art: ['stale_worker', '──▶ recovered'] },
+  { title: 'Self-healing', body: 'reconcile() repairs stale workers, orphaned tickets and unmerged PRs, then escalates to a human when retries run out.', art: ['stale_worker', '──▶ recovered'] },
   { title: 'Human escalation', body: 'Ambiguous specs and stuck merges are parked as awaiting_human and sent to Slack, Discord or WhatsApp.', art: ['T-147', 'awaiting_human'] },
   { title: 'Zero keys in workspaces', body: 'Model keys stay in the Coder AI Gateway. Workspaces get short-lived, repository-scoped tokens.', art: ['LLM keys   0', 'scope    repo'] },
   { title: 'Multi-tenant', body: 'One Coder server, many teams, isolated by Coder RBAC and per-tenant Redis keyspaces.', art: ['ns:web:*', 'ns:infra:*'] },
@@ -19,13 +18,6 @@ const RUN_STAGES = [
   { n: '02', title: 'Manager authorizes work', sub: 'Identity, scope, capacity, credentials', tag: 'Control plane' },
   { n: '03', title: 'Agents work in Coder', sub: 'Nexus coordinates isolated workspaces', tag: 'Runtime' },
   { n: '04', title: 'Evidence reaches review', sub: 'Changes, verification, pull request', tag: 'Human gate' },
-];
-
-const WORKFLOW = [
-  { step: '01', label: 'Connect', title: 'Choose a repository', body: 'Sign in, connect a GitHub App installation, and create a tenant for a repository the installation can access.' },
-  { step: '02', label: 'Provision', title: 'Start the runtime', body: 'Manager records durable operations and asks Coder to create the tenant controller and scoped worker workspaces.' },
-  { step: '03', label: 'Execute', title: 'Run the issue', body: 'Nexus assigns ticket work. Agents use registered runtime sessions and request only the credentials their task permits.' },
-  { step: '04', label: 'Review', title: 'Inspect the evidence', body: 'Changes and verification return through the tenant workflow before a human decides whether to merge.' },
 ];
 
 const BOUNDARIES = [
@@ -90,7 +82,7 @@ const PILOT = [
             <h1 class="fade-up" style="animation-delay:80ms">Agent work your team can <span class="of-gradient-text">actually account for.</span></h1>
             <p class="of-lede fade-up" style="animation-delay:160ms">Turn a GitHub issue into a reviewed pull request with clear ownership, isolated workspaces, scoped credentials, and a record of what happened along the way.</p>
             <div class="of-actions fade-up" style="animation-delay:240ms">
-              <a class="of-btn of-btn-primary of-btn-lg" href="/contact"><span class="of-sq"></span>Talk to the team</a>
+              <a class="of-btn of-btn-primary of-btn-lg" href="/resources#contact"><span class="of-sq"></span>Talk to the team</a>
               <a class="of-btn of-btn-ghost of-btn-lg" href="/docs/architecture/components-and-interactions">Explore the architecture</a>
             </div>
             <p class="hero-note fade-up" style="animation-delay:300ms"><span class="of-dot"></span>Open source at the core. Customer-managed deployments can be evaluated today.</p>
@@ -110,26 +102,6 @@ const PILOT = [
             <p class="run-foot">The agent does the work. Your team keeps the decision.</p>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="of-section" id="workflow">
-      <div class="of-container">
-        <div class="of-head" data-reveal>
-          <span class="of-eyebrow">From issue to review</span>
-          <h2>One workflow, with visible handoffs.</h2>
-          <p>OpenFlows separates product authority from execution. Manager decides what a runtime may do; Nexus coordinates work inside one tenant; Forge and Sentinel work in separate Coder workspaces.</p>
-        </div>
-        <div class="workflow" data-reveal-group>
-          {WORKFLOW.map((w) => (
-            <article class="wf of-card" data-reveal>
-              <span class="wf-step">{w.step} <i>/</i> {w.label}</span>
-              <h3>{w.title}</h3>
-              <p>{w.body}</p>
-            </article>
-          ))}
-        </div>
-        <a class="of-link wf-link" href="/docs/getting-started/first-issue">Walk through a first issue <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg></a>
       </div>
     </section>
 
@@ -231,7 +203,7 @@ const PILOT = [
             <p class="of-lede" style="margin-top:1.1rem">Use a contained pilot to test the real boundaries: GitHub connection, tenant provisioning, runtime registration, issue execution, review evidence, and recovery after a worker interruption.</p>
             <div class="of-actions">
               <a class="of-btn of-btn-primary" href="/docs/getting-started/installation">Read the setup guide</a>
-              <a class="of-btn of-btn-ghost" href="/contact">Discuss your requirements</a>
+              <a class="of-btn of-btn-ghost" href="/resources#contact">Discuss your requirements</a>
             </div>
           </div>
           <ol class="pilot-list" data-reveal-group>
@@ -243,12 +215,6 @@ const PILOT = [
       </div>
     </section>
 
-    <CtaBanner
-      title="Bring governed AI delivery to your org."
-      body="Start with one repository, one tenant, and your own infrastructure. Scale when your security team is satisfied."
-      primary={{ label: 'Plan an evaluation', href: '/docs/getting-started/installation' }}
-      secondary={{ label: 'Talk to the maintainers', href: '/contact' }}
-    />
   </main>
 </BaseLayout>
 
@@ -295,13 +261,6 @@ const PILOT = [
   .run-tag { font-family: var(--font-mono); font-size: 0.68rem; padding: 0.25rem 0.5rem; border-radius: 6px; border: 1px solid var(--of-line-strong); color: var(--of-text-2); }
   .run-foot { padding: 0.9rem 1.25rem; border-top: 1px solid var(--of-line); font-size: 0.85rem; color: var(--of-text-2); }
 
-  .workflow { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-  .wf { padding: 1.5rem; }
-  .wf-step { font-family: var(--font-mono); font-size: 0.72rem; color: var(--of-mint); letter-spacing: 0.06em; text-transform: uppercase; }
-  .wf-step i { font-style: normal; color: var(--of-text-3); }
-  .wf h3 { margin-top: 1.4rem; font-size: 1.1rem; }
-  .wf p { margin-top: 0.55rem; font-size: 0.9rem; line-height: 1.6; color: var(--of-text-2); }
-  .wf-link { margin-top: 1.75rem; }
 
   .boundaries { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; }
   .boundary { display: flex; flex-direction: column; padding: 1.75rem; }
@@ -339,13 +298,11 @@ const PILOT = [
 
   @media (max-width: 1000px) {
     .hero-grid, .deploy, .pilot { grid-template-columns: 1fr; }
-    .workflow { grid-template-columns: 1fr 1fr; }
-    .boundaries, .avail { grid-template-columns: 1fr; }
+      .boundaries, .avail { grid-template-columns: 1fr; }
   }
 
   @media (max-width: 560px) {
-    .workflow { grid-template-columns: 1fr; }
-    .run-stages li { grid-template-columns: 32px 1fr; }
+      .run-stages li { grid-template-columns: 32px 1fr; }
     .run-tag { display: none; }
   }
 

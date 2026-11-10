@@ -1,6 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PixelField from '@/components/site/PixelField.astro';
+import ContactSection from '@/components/site/ContactSection.astro';
 import { getCollection } from 'astro:content';
 import PostRow from '@/components/blog/PostRow.astro';
 import { getPublishedPosts } from '@/components/blog/blog';
@@ -32,7 +33,7 @@ const tabs = [
     <div class="of-container">
       <span class="of-eyebrow fade-up">Resources</span>
       <h1 class="of-lines"><span><span style="--l:0">Learn how teams govern AI delivery.</span></span></h1>
-      <p class="of-lede fade-up" style="animation-delay:250ms">Blog posts, research papers and case studies from the OpenFlows team and community.</p>
+      <p class="of-lede fade-up" style="animation-delay:250ms">Blog posts, research papers and case studies from the OpenFlows team and community, and a direct line to the maintainers.</p>
     </div>
   </section>
   <main class="resources">
@@ -118,6 +119,8 @@ const tabs = [
       )}
     </section>
   </main>
+
+  <ContactSection />
 
   <script>
     const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.resources-tab'));

@@ -41,7 +41,7 @@ const USE_CASES = [
       'Zero personal access tokens in worker configuration',
       'Every action tied to a Coder-authenticated GitHub identity',
       'Source code stays inside your network boundary',
-      'Models route through Coder AI Gateway or LiteLLM fallback',
+      'Models route through the Coder AI Gateway',
     ],
   },
   {

@@ -53,7 +53,7 @@ const NAV: NavItem[] = [
         { label: 'Quick start', href: '/docs/getting-started' },
         { label: 'Installation', href: '/docs/getting-started/installation' },
         { label: 'First issue', href: '/docs/getting-started/first-issue' },
-        { label: 'Talk to the team', href: '/contact' },
+        { label: 'Talk to the team', href: '/resources#contact' },
       ] },
     },
   },
@@ -110,14 +110,13 @@ const NAV: NavItem[] = [
       feature: blogFeature,
       side: { heading: 'Company', links: [
         { label: 'Community', href: '/about' },
-        { label: 'Contact', href: '/contact' },
+        { label: 'Contact', href: '/resources#contact' },
         { label: 'Security', href: `${REPO_URL}/blob/HEAD/SECURITY.md`, external: true },
         { label: 'Discord', href: 'https://discord.gg/gDhK2RQZpY', external: true },
       ] },
     },
   },
   { label: 'Community', href: '/about' },
-  { label: 'Contact', href: '/contact' },
 ];
 
 const currentPath = Astro.url.pathname;

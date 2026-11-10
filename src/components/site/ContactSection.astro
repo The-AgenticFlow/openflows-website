@@ -1,7 +1,4 @@
 ---
-import BaseLayout from '@/layouts/BaseLayout.astro';
-import PixelField from '@/components/site/PixelField.astro';
-
 const REPO = 'https://github.com/The-AgenticFlow/OpenFlows';
 
 // Set this to a monitored inbox to send the form by email instead of
@@ -49,83 +46,75 @@ const CHANNELS = [
 ];
 ---
 
-<BaseLayout title="Contact · OpenFlows" description="Talk to the OpenFlows maintainers about an enterprise evaluation, a partnership, or running OpenFlows on your Coder environment.">
-  <main>
-    <section class="of-page-hero of-dark">
-      <PixelField cell={30} density={0.06} />
-      <div class="of-container">
-        <span class="of-eyebrow fade-up">Contact</span>
-        <h1 class="of-lines"><span><span style="--l:0">Talk to the people</span></span><span><span style="--l:1">building OpenFlows.</span></span></h1>
-        <p class="of-lede fade-up" style="animation-delay:300ms">Planning an evaluation, exploring a partnership, or stuck on a deployment? Tell us what you are working on and the maintainers will get back to you.</p>
+  <section class="of-section contact-section" id="contact">
+    <div class="of-container">
+      <div class="of-head" data-reveal>
+        <span class="of-eyebrow">Contact</span>
+        <h2 class="of-h2">Talk to the people building OpenFlows.</h2>
+        <p>Planning an evaluation, exploring a partnership, or stuck on a deployment? Tell us what you are working on and the maintainers will get back to you.</p>
       </div>
-    </section>
+      <div class="contact">
+        <form class="form of-card" id="contact-form" data-reveal data-email={CONTACT_EMAIL ?? ''} data-repo={REPO} novalidate>
+          <div class="form-head">
+            <h2>Send a message</h2>
+            <p>{CONTACT_EMAIL ? 'Your email app opens with the message ready to send.' : 'This opens a prefilled GitHub Discussion, so the whole team sees it and replies in one place.'}</p>
+          </div>
 
-    <section class="of-section">
-      <div class="of-container">
-        <div class="contact">
-          <form class="form of-card" id="contact-form" data-reveal data-email={CONTACT_EMAIL ?? ''} data-repo={REPO} novalidate>
-            <div class="form-head">
-              <h2>Send a message</h2>
-              <p>{CONTACT_EMAIL ? 'Your email app opens with the message ready to send.' : 'This opens a prefilled GitHub Discussion, so the whole team sees it and replies in one place.'}</p>
+          <fieldset class="topics">
+            <legend>What is it about?</legend>
+            <div class="topic-list">
+              {TOPICS.map((t, i) => (
+                <label class="topic">
+                  <input type="radio" name="topic" value={t.label} checked={i === 0} />
+                  <span>{t.label}</span>
+                </label>
+              ))}
             </div>
+          </fieldset>
 
-            <fieldset class="topics">
-              <legend>What is it about?</legend>
-              <div class="topic-list">
-                {TOPICS.map((t, i) => (
-                  <label class="topic">
-                    <input type="radio" name="topic" value={t.label} checked={i === 0} />
-                    <span>{t.label}</span>
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-
-            {CONTACT_EMAIL && (
-              <div class="row">
-                <label class="field"><span>Name</span><input name="name" autocomplete="name" /></label>
-                <label class="field"><span>Company</span><input name="company" autocomplete="organization" /></label>
-              </div>
-            )}
-
-            <label class="field">
-              <span>Subject</span>
-              <input name="subject" required maxlength="140" placeholder="e.g. Evaluating OpenFlows for 40 engineers on Coder" />
-            </label>
-
-            <label class="field">
-              <span>Message</span>
-              <textarea name="message" required rows="6" placeholder="Your team, your Coder setup, and what you want OpenFlows to do."></textarea>
-            </label>
-
-            <p class="form-error" id="form-error" role="alert" hidden>Add a subject and a short message first.</p>
-
-            <div class="form-foot">
-              <button type="submit" class="of-btn of-btn-primary of-btn-lg"><span class="of-sq"></span>{CONTACT_EMAIL ? 'Send message' : 'Continue on GitHub'}</button>
-              {!CONTACT_EMAIL && <span class="form-note">Don’t include secrets or private details: discussions are public.</span>}
+          {CONTACT_EMAIL && (
+            <div class="row">
+              <label class="field"><span>Name</span><input name="name" autocomplete="name" /></label>
+              <label class="field"><span>Company</span><input name="company" autocomplete="organization" /></label>
             </div>
-          </form>
+          )}
 
-          <aside class="channels">
-            <p class="channels-label">Other ways to reach us</p>
-            {CHANNELS.map((c) => (
-              <a href={c.href} target="_blank" rel="noopener noreferrer" class="channel" data-reveal>
-                <span class="ch-icon"><svg viewBox="0 0 24 24" fill={c.fill ? 'currentColor' : 'none'} stroke={c.fill ? 'none' : 'currentColor'} stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={c.icon} /></span>
-                <span class="ch-text"><b>{c.title}</b><span>{c.desc}</span></span>
-                <span class="ch-arrow" aria-hidden="true">↗</span>
-              </a>
-            ))}
-            <div class="evaluate" data-reveal>
-              <p class="channels-label">Prefer to try it first?</p>
-              <p>Run a contained pilot on one repository. The setup script handles the GitHub App, Coder, Redis and templates.</p>
-              <a href="/docs/getting-started/installation" class="of-link">Read the setup guide →</a>
-            </div>
-          </aside>
-        </div>
+          <label class="field">
+            <span>Subject</span>
+            <input name="subject" required maxlength="140" placeholder="e.g. Evaluating OpenFlows for 40 engineers on Coder" />
+          </label>
+
+          <label class="field">
+            <span>Message</span>
+            <textarea name="message" required rows="6" placeholder="Your team, your Coder setup, and what you want OpenFlows to do."></textarea>
+          </label>
+
+          <p class="form-error" id="form-error" role="alert" hidden>Add a subject and a short message first.</p>
+
+          <div class="form-foot">
+            <button type="submit" class="of-btn of-btn-primary of-btn-lg"><span class="of-sq"></span>{CONTACT_EMAIL ? 'Send message' : 'Continue on GitHub'}</button>
+            {!CONTACT_EMAIL && <span class="form-note">Don’t include secrets or private details: discussions are public.</span>}
+          </div>
+        </form>
+
+        <aside class="channels">
+          <p class="channels-label">Other ways to reach us</p>
+          {CHANNELS.map((c) => (
+            <a href={c.href} target="_blank" rel="noopener noreferrer" class="channel" data-reveal>
+              <span class="ch-icon"><svg viewBox="0 0 24 24" fill={c.fill ? 'currentColor' : 'none'} stroke={c.fill ? 'none' : 'currentColor'} stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={c.icon} /></span>
+              <span class="ch-text"><b>{c.title}</b><span>{c.desc}</span></span>
+              <span class="ch-arrow" aria-hidden="true">↗</span>
+            </a>
+          ))}
+          <div class="evaluate" data-reveal>
+            <p class="channels-label">Prefer to try it first?</p>
+            <p>Run a contained pilot on one repository. The setup script handles the GitHub App, Coder, Redis and templates.</p>
+            <a href="/docs/getting-started/installation" class="of-link">Read the setup guide →</a>
+          </div>
+        </aside>
       </div>
-    </section>
-  </main>
-</BaseLayout>
+    </div>
+  </section>
 
 <script>
   const form = document.getElementById('contact-form') as HTMLFormElement | null;
@@ -150,12 +139,13 @@ const CHANNELS = [
       return;
     }
     const title = `[${topic}] ${subject}`;
-    const body = `${message}\n\n---\n_Sent from the contact page on openflows.dev_`;
+    const body = `${message}\n\n---\n_Sent from openflows.dev_`;
     window.open(`${form.dataset.repo}/discussions/new?title=${encodeURIComponent(title)}&body=${encodeURIComponent(body)}`, '_blank', 'noopener');
   });
 </script>
 
 <style>
+  .contact-section { border-top: 1px solid var(--of-line); scroll-margin-top: var(--nav-height); }
   .contact { display: grid; grid-template-columns: 1.25fr 0.9fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
 
   .form { padding: clamp(1.5rem, 3.5vw, 2.5rem); display: grid; gap: 1.4rem; }

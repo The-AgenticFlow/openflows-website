@@ -6,6 +6,7 @@ export default defineConfig({
   site: 'https://openflows.dev',
   integrations: [react(), sitemap()],
   output: 'static',
+  redirects: { '/contact': '/resources#contact' },
   
   // Preserve existing Vite config
   vite: {

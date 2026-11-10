@@ -1,6 +1,5 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import MissionControl from '@/organisms/MissionControl/MissionControl';
 import FAQ from '@/organisms/FAQ/FAQ';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 import PixelField from '@/components/site/PixelField.astro';
@@ -117,18 +116,19 @@ const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '
 const codeHtml = (lines: string[][][]) =>
   lines.map((line) => line.map(([cls, text]) => `<span class="t-${cls}">${escapeHtml(text)}</span>`).join('')).join('\n');
 
+// Real Console screens, captured from the Console running against demo data.
+const CONSOLE_SCREENS = [
+  { id: 'overview', label: 'Overview', alt: 'OpenFlows Console overview: tenant count, running tenants, GitHub connection and recent activity' },
+  { id: 'tenant', label: 'Agent activity', alt: 'Tenant detail page showing runtime health and the agents working on each ticket' },
+  { id: 'tenants', label: 'Tenants', alt: 'Tenants list with one runtime per GitHub repository and its status' },
+  { id: 'activity', label: 'Operations', alt: 'Activity page listing every lifecycle operation and its result' },
+  { id: 'members', label: 'Members', alt: 'Members page with roles and invitations' },
+];
+
 // Screens that line the walls of the how-it-works tunnel.
 const TUNNEL_IMAGES = [
-  '/images/worker-workspace.png',
-  '/images/code-review.png',
-  '/images/a2a-relay.png',
-  '/images/model-routing.png',
-  '/images/openflows-controller.png',
-  '/images/v1-stable.png',
+  ...CONSOLE_SCREENS.flatMap((sc) => [`/images/console/${sc.id}-light.webp`, `/images/console/${sc.id}-dark.webp`]),
   '/images/howitworks.png',
-  '/images/vessel-loop.png',
-  '/images/system-architecture.png',
-  '/images/how-openflows-compares.png',
 ];
 const TUNNEL_SEGMENTS = 9;
 
@@ -175,7 +175,6 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
           <span class="of-tag">New</span>
           <span>Delegated verification: how SENTINEL runs tests without touching FORGE’s workspace</span>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-          <span class="strip-meta">Open source · MIT · Self-hosted</span>
         </a>
       </div>
     </section>
@@ -183,7 +182,7 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
     <!-- ───────── LOGOS ───────── -->
     <section class="logos" aria-label="Supporters">
       <div class="of-container">
-        <p class="logos-label">Built with engineering teams and communities at</p>
+        <p class="logos-label">Supported by engineering teams and communities</p>
         <ul class="logo-row" data-reveal-group>
           {LOGOS.map((logo) => (
             <li class="logo" data-reveal="fade">
@@ -205,14 +204,24 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
 
         <article class="feature feature-wide" data-reveal>
           <div class="feature-copy">
-            <h3>OpenFlows control plane</h3>
-            <p>Connect a repository, provision a tenant and watch every ticket move through planning, build, review and merge, with the agent responsible for each step in plain view.</p>
-            <a href="/docs/introduction/how-it-works" class="of-btn of-btn-ghost of-btn-sm">Explore how it works</a>
+            <h3>The OpenFlows Console</h3>
+            <p>Connect GitHub, create one tenant per repository, start and stop its runtime, and see which agent is working on which ticket. Members, roles and the full operations history live in the same place.</p>
+            <a href="/docs/getting-started" class="of-btn of-btn-ghost of-btn-sm">Get the Console</a>
           </div>
-          <div class="shot shot-wide">
+          <div class="shot shot-wide" id="console-tour">
             <div class="shot-light" aria-hidden="true"></div>
-            <div class="shot-inner console" data-scroll-scale>
-              <MissionControl client:visible />
+            <div class="console-tabs" role="tablist" aria-label="Console screens">
+              {CONSOLE_SCREENS.map((sc, i) => (
+                <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-console-tab={i}>{sc.label}</button>
+              ))}
+            </div>
+            <div class="console-frame" data-scroll-scale>
+              {CONSOLE_SCREENS.map((sc, i) => (
+                <figure class={`console-screen ${i === 0 ? 'is-active' : ''}`} data-console-screen={i}>
+                  <img class="on-light" src={`/images/console/${sc.id}-light.webp`} alt={sc.alt} width="1440" height="900" />
+                  <img class="on-dark" src={`/images/console/${sc.id}-dark.webp`} alt={sc.alt} width="1440" height="900" />
+                </figure>
+              ))}
             </div>
           </div>
         </article>
@@ -393,7 +402,7 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
             <h2 class="of-h2" style="margin-top:1.1rem" data-split>From zero to your first merged PR.</h2>
             <p class="of-lede" style="margin-top:1.2rem">One script creates the GitHub App, starts Coder and Redis, configures the model, pushes templates and connects your repository. Re-run it any time; it skips what is done.</p>
             <ol class="quick-steps">
-              <li><span>01</span><div><b>Run the setup script</b><p>Published images on x86-64 Linux, or compile from source.</p></div></li>
+              <li><span>01</span><div><b>Run the setup script</b><p>Published images or release binaries on Linux and macOS, or compile from source.</p></div></li>
               <li><span>02</span><div><b>Open a GitHub issue</b><p>NEXUS picks it up on the next cycle and assigns a worker.</p></div></li>
               <li><span>03</span><div><b>Review the pull request</b><p>Approve the gates that need a human. The team does the rest.</p></div></li>
             </ol>
@@ -404,7 +413,7 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
           </div>
           <div class="of-window" data-reveal="scale">
             <div class="of-window-bar"><span class="of-window-dots"><span></span><span></span><span></span></span>~/openflows</div>
-            <pre class="term"><span class="t-c"># published images, no compiling (x86-64 Linux)</span>
+            <pre class="term"><span class="t-c"># published images, no compiling</span>
 <span class="t-c">$</span> ./scripts/setup.sh acme/web --compose
 <span class="t-g">✓</span> .env created · GitHub App registered
 <span class="t-g">✓</span> Coder + Redis running
@@ -483,6 +492,27 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
       m.addEventListener('focus', () => open(m));
       m.addEventListener('click', () => open(m));
     });
+  }
+
+  // Console tour: tabs swap the real Console screen, and advance on their own
+  // until the visitor picks one.
+  const tour = document.getElementById('console-tour');
+  if (tour) {
+    const tabs = [...tour.querySelectorAll<HTMLButtonElement>('[data-console-tab]')];
+    const screens = [...tour.querySelectorAll<HTMLElement>('[data-console-screen]')];
+    let index = 0;
+    let timer = 0;
+    const show = (i: number) => {
+      index = (i + tabs.length) % tabs.length;
+      tabs.forEach((t, k) => t.setAttribute('aria-selected', String(k === index)));
+      screens.forEach((sc, k) => sc.classList.toggle('is-active', k === index));
+    };
+    const auto = () => { timer = window.setInterval(() => show(index + 1), 4500); };
+    tabs.forEach((t, k) => t.addEventListener('click', () => { window.clearInterval(timer); show(k); }));
+    new IntersectionObserver(([e]) => {
+      window.clearInterval(timer);
+      if (e.isIntersecting && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) auto();
+    }, { threshold: 0.3 }).observe(tour);
   }
 
   // Scroll tunnel: a corridor whose four walls are lined with screens. Scrolling
@@ -831,8 +861,36 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
   .shot-code { margin: 0; padding: 1.25rem 1.4rem 1.5rem; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.85; color: #c8c9ce; white-space: pre; }
 
   .shot-wide { aspect-ratio: auto; padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 3.5rem) 0; }
-  .shot-wide .console { max-width: 1080px; margin: 0 auto; transform-origin: 50% 0; will-change: transform; }
-  .shot-wide .console :global(> div) { border-bottom-left-radius: 0; border-bottom-right-radius: 0; }
+  .console-tabs { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem; margin-bottom: 1.5rem; }
+  .console-tabs button {
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: color 0.3s, background 0.3s, border-color 0.3s;
+  }
+  .console-tabs button:hover { color: #fff; }
+  .console-tabs button[aria-selected='true'] { color: #0c0c0d; background: #fff; border-color: #fff; }
+  .console-frame {
+    position: relative;
+    max-width: 1080px;
+    margin: 0 auto;
+    aspect-ratio: 1440 / 900;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+    background: #0b0b0c;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.45);
+    transform-origin: 50% 0;
+    will-change: transform;
+  }
+  .console-screen { position: absolute; inset: 0; margin: 0; opacity: 0; transform: scale(1.015); transition: opacity 0.6s var(--ease-out), transform 0.9s var(--ease-out); }
+  .console-screen.is-active { opacity: 1; transform: none; }
+  .console-screen img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
 
   .brief {
     display: flex;
@@ -864,9 +922,12 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
 
   .tunnel-sticky {
     position: sticky;
-    top: calc(var(--nav-height) + 8px);
-    height: calc(100vh - var(--nav-height) - 16px);
-    min-height: 560px;
+    --th: min(calc(100vh - var(--nav-height) - 96px), 720px);
+    top: calc(var(--nav-height) + (100vh - var(--nav-height) - var(--th)) / 2);
+    width: min(1240px, calc(100% - 48px));
+    height: var(--th);
+    min-height: 520px;
+    margin-inline: auto;
     overflow: hidden;
     perspective: 760px;
     perspective-origin: 50% 50%;
@@ -890,10 +951,11 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
     width: 100%;
     height: 100%;
     object-fit: cover;
-    border-radius: 14px;
+    object-position: left top;
+    border-radius: 12px;
     border: 1px solid rgba(255, 255, 255, 0.1);
     background: #111113;
-    filter: brightness(0.72);
+    filter: brightness(0.86);
   }
 
   .tunnel-fog {
@@ -903,7 +965,8 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
     pointer-events: none;
     background:
       radial-gradient(ellipse 36% 34% at 50% 52%, rgba(7, 7, 8, 0.94) 25%, rgba(7, 7, 8, 0.6) 62%, transparent 100%),
-      radial-gradient(ellipse 90% 90% at 50% 50%, transparent 55%, rgba(7, 7, 8, 0.35) 100%);
+      radial-gradient(ellipse 90% 90% at 50% 50%, transparent 55%, rgba(7, 7, 8, 0.35) 100%),
+      linear-gradient(180deg, rgba(7, 7, 8, 0.85), transparent 16%, transparent 76%, rgba(7, 7, 8, 0.9));
   }
 
   .tunnel-hud {
