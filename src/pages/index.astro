@@ -117,6 +117,21 @@ const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '
 const codeHtml = (lines: string[][][]) =>
   lines.map((line) => line.map(([cls, text]) => `<span class="t-${cls}">${escapeHtml(text)}</span>`).join('')).join('\n');
 
+// Screens that line the walls of the how-it-works tunnel.
+const TUNNEL_IMAGES = [
+  '/images/worker-workspace.png',
+  '/images/code-review.png',
+  '/images/a2a-relay.png',
+  '/images/model-routing.png',
+  '/images/openflows-controller.png',
+  '/images/v1-stable.png',
+  '/images/howitworks.png',
+  '/images/vessel-loop.png',
+  '/images/system-architecture.png',
+  '/images/how-openflows-compares.png',
+];
+const TUNNEL_SEGMENTS = 9;
+
 const SETUP_COMMAND = './scripts/setup.sh owner/repo --compose';
 const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.'];
 ---
@@ -252,21 +267,13 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
     <section class="tunnel-wrap" id="tunnel" style={`--stages:${STAGES.length}`} aria-label="How OpenFlows works, stage by stage">
       <div class="tunnel-sticky of-panel of-dark">
         <div class="tunnel-scene" aria-hidden="true">
-          <div class="tunnel-rings">
-            {Array.from({ length: 16 }).map((_, k) => <div class="ring" data-ring={k}><i></i><i></i><i></i><i></i></div>)}
-          </div>
-          <div class="tunnel-cards">
-            {STAGES.map((st, i) => (
-              <div class="tcard" data-tcard={i}>
-                <span class="tcard-tag">{String(i + 1).padStart(2, '0')} · {st.agent}</span>
-                <div class="of-window">
-                  <div class="of-window-bar"><span class="of-window-dots"><span></span><span></span><span></span></span>{st.file}</div>
-                  <pre set:html={codeHtml(st.code)} />
-                </div>
-              </div>
+          <div class="tunnel-world" data-world>
+            {Array.from({ length: TUNNEL_SEGMENTS * 8 }).map((_, k) => (
+              <div class="tile" data-tile={k}><img src={TUNNEL_IMAGES[(k * 3 + Math.floor(k / 8)) % TUNNEL_IMAGES.length]} alt="" decoding="async" /></div>
             ))}
           </div>
         </div>
+        <div class="tunnel-fog" aria-hidden="true"></div>
 
         <div class="tunnel-hud">
           <div class="hud-top">
@@ -276,7 +283,7 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
           <div class="hud-copy">
             {STAGES.map((st, i) => (
               <div class={`hud-stage ${i === 0 ? 'is-active' : ''}`} data-hud={i}>
-                <p class="hud-agent">{st.agent}</p>
+                <p class="hud-agent">{String(i + 1).padStart(2, '0')} · {st.agent}</p>
                 <h3>{st.title}</h3>
                 <p class="hud-body">{st.body}</p>
               </div>
@@ -288,7 +295,6 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
             ))}
           </ol>
           <div class="hud-progress" aria-hidden="true"><i id="hud-bar"></i></div>
-          <p class="hud-hint" aria-hidden="true">Scroll to travel through the pipeline</p>
         </div>
       </div>
     </section>
@@ -479,29 +485,47 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
     });
   }
 
-  // Scroll tunnel: the camera flies forward through rotating rings while
-  // each stage artifact orbits into focus, holding briefly at every stage.
+  // Scroll tunnel: a corridor whose four walls are lined with screens. Scrolling
+  // flies the camera forward one short hop per stage.
   const tunnel = document.getElementById('tunnel');
   const tunnelOn = () => tunnel && getComputedStyle(tunnel).display !== 'none';
   if (tunnel) {
-    const cards = [...tunnel.querySelectorAll<HTMLElement>('[data-tcard]')];
-    const rings = [...tunnel.querySelectorAll<HTMLElement>('[data-ring]')];
+    const sticky = tunnel.querySelector<HTMLElement>('.tunnel-sticky')!;
+    const tiles = [...tunnel.querySelectorAll<HTMLElement>('[data-tile]')];
     const huds = [...tunnel.querySelectorAll<HTMLElement>('[data-hud]')];
     const steps = [...tunnel.querySelectorAll<HTMLElement>('[data-hud-step]')];
     const hudIndex = document.getElementById('hud-index');
     const hudBar = document.getElementById('hud-bar');
-    const N = cards.length;
-    const GAP = 1100;
-    const RING_GAP = 420;
-    const SPAN = RING_GAP * rings.length;
+    const N = huds.length;
+    const SEGMENTS = tiles.length / 8;
+    let W = 0, H = 0, D = 0;
     let current = -1;
     let smooth = 0;
     let target = 0;
 
-    // Hold still on each stage for the middle of its scroll segment.
+    // Each segment of the corridor is a ring of 8 tiles: two per wall.
+    const layout = () => {
+      W = sticky.clientWidth;
+      H = sticky.clientHeight;
+      D = Math.round(H * 0.85);
+      tiles.forEach((tile, k) => {
+        const side = k % 8;
+        const wall = side >> 1;
+        const half = side & 1;
+        const vertical = wall < 2;
+        tile.style.width = `${vertical ? D : W / 2}px`;
+        tile.style.height = `${vertical ? H / 2 : D}px`;
+        tile.dataset.wall = String(wall);
+        tile.dataset.half = String(half);
+      });
+    };
+    layout();
+    window.addEventListener('resize', layout);
+
+    // Pause briefly on every stage, then glide to the next.
     const settle = (f: number) => {
       const i = Math.floor(f);
-      const t = Math.min(1, Math.max(0, (f - i - 0.3) / 0.4));
+      const t = Math.min(1, Math.max(0, (f - i - 0.15) / 0.7));
       return i + t * t * (3 - 2 * t);
     };
 
@@ -509,34 +533,36 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
       const rect = tunnel.getBoundingClientRect();
       const total = rect.height - window.innerHeight;
       const raw = Math.min(1, Math.max(0, -rect.top / total));
-      target = settle(raw * (N - 1) * 0.9999 + 0.0001);
+      target = settle(raw * (N - 1) * 0.9999);
     };
 
     const render = () => {
       if (!tunnelOn()) { requestAnimationFrame(render); return; }
       measure();
-      smooth += (target - smooth) * 0.12;
+      smooth += (target - smooth) * 0.1;
       const p = smooth;
-      const vw = window.innerWidth;
-      const R = Math.min(vw * 0.2, 300);
+      // Two segments per stage, offset half a segment so a ring of tiles always
+      // starts exactly at the screen edge when the camera rests on a stage.
+      const cam = (p * 2 + 0.5) * D;
+      const span = SEGMENTS * D;
+      const a = W / 2, b = H / 2;
 
-      cards.forEach((card, i) => {
-        const d = i - p;
-        const angle = d * 0.95;
-        const x = (Math.cos(angle) - 1) * R * 1.15;
-        const y = Math.sin(angle) * R;
-        const z = -d * GAP;
-        const opacity = d < 0 ? Math.max(0, 1 + d * 3) : Math.max(0, 1 - d * 0.42);
-        card.style.transform = `translate(-50%, -50%) translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, ${z.toFixed(1)}px) rotateZ(${(-d * 8).toFixed(2)}deg) rotateY(${(-d * 10).toFixed(2)}deg)`;
-        card.style.opacity = opacity.toFixed(3);
-        card.style.zIndex = String(100 - Math.round(Math.abs(d) * 10));
-      });
-
-      rings.forEach((ring, k) => {
-        let z = ((k * RING_GAP + p * GAP * 0.9) % SPAN) - SPAN + RING_GAP;
-        const depth = -z / SPAN;
-        ring.style.transform = `translate(-50%, -50%) translateZ(${z.toFixed(1)}px) rotateZ(${(k * 11 + p * 24).toFixed(2)}deg)`;
-        ring.style.opacity = Math.max(0, Math.min(1, (1 - depth) * 1.2) * Math.min(1, (z + RING_GAP * 1.6) / RING_GAP)).toFixed(3);
+      tiles.forEach((tile, k) => {
+        const seg = Math.floor(k / 8);
+        const wall = Number(tile.dataset.wall);
+        const half = Number(tile.dataset.half);
+        // Depth of the segment's centre, wrapped so tiles recycle to the far end.
+        const zc = -(((seg * D - cam) % span + span) % span);
+        let t = '';
+        if (wall === 0) t = `translate3d(${-a}px, ${-b + (half + 0.5) * b}px, ${zc}px) rotateY(90deg)`;
+        else if (wall === 1) t = `translate3d(${a}px, ${-b + (half + 0.5) * b}px, ${zc}px) rotateY(-90deg)`;
+        else if (wall === 2) t = `translate3d(${-a + (half + 0.5) * a}px, ${-b}px, ${zc}px) rotateX(-90deg)`;
+        else t = `translate3d(${-a + (half + 0.5) * a}px, ${b}px, ${zc}px) rotateX(90deg)`;
+        tile.style.transform = `translate(-50%, -50%) ${t}`;
+        const far = -zc / (span - D);
+        const near = Math.min(1, (-zc - D * 0.25) / (D * 0.25));
+        tile.style.visibility = zc > -D * 0.3 ? 'hidden' : '';
+        tile.style.opacity = Math.max(0, Math.min(near, 1 - far * far)).toFixed(3);
       });
 
       const active = Math.min(N - 1, Math.max(0, Math.round(p)));
@@ -557,9 +583,9 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
     steps.forEach((step, i) => step.addEventListener('click', () => {
       const rect = tunnel.getBoundingClientRect();
       const total = rect.height - window.innerHeight;
-      const y = window.scrollY + rect.top + ((i + 0.5) / (N - 1)) * total * ((N - 1) / N) + 1;
+      const y = window.scrollY + rect.top + (i / (N - 1)) * total;
       const lenis = (window as any).__lenis;
-      lenis ? lenis.scrollTo(Math.min(y, window.scrollY + rect.top + total), { duration: 1.6 }) : window.scrollTo({ top: y, behavior: 'smooth' });
+      lenis ? lenis.scrollTo(y, { duration: 1.2 }) : window.scrollTo({ top: y, behavior: 'smooth' });
     }));
   }
 
@@ -834,68 +860,51 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
   }
 
   /* ── Scroll tunnel ── */
-  .tunnel-wrap { position: relative; height: calc(var(--stages) * 100vh + 40vh); }
+  .tunnel-wrap { position: relative; height: calc(var(--stages) * 55vh + 100vh); }
 
   .tunnel-sticky {
     position: sticky;
     top: calc(var(--nav-height) + 8px);
     height: calc(100vh - var(--nav-height) - 16px);
     min-height: 560px;
-    perspective: 1100px;
-    perspective-origin: 66% 50%;
+    overflow: hidden;
+    perspective: 760px;
+    perspective-origin: 50% 50%;
+    background: #070708;
   }
 
-  .tunnel-sticky::after {
-    content: '';
+  .tunnel-scene { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .tunnel-world { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+
+  .tile {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 8px;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+
+  .tile img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 14px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #111113;
+    filter: brightness(0.72);
+  }
+
+  .tunnel-fog {
     position: absolute;
     inset: 0;
     z-index: 2;
     pointer-events: none;
     background:
-      radial-gradient(ellipse 50% 60% at 66% 50%, transparent 35%, rgba(11, 11, 12, 0.5) 85%),
-      linear-gradient(90deg, #0b0b0c 0%, rgba(11, 11, 12, 0.9) 28%, rgba(11, 11, 12, 0) 46%);
+      radial-gradient(ellipse 36% 34% at 50% 52%, rgba(7, 7, 8, 0.94) 25%, rgba(7, 7, 8, 0.6) 62%, transparent 100%),
+      radial-gradient(ellipse 90% 90% at 50% 50%, transparent 55%, rgba(7, 7, 8, 0.35) 100%);
   }
-
-  .tunnel-scene { position: absolute; inset: 0; transform-style: preserve-3d; }
-  .tunnel-rings, .tunnel-cards { position: absolute; left: 66%; top: 52%; transform-style: preserve-3d; }
-
-  .ring {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: min(64vw, 1100px);
-    height: min(64vw, 1100px);
-    border: 1px solid rgba(255, 255, 255, 0.14);
-    border-radius: 34%;
-    box-shadow: inset 0 0 60px rgba(255, 255, 255, 0.025);
-    will-change: transform, opacity;
-  }
-
-  .ring i { position: absolute; width: 10px; height: 10px; background: rgba(255, 255, 255, 0.5); }
-  .ring i:nth-child(1) { left: 50%; top: -5px; }
-  .ring i:nth-child(2) { right: -5px; top: 50%; background: rgba(95, 227, 176, 0.55); }
-  .ring i:nth-child(3) { left: 50%; bottom: -5px; width: 6px; height: 6px; }
-  .ring i:nth-child(4) { left: -5px; top: 30%; width: 6px; height: 6px; }
-
-  .tcard {
-    position: absolute;
-    left: 0;
-    top: 0;
-    width: min(460px, 34vw);
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-  }
-
-  .tcard-tag { display: inline-block; margin-bottom: 0.6rem; font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.06em; color: #a2a3a8; }
-  .tcard .of-window { box-shadow: 0 40px 100px rgba(0, 0, 0, 0.6), 0 0 0 1px rgba(255, 255, 255, 0.06); }
-  .tcard pre { margin: 0; padding: 1.15rem 1.3rem 1.35rem; font-family: var(--font-mono); font-size: 0.76rem; line-height: 1.8; white-space: pre-wrap; word-break: break-word; color: #c8c9ce; }
-  .tcard :global(.t-k) { color: #f2f2f0; }
-  .tcard :global(.t-p) { color: #c8c9ce; }
-  .tcard :global(.t-s) { color: #a7a8ae; }
-  .tcard :global(.t-n) { color: #8b8c92; }
-  .tcard :global(.t-c) { color: #66676d; }
-  .tcard :global(.t-g) { color: #5fe3b0; }
-  .tcard :global(.t-h) { color: #fff; font-weight: 500; }
 
   .tunnel-hud {
     position: absolute;
@@ -907,21 +916,21 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
     pointer-events: none;
   }
 
-  .hud-top { display: flex; align-items: center; gap: 1.5rem; }
+  .hud-top { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
   .hud-count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-text-3); }
   .hud-count b { color: var(--of-text); font-weight: 500; }
 
-  .hud-copy { position: relative; align-self: center; width: min(420px, 36vw); height: 260px; }
-  .hud-stage { position: absolute; inset: auto 0 auto 0; top: 50%; transform: translateY(-40%); }
-  .hud-stage > * { opacity: 0; transform: translateY(18px); filter: blur(6px); transition: opacity 0.5s var(--ease-out), transform 0.8s var(--ease-out), filter 0.5s var(--ease-out); }
+  .hud-copy { position: relative; place-self: center; width: min(560px, 46vw); height: 280px; text-align: center; }
+  .hud-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .hud-stage > * { opacity: 0; transform: translateY(14px) scale(0.96); filter: blur(8px); transition: opacity 0.45s var(--ease-out), transform 0.7s var(--ease-out), filter 0.45s var(--ease-out); }
   .hud-stage.is-active > * { opacity: 1; transform: none; filter: none; }
-  .hud-stage.is-active > :nth-child(2) { transition-delay: 60ms; }
-  .hud-stage.is-active > :nth-child(3) { transition-delay: 120ms; }
-  .hud-agent { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; color: var(--of-text-2); }
-  .hud-stage h3 { margin-top: 0.9rem; font-size: clamp(2rem, 3.4vw, 3rem); letter-spacing: -0.045em; line-height: 1.02; }
-  .hud-body { margin-top: 1rem; color: var(--of-text-2); line-height: 1.65; }
+  .hud-stage.is-active > :nth-child(2) { transition-delay: 50ms; }
+  .hud-stage.is-active > :nth-child(3) { transition-delay: 100ms; }
+  .hud-agent { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; color: #5fe3b0; }
+  .hud-stage h3 { margin-top: 0.9rem; font-size: clamp(2.2rem, 3.8vw, 3.4rem); letter-spacing: -0.045em; line-height: 1.02; }
+  .hud-body { margin-top: 1rem; max-width: 46ch; color: var(--of-text-2); line-height: 1.65; }
 
-  .hud-steps { display: flex; gap: 0.35rem; pointer-events: auto; }
+  .hud-steps { display: flex; justify-content: center; gap: 0.35rem; pointer-events: auto; }
   .hud-steps li {
     display: flex;
     align-items: center;
@@ -929,6 +938,8 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
     padding: 0.45rem 0.75rem;
     border-radius: 999px;
     border: 1px solid var(--of-line);
+    background: rgba(7, 7, 8, 0.6);
+    backdrop-filter: blur(8px);
     font-size: 0.78rem;
     color: var(--of-text-3);
     white-space: nowrap;
@@ -940,9 +951,8 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
   .hud-steps li.is-done { color: var(--of-text-2); }
   .hud-steps li.is-active { color: var(--of-invert); background: var(--of-text); border-color: var(--of-text); }
 
-  .hud-progress { height: 1px; margin-top: 1.25rem; background: var(--of-line-strong); overflow: hidden; }
+  .hud-progress { width: min(640px, 60%); justify-self: center; height: 1px; margin-top: 1.25rem; background: var(--of-line-strong); overflow: hidden; }
   .hud-progress i { display: block; height: 100%; background: var(--of-text); transform: scaleX(0); transform-origin: left; }
-  .hud-hint { position: absolute; right: clamp(1.75rem, 3.5vw, 3rem); top: clamp(1.75rem, 3.5vw, 3rem); font-family: var(--font-mono); font-size: 0.7rem; color: var(--of-text-3); }
 
   /* Tunnel on capable desktops; tab player elsewhere */
   .flow-section { display: none; }
