@@ -386,12 +386,14 @@ const editUrl = source ? `${SITE_REPO}/blob/master${source}` : `${SITE_REPO}/tre
   .content {
     margin-left: var(--dsb-w);
     margin-right: var(--dtoc-w);
+    width: auto;
+    max-width: none;
     min-height: 100vh;
     padding: 2rem clamp(1.5rem, 4vw, 3.5rem) 4rem;
     transition: margin-left 0.45s var(--ease-out);
   }
   .content.docsHomeContent { margin-right: 0; }
-  .contentInner { max-width: 760px; margin: 0 auto; }
+  .contentInner { max-width: 800px; margin: 0 auto; }
   .docsHomeContent .contentInner { max-width: 980px; }
 
   .dtop { display: flex; align-items: center; justify-content: space-between; gap: 1rem; margin-bottom: 1.5rem; min-height: 32px; }
