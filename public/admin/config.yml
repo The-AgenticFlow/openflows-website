@@ -28,7 +28,7 @@ collections:
     label_singular: "Blog post"
     description: "Engineering essays shown on /blog. New posts go through Workflow: Draft, In review, Ready, then Publish."
     folder: "src/content/blogs"
-    summary: "{{title}}"
+    summary: "{{title}}  ·  {{published_at | date('MMM D, YYYY')}}  ·  {{category_id}}"
     sortable_fields:
       - { field: "published_at", label: "Date", default_sort: "desc" }
       - "title"
@@ -74,7 +74,7 @@ collections:
     label_singular: "Research paper"
     description: "Papers and technical reports shown on /research."
     folder: "src/content/research"
-    summary: "{{title}}"
+    summary: "{{title}}  ·  {{publish_date | date('MMM D, YYYY')}}"
     sortable_fields:
       - { field: "publish_date", label: "Date", default_sort: "desc" }
       - "title"
@@ -129,7 +129,7 @@ collections:
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}} · {{title}}"
+    summary: "{{order}}.  {{title}}"
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
@@ -156,7 +156,7 @@ collections:
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}} · {{title}}"
+    summary: "{{order}}.  {{title}}"
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
@@ -183,7 +183,7 @@ collections:
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}} · {{title}}"
+    summary: "{{order}}.  {{title}}"
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
@@ -210,7 +210,7 @@ collections:
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}} · {{title}}"
+    summary: "{{order}}.  {{title}}"
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
@@ -237,7 +237,7 @@ collections:
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}} · {{title}}"
+    summary: "{{order}}.  {{title}}"
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
@@ -264,7 +264,7 @@ collections:
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}} · {{title}}"
+    summary: "{{order}}.  {{title}}"
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
@@ -291,7 +291,7 @@ collections:
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}} · {{title}}"
+    summary: "{{order}}.  {{title}}"
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
@@ -318,7 +318,7 @@ collections:
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}} · {{title}}"
+    summary: "{{order}}.  {{title}}"
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
@@ -334,6 +334,36 @@ collections:
       - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
       - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
       - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+
+  - name: "site"
+    label: "Site content"
+    label_singular: "Site content"
+    description: "Content that appears across the website, outside the blog and docs."
+    files:
+      - name: "faq"
+        label: "FAQ"
+        file: "src/data/faq.json"
+        editor: { preview: false }
+        description: "Questions on /faq and the homepage. Answers are short Markdown: **bold**, `code` and [links](/docs/...)."
+        fields:
+          - label: "Topics"
+            name: "groups"
+            widget: "list"
+            summary: "{{fields.title}}"
+            collapsed: true
+            fields:
+              - { label: "Topic", name: "title", widget: "string" }
+              - { label: "Anchor", name: "id", widget: "string", required: false, hint: "Short id used in links, for example security. Leave empty to generate it from the topic." }
+              - label: "Questions"
+                name: "items"
+                widget: "list"
+                summary: "{{fields.question}}"
+                collapsed: true
+                fields:
+                  - { label: "Question", name: "question", widget: "string" }
+                  - { label: "Answer", name: "answer", widget: "text", hint: "Separate paragraphs with a blank line." }
+                  - { label: "Anchor", name: "id", widget: "string", required: false, hint: "Used in links like /faq#anchor. Leave empty to generate it from the question." }
+          - { label: "Shown on the homepage", name: "home", widget: "list", hint: "Anchors of the questions to show on the homepage, in order, separated by commas." }
 
   - name: "authors"
     label: "Authors"

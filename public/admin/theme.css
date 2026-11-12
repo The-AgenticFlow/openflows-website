@@ -18,7 +18,7 @@
 }
 
 html, body { background: var(--ofc-bg) !important; }
-body, button, input, select, textarea { font-family: Inter, system-ui, -apple-system, sans-serif !important; }
+body, body *:not(code):not(pre):not(kbd):not(.cm-line):not([class*="CodeMirror"] *) { font-family: Inter, system-ui, -apple-system, sans-serif !important; }
 body { color: var(--ofc-text); -webkit-font-smoothing: antialiased; }
 code, pre, kbd { font-family: 'JetBrains Mono', ui-monospace, monospace !important; }
 
@@ -120,12 +120,14 @@ code, pre, kbd { font-family: 'JetBrains Mono', ui-monospace, monospace !importa
 [data-testid="research"]::before { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 3h6M10 3v6L4 20a1 1 0 0 0 .9 1.5h14.2A1 1 0 0 0 20 20l-6-11V3'/%3E%3C/svg%3E"); }
 [data-testid="stories"]::before { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 2l3 6.5 7 .9-5 4.8 1.3 7L12 18l-6.3 3.2L7 14.2 2 9.4l7-.9z'/%3E%3C/svg%3E"); }
 [data-testid="authors"]::before { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='8' r='4'/%3E%3Cpath d='M4 21a8 8 0 0 1 16 0'/%3E%3C/svg%3E"); }
+[data-testid="site"]::before { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='9'/%3E%3Cpath d='M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18'/%3E%3C/svg%3E"); }
 [data-testid^="docs-"]::before { --icon: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 1 6.5 17H20V3H6.5A2.5 2.5 0 0 0 4 5.5z'/%3E%3Cpath d='M4 19.5A2.5 2.5 0 0 0 6.5 22H20v-5'/%3E%3C/svg%3E"); }
 
 /* Group headings in the sidebar. */
 [class*="-SidebarNavList"] > li:has(> [data-testid="blogs"])::before,
 [class*="-SidebarNavList"] > li:has(> [data-testid="docs-introduction"])::before,
-[class*="-SidebarNavList"] > li:has(> [data-testid="authors"])::before {
+[class*="-SidebarNavList"] > li:has(> [data-testid="authors"])::before,
+[class*="-SidebarNavList"] > li:has(> [data-testid="site"])::before {
   display: block;
   padding: 14px 12px 6px;
   font-size: 11px;
@@ -136,6 +138,7 @@ code, pre, kbd { font-family: 'JetBrains Mono', ui-monospace, monospace !importa
 }
 [class*="-SidebarNavList"] > li:has(> [data-testid="blogs"])::before { content: 'Publishing'; padding-top: 4px; }
 [class*="-SidebarNavList"] > li:has(> [data-testid="docs-introduction"])::before { content: 'Documentation'; margin-top: 8px; border-top: 1px solid var(--ofc-line); padding-top: 16px; }
+[class*="-SidebarNavList"] > li:has(> [data-testid="site"])::before { content: 'Website'; margin-top: 8px; border-top: 1px solid var(--ofc-line); padding-top: 16px; }
 [class*="-SidebarNavList"] > li:has(> [data-testid="authors"])::before { content: 'People'; margin-top: 8px; border-top: 1px solid var(--ofc-line); padding-top: 16px; }
 
 /* ── Collection header ───────────────────────────────── */
@@ -228,3 +231,66 @@ code, pre, kbd { font-family: 'JetBrains Mono', ui-monospace, monospace !importa
 /* Decap fixes these to 682px; let them fill the column. */
 [class*="-CollectionTopContainer"], [class*="-CollectionControlsContainer"] { width: auto !important; max-width: 1000px !important; }
 [class*="-ListCard-"] { width: 100% !important; max-width: 1000px !important; }
+
+/* ── Polish ──────────────────────────────────────────── */
+/* The group labels replace Decap's single "Collections" heading. */
+[class*="-SidebarHeading"] { display: none !important; }
+[class*="-SearchContainer"] { margin-top: 12px !important; }
+
+/* Entry rows: a quiet arrow on the right, a lighter secondary part. */
+[class*="-ListCardLink"] { display: flex !important; align-items: center; justify-content: space-between; gap: 16px; }
+[class*="-ListCardLink"]::after { content: '→'; color: var(--ofc-text-3); font-size: 15px; transition: transform 0.2s, color 0.2s; }
+[class*="-ListCard-"]:hover [class*="-ListCardLink"]::after { color: var(--ofc-text); transform: translateX(3px); }
+[class*="-ListCardTitle"] { margin: 0 !important; display: flex; align-items: center; gap: 10px; }
+
+/* Grid view (authors show their photos). */
+[class*="-GridCard"] { background: var(--ofc-surface) !important; overflow: hidden; transition: border-color 0.15s, transform 0.2s; }
+[class*="-GridCard"]:hover { border-color: var(--ofc-line-strong); transform: translateY(-2px); }
+[class*="-CardHeading"] { font-size: 15px !important; font-weight: 600 !important; color: var(--ofc-text) !important; }
+
+/* Dropdowns (Sort, Filter, Group, Quick add). */
+[class*="-DropdownList"] { border-radius: 12px !important; border: 1px solid var(--ofc-line); box-shadow: 0 18px 50px rgba(0, 0, 0, 0.12) !important; overflow: hidden; padding: 6px 0 !important; }
+[class*="-StyledMenuItem"], [class*="-DropdownItem"] { font-size: 14px !important; padding: 9px 16px !important; }
+[class*="-StyledMenuItem"]:hover, [class*="-DropdownItem"]:hover { background: var(--ofc-surface-2) !important; color: var(--ofc-text) !important; }
+
+/* Workflow board. */
+[class*="-WorkflowContainer"] { padding-top: 32px !important; }
+[class*="-WorkflowTopRow"] h1, [class*="-WorkflowTopHeading"] { font-size: 26px !important; font-weight: 600 !important; letter-spacing: -0.03em; }
+[class*="-ColumnHeader"] { background: var(--ofc-surface) !important; color: var(--ofc-text) !important; border: 1px solid var(--ofc-line); text-transform: none !important; font-size: 14px !important; }
+[class*="-ColumnCount"] { color: var(--ofc-text-3) !important; }
+[class*="-WorkflowCard"] { background: var(--ofc-surface) !important; }
+[class*="-CardCollection"] { color: var(--ofc-accent) !important; font-size: 11px !important; font-weight: 600 !important; letter-spacing: 0.06em; text-transform: uppercase; }
+[class*="-CardTitle"] { font-weight: 600 !important; color: var(--ofc-text) !important; }
+
+/* Lists inside the editor (FAQ topics and questions). */
+[class*="-ListControl"], [class*="-StyledListItemTopBar"] { border-radius: 10px !important; }
+[class*="-StyledListItemTopBar"] { background: var(--ofc-surface-2) !important; }
+[class*="-ListItemTopBar"] [class*="-SortableListItemTopBarLabel"], [class*="-StyledListItemTopBar"] { font-weight: 500; }
+
+/* Editor top bar. */
+[class*="-ToolbarContainer"] { height: 64px !important; }
+[class*="-ToolbarSectionBackLink"] { border-right: 1px solid var(--ofc-line) !important; }
+[class*="-BackCollection"] { color: var(--ofc-text) !important; font-weight: 600 !important; font-size: 14px !important; }
+[class*="-BackStatus"] { font-size: 11px !important; letter-spacing: 0.06em; }
+/* Single-column editor (docs and site content have no preview). */
+[class*="-NoPreviewContainer"] { background: var(--ofc-bg) !important; border: 0 !important; box-shadow: none !important; }
+[class*="-NoPreviewContainer"] [class*="-ControlPaneContainer"] { max-width: 880px; margin: 0 auto !important; padding: 8px 32px 80px !important; }
+[class*="-EditorContainer"] { background: var(--ofc-bg) !important; }
+
+/* List widgets: rows instead of grey boxes. */
+[class*="-ListItem-listControlItem"] { margin: 8px 0 !important; border: 1px solid var(--ofc-line) !important; border-radius: 12px !important; background: var(--ofc-surface) !important; overflow: hidden; }
+[class*="-StyledListItemTopBar"] { background: transparent !important; border: 0 !important; height: 34px !important; }
+[class*="-NestedObjectLabel"] { background: transparent !important; border: 0 !important; padding: 2px 16px 14px !important; color: var(--ofc-text) !important; font-size: 15px !important; font-weight: 500; }
+[class*="-TopBarContainer"] { background: var(--ofc-surface) !important; border: 1px solid var(--ofc-line) !important; border-radius: 12px !important; padding: 10px 14px !important; }
+[class*="-AddButton-button"] { background: var(--ofc-ink) !important; color: #fff !important; border-radius: 999px !important; padding: 4px 14px !important; font-weight: 600 !important; }
+[class*="-AddButton-button"] svg { fill: #fff !important; }
+
+/* ── Entry rows built by enhance.js ──────────────────── */
+.of-enhanced > [class*="-ListCardTitle"] { display: none !important; }
+.of-row { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
+.of-title { font-size: 15px; font-weight: 500; color: var(--ofc-text); letter-spacing: -0.01em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.of-meta { display: flex; align-items: center; gap: 8px; margin-left: auto; flex-shrink: 0; }
+.of-date { font-size: 13px; color: var(--ofc-text-3); font-variant-numeric: tabular-nums; }
+.of-chip { padding: 3px 10px; border-radius: 999px; background: var(--ofc-accent-soft); color: var(--ofc-accent); font-size: 12px; font-weight: 500; max-width: 220px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.of-badge { flex-shrink: 0; min-width: 28px; height: 24px; padding: 0 8px; display: inline-grid; place-items: center; border-radius: 7px; background: var(--ofc-surface-2); color: var(--ofc-text-2); font: 500 12px/1 'JetBrains Mono', monospace !important; }
+.of-badge:not(:empty) { font-variant-numeric: tabular-nums; }

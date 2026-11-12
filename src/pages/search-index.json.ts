@@ -7,7 +7,7 @@ import { getPublishedPosts, getPostHref } from '@/components/blog/blog';
 import { getStories } from '@/components/stories/stories';
 import { AGENT_SUMMARY } from '@/data/agentSummary';
 import { FAQ_GROUPS } from '@/data/faq';
-import { docHref } from '@/lib/docs';
+import { docHref, plainMarkdown } from '@/lib/docs';
 
 interface Entry {
   url: string;
@@ -77,7 +77,7 @@ export const GET: APIRoute = async () => {
   for (const doc of await getCollection('docs')) {
     if (doc.data.hidden) continue;
     const text = plain(doc.body ?? '');
-    entries.push({ url: docHref(doc), type: 'Docs', title: doc.data.title, summary: clip(doc.data.description ?? text), text: clip(`${doc.data.description ?? ''} ${text}`, TEXT_LIMIT) });
+    entries.push({ url: docHref(doc), type: 'Docs', title: doc.data.title, summary: clip(plainMarkdown(doc.data.description ?? '') || text), text: clip(`${plainMarkdown(doc.data.description ?? '')} ${text}`, TEXT_LIMIT) });
   }
 
   for (const post of await getPublishedPosts()) {

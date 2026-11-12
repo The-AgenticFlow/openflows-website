@@ -2,7 +2,7 @@
 // Every docs page written in Markdown (src/content/docs), editable from the CMS.
 import { getCollection, render } from 'astro:content';
 import DocsLayout from '@/layouts/DocsLayout.astro';
-import { DOCS_DIRS, docCmsUrl, docHref, docPath } from '@/lib/docs';
+import { DOCS_DIRS, docCmsUrl, docPath, inlineMarkdown, plainMarkdown } from '@/lib/docs';
 
 export async function getStaticPaths() {
   const entries = await getCollection('docs');
@@ -22,11 +22,11 @@ const breadcrumbs = [
 ];
 ---
 
-<DocsLayout breadcrumbs={breadcrumbs} title={title} description={description} cmsUrl={docCmsUrl(entry)}>
+<DocsLayout breadcrumbs={breadcrumbs} title={title} description={description && plainMarkdown(description)} cmsUrl={docCmsUrl(entry)}>
   <header class="docHero">
     {eyebrow && <p class="docEyebrow">{eyebrow}</p>}
     <h1>{title}</h1>
-    {description && <p class="docLead">{description}</p>}
+    {description && <p class="docLead" set:html={inlineMarkdown(description)} />}
     {(read_time || level) && (
       <div class="docMeta">
         {read_time && (
