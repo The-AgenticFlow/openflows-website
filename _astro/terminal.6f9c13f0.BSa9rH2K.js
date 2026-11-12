@@ -1,0 +1,1 @@
+const o="_window_1oml8_1",_="_bar_1oml8_9",t="_dots_1oml8_21",s="_replay_1oml8_24",l="_body_1oml8_43",n="_line_1oml8_53",c="_tag_1oml8_71",r="_text_1oml8_72",m="_ok_1oml8_73",a="_prompt_1oml8_75",p="_gap_1oml8_76",e="_cursor_1oml8_78",d={window:o,bar:_,dots:t,replay:s,body:l,line:n,tag:c,text:r,ok:m,prompt:a,gap:p,cursor:e};export{d as s};
