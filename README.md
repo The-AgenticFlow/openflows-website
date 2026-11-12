@@ -60,6 +60,19 @@ Then open `http://localhost:4321/admin/index.html` and click **Login**. No GitHu
 
 Posts name an author, and the photo comes from that person's profile under **Authors** in the CMS (`src/content/authors/`). A profile can have an uploaded **Photo** or a **GitHub username** (their public GitHub photo is used); with neither, the byline shows their initials in a circle. To credit someone new, add them under **Authors** first, then pick them in the post's **Author** field.
 
+### Editing the documentation
+
+Docs pages are Markdown files in `src/content/docs/<section>/`, one folder per sidebar section (`index.md` is the section overview). Edit them in the CMS under **Documentation**, or directly in the files. The sidebar is built from these files: `order` sets the position, `nav_label` the shorter sidebar name, and `hidden: true` keeps a page out of the sidebar and search. Every docs page has an **Edit this page** button that opens it in the CMS.
+
+Besides normal Markdown, the docs support a few extras (the CMS editor's **+** menu inserts them):
+
+- Callout: `> [!TIP] Title`, `> [!INFO] Title` or `> [!WARNING] Title`, followed by `>` lines.
+- Numbered step: a heading like `## 1. Install the stack`.
+- Link cards: a ` ```cards ` block with one `- [Title](/docs/page): description` per line.
+- Diagram: a ` ```mermaid title="Caption" ` block.
+
+These are rendered by `src/lib/remark-docs.mjs`. Pages with custom visuals (the docs home and *How OpenFlows compares*) stay as `.astro` files in `src/pages/docs/`.
+
 ## Deployment
 
 The site is automatically deployed to GitHub Pages via GitHub Actions when changes are pushed to the `main` branch.

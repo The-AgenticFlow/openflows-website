@@ -1,6 +1,7 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import remarkDocs from './src/lib/remark-docs.mjs';
 
 export default defineConfig({
   site: 'https://openflows.dev',
@@ -24,6 +25,7 @@ export default defineConfig({
   
   // Markdown configuration
   markdown: {
+    remarkPlugins: [remarkDocs],
     syntaxHighlight: 'shiki',
     shikiConfig: {
       theme: 'github-dark',

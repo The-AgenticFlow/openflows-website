@@ -1,0 +1,73 @@
+---
+// Every docs page written in Markdown (src/content/docs), editable from the CMS.
+import { getCollection, render } from 'astro:content';
+import DocsLayout from '@/layouts/DocsLayout.astro';
+import { DOCS_DIRS, docCmsUrl, docHref, docPath } from '@/lib/docs';
+
+export async function getStaticPaths() {
+  const entries = await getCollection('docs');
+  return entries.map((entry) => ({ params: { slug: docPath(entry) }, props: { entry } }));
+}
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+const { title, description, eyebrow, read_time, level } = entry.data;
+const [dir, page] = entry.id.split('/');
+const isOverview = !page || page === 'index';
+
+const breadcrumbs = [
+  { label: 'Docs', href: '/docs' },
+  ...(isOverview ? [] : [{ label: DOCS_DIRS[dir] ?? dir, href: `/docs/${dir}` }]),
+  { label: title },
+];
+---
+
+<DocsLayout breadcrumbs={breadcrumbs} title={title} description={description} cmsUrl={docCmsUrl(entry)}>
+  <header class="docHero">
+    {eyebrow && <p class="docEyebrow">{eyebrow}</p>}
+    <h1>{title}</h1>
+    {description && <p class="docLead">{description}</p>}
+    {(read_time || level) && (
+      <div class="docMeta">
+        {read_time && (
+          <span class="docMetaItem">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+            {read_time}
+          </span>
+        )}
+        {read_time && level && <span class="docMetaSep"></span>}
+        {level && <span class="docMetaItem">{level}</span>}
+      </div>
+    )}
+  </header>
+  <Content />
+</DocsLayout>
+
+<script>
+  // Diagrams are written as ```mermaid blocks and drawn in the browser.
+  const diagrams = document.querySelectorAll<HTMLElement>('.docsDiagram .mermaid');
+  if (diagrams.length) {
+    import('mermaid').then(({ default: mermaid }) => {
+      const dark = document.documentElement.dataset.theme === 'dark';
+      mermaid.initialize({
+        startOnLoad: false,
+        securityLevel: 'strict',
+        theme: dark ? 'dark' : 'neutral',
+        fontFamily: 'Inter, system-ui, sans-serif',
+      });
+      mermaid.run({ nodes: [...diagrams] });
+    });
+  }
+</script>
+
+<style is:global>
+  .docsDiagram { width: 100%; margin: 2.5rem 0; color: var(--of-text); }
+  .docsDiagram .diagramCanvas svg { display: block; width: 100%; max-width: 100% !important; height: auto; margin-inline: auto; }
+  .docsDiagram .diagramCanvas svg :is(p, span, text) { color: var(--of-text) !important; fill: var(--of-text) !important; }
+  .docsDiagram .diagramCanvas svg .cluster rect { fill: transparent !important; stroke: var(--of-line-strong) !important; }
+  .docsDiagram .diagramCanvas pre { margin: 0; white-space: pre-wrap; background: none; border: 0; }
+  .docsDiagram figcaption { margin-top: 0.75rem; color: var(--of-text-3); font-size: 0.83rem; line-height: 1.5; }
+  .docsDiagram details { margin-top: 0.35rem; color: var(--of-text-3); font-size: 0.78rem; }
+  .docsDiagram summary { width: max-content; cursor: pointer; }
+  .docsDiagram details pre { white-space: pre-wrap; overflow-wrap: anywhere; padding: 1rem; border-left: 2px solid var(--of-line-strong); color: var(--of-text-2); }
+</style>
