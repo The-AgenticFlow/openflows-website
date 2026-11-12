@@ -42,18 +42,13 @@ npm run build
 npm run preview
 ```
 
-### Editing content locally (Decap CMS)
+### Editing content (Sveltia CMS)
 
-Content lives in `src/content/` and is edited through Decap CMS at `/admin`. In production the CMS commits to GitHub; locally it talks to a proxy that commits to your local git repository instead. Run both in separate terminals:
+Content lives in `src/content/` and `src/data/faq.json`, and is edited through [Sveltia CMS](https://sveltiacms.app) at `/admin`. Sveltia reads the same `public/admin/config.yml` format as Decap CMS.
 
-```bash
-npm run dev
-npm run cms
-```
-
-Then open `http://localhost:4321/admin/index.html` and click **Login**. No GitHub sign-in is needed.
-
-- `npm run cms` starts the proxy in git mode, which supports the same editorial workflow as production: **Save** creates a local `cms/...` branch; set the entry to **Ready**, then **Publish now** merges it into your local `master`. Commit or stash your own changes first, because the proxy switches branches in your working tree.
+- **In production** (`https://openflows.dev/admin`), sign in with GitHub. Every change goes through the editorial workflow: it is saved as a pull request on a `cms/...` branch, moves through Draft, In review and Ready, and is merged when published. Merging to `master` deploys the site.
+- **Locally**, run `npm run dev`, open `http://localhost:4321/admin/index.html` in Chrome or Edge and click **Work with Local Repository**, then pick this project folder. Saves write straight into your working tree (no branches, no workflow), so you can review them with `git diff`. This uses the browser's File System Access API, which Firefox and Safari do not support.
+- After changing `config.yml`, bump the `?v=` number in `public/admin/index.html` so browsers load the new version.
 - Publishing in the CMS and the post's **Status** field are separate. The website only lists entries whose Status is `published`; `draft` and `archived` entries stay hidden even after they are published in the CMS.
 
 ### Author photos
