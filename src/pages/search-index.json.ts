@@ -6,10 +6,11 @@ import { getCollection } from 'astro:content';
 import { getPublishedPosts, getPostHref } from '@/components/blog/blog';
 import { getStories } from '@/components/stories/stories';
 import { AGENT_SUMMARY } from '@/data/agentSummary';
+import { FAQ_GROUPS } from '@/data/faq';
 
 interface Entry {
   url: string;
-  type: 'Page' | 'Docs' | 'Blog' | 'Research' | 'Case study' | 'Agent';
+  type: 'Page' | 'FAQ' | 'Docs' | 'Blog' | 'Research' | 'Case study' | 'Agent';
   title: string;
   summary: string;
   text: string;
@@ -91,6 +92,11 @@ export const GET: APIRoute = async () => {
 
   for (const agent of AGENT_SUMMARY) {
     entries.push({ url: `/agents/${agent.id}`, type: 'Agent', title: `${agent.name} · ${agent.role}`, summary: agent.tagline, text: `${agent.tagline} Focus: ${agent.tags.join(', ')}. Runs in ${agent.spec.runs}. Writes ${agent.spec.writes}. Never ${agent.spec.never}.` });
+  }
+
+  for (const item of FAQ_GROUPS.flatMap((g) => g.items)) {
+    const answer = plain(item.a);
+    entries.push({ url: `/faq#${item.id}`, type: 'FAQ', title: item.q, summary: clip(answer), text: answer });
   }
 
   return new Response(JSON.stringify(entries), { headers: { 'Content-Type': 'application/json' } });

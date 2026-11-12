@@ -2,13 +2,8 @@
 import BaseLayout from '@/layouts/BaseLayout.astro';
 import PixelField from '@/components/site/PixelField.astro';
 import CtaBanner from '@/components/site/CtaBanner.astro';
-import { getCollection } from 'astro:content';
 
 const REPO = 'https://github.com/The-AgenticFlow/OpenFlows';
-
-const people = (await getCollection('authors'))
-  .map((entry) => entry.data as { name: string; github?: string; avatar?: string; role?: string })
-  .sort((a, b) => (a.role ? -1 : b.role ? 1 : a.name.localeCompare(b.name)));
 
 const CHANNELS = [
   {
@@ -113,31 +108,6 @@ const PRINCIPLES = [
       </div>
     </section>
 
-    <section class="of-section" style="padding-top:0">
-      <div class="of-container">
-        <div class="split-head" data-reveal>
-          <div>
-            <span class="of-eyebrow">The team</span>
-            <h2 class="of-h2">People building OpenFlows.</h2>
-          </div>
-          <p class="of-lede">Maintained by the AgenticFlow team and contributors across the Rust and open-source communities.</p>
-        </div>
-        <ul class="people" data-reveal-group>
-          {people.map((person) => (
-            <li data-reveal>
-              <a href={person.github ? `https://github.com/${person.github}` : undefined} target="_blank" rel="noopener noreferrer" class="person">
-                <img src={person.avatar || `https://github.com/${person.github}.png?size=160`} alt="" width="64" height="64" loading="lazy" />
-                <span class="person-text">
-                  <span class="person-name">{person.name}</span>
-                  <span class="person-meta">{person.role || (person.github ? `@${person.github}` : 'Contributor')}</span>
-                </span>
-              </a>
-            </li>
-          ))}
-        </ul>
-      </div>
-    </section>
-
     <section class="principles-wrap">
       <div class="principles of-panel of-dark">
         <div class="of-container">
@@ -187,14 +157,6 @@ const PRINCIPLES = [
   .contrib-arrow { position: absolute; top: 1.5rem; right: 1.6rem; color: var(--of-text-3); transition: transform 0.4s var(--ease-out), color 0.3s; }
   .contrib-item:hover .contrib-arrow { transform: translateX(4px); color: var(--of-text); }
 
-  .people { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
-  .person { display: flex; align-items: center; gap: 0.9rem; padding: 1rem; border-radius: 14px; border: 1px solid var(--of-line); background: var(--of-surface); transition: border-color 0.3s, transform 0.4s var(--ease-out); }
-  .person:hover { border-color: var(--of-line-strong); transform: translateY(-2px); }
-  .person img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--of-surface-2); filter: grayscale(1); transition: filter 0.4s; }
-  .person:hover img { filter: none; }
-  .person-name { display: block; font-size: 0.92rem; font-weight: 500; }
-  .person-meta { display: block; font-family: var(--font-mono); font-size: 0.7rem; color: var(--of-text-3); }
-  .person-text { display: flex; flex-direction: column; min-width: 0; }
 
   .principles { padding: clamp(4rem, 8vw, 6.5rem) 0; }
   .principle-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--of-line); }
@@ -202,7 +164,7 @@ const PRINCIPLES = [
   .principle + .principle { padding-left: 1.5rem; border-left: 1px solid var(--of-line); }
 
   @media (max-width: 1000px) {
-    .channels, .people { grid-template-columns: 1fr 1fr; }
+    .channels { grid-template-columns: 1fr 1fr; }
     .contrib { grid-template-columns: 1fr 1fr; }
     .split-head { grid-template-columns: 1fr; }
     .principle-grid { grid-template-columns: 1fr 1fr; }

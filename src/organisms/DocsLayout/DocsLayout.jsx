@@ -28,7 +28,7 @@ const SIDEBAR = [
   {
     title: 'Other',
     links: [
-      { label: 'FAQ', href: '/docs/resources/faq' },
+      { label: 'FAQ', href: '/faq' },
     ],
   },
 ]
