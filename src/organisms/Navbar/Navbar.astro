@@ -1,4 +1,5 @@
 ---
+import SiteSearch from '@/components/site/SiteSearch.astro';
 import { getPublishedPosts, getPostHref } from '@/components/blog/blog';
 
 const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
@@ -148,6 +149,7 @@ const isActive = (href: string) =>
     </nav>
 
     <div class="actions">
+      <SiteSearch />
       <a
         href={`https://github.com/${GITHUB_REPO}`}
         target="_blank"

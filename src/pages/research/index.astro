@@ -35,7 +35,7 @@ const categories = ['all', ...new Set(research.map(r => r.data.category).filter(
         ) : (
           <div class="list" data-reveal-group>
             {research.map((item) => (
-              <a href={`/research/${item.data.slug}`} class="paper of-card of-spotlight" data-reveal>
+              <a href={`/research/${(item.data.slug || item.slug).trim()}`} class="paper of-card of-spotlight" data-reveal>
                 <div class="paper-meta">
                   <span class="kind">{item.data.category}</span>
                   {item.data.venue && <span>{item.data.venue}</span>}
