@@ -1,0 +1,67 @@
+/* OpenFlows theme for Sveltia CMS.
+   Sveltia is styled through --sui-* custom properties on :root. The doubled
+   :root raises specificity above Sveltia's own :root[data-theme] rules, so
+   these values win whichever stylesheet loads last. */
+
+:root:root {
+  --sui-font-family-default: Inter, system-ui, -apple-system, sans-serif;
+  --sui-font-family-monospace: 'JetBrains Mono', ui-monospace, monospace;
+  --sui-control-medium-border-radius: 8px;
+  --sui-textbox-border-radius: 8px;
+  --sui-button-medium-border-radius: 8px;
+  --sui-focus-ring-width: 2px;
+}
+
+/* Light: warm white surfaces, ink text, OpenFlows green. */
+:root:root[data-theme='light'] {
+  --sui-base-hue: 40;
+  --sui-background-color-1-hsl: 0 0% 100%;
+  --sui-background-color-2-hsl: 40 14% 98%;
+  --sui-background-color-3-hsl: 40 12% 96%;
+  --sui-background-color-4-hsl: 40 9% 93%;
+  --sui-background-color-5-hsl: 40 7% 86%;
+  --sui-foreground-color-1-hsl: 240 6% 6%;
+  --sui-foreground-color-2-hsl: 240 4% 22%;
+  --sui-foreground-color-3-hsl: 240 3% 36%;
+  --sui-foreground-color-4-hsl: 240 2% 50%;
+  --sui-foreground-color-5-hsl: 240 2% 62%;
+  --sui-border-color-1-hsl: 40 6% 70%;
+  --sui-border-color-2-hsl: 40 7% 82%;
+  --sui-border-color-3-hsl: 40 9% 90%;
+  --sui-primary-accent-color: hsl(169 75% 24%);
+  --sui-primary-accent-color-light: hsl(169 70% 30%);
+  --sui-primary-accent-color-dark: hsl(169 80% 19%);
+  --sui-primary-accent-color-text: hsl(169 75% 24%);
+  --sui-primary-accent-color-inverted: #fff;
+  --sui-primary-accent-color-translucent: hsl(169 70% 30% / 35%);
+  --sui-selected-background-color: hsl(162 40% 93%);
+  --sui-focus-ring-color: hsl(169 70% 30% / 45%);
+}
+
+/* Dark: the site's near-black surfaces, mint accent. */
+:root:root[data-theme='dark'] {
+  --sui-base-hue: 240;
+  --sui-background-color-1-hsl: 240 5% 5%;
+  --sui-background-color-2-hsl: 240 4% 7%;
+  --sui-background-color-3-hsl: 240 4% 10%;
+  --sui-background-color-4-hsl: 240 4% 13%;
+  --sui-background-color-5-hsl: 240 3% 22%;
+  --sui-foreground-color-1-hsl: 40 10% 95%;
+  --sui-foreground-color-2-hsl: 240 4% 82%;
+  --sui-foreground-color-3-hsl: 240 3% 68%;
+  --sui-foreground-color-4-hsl: 240 3% 56%;
+  --sui-foreground-color-5-hsl: 240 2% 44%;
+  --sui-border-color-1-hsl: 240 3% 32%;
+  --sui-border-color-2-hsl: 240 4% 20%;
+  --sui-border-color-3-hsl: 240 4% 14%;
+  --sui-primary-accent-color: hsl(158 62% 36%);
+  --sui-primary-accent-color-light: hsl(158 62% 42%);
+  --sui-primary-accent-color-dark: hsl(158 64% 30%);
+  --sui-primary-accent-color-text: hsl(156 70% 64%);
+  --sui-primary-accent-color-inverted: #fff;
+  --sui-primary-accent-color-translucent: hsl(158 62% 42% / 35%);
+  --sui-selected-background-color: hsl(158 30% 14%);
+  --sui-focus-ring-color: hsl(156 70% 50% / 45%);
+}
+
+body { -webkit-font-smoothing: antialiased; }
