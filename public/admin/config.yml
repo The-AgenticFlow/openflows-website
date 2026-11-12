@@ -1,6 +1,3 @@
-local_backend:
-  url: http://localhost:8082/api/v1
-
 backend:
   name: github
   repo: The-AgenticFlow/openflows-website
@@ -8,12 +5,24 @@ backend:
   base_url: https://openflows-oauth-proxy.yemelechristian2.workers.dev
   auth_endpoint: auth
 
+# Every change becomes a pull request: Draft, In review, Ready, then merged.
 publish_mode: editorial_workflow
 
 # Branding shown in the editor.
+app_title: OpenFlows Content
 site_url: https://openflows.dev
 display_url: https://openflows.dev
-logo_url: /openlogo-light.png
+logo:
+  src: /openlogo-transparent.png
+
+# Keep frontmatter tidy: leave out optional fields that are empty, and give
+# uploaded files URL-safe names.
+output:
+  omit_empty_optional_fields: true
+media_libraries:
+  default:
+    config:
+      slugify_filename: true
 
 media_folder: "public/uploads"
 public_folder: "/uploads"
@@ -24,11 +33,19 @@ slug:
 
 collections:
   - name: "blogs"
+    icon: "edit_note"
     label: "Blog posts"
     label_singular: "Blog post"
-    description: "Engineering essays shown on /blog. New posts go through Workflow: Draft, In review, Ready, then Publish."
+    description: "Articles on /blog. Each change is reviewed before it goes live."
     folder: "src/content/blogs"
-    summary: "{{title}}  ·  {{published_at | date('MMM D, YYYY')}}  ·  {{category_id}}"
+    thumbnail: cover_image_url
+    summary: "{{title}}"
+    table_columns:
+      - { field: title, label: "Title" }
+      - { field: category_id, label: "Category" }
+      - { field: author_name, label: "Author" }
+      - { field: status, label: "Status" }
+      - { field: published_at, label: "Published" }
     sortable_fields:
       - { field: "published_at", label: "Date", default_sort: "desc" }
       - "title"
@@ -45,9 +62,9 @@ collections:
     extension: "md"
     format: "frontmatter"
     fields:
-      - { label: "Title", name: "title", widget: "string" }
-      - { label: "Slug", name: "slug", widget: "string" }
-      - { label: "Excerpt", name: "excerpt", widget: "text" }
+      - { label: "Title", name: "title", widget: "string", hint: "The headline of the post." }
+      - { label: "Web address", name: "slug", widget: "string", hint: "The last part of the link, lowercase with dashes, for example 'planning-gates-explained' gives openflows.dev/blog/planning-gates-explained. Do not change it after publishing." }
+      - { label: "Teaser", name: "excerpt", widget: "text", hint: "One or two sentences shown on the blog list, in search and in link previews." }
       - label: "Author"
         name: "author_name"
         widget: "relation"
@@ -56,7 +73,7 @@ collections:
         value_field: "name"
         display_fields: ["name"]
         hint: "Pick the author. Their photo comes from their profile under Authors; add the person there first if they are not listed."
-      - { label: "Cover Image URL", name: "cover_image_url", widget: "string", required: false }
+      - { label: "Cover image", name: "cover_image_url", widget: "image", required: false, hint: "Upload an image or paste an image link. Wide images (about 1600 × 900) look best." }
       - { label: "Category", name: "category_id", widget: "string", required: false, hint: "One short topic, for example Architecture. It becomes a filter on the blog page." }
       - label: "Status"
         name: "status"
@@ -64,17 +81,22 @@ collections:
         options: ["published", "draft", "archived"]
         default: "published"
         hint: "Visibility on the website. Defaults to published because the CMS workflow (Draft, Ready, Publish now) already gates when a post goes live. Choose draft or archived to keep a post hidden even after it is merged."
-      - { label: "Published At", name: "published_at", widget: "datetime", required: false }
-      - { label: "Featured", name: "is_featured", widget: "boolean", default: false }
-      - { label: "Read Time (minutes)", name: "read_time_minutes", widget: "number", required: false }
-      - { label: "Content", name: "body", widget: "markdown" }
+      - { label: "Publish date", name: "published_at", widget: "datetime", required: false, hint: "Shown on the post and used to order the blog, newest first." }
+      - { label: "Featured", name: "is_featured", widget: "boolean", default: false, hint: "Marks the post as featured. The website does not use this yet." }
+      - { label: "Reading time (minutes)", name: "read_time_minutes", widget: "number", required: false, hint: "Optional. Leave empty to calculate it from the text." }
+      - { label: "Post content", name: "body", widget: "markdown" }
 
   - name: "research"
+    icon: "science"
     label: "Research papers"
     label_singular: "Research paper"
-    description: "Papers and technical reports shown on /research."
+    description: "Papers and technical reports on /research."
     folder: "src/content/research"
-    summary: "{{title}}  ·  {{publish_date | date('MMM D, YYYY')}}"
+    summary: "{{title}}"
+    table_columns:
+      - { field: title, label: "Title" }
+      - { field: category, label: "Category" }
+      - { field: publish_date, label: "Published" }
     sortable_fields:
       - { field: "publish_date", label: "Date", default_sort: "desc" }
       - "title"
@@ -102,9 +124,10 @@ collections:
       - { label: "Content", name: "body", widget: "markdown" }
 
   - name: "stories"
+    icon: "star"
     label: "Case studies"
     label_singular: "Case study"
-    description: "Stories from teams using OpenFlows, shown on /resources."
+    description: "Stories from teams using OpenFlows, on /resources."
     folder: "src/content/stories"
     summary: "{{title}}"
     create: true
@@ -119,232 +142,284 @@ collections:
       - { label: "Image URL", name: "image", widget: "string", required: false }
       - { label: "Content", name: "body", widget: "markdown" }
 
+  - divider: true
+
   - name: "docs-introduction"
+    icon: "info"
     label: "Introduction"
     label_singular: "Introduction page"
-    description: "Pages in the Introduction section of /docs. Order sets the position in the sidebar; index is the section overview."
+    description: "Docs pages in the Introduction section, listed in sidebar order."
     folder: "src/content/docs/introduction"
     create: true
     slug: "{{slug}}"
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}}.  {{title}}"
+    summary: "{{title}}"
+    table_columns:
+      - { field: order, label: "#" }
+      - { field: title, label: "Title" }
+      - { field: nav_label, label: "Sidebar label" }
+      - { field: level, label: "Level" }
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
     editor: { preview: false }
     fields:
       - { label: "Section", name: "section", widget: "hidden", default: "Introduction" }
-      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
-      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
-      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
-      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
-      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
-      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
-      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
-      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
-      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+      - { label: "Page title", name: "title", widget: "string", hint: "The big heading at the top of the page." }
+      - { label: "Summary", name: "description", widget: "text", required: false, hint: "One or two sentences under the title. Also used in search results and link previews." }
+      - { label: "Page content", name: "body", widget: "markdown", hint: "Use Insert → Callout box, Link cards or Diagram for special blocks. A heading written as '1. Install' becomes a numbered step. Full guide: openflows.dev/docs/contributing/editing-content" }
+      - { label: "Position in the sidebar", name: "order", widget: "number", value_type: "int", default: 50, hint: "Lower numbers come first. The section's overview page uses 0 or 1." }
+      - { label: "Short sidebar name", name: "nav_label", widget: "string", required: false, hint: "Optional. A shorter name for the sidebar, for example 'Quick Start'. Leave empty to use the page title." }
+      - { label: "Label above the title", name: "eyebrow", widget: "string", required: false, hint: "Optional small capitals above the title, for example 'Quick start guide'." }
+      - { label: "Reading time", name: "read_time", widget: "string", required: false, hint: "Optional, for example '~10 min read'." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"], hint: "Optional. Shown next to the reading time." }
+      - { label: "Hide from the sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "The page stays online at its address but is left out of the sidebar and search." }
 
   - name: "docs-getting-started"
+    icon: "rocket_launch"
     label: "Get Started"
     label_singular: "Get Started page"
-    description: "Pages in the Get Started section of /docs. Order sets the position in the sidebar; index is the section overview."
+    description: "Docs pages in the Get Started section, listed in sidebar order."
     folder: "src/content/docs/getting-started"
     create: true
     slug: "{{slug}}"
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}}.  {{title}}"
+    summary: "{{title}}"
+    table_columns:
+      - { field: order, label: "#" }
+      - { field: title, label: "Title" }
+      - { field: nav_label, label: "Sidebar label" }
+      - { field: level, label: "Level" }
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
     editor: { preview: false }
     fields:
       - { label: "Section", name: "section", widget: "hidden", default: "Get Started" }
-      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
-      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
-      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
-      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
-      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
-      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
-      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
-      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
-      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+      - { label: "Page title", name: "title", widget: "string", hint: "The big heading at the top of the page." }
+      - { label: "Summary", name: "description", widget: "text", required: false, hint: "One or two sentences under the title. Also used in search results and link previews." }
+      - { label: "Page content", name: "body", widget: "markdown", hint: "Use Insert → Callout box, Link cards or Diagram for special blocks. A heading written as '1. Install' becomes a numbered step. Full guide: openflows.dev/docs/contributing/editing-content" }
+      - { label: "Position in the sidebar", name: "order", widget: "number", value_type: "int", default: 50, hint: "Lower numbers come first. The section's overview page uses 0 or 1." }
+      - { label: "Short sidebar name", name: "nav_label", widget: "string", required: false, hint: "Optional. A shorter name for the sidebar, for example 'Quick Start'. Leave empty to use the page title." }
+      - { label: "Label above the title", name: "eyebrow", widget: "string", required: false, hint: "Optional small capitals above the title, for example 'Quick start guide'." }
+      - { label: "Reading time", name: "read_time", widget: "string", required: false, hint: "Optional, for example '~10 min read'." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"], hint: "Optional. Shown next to the reading time." }
+      - { label: "Hide from the sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "The page stays online at its address but is left out of the sidebar and search." }
 
   - name: "docs-concepts"
+    icon: "lightbulb"
     label: "Core Concepts"
     label_singular: "Core Concepts page"
-    description: "Pages in the Core Concepts section of /docs. Order sets the position in the sidebar; index is the section overview."
+    description: "Docs pages in the Core Concepts section, listed in sidebar order."
     folder: "src/content/docs/concepts"
     create: true
     slug: "{{slug}}"
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}}.  {{title}}"
+    summary: "{{title}}"
+    table_columns:
+      - { field: order, label: "#" }
+      - { field: title, label: "Title" }
+      - { field: nav_label, label: "Sidebar label" }
+      - { field: level, label: "Level" }
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
     editor: { preview: false }
     fields:
       - { label: "Section", name: "section", widget: "hidden", default: "Core Concepts" }
-      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
-      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
-      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
-      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
-      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
-      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
-      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
-      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
-      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+      - { label: "Page title", name: "title", widget: "string", hint: "The big heading at the top of the page." }
+      - { label: "Summary", name: "description", widget: "text", required: false, hint: "One or two sentences under the title. Also used in search results and link previews." }
+      - { label: "Page content", name: "body", widget: "markdown", hint: "Use Insert → Callout box, Link cards or Diagram for special blocks. A heading written as '1. Install' becomes a numbered step. Full guide: openflows.dev/docs/contributing/editing-content" }
+      - { label: "Position in the sidebar", name: "order", widget: "number", value_type: "int", default: 50, hint: "Lower numbers come first. The section's overview page uses 0 or 1." }
+      - { label: "Short sidebar name", name: "nav_label", widget: "string", required: false, hint: "Optional. A shorter name for the sidebar, for example 'Quick Start'. Leave empty to use the page title." }
+      - { label: "Label above the title", name: "eyebrow", widget: "string", required: false, hint: "Optional small capitals above the title, for example 'Quick start guide'." }
+      - { label: "Reading time", name: "read_time", widget: "string", required: false, hint: "Optional, for example '~10 min read'." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"], hint: "Optional. Shown next to the reading time." }
+      - { label: "Hide from the sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "The page stays online at its address but is left out of the sidebar and search." }
 
   - name: "docs-architecture"
+    icon: "account_tree"
     label: "Architecture"
     label_singular: "Architecture page"
-    description: "Pages in the Architecture section of /docs. Order sets the position in the sidebar; index is the section overview."
+    description: "Docs pages in the Architecture section, listed in sidebar order."
     folder: "src/content/docs/architecture"
     create: true
     slug: "{{slug}}"
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}}.  {{title}}"
+    summary: "{{title}}"
+    table_columns:
+      - { field: order, label: "#" }
+      - { field: title, label: "Title" }
+      - { field: nav_label, label: "Sidebar label" }
+      - { field: level, label: "Level" }
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
     editor: { preview: false }
     fields:
       - { label: "Section", name: "section", widget: "hidden", default: "Architecture" }
-      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
-      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
-      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
-      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
-      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
-      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
-      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
-      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
-      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+      - { label: "Page title", name: "title", widget: "string", hint: "The big heading at the top of the page." }
+      - { label: "Summary", name: "description", widget: "text", required: false, hint: "One or two sentences under the title. Also used in search results and link previews." }
+      - { label: "Page content", name: "body", widget: "markdown", hint: "Use Insert → Callout box, Link cards or Diagram for special blocks. A heading written as '1. Install' becomes a numbered step. Full guide: openflows.dev/docs/contributing/editing-content" }
+      - { label: "Position in the sidebar", name: "order", widget: "number", value_type: "int", default: 50, hint: "Lower numbers come first. The section's overview page uses 0 or 1." }
+      - { label: "Short sidebar name", name: "nav_label", widget: "string", required: false, hint: "Optional. A shorter name for the sidebar, for example 'Quick Start'. Leave empty to use the page title." }
+      - { label: "Label above the title", name: "eyebrow", widget: "string", required: false, hint: "Optional small capitals above the title, for example 'Quick start guide'." }
+      - { label: "Reading time", name: "read_time", widget: "string", required: false, hint: "Optional, for example '~10 min read'." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"], hint: "Optional. Shown next to the reading time." }
+      - { label: "Hide from the sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "The page stays online at its address but is left out of the sidebar and search." }
 
   - name: "docs-guides"
+    icon: "map"
     label: "Guides"
     label_singular: "Guides page"
-    description: "Pages in the Guides section of /docs. Order sets the position in the sidebar; index is the section overview."
+    description: "Docs pages in the Guides section, listed in sidebar order."
     folder: "src/content/docs/guides"
     create: true
     slug: "{{slug}}"
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}}.  {{title}}"
+    summary: "{{title}}"
+    table_columns:
+      - { field: order, label: "#" }
+      - { field: title, label: "Title" }
+      - { field: nav_label, label: "Sidebar label" }
+      - { field: level, label: "Level" }
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
     editor: { preview: false }
     fields:
       - { label: "Section", name: "section", widget: "hidden", default: "Guides" }
-      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
-      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
-      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
-      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
-      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
-      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
-      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
-      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
-      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+      - { label: "Page title", name: "title", widget: "string", hint: "The big heading at the top of the page." }
+      - { label: "Summary", name: "description", widget: "text", required: false, hint: "One or two sentences under the title. Also used in search results and link previews." }
+      - { label: "Page content", name: "body", widget: "markdown", hint: "Use Insert → Callout box, Link cards or Diagram for special blocks. A heading written as '1. Install' becomes a numbered step. Full guide: openflows.dev/docs/contributing/editing-content" }
+      - { label: "Position in the sidebar", name: "order", widget: "number", value_type: "int", default: 50, hint: "Lower numbers come first. The section's overview page uses 0 or 1." }
+      - { label: "Short sidebar name", name: "nav_label", widget: "string", required: false, hint: "Optional. A shorter name for the sidebar, for example 'Quick Start'. Leave empty to use the page title." }
+      - { label: "Label above the title", name: "eyebrow", widget: "string", required: false, hint: "Optional small capitals above the title, for example 'Quick start guide'." }
+      - { label: "Reading time", name: "read_time", widget: "string", required: false, hint: "Optional, for example '~10 min read'." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"], hint: "Optional. Shown next to the reading time." }
+      - { label: "Hide from the sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "The page stays online at its address but is left out of the sidebar and search." }
 
   - name: "docs-reference"
+    icon: "list_alt"
     label: "Reference"
     label_singular: "Reference page"
-    description: "Pages in the Reference section of /docs. Order sets the position in the sidebar; index is the section overview."
+    description: "Docs pages in the Reference section, listed in sidebar order."
     folder: "src/content/docs/reference"
     create: true
     slug: "{{slug}}"
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}}.  {{title}}"
+    summary: "{{title}}"
+    table_columns:
+      - { field: order, label: "#" }
+      - { field: title, label: "Title" }
+      - { field: nav_label, label: "Sidebar label" }
+      - { field: level, label: "Level" }
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
     editor: { preview: false }
     fields:
       - { label: "Section", name: "section", widget: "hidden", default: "Reference" }
-      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
-      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
-      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
-      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
-      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
-      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
-      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
-      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
-      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+      - { label: "Page title", name: "title", widget: "string", hint: "The big heading at the top of the page." }
+      - { label: "Summary", name: "description", widget: "text", required: false, hint: "One or two sentences under the title. Also used in search results and link previews." }
+      - { label: "Page content", name: "body", widget: "markdown", hint: "Use Insert → Callout box, Link cards or Diagram for special blocks. A heading written as '1. Install' becomes a numbered step. Full guide: openflows.dev/docs/contributing/editing-content" }
+      - { label: "Position in the sidebar", name: "order", widget: "number", value_type: "int", default: 50, hint: "Lower numbers come first. The section's overview page uses 0 or 1." }
+      - { label: "Short sidebar name", name: "nav_label", widget: "string", required: false, hint: "Optional. A shorter name for the sidebar, for example 'Quick Start'. Leave empty to use the page title." }
+      - { label: "Label above the title", name: "eyebrow", widget: "string", required: false, hint: "Optional small capitals above the title, for example 'Quick start guide'." }
+      - { label: "Reading time", name: "read_time", widget: "string", required: false, hint: "Optional, for example '~10 min read'." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"], hint: "Optional. Shown next to the reading time." }
+      - { label: "Hide from the sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "The page stays online at its address but is left out of the sidebar and search." }
 
   - name: "docs-contributing"
+    icon: "handshake"
     label: "Contributing"
     label_singular: "Contributing page"
-    description: "Pages in the Contributing section of /docs. Order sets the position in the sidebar; index is the section overview."
+    description: "Docs pages in the Contributing section, listed in sidebar order."
     folder: "src/content/docs/contributing"
     create: true
     slug: "{{slug}}"
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}}.  {{title}}"
+    summary: "{{title}}"
+    table_columns:
+      - { field: order, label: "#" }
+      - { field: title, label: "Title" }
+      - { field: nav_label, label: "Sidebar label" }
+      - { field: level, label: "Level" }
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
     editor: { preview: false }
     fields:
       - { label: "Section", name: "section", widget: "hidden", default: "Contributing" }
-      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
-      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
-      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
-      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
-      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
-      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
-      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
-      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
-      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+      - { label: "Page title", name: "title", widget: "string", hint: "The big heading at the top of the page." }
+      - { label: "Summary", name: "description", widget: "text", required: false, hint: "One or two sentences under the title. Also used in search results and link previews." }
+      - { label: "Page content", name: "body", widget: "markdown", hint: "Use Insert → Callout box, Link cards or Diagram for special blocks. A heading written as '1. Install' becomes a numbered step. Full guide: openflows.dev/docs/contributing/editing-content" }
+      - { label: "Position in the sidebar", name: "order", widget: "number", value_type: "int", default: 50, hint: "Lower numbers come first. The section's overview page uses 0 or 1." }
+      - { label: "Short sidebar name", name: "nav_label", widget: "string", required: false, hint: "Optional. A shorter name for the sidebar, for example 'Quick Start'. Leave empty to use the page title." }
+      - { label: "Label above the title", name: "eyebrow", widget: "string", required: false, hint: "Optional small capitals above the title, for example 'Quick start guide'." }
+      - { label: "Reading time", name: "read_time", widget: "string", required: false, hint: "Optional, for example '~10 min read'." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"], hint: "Optional. Shown next to the reading time." }
+      - { label: "Hide from the sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "The page stays online at its address but is left out of the sidebar and search." }
 
   - name: "docs-resources"
+    icon: "library_books"
     label: "Resources"
     label_singular: "Resources page"
-    description: "Pages in the Resources section of /docs. Order sets the position in the sidebar; index is the section overview."
+    description: "Docs pages in the Resources section, listed in sidebar order."
     folder: "src/content/docs/resources"
     create: true
     slug: "{{slug}}"
     extension: "md"
     format: "frontmatter"
     identifier_field: "title"
-    summary: "{{order}}.  {{title}}"
+    summary: "{{title}}"
+    table_columns:
+      - { field: order, label: "#" }
+      - { field: title, label: "Title" }
+      - { field: nav_label, label: "Sidebar label" }
+      - { field: level, label: "Level" }
     sortable_fields:
       - { field: "order", label: "Order", default_sort: "asc" }
       - "title"
     editor: { preview: false }
     fields:
       - { label: "Section", name: "section", widget: "hidden", default: "Resources" }
-      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
-      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
-      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
-      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
-      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
-      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
-      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
-      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
-      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+      - { label: "Page title", name: "title", widget: "string", hint: "The big heading at the top of the page." }
+      - { label: "Summary", name: "description", widget: "text", required: false, hint: "One or two sentences under the title. Also used in search results and link previews." }
+      - { label: "Page content", name: "body", widget: "markdown", hint: "Use Insert → Callout box, Link cards or Diagram for special blocks. A heading written as '1. Install' becomes a numbered step. Full guide: openflows.dev/docs/contributing/editing-content" }
+      - { label: "Position in the sidebar", name: "order", widget: "number", value_type: "int", default: 50, hint: "Lower numbers come first. The section's overview page uses 0 or 1." }
+      - { label: "Short sidebar name", name: "nav_label", widget: "string", required: false, hint: "Optional. A shorter name for the sidebar, for example 'Quick Start'. Leave empty to use the page title." }
+      - { label: "Label above the title", name: "eyebrow", widget: "string", required: false, hint: "Optional small capitals above the title, for example 'Quick start guide'." }
+      - { label: "Reading time", name: "read_time", widget: "string", required: false, hint: "Optional, for example '~10 min read'." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"], hint: "Optional. Shown next to the reading time." }
+      - { label: "Hide from the sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "The page stays online at its address but is left out of the sidebar and search." }
+
+  - divider: true
 
   - name: "site"
+    icon: "language"
     label: "Site content"
     label_singular: "Site content"
-    description: "Content that appears across the website, outside the blog and docs."
+    description: "Shared website content, such as the FAQ."
     files:
       - name: "faq"
         label: "FAQ"
         file: "src/data/faq.json"
         editor: { preview: false }
-        description: "Questions on /faq and the homepage. Answers are short Markdown: **bold**, `code` and [links](/docs/...)."
         fields:
           - label: "Topics"
             name: "groups"
@@ -355,6 +430,7 @@ collections:
               - { label: "Topic", name: "title", widget: "string" }
               - { label: "Anchor", name: "id", widget: "string", required: false, hint: "Short id used in links, for example security. Leave empty to generate it from the topic." }
               - label: "Questions"
+                hint: "Questions on /faq and the homepage. Answers are short Markdown: **bold**, `code` and [links](/docs/...)."
                 name: "items"
                 widget: "list"
                 summary: "{{fields.question}}"
@@ -365,11 +441,15 @@ collections:
                   - { label: "Anchor", name: "id", widget: "string", required: false, hint: "Used in links like /faq#anchor. Leave empty to generate it from the question." }
           - { label: "Shown on the homepage", name: "home", widget: "list", hint: "Anchors of the questions to show on the homepage, in order, separated by commas." }
 
+  - divider: true
+
   - name: "authors"
+    icon: "group"
     label: "Authors"
     label_singular: "Author"
-    description: "People who write on the site. Blog posts pick their author from this list."
+    description: "People credited on blog posts."
     folder: "src/content/authors"
+    thumbnail: avatar
     create: true
     slug: "{{slug}}"
     extension: "json"
