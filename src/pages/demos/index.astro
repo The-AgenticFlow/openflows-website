@@ -1,27 +1,116 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import { DocCards } from '@/molecules/DocComponents/DocComponents';
-import styles from './Demos.module.css';
-
-const CARDS = [
-  { icon: '💻', title: 'Terminal Simulation', desc: 'Live typewriter animation of a real OpenFlows run - NEXUS assigning, FORGE building, SENTINEL reviewing, VESSEL merging, LORE documenting.', href: '/demos/terminal' },
-  { icon: '📋', title: 'Step-by-Step Walkthrough', desc: 'Follow the complete pipeline from GitHub issue to merged PR - with the actual files created at each step: PLAN.md, CONTRACT.md, STATUS.json, ADR.', href: '/demos/walkthrough' },
-];
+import PixelField from '@/components/site/PixelField.astro';
+import CtaBanner from '@/components/site/CtaBanner.astro';
 ---
 
-<BaseLayout title="Demos - OpenFlows" description="Watch the full autonomous pipeline in action">
-  <section class={styles.hero}>
-    <div class={styles.container}>
-      <p class={styles.eyebrow}>Demos</p>
-      <h1 class={styles.title}>See OpenFlows in action</h1>
-      <p class={styles.sub}>Watch the full autonomous pipeline  -  from open GitHub issue to merged, documented pull request  -  running on top of your Coder environment, with no human intervention.</p>
-    </div>
-  </section>
-  <section class={styles.section}>
-    <div class={styles.container}>
-      <DocCards cards={CARDS} />
-    </div>
-  </section>
+<BaseLayout title="Demos · OpenFlows" description="Watch the OpenFlows pipeline in action, from an open GitHub issue to a merged, documented pull request.">
+  <main>
+    <section class="of-page-hero of-dark is-center">
+      <PixelField cell={30} density={0.06} />
+      <div class="of-container">
+        <span class="of-eyebrow fade-up">Demos</span>
+        <h1 class="fade-up" style="animation-delay:80ms">See OpenFlows <span class="of-gradient-text">in action.</span></h1>
+        <p class="of-lede fade-up" style="animation-delay:160ms">Watch the full pipeline, from an open GitHub issue to a merged, documented pull request, running on top of your Coder environment.</p>
+      </div>
+    </section>
+
+    <section style="padding-bottom: clamp(3rem, 6vw, 5rem)">
+      <div class="of-container">
+        <div class="video of-window fade-up" style="animation-delay:220ms">
+          <div class="of-window-bar"><span class="of-window-dots"><span></span><span></span><span></span></span>walkthrough video</div>
+          <div class="player" id="demo-player">
+            <button class="play" id="demo-play" aria-label="Play the OpenFlows walkthrough video">
+              <img src="/images/howitworks.png" alt="" />
+              <span class="shade"></span>
+              <span class="btn"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M8 5.5v13L19 12z" fill="currentColor"/></svg></span>
+            </button>
+          </div>
+        </div>
+
+        <div class="cards" data-reveal-group>
+          <a href="/demos/terminal" class="card of-card of-spotlight" data-reveal>
+            <div class="preview term" aria-hidden="true">
+              <p><span class="p">❯</span> openflows</p>
+              <p><span class="n">nexus</span> assigning #1 → forge-1</p>
+              <p><span class="f">forge</span> PLAN.md written</p>
+              <p><span class="s">sentinel</span> <span class="ok">✓ plan gate approved</span></p>
+              <p><span class="v">vessel</span> <span class="ok">✓ squash-merged #7</span></p>
+            </div>
+            <div class="card-body">
+              <span class="of-eyebrow">Terminal replay</span>
+              <h2>Watch a run, line by line</h2>
+              <p>A replay of a real OpenFlows session: NEXUS assigning, FORGE building, SENTINEL reviewing, VESSEL merging, LORE documenting.</p>
+              <span class="of-link">Open the replay <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+
+          <a href="/demos/walkthrough" class="card of-card of-spotlight" data-reveal>
+            <div class="preview files" aria-hidden="true">
+              <span class="file"><i style="background:var(--color-agent-nexus)"></i>ticket T-142</span>
+              <span class="file"><i style="background:var(--color-agent-forge)"></i>PLAN.md</span>
+              <span class="file"><i style="background:var(--color-agent-sentinel)"></i>review.json</span>
+              <span class="file"><i style="background:var(--color-agent-vessel)"></i>merge #142</span>
+              <span class="file"><i style="background:var(--color-agent-lore)"></i>ADR-001.md</span>
+            </div>
+            <div class="card-body">
+              <span class="of-eyebrow">Walkthrough</span>
+              <h2>Follow the artifacts</h2>
+              <p>Step through the pipeline from issue to merged PR, with the file each agent produces: plan, code, review, PR and ADR.</p>
+              <span class="of-link">Start the walkthrough <span aria-hidden="true">→</span></span>
+            </div>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <CtaBanner />
+  </main>
 </BaseLayout>
 
-<style src="./Demos.module.css" />
+<script>
+  document.getElementById('demo-play')?.addEventListener('click', () => {
+    const player = document.getElementById('demo-player');
+    if (!player) return;
+    const frame = document.createElement('iframe');
+    frame.src = 'https://www.loom.com/embed/46d47c9e9291445a8eb9cc88b2a26627?hideOwner=true&hideTitle=true&hideEmbedTopBar=true&autoplay=1';
+    frame.title = 'OpenFlows agent flow demo';
+    frame.allow = 'autoplay; fullscreen';
+    frame.allowFullscreen = true;
+    player.replaceChildren(frame);
+  });
+</script>
+
+<style>
+  .video { max-width: 1000px; margin: 0 auto; }
+  .player { position: relative; aspect-ratio: 16 / 9; background: #050607; }
+  .player :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .play { position: absolute; inset: 0; display: grid; place-items: center; width: 100%; overflow: hidden; }
+  .play img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; opacity: 0.55; transition: transform 0.8s var(--ease-out), opacity 0.4s; }
+  .play:hover img { transform: scale(1.03); opacity: 0.7; }
+  .shade { position: absolute; inset: 0; background: radial-gradient(circle, var(--of-surface), var(--of-surface)); }
+  .btn { position: relative; display: grid; place-items: center; width: 80px; height: 80px; border-radius: 50%; background: #f2f2f0; color: #0b0b0c; box-shadow: 0 0 0 10px rgba(255, 255, 255, 0.08); transition: transform 0.3s var(--ease-out); }
+  .play:hover .btn { transform: scale(1.06); }
+  .btn svg { width: 28px; height: 28px; margin-left: 4px; }
+
+  .cards { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; max-width: 1000px; margin: 1.5rem auto 0; }
+  .card { display: flex; flex-direction: column; overflow: hidden; }
+  .preview { height: 180px; padding: 1.25rem 1.4rem; border-bottom: 1px solid var(--of-line); background: var(--of-surface); }
+  .term { font-family: var(--font-mono); font-size: 0.75rem; line-height: 1.9; color: var(--of-text-2); }
+  .term .p, .term .ok { color: var(--of-mint); }
+  .term .n { color: var(--color-agent-nexus); }
+  .term .f { color: var(--color-agent-forge); }
+  .term .s { color: var(--color-agent-sentinel); }
+  .term .v { color: var(--color-agent-vessel); }
+  .files { display: flex; flex-wrap: wrap; align-content: center; gap: 0.5rem; }
+  .file { display: inline-flex; align-items: center; gap: 0.45rem; padding: 0.45rem 0.7rem; border-radius: 8px; border: 1px solid var(--of-line-strong); background: var(--of-surface-2); font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-text-2); }
+  .file i { width: 6px; height: 6px; border-radius: 2px; }
+  .card-body { display: flex; flex-direction: column; padding: 1.6rem; flex: 1; }
+  .card-body h2 { margin-top: 0.8rem; font-size: 1.3rem; }
+  .card-body p { margin: 0.55rem 0 1.4rem; color: var(--of-text-2); font-size: 0.93rem; line-height: 1.6; }
+  .card-body .of-link { margin-top: auto; }
+
+  @media (max-width: 760px) {
+    .cards { grid-template-columns: 1fr; }
+  }
+</style>

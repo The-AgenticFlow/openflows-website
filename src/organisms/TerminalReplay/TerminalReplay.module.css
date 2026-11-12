@@ -1,0 +1,90 @@
+.window {
+  border-radius: 18px;
+  border: 1px solid var(--of-line-strong);
+  background: #0e0e10;
+  box-shadow: var(--shadow-xl);
+  overflow: hidden;
+}
+
+.bar {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  height: 44px;
+  padding: 0 0.6rem 0 1rem;
+  border-bottom: 1px solid var(--of-line);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  color: var(--of-text-3);
+}
+
+.dots { display: flex; gap: 6px; }
+.dots i { width: 10px; height: 10px; border-radius: 50%; background: #2a2d34; }
+
+.replay {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  margin-left: auto;
+  height: 30px;
+  padding: 0 0.7rem;
+  border-radius: 8px;
+  border: 1px solid var(--of-line-strong);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--of-text-2);
+  transition: color 0.15s, border-color 0.15s, opacity 0.2s;
+}
+
+.replay:hover:not(:disabled) { color: var(--of-text); border-color: rgba(255, 255, 255, 0.25); }
+.replay:disabled { opacity: 0.35; cursor: default; }
+.replay svg { width: 13px; height: 13px; }
+
+.body {
+  height: 520px;
+  padding: 1.25rem 1.4rem;
+  overflow-y: auto;
+  font-family: var(--font-mono);
+  font-size: 0.82rem;
+  line-height: 1.85;
+  color: var(--of-text-2);
+}
+
+.line {
+  --agent: var(--of-text-3);
+  display: flex;
+  gap: 0.75rem;
+  animation: lineIn 0.3s var(--ease-out) both;
+}
+
+.line[data-agent='nexus'] { --agent: var(--color-agent-nexus); }
+.line[data-agent='forge'] { --agent: var(--color-agent-forge); }
+.line[data-agent='sentinel'] { --agent: var(--color-agent-sentinel); }
+.line[data-agent='vessel'] { --agent: var(--color-agent-vessel); }
+.line[data-agent='lore'] { --agent: var(--color-agent-lore); }
+
+@keyframes lineIn {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.tag { width: 72px; flex-shrink: 0; color: var(--of-text); }
+.text { min-width: 0; }
+.ok .text { color: var(--of-text); }
+.ok b { color: var(--of-mint); font-weight: 500; }
+.prompt { color: var(--of-text-3); }
+.gap { height: 0.9rem; }
+
+.cursor {
+  display: inline-block;
+  width: 8px;
+  height: 15px;
+  margin-top: 4px;
+  background: var(--of-text);
+  animation: of-blink 1s steps(1) infinite;
+}
+
+@media (max-width: 640px) {
+  .body { height: 440px; font-size: 0.72rem; padding: 1rem; }
+  .tag { width: 58px; }
+}

@@ -1,19 +1,51 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import styles from './NotFound.module.css';
+
+const LINKS = [
+  { label: 'Documentation', href: '/docs', desc: 'Guides, concepts and reference' },
+  { label: 'The agent team', href: '/agents', desc: 'Meet the five agents' },
+  { label: 'Blog', href: '/blog', desc: 'Engineering essays and updates' },
+];
 ---
 
-<BaseLayout title="404 - Page Not Found">
-  <div class={styles.container}>
-    <p class={styles.code}>404</p>
-    <h1 class={styles.title}>Page not found</h1>
-    <p class={styles.text}>
-      The page you're looking for doesn't exist or has been moved.
-    </p>
-    <a href="/" class={styles.link}>
-      Back to home
-    </a>
-  </div>
+<BaseLayout title="Page not found · OpenFlows">
+  <main class="nf">
+    <div class="of-grid-bg" aria-hidden="true"></div>
+    <div class="of-container">
+      <p class="code fade-up">404</p>
+      <div class="log fade-up" style="animation-delay:80ms">
+        <span class="tag">nexus</span> ticket not found · <span class="state">awaiting_human</span>
+      </div>
+      <h1 class="fade-up" style="animation-delay:140ms">This page isn’t in the queue.</h1>
+      <p class="of-lede fade-up" style="animation-delay:200ms">The page you’re looking for doesn’t exist or has moved. Here are a few places to pick up from.</p>
+      <div class="of-actions fade-up" style="animation-delay:260ms">
+        <a href="/" class="of-btn of-btn-primary">Back to home</a>
+        <a href="https://github.com/The-AgenticFlow/openflows-website/issues" target="_blank" rel="noopener noreferrer" class="of-btn of-btn-ghost">Report a broken link</a>
+      </div>
+      <div class="links fade-up" style="animation-delay:320ms">
+        {LINKS.map((l) => (
+          <a href={l.href} class="of-card">
+            <b>{l.label}</b>
+            <span>{l.desc}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </main>
 </BaseLayout>
 
-<style src="./NotFound.module.css" />
+<style>
+  .nf { position: relative; min-height: 100vh; padding: calc(var(--nav-height) + 5rem) 0 5rem; text-align: center; overflow: hidden; isolation: isolate; }
+  .code { font-size: clamp(6rem, 18vw, 11rem); font-weight: 700; line-height: 1; letter-spacing: -0.06em; background: var(--of-gradient); -webkit-background-clip: text; background-clip: text; color: transparent; opacity: 0.9; }
+  .log { display: inline-flex; gap: 0.5rem; margin-top: 1.5rem; padding: 0.45rem 0.85rem; border-radius: 999px; border: 1px solid var(--of-line-strong); font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-text-2); }
+  .tag { color: var(--color-agent-nexus); }
+  .state { color: var(--of-amber); }
+  h1 { margin-top: 1.5rem; font-size: clamp(2rem, 4.5vw, 3rem); letter-spacing: -0.04em; }
+  .of-lede { margin: 1rem auto 0; }
+  .of-actions { justify-content: center; }
+  .links { display: grid; grid-template-columns: repeat(3, 1fr); gap: 0.75rem; max-width: 760px; margin: 3.5rem auto 0; text-align: left; }
+  .links a { display: flex; flex-direction: column; gap: 0.25rem; padding: 1.1rem 1.25rem; }
+  .links b { font-weight: 500; }
+  .links span { font-size: 0.85rem; color: var(--of-text-3); }
+  @media (max-width: 640px) { .links { grid-template-columns: 1fr; } }
+</style>

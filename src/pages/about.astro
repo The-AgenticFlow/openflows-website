@@ -1,245 +1,216 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import styles from './About.module.css';
+import PixelField from '@/components/site/PixelField.astro';
+import CtaBanner from '@/components/site/CtaBanner.astro';
+import { getCollection } from 'astro:content';
 
-const STATS = [
-  { value: '5', label: 'Specialized agents' },
-  { value: '24/7', label: 'Autonomous operation' },
-  { value: '~16min', label: 'Issue to merged PR' },
-  { value: 'MIT', label: 'Open source license' },
+const REPO = 'https://github.com/The-AgenticFlow/OpenFlows';
+
+const people = (await getCollection('authors'))
+  .map((entry) => entry.data as { name: string; github?: string; avatar?: string; role?: string })
+  .sort((a, b) => (a.role ? -1 : b.role ? 1 : a.name.localeCompare(b.name)));
+
+const CHANNELS = [
+  {
+    title: 'Discord',
+    desc: 'Chat with maintainers and other operators. The fastest place to get unstuck.',
+    href: 'https://discord.gg/gDhK2RQZpY',
+    cta: 'Join the server',
+    icon: '<path d="M20.32 4.37a19.8 19.8 0 0 0-4.89-1.52.07.07 0 0 0-.08.04c-.21.38-.44.86-.61 1.25a18.3 18.3 0 0 0-5.49 0 12.6 12.6 0 0 0-.62-1.25.08.08 0 0 0-.08-.04 19.7 19.7 0 0 0-4.88 1.52.07.07 0 0 0-.03.03C.53 9.05-.32 13.58.1 18.06a.08.08 0 0 0 .03.05 19.9 19.9 0 0 0 6 3.03.08.08 0 0 0 .08-.03c.46-.63.87-1.3 1.23-1.99a.08.08 0 0 0-.04-.11 13.1 13.1 0 0 1-1.87-.89.08.08 0 0 1-.01-.13l.37-.29a.07.07 0 0 1 .08-.01c3.93 1.79 8.18 1.79 12.06 0a.07.07 0 0 1 .08.01l.37.29a.08.08 0 0 1 0 .13c-.6.35-1.22.64-1.88.89a.08.08 0 0 0-.04.11c.36.7.77 1.36 1.23 1.99a.08.08 0 0 0 .08.03 19.8 19.8 0 0 0 6-3.03.08.08 0 0 0 .03-.05c.5-5.18-.84-9.67-3.55-13.66a.06.06 0 0 0-.03-.03zM8.02 15.33c-1.18 0-2.16-1.09-2.16-2.42s.96-2.42 2.16-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.96 2.42-2.16 2.42zm7.97 0c-1.18 0-2.15-1.09-2.15-2.42s.95-2.42 2.15-2.42c1.21 0 2.18 1.1 2.16 2.42 0 1.33-.95 2.42-2.16 2.42z"/>',
+    fill: true,
+  },
+  {
+    title: 'GitHub',
+    desc: 'Source, releases, issues and pull requests. Everything is MIT licensed.',
+    href: REPO,
+    cta: 'Star the repo',
+    icon: '<path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/>',
+    fill: true,
+  },
+  {
+    title: 'Discussions',
+    desc: 'Ask questions, share how you run OpenFlows, and propose ideas.',
+    href: `${REPO}/discussions`,
+    cta: 'Start a thread',
+    icon: '<path d="M4 5h11v8H8l-4 3z"/><path d="M15 9h5v8l-3-2h-6v-2"/>',
+  },
+  {
+    title: 'Blog',
+    desc: 'Engineering essays from the team on building trustworthy agents.',
+    href: '/blog',
+    cta: 'Read the blog',
+    icon: '<path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/>',
+    internal: true,
+  },
 ];
 
-const AGENTS = [
-  {
-    name: 'NEXUS',
-    role: 'Orchestrator',
-    desc: 'Syncs GitHub issues, assigns work to agents, and coordinates the tenant pipeline. Manager provisions and manages the workspaces.',
-  },
-  {
-    name: 'FORGE',
-    role: 'Builder',
-    desc: 'Receives tickets, writes PLAN.md, implements code segment by segment, and opens pull requests.',
-  },
-  {
-    name: 'SENTINEL',
-    role: 'Reviewer',
-    desc: 'Reviews every code segment against 5 criteria: correctness, security, test coverage, standards compliance, and no regressions.',
-  },
-  {
-    name: 'VESSEL',
-    role: 'Shipper',
-    desc: 'Handles CI status, resolves merge conflicts, and squash-merges approved PRs after SENTINEL approval.',
-  },
-  {
-    name: 'LORE',
-    role: 'Documenter',
-    desc: 'Writes ADRs (Architecture Decision Records) and updates CHANGELOG.md after each successful merge.',
-  },
+const CONTRIBUTE = [
+  { title: 'Add a skill', desc: 'Drop a SKILL.md into the plugin skills folder and register it for a role.', href: '/docs/contributing/adding-skills' },
+  { title: 'Plug in an MCP server', desc: 'Give an agent a new tool through the registry, no code change.', href: '/docs/guides/extending-mcp' },
+  { title: 'Integrate a model', desc: 'Route a role to a new provider through Coder AI settings.', href: '/docs/guides/extending-models' },
+  { title: 'Improve the docs', desc: 'Fix a gap, clarify a concept, or add a guide you wished existed.', href: '/docs/contributing' },
+  { title: 'Report a bug', desc: 'Open an issue with steps to reproduce. Small reports help a lot.', href: `${REPO}/issues` },
+  { title: 'Harden the core', desc: 'Planning gate, recovery, A2A relay: pick an issue and send a PR.', href: '/docs/contributing/development-setup' },
 ];
 
-const VALUES = [
-  {
-    title: 'Autonomous by default',
-    desc: 'NEXUS coordinates tickets and agents, while Manager provisions workspaces and brokers runtime credentials. The pipeline escalates decisions that require a person.',
-  },
-  {
-    title: 'Each agent has an identity',
-    desc: 'Each agent has a role, skills, hooks, and a workspace runtime identity. Manager brokers short-lived GitHub App installation tokens scoped to the tenant repository; human GitHub OAuth remains separate.',
-  },
-  {
-    title: 'Built for resilience',
-    desc: 'Manager persists operations and uses leases so another instance can resume queued work. Agent coordination and workspace reconciliation provide additional recovery paths.',
-  },
-  {
-    title: 'Model-agnostic, adversarial by design',
-    desc: 'Each agent\'s LLM provider and model are configured independently in registry.json. FORGE and SENTINEL can use different providers  -  Anthropic for the builder, OpenAI for the reviewer  -  so the reviewer\'s blind spots differ from the writer\'s. SENTINEL spawns fresh per evaluation, read-only and bias-free.',
-  },
-  {
-    title: 'Open source, MIT licensed',
-    desc: 'The orchestration engine  -  PocketFlow core, SharedStore, agent harnesses, and TUI setup wizard  -  is on GitHub under the MIT license. Install via npm, cargo, Docker, or a one-line curl installer. Self-hosted on your infrastructure, with Coder AI Gateway and LiteLLM fallback for any model provider.',
-  },
-  {
-    title: 'Ship faster, not harder',
-    desc: 'FORGE implements and opens PRs in 15–30 minutes. SENTINEL reviews every segment automatically. VESSEL merges when CI is green. A 2-person startup can ship 40 features in a month because the pipeline eliminates the PR review queue and founder context-switching.',
-  },
-  {
-    title: 'Conflict rework, not rebase churn',
-    desc: 'When VESSEL detects a merge conflict, it does not create a new branch or lose context. It writes CONFLICT_RESOLUTION.md and re-routes the ticket back to the same FORGE worker. FORGE reworks the implementation, re-commits, and VESSEL re-monitors CI  -  no manual rebase.',
-  },
-  {
-    title: 'Documentation as a byproduct',
-    desc: 'LORE writes Architecture Decision Records and updates CHANGELOG.md after every successful merge. Technical decisions are captured automatically, not as an afterthought. The team ships code and the paper trail writes itself.',
-  },
+const PRINCIPLES = [
+  { title: 'Architecture first', desc: 'Engineers own the spec and the final say. Agents implement against it.' },
+  { title: 'Governed by default', desc: 'Every action is gated, attributed and auditable from issue to merge.' },
+  { title: 'Open and self-hosted', desc: 'MIT licensed, running on your infrastructure, with your models.' },
+  { title: 'Never guess', desc: 'When a spec is ambiguous, agents ask an exact question instead of improvising.' },
 ];
 ---
 
-<BaseLayout title="About - OpenFlows" description="Learn about OpenFlows - the autonomous AI development team orchestration layer that coordinates five specialized agents to take GitHub issues to merged pull requests.">
-  {/* ── Hero ── */}
-  <section class={styles.hero}>
-    <div class={styles.container}>
-      <p class={styles.eyebrow}>About OpenFlows</p>
-      <h1 class={styles.heroTitle}>
-        The orchestration layer for<br class={styles.br} /> autonomous AI development teams.
-      </h1>
-      <p class={styles.heroSub}>
-        OpenFlows coordinates five specialized AI agents through a Redis-backed state machine
-        to take GitHub issues all the way to merged, documented pull requests. GitHub identity
-        is brokered by Manager through a GitHub App installation. The pipeline can run
-        autonomously - you wake up to completed features, reviewed PRs, and updated documentation.
-      </p>
-    </div>
-  </section>
-
-  {/* ── Stats bar ── */}
-  <section class={styles.statsBar}>
-    <div class={styles.container}>
-      <div class={styles.statsGrid}>
-        {STATS.map(({ value, label }) => (
-          <div key={label} class={styles.statItem}>
-            <span class={styles.statValue}>{value}</span>
-            <span class={styles.statLabel}>{label}</span>
-          </div>
-        ))}
+<BaseLayout title="Community · OpenFlows" description="Join the OpenFlows community: chat on Discord, contribute on GitHub, and help build the open-source, governed AI dev team for Coder.">
+  <main>
+    <section class="of-page-hero of-dark">
+      <PixelField cell={30} density={0.06} />
+      <div class="of-container">
+        <span class="of-eyebrow fade-up">Community</span>
+        <h1 class="of-lines"><span><span style="--l:0">Build OpenFlows</span></span><span><span style="--l:1">with us.</span></span></h1>
+        <p class="of-lede fade-up" style="animation-delay:300ms">OpenFlows is open source and built in the open. Ask questions, share what you ship, and help shape how autonomous engineering teams should work.</p>
+        <div class="of-actions fade-up" style="animation-delay:400ms">
+          <a href="https://discord.gg/gDhK2RQZpY" target="_blank" rel="noopener noreferrer" class="of-btn of-btn-primary of-btn-lg"><span class="of-sq"></span>Join the Discord</a>
+          <a href="/docs/contributing" class="of-btn of-btn-ghost of-btn-lg">Contributor guide</a>
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  {/* ── The Agents ── */}
-  <section class={styles.split}>
-    <div class={styles.container}>
-      <p class={styles.eyebrow}>The team</p>
-      <h2 class={styles.valuesHeading}>Five agents, one pipeline</h2>
-      <div class={styles.valuesGrid}>
-        {AGENTS.map(({ name, role, desc }) => (
-          <div key={name} class={styles.valueCard}>
-            <h3 class={styles.valueTitle}>{name} <span class={styles.agentRole}> -  {role}</span></h3>
-            <p class={styles.valueDesc}>{desc}</p>
-          </div>
-        ))}
+    <section class="of-section">
+      <div class="of-container">
+        <div class="channels" data-reveal-group>
+          {CHANNELS.map((c) => (
+            <a href={c.href} class="channel of-card" target={c.internal ? undefined : '_blank'} rel={c.internal ? undefined : 'noopener noreferrer'} data-reveal>
+              <span class="channel-icon"><svg viewBox="0 0 24 24" fill={c.fill ? 'currentColor' : 'none'} stroke={c.fill ? 'none' : 'currentColor'} stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={c.icon} /></span>
+              <h2>{c.title}</h2>
+              <p>{c.desc}</p>
+              <span class="channel-cta">{c.cta} <span aria-hidden="true">{c.internal ? '→' : '↗'}</span></span>
+            </a>
+          ))}
+        </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  {/* ── Pull quote ── */}
-  <section class={styles.quoteSection}>
-    <div class={styles.container}>
-      <blockquote class={styles.quote}>
-        "Coder governs where agents run. OpenFlows governs how they coordinate.
-        Code is the output. Architecture is the product."
-      </blockquote>
-    </div>
-  </section>
+    <section class="of-section" style="padding-top:0">
+      <div class="of-container">
+        <div class="split-head" data-reveal>
+          <div>
+            <span class="of-eyebrow">Contribute</span>
+            <h2 class="of-h2">Ways to get involved.</h2>
+          </div>
+          <p class="of-lede">Most contributions need no deep knowledge of the core. The registry is designed so skills, tools and models plug in without touching orchestration code.</p>
+        </div>
+        <div class="contrib" data-reveal-group>
+          {CONTRIBUTE.map((c, i) => (
+            <a href={c.href} class="contrib-item" data-reveal>
+              <span class="contrib-num">{String(i + 1).padStart(2, '0')}</span>
+              <h3>{c.title}</h3>
+              <p>{c.desc}</p>
+              <span class="contrib-arrow" aria-hidden="true">→</span>
+            </a>
+          ))}
+        </div>
+      </div>
+    </section>
 
-  {/* ── How it works - text left ── */}
-  <section class={styles.split}>
-    <div class={styles.container}>
-      <div class={styles.splitGrid}>
-        <div class={styles.splitText}>
-          <p class={styles.eyebrow}>How it works</p>
-          <h2 class={styles.splitHeading}>From issue to merged PR, autonomously</h2>
-          <p class={styles.splitDesc}>
-            NEXUS polls GitHub for open issues, while Manager provisions tenant workspaces.
-            FORGE receives the ticket, writes a PLAN.md, and implements the code segment by segment.
-            SENTINEL reviews every segment against five criteria before approval. VESSEL handles CI
-            status and merges approved PRs. LORE documents everything with ADRs and CHANGELOG updates.
-          </p>
-          <p class={styles.splitDesc}>
-            The entire pipeline runs without human intervention. NEXUS only reaches out when it
-            genuinely needs you - spec ambiguity, security concerns, or resource limits. Otherwise,
-            the team runs autonomously within your governed environment.
-          </p>
-          <div class={styles.linkRow}>
-            <a href="/docs/architecture" class={styles.textLink}>Architecture Overview ›</a>
-            <a href="/docs/getting-started" class={styles.textLink}>Get Started ›</a>
+    <section class="of-section" style="padding-top:0">
+      <div class="of-container">
+        <div class="split-head" data-reveal>
+          <div>
+            <span class="of-eyebrow">The team</span>
+            <h2 class="of-h2">People building OpenFlows.</h2>
+          </div>
+          <p class="of-lede">Maintained by the AgenticFlow team and contributors across the Rust and open-source communities.</p>
+        </div>
+        <ul class="people" data-reveal-group>
+          {people.map((person) => (
+            <li data-reveal>
+              <a href={person.github ? `https://github.com/${person.github}` : undefined} target="_blank" rel="noopener noreferrer" class="person">
+                <img src={person.avatar || `https://github.com/${person.github}.png?size=160`} alt="" width="64" height="64" loading="lazy" />
+                <span class="person-text">
+                  <span class="person-name">{person.name}</span>
+                  <span class="person-meta">{person.role || (person.github ? `@${person.github}` : 'Contributor')}</span>
+                </span>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <section class="principles-wrap">
+      <div class="principles of-panel of-dark">
+        <div class="of-container">
+          <div class="split-head" data-reveal>
+            <div>
+              <span class="of-eyebrow">What we believe</span>
+              <h2 class="of-h2">Code is the output. Architecture is the product.</h2>
+            </div>
+            <p class="of-lede">Coder governs where agents run. OpenFlows governs how they coordinate. These principles decide what we build and what we refuse to.</p>
+          </div>
+          <div class="principle-grid" data-reveal-group>
+            {PRINCIPLES.map((p, i) => (
+              <div class="principle" data-reveal>
+                <span class="contrib-num">{String(i + 1).padStart(2, '0')}</span>
+                <h3>{p.title}</h3>
+                <p>{p.desc}</p>
+              </div>
+            ))}
           </div>
         </div>
       </div>
-    </div>
-  </section>
+    </section>
 
-  {/* ── Values grid ── */}
-  <section class={styles.valuesSection}>
-    <div class={styles.container}>
-      <p class={styles.eyebrow}>What we stand for</p>
-      <h2 class={styles.valuesHeading}>Built on clear principles</h2>
-      <div class={styles.valuesGrid}>
-        {VALUES.map(({ title, desc }) => (
-          <div key={title} class={styles.valueCard}>
-            <h3 class={styles.valueTitle}>{title}</h3>
-            <p class={styles.valueDesc}>{desc}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  </section>
-
-  {/* ── Community ── */}
-  <section class={styles.split}>
-    <div class={styles.container}>
-      <div class={styles.splitGrid}>
-        <div class={styles.splitText}>
-          <p class={styles.eyebrow}>Community</p>
-          <h2 class={styles.splitHeading}>Help build the autonomous AI development team.</h2>
-          <p class={styles.splitDesc}>
-            OpenFlows is an MIT-licensed, self-hosted AI software team that turns GitHub issues
-            into reviewed, production-ready pull requests inside your Coder environment.
-            Contributions shape the agents, NEXUS orchestration, FORGE implementation, SENTINEL
-            adversarial review, VESSEL merge automation, LORE docs, through skills, MCP servers,
-            new model integrations, and the PocketFlow flow graph.
-          </p>
-          <p class={styles.splitDesc}>
-            Maintained by the AgenticFlow team. Whether you're hardening the planning gate and
-            failure recovery, tuning agent personas and permissions, or documenting architecture,
-            your work directly shapes how autonomous development teams operate.
-          </p>
-          <div class={styles.linkRow}>
-            <a
-              href="https://discord.gg/gDhK2RQZpY"
-              class={styles.socialBtn}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg class={styles.socialIcon} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M20.317 4.3698a19.7913 19.7913 0 00-4.8851-1.5152.0741.0741 0 00-.0785.0371c-.211.3753-.4447.8648-.6083 1.2495-1.8447-.2762-3.68-.2762-5.4868 0-.1636-.3933-.4058-.8742-.6177-1.2495a.077.077 0 00-.0785-.037 19.7363 19.7363 0 00-4.8852 1.515.0699.0699 0 00-.0321.0277C.5334 9.0458-.319 13.5799.0992 18.0578a.0824.0824 0 00.0312.0561c2.0528 1.5076 4.0413 2.4228 5.9929 3.0294a.0777.0777 0 00.0842-.0276c.4616-.6304.8731-1.2952 1.226-1.9942a.076.076 0 00-.0416-.1057c-.6528-.2476-1.2743-.5495-1.8722-.8923a.077.077 0 01-.0076-.1277c.1258-.0943.2517-.1923.3718-.2914a.0743.0743 0 01.0776-.0105c3.9278 1.7933 8.18 1.7933 12.0614 0a.0739.0739 0 01.0785.0095c.1202.099.246.1981.3728.2924a.077.077 0 01-.0066.1276 12.2986 12.2986 0 01-1.873.8914.0766.0766 0 00-.0407.1067c.3604.698.7719 1.3628 1.225 1.9932a.076.076 0 00.0842.0286c1.961-.6067 3.9495-1.5219 6.0023-3.0294a.077.077 0 00.0313-.0552c.5004-5.177-.8382-9.6739-3.5485-13.6604a.061.061 0 00-.0312-.0286zM8.02 15.3312c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9555-2.4189 2.157-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.9555 2.4189-2.1569 2.4189zm7.9748 0c-1.1825 0-2.1569-1.0857-2.1569-2.419 0-1.3332.9554-2.4189 2.1569-2.4189 1.2108 0 2.1757 1.0952 2.1568 2.419 0 1.3332-.946 2.4189-2.1568 2.4189z" />
-              </svg>
-              Join Discord
-            </a>
-            <a
-              href="https://github.com/The-AgenticFlow/OpenFlows"
-              class={styles.socialBtn}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg class={styles.socialIcon} viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-                <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-              </svg>
-              GitHub
-            </a>
-            <a
-              href="https://github.com/The-AgenticFlow/OpenFlows/issues"
-              class={styles.socialBtn}
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              <svg class={styles.socialIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <circle cx="12" cy="12" r="10" />
-                <line x1="12" y1="8" x2="12" y2="12" />
-                <line x1="12" y1="16" x2="12.01" y2="16" />
-              </svg>
-              Report an issue
-            </a>
-            <a href="/docs/getting-started/installation" class={styles.socialBtn}>
-              <svg class={styles.socialIcon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-                <polyline points="4 17 10 11 4 5" />
-                <line x1="12" y1="19" x2="20" y2="19" />
-              </svg>
-              Installation Guide
-            </a>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
+    <div style="height: clamp(4rem, 8vw, 6rem)"></div>
+    <CtaBanner title="Your first contribution starts here." body="Pick an issue, open a pull request, and the maintainers will help you land it." primary={{ label: 'Contributor guide', href: '/docs/contributing' }} secondary={{ label: 'Good first issues', href: `${REPO}/issues`, external: true }} />
+  </main>
 </BaseLayout>
 
-<style src="./About.module.css"></style>
+<style>
+  .channels { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .channel { display: flex; flex-direction: column; padding: 1.6rem; min-height: 250px; }
+  .channel-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: var(--of-text); color: var(--of-invert); }
+  .channel-icon svg { width: 20px; height: 20px; }
+  .channel h2 { margin-top: 1.5rem; font-size: 1.2rem; letter-spacing: -0.02em; }
+  .channel p { margin: 0.5rem 0 1.5rem; font-size: 0.9rem; line-height: 1.55; color: var(--of-text-2); }
+  .channel-cta { margin-top: auto; font-size: 0.88rem; font-weight: 500; }
+
+  .split-head { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem 4rem; align-items: end; margin-bottom: clamp(2.5rem, 5vw, 3.5rem); }
+  .split-head h2 { margin-top: 1rem; }
+
+  .contrib { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--of-line-strong); border-left: 1px solid var(--of-line-strong); }
+  .contrib-item { position: relative; display: flex; flex-direction: column; padding: 1.6rem 1.6rem 1.8rem; border-right: 1px solid var(--of-line-strong); border-bottom: 1px solid var(--of-line-strong); transition: background 0.3s; }
+  .contrib-item:hover { background: var(--of-surface); }
+  .contrib-num { font-family: var(--font-mono); font-size: 0.72rem; color: var(--of-text-3); }
+  .contrib-item h3, .principle h3 { margin-top: 1.75rem; font-size: 1.1rem; letter-spacing: -0.02em; }
+  .contrib-item p, .principle p { margin-top: 0.45rem; font-size: 0.9rem; line-height: 1.55; color: var(--of-text-2); }
+  .contrib-arrow { position: absolute; top: 1.5rem; right: 1.6rem; color: var(--of-text-3); transition: transform 0.4s var(--ease-out), color 0.3s; }
+  .contrib-item:hover .contrib-arrow { transform: translateX(4px); color: var(--of-text); }
+
+  .people { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1rem; }
+  .person { display: flex; align-items: center; gap: 0.9rem; padding: 1rem; border-radius: 14px; border: 1px solid var(--of-line); background: var(--of-surface); transition: border-color 0.3s, transform 0.4s var(--ease-out); }
+  .person:hover { border-color: var(--of-line-strong); transform: translateY(-2px); }
+  .person img { width: 44px; height: 44px; border-radius: 50%; object-fit: cover; background: var(--of-surface-2); filter: grayscale(1); transition: filter 0.4s; }
+  .person:hover img { filter: none; }
+  .person-name { display: block; font-size: 0.92rem; font-weight: 500; }
+  .person-meta { display: block; font-family: var(--font-mono); font-size: 0.7rem; color: var(--of-text-3); }
+  .person-text { display: flex; flex-direction: column; min-width: 0; }
+
+  .principles { padding: clamp(4rem, 8vw, 6.5rem) 0; }
+  .principle-grid { display: grid; grid-template-columns: repeat(4, 1fr); border-top: 1px solid var(--of-line); }
+  .principle { padding: 1.6rem 1.5rem 0 0; }
+  .principle + .principle { padding-left: 1.5rem; border-left: 1px solid var(--of-line); }
+
+  @media (max-width: 1000px) {
+    .channels, .people { grid-template-columns: 1fr 1fr; }
+    .contrib { grid-template-columns: 1fr 1fr; }
+    .split-head { grid-template-columns: 1fr; }
+    .principle-grid { grid-template-columns: 1fr 1fr; }
+    .principle:nth-child(3) { padding-left: 0; border-left: 0; }
+  }
+
+  @media (max-width: 600px) {
+    .channels, .people, .contrib, .principle-grid { grid-template-columns: 1fr; }
+    .principle, .principle + .principle { padding-left: 0; border-left: 0; padding-bottom: 1.25rem; }
+  }
+</style>

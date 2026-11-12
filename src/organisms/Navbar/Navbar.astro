@@ -1,338 +1,688 @@
 ---
-import Logo from '@/atoms/Logo/Logo';
-import Button from '@/atoms/Button/Button';
-import styles from './Navbar.module.css';
+import { getPublishedPosts, getPostHref } from '@/components/blog/blog';
 
-const NAV_DATA = [
+const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
+const REPO_URL = `https://github.com/${GITHUB_REPO}`;
+
+interface MenuLink { label: string; href: string; external?: boolean }
+interface MenuColumn { heading: string; links: MenuLink[] }
+interface Feature { eyebrow: string; title: string; desc?: string; href: string; cta: string; image?: string }
+interface NavItem {
+  label: string;
+  href: string;
+  menu?: { columns: MenuColumn[]; feature?: Feature; side?: MenuColumn };
+}
+
+const latest = (await getPublishedPosts())[0];
+const blogFeature: Feature | undefined = latest && {
+  eyebrow: 'Blog',
+  title: latest.data.title,
+  href: getPostHref(latest),
+  cta: 'Read the blog',
+  image: latest.data.cover_image_url,
+};
+
+const NAV: NavItem[] = [
   {
     label: 'Product',
     href: '/agents',
-    dropdown: {
-      heading: 'Product',
-      items: [
-        { label: 'Agents', href: '/agents' },
-        { label: 'How it works', href: '/#how-it-works' },
-        { label: 'Use cases', href: '/docs' },
-        { label: 'Demos', href: '/demos' },
-      ]
-    }
+    menu: {
+      columns: [
+        { heading: 'Platform', links: [
+          { label: 'The agent team', href: '/agents' },
+          { label: 'How it works', href: '/#how-it-works' },
+          { label: 'Planning gate', href: '/docs/concepts/planning-gate' },
+          { label: 'Security model', href: '/docs/architecture/security-by-design' },
+        ] },
+        { heading: 'See it run', links: [
+          { label: 'Demos', href: '/demos' },
+          { label: 'Terminal replay', href: '/demos/terminal' },
+          { label: 'Walkthrough', href: '/demos/walkthrough' },
+          { label: 'Enterprise', href: '/enterprise' },
+        ] },
+      ],
+      feature: {
+        eyebrow: 'Live replay',
+        title: 'Watch an issue become a merged PR',
+        desc: 'NEXUS assigns, FORGE builds, SENTINEL reviews, VESSEL ships.',
+        href: '/demos/terminal',
+        cta: 'Open the demo',
+        image: '/images/howitworks.png',
+      },
+      side: { heading: 'Get started', links: [
+        { label: 'Quick start', href: '/docs/getting-started' },
+        { label: 'Installation', href: '/docs/getting-started/installation' },
+        { label: 'First issue', href: '/docs/getting-started/first-issue' },
+        { label: 'Talk to the team', href: '/resources#contact' },
+      ] },
+    },
   },
   {
     label: 'Docs',
     href: '/docs',
-    dropdown: {
-      heading: 'Documentation',
-      items: [
-        { label: 'Introduction', href: '/docs/introduction/what-is-openflows' },
-        { label: 'Get Started', href: '/docs/getting-started' },
-        { label: 'Core Concepts', href: '/docs/concepts/coder-openflows-split' },
-        { label: 'Architecture', href: '/docs/architecture' },
-        { label: 'Guides', href: '/docs/guides' },
-        { label: 'Reference', href: '/docs/reference' },
-        { label: 'FAQ', href: '/docs/resources/faq' },
-      ]
-    }
+    menu: {
+      columns: [
+        { heading: 'Learn', links: [
+          { label: 'What is OpenFlows', href: '/docs/introduction/what-is-openflows' },
+          { label: 'How it works', href: '/docs/introduction/how-it-works' },
+          { label: 'Use cases', href: '/docs/introduction/use-cases' },
+          { label: 'How it compares', href: '/docs/introduction/how-openflows-compares' },
+        ] },
+        { heading: 'Build', links: [
+          { label: 'Quick start', href: '/docs/getting-started' },
+          { label: 'Core concepts', href: '/docs/concepts' },
+          { label: 'Architecture', href: '/docs/architecture' },
+          { label: 'Guides', href: '/docs/guides' },
+        ] },
+        { heading: 'Operate', links: [
+          { label: 'Reference', href: '/docs/reference' },
+          { label: 'Operations', href: '/docs/guides/operations' },
+          { label: 'Troubleshooting', href: '/docs/guides/troubleshooting' },
+          { label: 'FAQ', href: '/docs/resources/faq' },
+        ] },
+      ],
+      side: { heading: 'Contribute', links: [
+        { label: 'Contributor guide', href: '/docs/contributing' },
+        { label: 'Development setup', href: '/docs/contributing/development-setup' },
+        { label: 'Adding skills', href: '/docs/contributing/adding-skills' },
+        { label: 'Community & support', href: '/docs/resources/community-and-support' },
+      ] },
+    },
   },
-  {
-    label: 'Enterprise',
-    href: '/enterprise',
-    dropdown: {
-      heading: 'Enterprise',
-      items: [
-        { label: 'Overview', href: '/enterprise' },
-        { label: 'Trust boundaries', href: '/enterprise#security' },
-        { label: 'Deployment', href: '/enterprise#deployment' },
-        { label: 'Availability', href: '/enterprise#editions' },
-      ]
-    }
-  },
+  { label: 'Enterprise', href: '/enterprise' },
   {
     label: 'Resources',
     href: '/resources',
-    dropdown: {
-      heading: 'Resources',
-      items: [
-        { label: 'All Resources', href: '/resources' },
-        { label: 'Blog', href: '/blog' },
-        { label: 'Research', href: '/research' },
-        { label: 'Case Studies', href: '/resources#stories' },
-        { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
-      ]
-    }
+    menu: {
+      columns: [
+        { heading: 'Read', links: [
+          { label: 'Blog', href: '/blog' },
+          { label: 'Research', href: '/research' },
+          { label: 'Case studies', href: '/resources#stories' },
+          { label: 'Developers', href: '/developers' },
+        ] },
+        { heading: 'Stay current', links: [
+          { label: 'Changelog', href: `${REPO_URL}/releases`, external: true },
+          { label: 'GitHub', href: REPO_URL, external: true },
+          { label: 'Discussions', href: `${REPO_URL}/discussions`, external: true },
+        ] },
+      ],
+      feature: blogFeature,
+      side: { heading: 'Company', links: [
+        { label: 'Community', href: '/about' },
+        { label: 'Contact', href: '/resources#contact' },
+        { label: 'Security', href: `${REPO_URL}/blob/HEAD/SECURITY.md`, external: true },
+        { label: 'Discord', href: 'https://discord.gg/gDhK2RQZpY', external: true },
+      ] },
+    },
   },
   { label: 'Community', href: '/about' },
 ];
 
-const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
+const currentPath = Astro.url.pathname;
+const isActive = (href: string) =>
+  href !== '/' && !href.startsWith('http') && !href.includes('#') && currentPath.startsWith(href);
 ---
 
-<header
-  class={styles.navbar}
-  id="navbar"
-  data-scrolled-class={styles.scrolled}
-  data-dropdown-active-class={styles.dropdownActive}
->
-  <div class={styles.inner}>
-    <Logo />
+<header class="nav" id="site-nav">
+  <div class="nav-inner">
+    <a href="/" class="brand" aria-label="OpenFlows home">
+      <img class="on-light" src="/openlogo-dark.png" alt="" width="30" height="30" />
+      <img class="on-dark" src="/openlogo-light.png" alt="" width="30" height="30" />
+      <span>OpenFlows</span>
+    </a>
 
-    <nav class={styles.desktopNav} aria-label="Main navigation">
-      {NAV_DATA.map((item, index) => (
-        <div class={styles.navLinkWrapper} data-dropdown-index={index}>
-          <a
-            href={item.href}
-            class={styles.navLink}
-            target={item.external ? '_blank' : undefined}
-            rel={item.external ? 'noopener noreferrer' : undefined}
-          >
-            {item.label}
-          </a>
+    <nav class="links" aria-label="Main navigation">
+      {NAV.map((item, i) => (
+        <div class={`item ${item.menu ? 'has-menu' : ''}`} data-menu-trigger={item.menu ? i : undefined}>
+          {item.menu ? (
+            <button type="button" class={`link ${isActive(item.href) ? 'is-active' : ''}`} aria-haspopup="true" aria-expanded="false" aria-controls={`mega-${i}`}>
+              {item.label}
+              <svg class="caret" viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </button>
+          ) : (
+            <a href={item.href} class={`link ${isActive(item.href) ? 'is-active' : ''}`}>{item.label}</a>
+          )}
         </div>
       ))}
     </nav>
 
-    <div class={styles.actions}>
+    <div class="actions">
       <a
         href={`https://github.com/${GITHUB_REPO}`}
         target="_blank"
         rel="noopener noreferrer"
-        class={styles.starButton}
+        class="star"
+        aria-label="Star OpenFlows on GitHub"
       >
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-          <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-        </svg>
-        <span class={styles.starCount} id="starCount"> - </span>
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.3 3.44 9.8 8.21 11.39.6.11.79-.26.79-.58v-2.23c-3.34.73-4.03-1.42-4.03-1.42-.55-1.39-1.33-1.76-1.33-1.76-1.09-.74.08-.73.08-.73 1.2.08 1.84 1.24 1.84 1.24 1.07 1.83 2.81 1.3 3.49 1 .11-.78.42-1.31.76-1.61-2.67-.3-5.47-1.33-5.47-5.93 0-1.31.47-2.38 1.24-3.22-.12-.3-.54-1.52.12-3.18 0 0 1-.32 3.3 1.23a11.5 11.5 0 0 1 6 0c2.29-1.55 3.3-1.23 3.3-1.23.65 1.66.24 2.88.12 3.18.77.84 1.23 1.91 1.23 3.22 0 4.61-2.81 5.62-5.48 5.92.43.37.82 1.1.82 2.22v3.29c0 .32.19.69.8.58C20.57 21.8 24 17.3 24 12c0-6.63-5.37-12-12-12z"/></svg>
+        <span>Star</span>
+        <span class="star-count" data-star-count>—</span>
       </a>
-      <Button variant="primary" size="sm" href="/docs/getting-started">
-        Get Started
-      </Button>
+      <button class="theme" id="theme-toggle" aria-label="Toggle dark mode" title="Toggle theme">
+        <svg class="sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        <svg class="moon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 14.5A8 8 0 0 1 9.5 4a8 8 0 1 0 10.5 10.5z"/></svg>
+      </button>
+      <a href="/docs/getting-started" class="of-btn of-btn-primary of-btn-sm"><span class="of-sq"></span>Get started</a>
+      <button class="burger" id="nav-burger" aria-label="Open menu" aria-expanded="false" aria-controls="nav-drawer">
+        <span></span><span></span>
+      </button>
     </div>
-
-    <button
-      class={styles.hamburger}
-      id="hamburgerBtn"
-      aria-label="Toggle menu"
-      data-open-class={styles.hamburgerOpen}
-    >
-      <span class={styles.bar}></span>
-      <span class={styles.bar}></span>
-      <span class={styles.bar}></span>
-    </button>
   </div>
 
-  <div
-    class={styles.megaPanel}
-    id="megaPanel"
-    data-visible-class={styles.panelVisible}
-  >
-    <div class={styles.panelContent} id="panelContent">
+  <div class="nav-dim" id="nav-dim" aria-hidden="true"></div>
+  <div class="mega" id="mega">
+    <div class="mega-bg" id="mega-bg"></div>
+    {NAV.map((item, i) => item.menu && (
+      <div class="mega-panel" id={`mega-${i}`} data-menu-panel={i} role="menu" aria-label={item.label}>
+        <div class="mega-inner" style={`grid-template-columns: ${[...item.menu.columns.map(() => 'minmax(0, 1fr)'), ...(item.menu.feature ? ['minmax(0, 1.7fr)'] : []), ...(item.menu.side ? ['minmax(0, 1.15fr)'] : [])].join(' ')}`}>
+          {item.menu.columns.map((col, c) => (
+            <div class="mega-col" style={`--c:${c}`}>
+              <p class="mega-heading">{col.heading}</p>
+              <ul>
+                {col.links.map((link) => (
+                  <li><a href={link.href} role="menuitem" target={link.external ? '_blank' : undefined} rel={link.external ? 'noopener noreferrer' : undefined}>{link.label}{link.external && <span class="ext" aria-hidden="true">↗</span>}</a></li>
+                ))}
+              </ul>
+            </div>
+          ))}
+          {item.menu.feature && (
+            <a href={item.menu.feature.href} class="mega-feature" style={`--c:${item.menu.columns.length}`}>
+              <p class="mega-heading">{item.menu.feature.eyebrow}</p>
+              {item.menu.feature.image && <span class="mf-img"><img src={item.menu.feature.image} alt="" decoding="async" /></span>}
+              <span class="mf-title">{item.menu.feature.title}</span>
+              {item.menu.feature.desc && <span class="mf-desc">{item.menu.feature.desc}</span>}
+              <span class="mf-cta">{item.menu.feature.cta} <span aria-hidden="true">→</span></span>
+            </a>
+          )}
+          {item.menu.side && (
+            <div class="mega-side" style={`--c:${item.menu.columns.length + 1}`}>
+              <p class="mega-heading">{item.menu.side.heading}</p>
+              <ul>
+                {item.menu.side.links.map((link) => (
+                  <li><a href={link.href} role="menuitem" target={link.external ? '_blank' : undefined} rel={link.external ? 'noopener noreferrer' : undefined}>{link.label}{link.external && <span class="ext" aria-hidden="true">↗</span>}</a></li>
+                ))}
+              </ul>
+            </div>
+          )}
+        </div>
+      </div>
+    ))}
+  </div>
+  <div class="drawer" id="nav-drawer" hidden data-lenis-prevent>
+    <nav aria-label="Mobile navigation">
+      {NAV.map((item) => (
+        item.menu ? (
+          <details class="drawer-group">
+            <summary>{item.label}<svg viewBox="0 0 12 12" aria-hidden="true"><path d="M3 4.5l3 3 3-3" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg></summary>
+            <div class="drawer-sub">
+              {[...item.menu.columns, ...(item.menu.side ? [item.menu.side] : [])].map((col) => (
+                <>
+                  <p class="drawer-heading">{col.heading}</p>
+                  {col.links.map((sub) => (
+                    <a href={sub.href} target={sub.external ? '_blank' : undefined} rel={sub.external ? 'noopener noreferrer' : undefined}>
+                      <span>{sub.label}{sub.external && ' ↗'}</span>
+                    </a>
+                  ))}
+                </>
+              ))}
+            </div>
+          </details>
+        ) : (
+          <a class="drawer-link" href={item.href}>{item.label}</a>
+        )
+      ))}
+    </nav>
+    <div class="drawer-actions">
+      <a href={`https://github.com/${GITHUB_REPO}`} class="of-btn of-btn-ghost" target="_blank" rel="noopener noreferrer">GitHub <span data-star-count></span></a>
+      <a href="/docs/getting-started" class="of-btn of-btn-primary">Get started</a>
     </div>
   </div>
 </header>
 
-<div
-  class={styles.mobileMenu}
-  id="mobileMenu"
-  data-open-class={styles.mobileMenuOpen}
->
-  <nav class={styles.mobileNav}>
-    {NAV_DATA.map((item) => (
-      <div>
-        <a
-          href={item.href}
-          class={styles.mobileNavLink}
-          target={item.external ? '_blank' : undefined}
-          rel={item.external ? 'noopener noreferrer' : undefined}
-        >
-          {item.label}
-          {item.external && <span class={styles.mobileNavLinkExternal}>↗</span>}
-        </a>
-        {item.dropdown && (
-          <div class={styles.mobileSubSection}>
-            <p class={styles.mobileSubHeading}>{item.dropdown.heading}</p>
-            {item.dropdown.items.map((subItem) => (
-              <a
-                href={subItem.href}
-                class={styles.mobileSubLink}
-                target={subItem.external ? '_blank' : undefined}
-                rel={subItem.external ? 'noopener noreferrer' : undefined}
-              >
-                {subItem.label}
-              </a>
-            ))}
-          </div>
-        )}
-      </div>
-    ))}
-  </nav>
-  <div class={styles.mobileActions}>
-    <a
-      href={`https://github.com/${GITHUB_REPO}`}
-      target="_blank"
-      rel="noopener noreferrer"
-      class={styles.starButton}
-    >
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
-        <path d="M12 0C5.374 0 0 5.373 0 12c0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23A11.509 11.509 0 0112 5.803c1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576C20.566 21.797 24 17.3 24 12c0-6.627-5.373-12-12-12z" />
-      </svg>
-      <span class={styles.starCount} id="mobileStarCount"> - </span>
-    </a>
-    <Button variant="primary" size="md" href="/docs/getting-started" class={styles.mobileDemoButton}>
-      Get Started
-    </Button>
-  </div>
-</div>
-
 <script>
-  const NAV_DATA = [
-    {
-      label: 'Product',
-      dropdown: {
-        heading: 'Product',
-        items: [
-          { label: 'Agents', href: '/agents' },
-          { label: 'How it works', href: '/#how-it-works' },
-          { label: 'Use cases', href: '/docs' },
-          { label: 'Demos', href: '/demos' },
-        ]
-      }
-    },
-    {
-      label: 'Docs',
-      dropdown: {
-        heading: 'Documentation',
-        items: [
-          { label: 'Introduction', href: '/docs/introduction/what-is-openflows' },
-          { label: 'Get Started', href: '/docs/getting-started' },
-          { label: 'Core Concepts', href: '/docs/concepts/coder-openflows-split' },
-          { label: 'Architecture', href: '/docs/architecture' },
-          { label: 'Guides', href: '/docs/guides' },
-          { label: 'Reference', href: '/docs/reference' },
-          { label: 'FAQ', href: '/docs/resources/faq' },
-        ]
-      }
-    },
-    {
-      label: 'Enterprise',
-      dropdown: {
-        heading: 'Enterprise',
-        items: [
-          { label: 'Overview', href: '/enterprise' },
-          { label: 'Trust boundaries', href: '/enterprise#security' },
-          { label: 'Deployment', href: '/enterprise#deployment' },
-          { label: 'Availability', href: '/enterprise#editions' },
-        ]
-      }
-    },
-    {
-      label: 'Resources',
-      dropdown: {
-        heading: 'Resources',
-        items: [
-          { label: 'Developer Hub', href: '/developer' },
-          { label: 'Research', href: '/research' },
-          { label: 'Blog', href: '/blog' },
-          { label: 'GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
-        ]
-      }
-    },
-  ];
+  const REPO = 'The-AgenticFlow/OpenFlows';
+  const nav = document.getElementById('site-nav');
+  const burger = document.getElementById('nav-burger');
+  const drawer = document.getElementById('nav-drawer');
 
-  const GITHUB_REPO = 'The-AgenticFlow/OpenFlows';
+  const format = (n: number) => (n >= 1000 ? (n / 1000).toFixed(1).replace(/\.0$/, '') + 'k' : String(n));
 
-  function formatStarCount(count: number): string {
-    if (count >= 1000) {
-      return (count / 1000).toFixed(1).replace(/\.0$/, '') + 'k';
-    }
-    return String(count);
-  }
+  const applyStars = (count: number) => {
+    document.querySelectorAll('[data-star-count]').forEach((el) => (el.textContent = format(count)));
+  };
 
-  // Fetch GitHub star count
-  fetch(`https://api.github.com/repos/${GITHUB_REPO}`)
+  try {
+    const cached = sessionStorage.getItem('of-stars');
+    if (cached) applyStars(Number(cached));
+  } catch {}
+
+  fetch(`https://api.github.com/repos/${REPO}`)
     .then((res) => res.json())
     .then((data) => {
       if (typeof data.stargazers_count === 'number') {
-        const starCount = formatStarCount(data.stargazers_count);
-        document.getElementById('starCount')!.textContent = starCount;
-        document.getElementById('mobileStarCount')!.textContent = starCount;
+        applyStars(data.stargazers_count);
+        try { sessionStorage.setItem('of-stars', String(data.stargazers_count)); } catch {}
       }
     })
     .catch(() => {});
 
-  // Scroll detection
-  let scrolled = false;
-  window.addEventListener('scroll', () => {
-    const navbar = document.getElementById('navbar');
-    if (!navbar) return;
-    if (window.scrollY > 8 && !scrolled) {
-      navbar.classList.add(navbar.dataset.scrolledClass);
-      scrolled = true;
-    } else if (window.scrollY <= 8 && scrolled) {
-      navbar.classList.remove(navbar.dataset.scrolledClass);
-      scrolled = false;
-    }
-  }, { passive: true });
-
-  // Mobile menu toggle
-  const hamburger = document.getElementById('hamburgerBtn');
-  const mobileMenu = document.getElementById('mobileMenu');
-  hamburger?.addEventListener('click', () => {
-    const menuOpenClass = mobileMenu?.dataset.openClass;
-    const btnOpenClass = hamburger?.dataset.openClass;
-    if (menuOpenClass) mobileMenu?.classList.toggle(menuOpenClass);
-    if (btnOpenClass) hamburger.classList.toggle(btnOpenClass);
-    document.body.style.overflow = mobileMenu?.classList.contains(menuOpenClass) ? 'hidden' : '';
+  const themeBtn = document.getElementById('theme-toggle');
+  themeBtn?.addEventListener('click', () => {
+    const root = document.documentElement;
+    const next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.classList.add('of-theme-anim');
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem('of-theme', next); } catch {}
+    setTimeout(() => root.classList.remove('of-theme-anim'), 500);
   });
 
-  // Dropdown hover (desktop)
-  const navLinkWrappers = document.querySelectorAll('.navLinkWrapper');
-  const megaPanel = document.getElementById('megaPanel');
-  const panelContent = document.getElementById('panelContent');
-  let dropdownTimer: number | null = null;
+  const onScroll = () => nav?.classList.toggle('is-scrolled', window.scrollY > 8);
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
 
-  navLinkWrappers.forEach((wrapper, index) => {
-    wrapper.addEventListener('mouseenter', () => {
-      if (dropdownTimer) clearTimeout(dropdownTimer);
-      if (NAV_DATA[index]?.dropdown) {
-        const dropdown = NAV_DATA[index].dropdown;
-        panelContent!.innerHTML = `
-          <div class="dropdownGrid">
-            <div class="dropdownMain">
-              <p class="dropdownHeading">${dropdown.heading}</p>
-              <div class="dropdownLinks">
-                ${dropdown.items.map(item => `
-                  <a href="${item.href}" class="megaLink" ${item.external ? 'target="_blank" rel="noopener noreferrer"' : ''}>
-                    ${item.label}
-                    ${item.external ? '<span class="externalArrow">↗</span>' : ''}
-                  </a>
-                `).join('')}
-              </div>
-            </div>
-          </div>
-        `;
-        if (megaPanel && megaPanel.dataset.visibleClass) {
-          megaPanel.classList.add(megaPanel.dataset.visibleClass);
+  const setOpen = (open: boolean) => {
+    if (!drawer || !burger) return;
+    drawer.hidden = !open;
+    burger.setAttribute('aria-expanded', String(open));
+    nav?.classList.toggle('is-open', open);
+    document.body.style.overflow = open ? 'hidden' : '';
+  };
+
+  burger?.addEventListener('click', () => setOpen(drawer?.hidden ?? true));
+  drawer?.addEventListener('click', (e) => {
+    if ((e.target as HTMLElement).closest('a')) setOpen(false);
+  });
+  window.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') setOpen(false);
+  });
+  window.matchMedia('(min-width: 1001px)').addEventListener('change', (e) => e.matches && setOpen(false));
+
+  // Shared dropdown: one panel morphs between menus with hover intent.
+  const mega = document.getElementById('mega');
+  if (mega && nav) {
+    const triggers = [...document.querySelectorAll<HTMLElement>('[data-menu-trigger]')];
+    const panels = new Map([...mega.querySelectorAll<HTMLElement>('[data-menu-panel]')].map((p) => [p.dataset.menuPanel!, p]));
+    let current: string | null = null;
+    let openTimer = 0;
+    let closeTimer = 0;
+
+    const order = triggers.map((t) => t.dataset.menuTrigger!);
+
+    const place = (key: string) => {
+      const panel = panels.get(key)!;
+      mega.style.setProperty('--h', `${panel.offsetHeight}px`);
+    };
+
+    const open = (key: string) => {
+      clearTimeout(closeTimer);
+      if (current === key) return;
+      const wasOpen = current !== null;
+      const from = current ? order.indexOf(current) : -1;
+      const to = order.indexOf(key);
+      mega.classList.toggle('no-morph', !wasOpen);
+      panels.forEach((p, k) => {
+        if (k === key) {
+          p.style.setProperty('--dir', String(wasOpen ? (to > from ? 1 : -1) : 0));
+          p.getBoundingClientRect();
+          p.classList.add('is-active');
+          p.style.setProperty('--dir', '0');
+        } else {
+          if (p.classList.contains('is-active')) p.style.setProperty('--dir', String(to > from ? -1 : 1));
+          p.classList.remove('is-active');
         }
-        const navbar = document.getElementById('navbar');
-        if (navbar && navbar.dataset.dropdownActiveClass) {
-          navbar.classList.add(navbar.dataset.dropdownActiveClass);
-        }
-      }
+      });
+      place(key);
+      triggers.forEach((t) => {
+        const on = t.dataset.menuTrigger === key;
+        t.classList.toggle('is-open', on);
+        t.querySelector('.link')?.setAttribute('aria-expanded', String(on));
+      });
+      current = key;
+      mega.classList.add('is-open');
+      nav.classList.add('menu-open');
+      requestAnimationFrame(() => mega.classList.remove('no-morph'));
+    };
+
+    const close = () => {
+      clearTimeout(openTimer);
+      current = null;
+      mega.classList.remove('is-open');
+      nav.classList.remove('menu-open');
+      panels.forEach((p) => p.classList.remove('is-active'));
+      triggers.forEach((t) => {
+        t.classList.remove('is-open');
+        t.querySelector('.link')?.setAttribute('aria-expanded', 'false');
+      });
+    };
+
+    const scheduleClose = () => {
+      clearTimeout(openTimer);
+      clearTimeout(closeTimer);
+      closeTimer = window.setTimeout(close, 180);
+    };
+
+    triggers.forEach((t) => {
+      const key = t.dataset.menuTrigger!;
+      t.addEventListener('mouseenter', () => {
+        clearTimeout(closeTimer);
+        clearTimeout(openTimer);
+        openTimer = window.setTimeout(() => open(key), current ? 0 : 70);
+      });
+      t.addEventListener('mouseleave', scheduleClose);
+      t.querySelector('button')?.addEventListener('click', () => {
+        clearTimeout(openTimer);
+        if (current === key && mega.classList.contains('is-open')) close();
+        else open(key);
+      });
     });
-  });
 
-  document.getElementById('navbar')?.addEventListener('mouseleave', () => {
-    dropdownTimer = setTimeout(() => {
-      if (megaPanel && megaPanel.dataset.visibleClass) {
-        megaPanel.classList.remove(megaPanel.dataset.visibleClass);
-      }
-      const navbar = document.getElementById('navbar');
-      if (navbar && navbar.dataset.dropdownActiveClass) {
-        navbar.classList.remove(navbar.dataset.dropdownActiveClass);
-      }
-    }, 150);
-  });
+    document.querySelectorAll('.links .item:not(.has-menu)').forEach((item) => {
+      item.addEventListener('mouseenter', scheduleClose);
+      item.addEventListener('focusin', close);
+    });
 
-  megaPanel?.addEventListener('mouseenter', () => {
-    if (dropdownTimer) clearTimeout(dropdownTimer);
-  });
+    mega.addEventListener('mouseenter', () => clearTimeout(closeTimer));
+    mega.addEventListener('mouseleave', scheduleClose);
+    mega.addEventListener('focusout', (e) => {
+      if (!mega.contains(e.relatedTarget as Node) && !(e.relatedTarget as HTMLElement)?.closest('[data-menu-trigger]')) close();
+    });
+    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') close(); });
+    document.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      if (current && !t.closest('#mega') && !t.closest('[data-menu-trigger]')) close();
+    });
+    window.addEventListener('resize', () => current && place(current));
+    window.addEventListener('scroll', () => current && close(), { passive: true });
+  }
 </script>
+
+<style>
+  .nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 100;
+    height: var(--nav-height);
+    transition: background 0.3s, border-color 0.3s, backdrop-filter 0.3s;
+    border-bottom: 1px solid transparent;
+  }
+
+  .nav.is-scrolled,
+  .nav.is-open {
+    background: color-mix(in srgb, var(--of-bg) 80%, transparent);
+    backdrop-filter: saturate(180%) blur(18px);
+    -webkit-backdrop-filter: saturate(180%) blur(18px);
+    border-bottom-color: var(--of-line);
+  }
+
+  .nav-inner {
+    display: flex;
+    align-items: center;
+    gap: 2rem;
+    height: 100%;
+    max-width: var(--max-width-7xl);
+    margin: 0 auto;
+    padding: 0 var(--gutter);
+  }
+
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    font-weight: 600;
+    font-size: 1.05rem;
+    letter-spacing: -0.02em;
+    color: var(--of-text);
+    flex-shrink: 0;
+  }
+
+  .brand img { width: 30px; height: 30px; }
+
+  .links { display: flex; align-items: center; gap: 0.15rem; flex: 1; }
+
+  .item { position: relative; }
+
+  .link {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    height: 36px;
+    padding: 0 0.75rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    color: var(--of-text-2);
+    transition: color 0.15s, background 0.15s;
+  }
+
+  .link:hover,
+  .item:focus-within > .link,
+  .link.is-active { color: var(--of-text); }
+  .link:hover { background: color-mix(in srgb, var(--of-text) 5%, transparent); }
+
+  .caret { width: 12px; height: 12px; opacity: 0.6; transition: transform 0.2s; }
+  .has-menu.is-open .caret { transform: rotate(180deg); }
+  .has-menu.is-open > .link { color: var(--of-text); background: color-mix(in srgb, var(--of-text) 5%, transparent); }
+
+  .actions { display: flex; align-items: center; gap: 0.6rem; margin-left: auto; }
+
+  .star {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    height: 34px;
+    padding: 0 0.7rem;
+    border-radius: 999px;
+    border: 1px solid var(--of-line-strong);
+    font-size: 0.85rem;
+    color: var(--of-text-2);
+    transition: color 0.15s, border-color 0.15s, background 0.15s;
+  }
+
+  .star:hover { color: var(--of-text); background: color-mix(in srgb, var(--of-text) 4%, transparent); }
+  .star svg { width: 15px; height: 15px; }
+  .star-count {
+    padding-left: 0.45rem;
+    border-left: 1px solid var(--of-line-strong);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .theme {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 1px solid var(--of-line-strong);
+    color: var(--of-text-2);
+    overflow: hidden;
+    transition: color 0.2s, background 0.2s;
+  }
+
+  .theme:hover { color: var(--of-text); background: color-mix(in srgb, var(--of-text) 5%, transparent); }
+  .theme svg { position: absolute; width: 16px; height: 16px; transition: transform 0.5s var(--ease-out), opacity 0.3s; }
+  .theme .moon { transform: translateY(120%) rotate(-40deg); opacity: 0; }
+  :global([data-theme='dark']) .theme .sun { transform: translateY(-120%) rotate(40deg); opacity: 0; }
+  :global([data-theme='dark']) .theme .moon { transform: none; opacity: 1; }
+
+  .burger {
+    display: none;
+    position: relative;
+    width: 38px;
+    height: 38px;
+    border-radius: 8px;
+    border: 1px solid var(--of-line-strong);
+  }
+
+  .burger span {
+    position: absolute;
+    left: 11px;
+    right: 11px;
+    height: 1.5px;
+    background: var(--of-text);
+    border-radius: 2px;
+    transition: transform 0.25s var(--ease-out), top 0.25s var(--ease-out);
+  }
+
+  .burger span:first-child { top: 15px; }
+  .burger span:last-child { top: 21px; }
+  .is-open .burger span:first-child { top: 18px; transform: rotate(45deg); }
+  .is-open .burger span:last-child { top: 18px; transform: rotate(-45deg); }
+
+  .drawer {
+    position: fixed;
+    top: var(--nav-height);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    overflow-y: auto;
+    padding: 1rem var(--gutter) 2rem;
+    background: var(--of-bg);
+    animation: drawerIn 0.25s var(--ease-out);
+  }
+
+  @keyframes drawerIn {
+    from { opacity: 0; transform: translateY(-8px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  .drawer nav { display: flex; flex-direction: column; }
+
+  .drawer-link,
+  .drawer-group summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1rem 0.25rem;
+    border-bottom: 1px solid var(--of-line);
+    font-size: 1.05rem;
+    font-weight: 500;
+    color: var(--of-text);
+    list-style: none;
+    cursor: pointer;
+  }
+
+  .drawer-group summary::-webkit-details-marker { display: none; }
+  .drawer-group summary svg { width: 14px; height: 14px; transition: transform 0.2s; color: var(--of-text-3); }
+  .drawer-group[open] summary svg { transform: rotate(180deg); }
+
+  .drawer-sub { display: grid; gap: 0.15rem; padding: 0.5rem 0 0.75rem; }
+  .drawer-sub a { display: flex; flex-direction: column; padding: 0.6rem 0.5rem; border-radius: 8px; }
+  .drawer-sub a:hover { background: color-mix(in srgb, var(--of-text) 5%, transparent); }
+  .drawer-sub span { font-size: 0.95rem; color: var(--of-text); }
+  .drawer-sub small { font-size: 0.8rem; color: var(--of-text-3); }
+
+  .drawer-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 0.75rem; margin-top: 1.5rem; }
+
+  @media (max-width: 1000px) {
+    .links, .star { display: none; }
+    .burger { display: block; }
+    .actions .of-btn { display: none; }
+  }
+
+  @media (max-width: 1180px) and (min-width: 1001px) {
+    .star > span:first-of-type { display: none; }
+  }
+
+  /* --- Full-width mega menu --- */
+  .mega {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    height: 0;
+    pointer-events: none;
+    --h: 0px;
+  }
+
+  .mega.is-open { pointer-events: auto; }
+
+  .mega-bg {
+    position: absolute;
+    inset: 0 0 auto 0;
+    height: var(--h);
+    background: var(--of-bg);
+    border-bottom: 1px solid var(--of-line);
+    box-shadow: 0 30px 60px -30px rgba(0, 0, 0, 0.25);
+    clip-path: inset(0 0 100% 0);
+    transition: height 0.5s var(--ease-out), clip-path 0.5s var(--ease-out);
+  }
+
+  .mega.is-open .mega-bg { clip-path: inset(0 0 0 0); }
+  .mega.no-morph .mega-bg { transition: clip-path 0.5s var(--ease-out); }
+
+  .mega-panel {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 2;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateX(calc(var(--dir, 0) * 24px));
+    transition: opacity 0.25s ease, transform 0.45s var(--ease-out), visibility 0s linear 0.25s;
+  }
+
+  .mega-panel.is-active { opacity: 1; visibility: visible; transform: none; transition: opacity 0.35s ease 0.06s, transform 0.5s var(--ease-out), visibility 0s; }
+
+  .mega-inner {
+    display: grid;
+    gap: clamp(1.5rem, 3vw, 3rem);
+    max-width: var(--max-width-7xl);
+    margin: 0 auto;
+    padding: 2rem var(--gutter) 2.25rem;
+  }
+
+  .mega-col, .mega-feature, .mega-side { opacity: 0; transform: translateY(8px); transition: opacity 0.4s ease, transform 0.6s var(--ease-out); }
+  .mega-panel.is-active .mega-col,
+  .mega-panel.is-active .mega-feature,
+  .mega-panel.is-active .mega-side { opacity: 1; transform: none; transition-delay: calc(var(--c) * 45ms + 80ms); }
+
+  .mega-heading { font-family: var(--font-mono); font-size: 0.68rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--of-text-3); margin-bottom: 1rem; }
+  .mega-col ul, .mega-side ul { display: grid; gap: 0.15rem; }
+  .mega-col a, .mega-side a {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.32rem 0;
+    font-size: 1rem;
+    color: var(--of-text);
+    background: linear-gradient(currentColor, currentColor) 0 calc(100% - 4px) / 0 1px no-repeat;
+    transition: background-size 0.35s var(--ease-out), color 0.2s;
+  }
+  .mega-col a:hover, .mega-side a:hover { background-size: 100% 1px; }
+  .mega-col a .ext, .mega-side a .ext { font-size: 0.75em; color: var(--of-text-3); }
+
+  .mega-feature { display: flex; flex-direction: column; min-width: 0; }
+  .mf-img { display: block; aspect-ratio: 16 / 7; border-radius: 12px; overflow: hidden; background: var(--of-surface-2); border: 1px solid var(--of-line); }
+  .mf-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.8s var(--ease-out); }
+  .mega-feature:hover .mf-img img { transform: scale(1.04); }
+  .mf-title { margin-top: 0.9rem; font-size: 1.02rem; font-weight: 500; line-height: 1.35; color: var(--of-text); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .mf-desc { margin-top: 0.3rem; font-size: 0.86rem; color: var(--of-text-2); }
+  .mf-cta { margin-top: 0.8rem; font-size: 0.9rem; font-weight: 500; color: var(--of-text); }
+  .mf-cta span { display: inline-block; transition: transform 0.3s var(--ease-out); }
+  .mega-feature:hover .mf-cta span { transform: translateX(4px); }
+
+  .mega-side { padding: 1.25rem 1.4rem; border-radius: 14px; background: var(--of-surface); border: 1px solid var(--of-line); align-self: start; }
+
+  .nav-dim {
+    position: fixed;
+    inset: var(--nav-height) 0 0 0;
+    background: rgba(10, 10, 12, 0.22);
+    backdrop-filter: blur(3px);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+    z-index: -1;
+  }
+
+  .nav.menu-open .nav-dim { opacity: 1; }
+  .nav.menu-open { background: var(--of-bg); backdrop-filter: none; border-bottom-color: var(--of-line); }
+
+  .drawer-heading { margin: 0.75rem 0 0.25rem 0.5rem; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--of-text-3); }
+
+  @media (max-width: 1000px) { .mega, .nav-dim { display: none; } }
+  button.link { background: none; border: 0; font: inherit; cursor: pointer; }
+</style>

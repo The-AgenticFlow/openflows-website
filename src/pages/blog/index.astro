@@ -1,5 +1,6 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
 import BlogItem from '@/components/blog/BlogItem.astro';
 import BlogSidebar from '@/components/blog/BlogSidebar.astro';
 import LeadPost from '@/components/blog/LeadPost.astro';
@@ -19,12 +20,16 @@ const topics = [...topicCounts.entries()]
   .sort((a, b) => b.count - a.count || a.name.localeCompare(b.name));
 ---
 
-<BaseLayout title="Blog - OpenFlows" description="Essays on building software with AI agents, from the OpenFlows team.">
+<BaseLayout title="Blog · OpenFlows" description="Essays on building software with AI agents, from the OpenFlows team.">
+  <section class="of-page-hero of-dark">
+    <PixelField cell={30} density={0.06} />
+    <div class="of-container">
+      <span class="of-eyebrow fade-up">Blog</span>
+      <h1 class="of-lines"><span><span style="--l:0">Notes on building trustworthy agents.</span></span></h1>
+      <p class="of-lede fade-up" style="animation-delay:250ms">Essays on governed AI delivery, agent architecture and engineering discipline, from the OpenFlows team.</p>
+    </div>
+  </section>
   <main class="blog" data-blog>
-    <header class="blog-head">
-      <h1>Blog</h1>
-      <p class="blog-sub">Essays on building software with AI agents, from the OpenFlows team.</p>
-    </header>
 
     {posts.length > 0 ? (
       <div class="blog-layout">
@@ -63,7 +68,7 @@ const topics = [...topicCounts.entries()]
   .blog {
     max-width: var(--max-width);
     margin-inline: auto;
-    padding: calc(var(--nav-height) + clamp(2.5rem, 5vw, 4rem)) var(--space-6) 6rem;
+    padding: clamp(3rem, 6vw, 4.5rem) var(--gutter) 6rem;
   }
 
   .blog-head {

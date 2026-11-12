@@ -115,8 +115,8 @@ const SECTIONS = [
       Read these docs to install, operate, extend, and contribute to the system.
     </p>
     <div class="docsCta">
-      <a href="/docs/getting-started" class="docsCtaPrimary">Get Started →</a>
-      <a href="/docs/introduction/how-openflows-compares" class="docsCtaSecondary">How OpenFlows compares</a>
+      <a href="/docs/getting-started" class="of-btn of-btn-primary"><span class="of-sq"></span>Get started</a>
+      <a href="/docs/introduction/how-openflows-compares" class="of-btn of-btn-ghost">How OpenFlows compares</a>
     </div>
   </div>
 
@@ -138,10 +138,9 @@ const SECTIONS = [
       <h2 class="docsSectionTitle">{title}</h2>
       <p class="docsSectionDesc">{desc}</p>
       <div class="docsGrid">
-        {cards.map(({ icon, title, desc, href }) => (
+        {cards.map(({ title, desc, href }) => (
           <a href={href} class="docsCard">
-            <div class="docsCardIcon">{icon}</div>
-            <h3 class="docsCardTitle">{title}</h3>
+            <h3 class="docsCardTitle">{title}<span aria-hidden="true">→</span></h3>
             <p class="docsCardDesc">{desc}</p>
           </a>
         ))}
@@ -151,76 +150,36 @@ const SECTIONS = [
 </DocsLayout>
 
 <style>
-  .docsHero {
-    padding: 2rem 0 2rem;
-    border-bottom: 1px solid var(--color-fog);
-    margin-bottom: 3rem;
-  }
+  .docsHero { padding: 0.5rem 0 2.5rem; margin-bottom: 3rem; border-bottom: 1px solid var(--of-line); }
+  .content .docsTitle { margin: 0 0 1rem; font-size: clamp(2.2rem, 3.6vw, 2.9rem); font-weight: 600; letter-spacing: -0.04em; line-height: 1.05; color: var(--of-text); }
+  .docsLead { max-width: 640px; margin-bottom: 1.75rem; font-size: 1.08rem; line-height: 1.65; color: var(--of-text-2); }
+  .docsCta { display: flex; flex-wrap: wrap; gap: 0.6rem; }
+  .docsCta a { text-decoration: none; }
 
-  .docsJourney { margin-bottom:3.5rem; }
-  .docsJourneyEyebrow { color:var(--color-aubergine); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.06em; }
-  .docsJourney h2 { margin:.3rem 0 .5rem; color:var(--color-ink); font-size:1.7rem; }
-  .docsJourney > p:not(.docsJourneyEyebrow) { color:var(--color-graphite); margin-bottom:1.5rem; }
-  .docsPaths { display:grid; grid-template-columns:repeat(3, minmax(0,1fr)); gap:1rem; margin:0; padding:0; list-style:none; }
-  .docsBrowseHeading { margin-bottom:2rem; color:var(--color-ink); font-size:1.7rem; }
-  .docsPath { display:flex; flex-direction:column; gap:.5rem; min-height:150px; padding:1.25rem; border:1px solid var(--color-driftwood); border-radius:var(--radius-md); background:var(--color-bone); text-decoration:none; transition:border-color .2s, transform .2s; }
-  .docsPath:hover { border-color:var(--color-aubergine); transform:translateY(-2px); }
-  .docsPath span { color:var(--color-aubergine); font-size:.75rem; font-weight:700; text-transform:uppercase; letter-spacing:.05em; }
-  .docsPath strong { color:var(--color-ink); font-size:1.05rem; }
-  .docsPath small { color:var(--color-graphite); font-size:.85rem; line-height:1.5; }
+  .docsJourney { margin-bottom: 3.5rem; }
+  .content .docsJourneyEyebrow { margin: 0; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--of-text-3); }
+  .content .docsJourney h2, .content .docsBrowseHeading, .content .docsSectionTitle { margin: 0.4rem 0 0.4rem; padding: 0; border: 0; font-size: 1.45rem; font-weight: 600; letter-spacing: -0.03em; color: var(--of-text); }
+  .docsJourney > p:not(.docsJourneyEyebrow) { margin-bottom: 1.4rem; color: var(--of-text-2); }
 
-  .docsTitle {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: var(--color-ink);
-    margin-bottom: 1rem;
-    line-height: 1.2;
-  }
+  .docsPaths { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.75rem; margin: 0; padding: 0; list-style: none; }
+  .content .docsPaths li { margin: 0; padding: 0; }
+  .docsPath { display: flex; flex-direction: column; gap: 0.4rem; height: 100%; padding: 1.1rem 1.2rem; border: 1px solid var(--of-line); border-radius: 12px; background: var(--of-surface); text-decoration: none; transition: border-color 0.2s, transform 0.3s var(--ease-out); }
+  .docsPath:hover { border-color: var(--of-line-strong); transform: translateY(-2px); }
+  .docsPath span { font-family: var(--font-mono); font-size: 0.7rem; color: var(--of-text-3); }
+  .docsPath strong { font-size: 0.98rem; font-weight: 600; color: var(--of-text); }
+  .docsPath small { font-size: 0.85rem; line-height: 1.5; color: var(--of-text-2); }
 
-  .docsLead {
-    font-size: 1.125rem;
-    color: var(--color-graphite);
-    line-height: 1.6;
-    max-width: 700px;
-    margin-bottom: 2rem;
-  }
+  .content .docsBrowseHeading { margin-bottom: 1.75rem; }
+  .docsSection { margin-bottom: 2.5rem; }
+  .content .docsSectionTitle { font-size: 1.05rem; }
+  .docsSectionDesc { margin-bottom: 1rem; font-size: 0.92rem; color: var(--of-text-2); }
+  .docsGrid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 0.75rem; }
+  .docsCard { display: block; padding: 1.1rem 1.2rem; border: 1px solid var(--of-line); border-radius: 12px; background: var(--of-surface); text-decoration: none; transition: border-color 0.2s, transform 0.3s var(--ease-out); }
+  .docsCard:hover { border-color: var(--of-line-strong); transform: translateY(-2px); }
+  .content .docsCardTitle { display: flex; justify-content: space-between; gap: 0.75rem; margin: 0 0 0.35rem; padding: 0; font-size: 0.98rem; font-weight: 600; letter-spacing: -0.01em; color: var(--of-text); }
+  .docsCardTitle span { color: var(--of-text-3); transition: transform 0.3s var(--ease-out), color 0.2s; }
+  .docsCard:hover .docsCardTitle span { color: var(--of-text); transform: translateX(3px); }
+  .content .docsCardDesc { margin: 0; font-size: 0.86rem; line-height: 1.5; color: var(--of-text-2); }
 
-  .docsCta { display: flex; gap: 1rem; flex-wrap: wrap; }
-
-  .docsCtaPrimary {
-    display: inline-flex; align-items: center; padding: 0.75rem 1.5rem;
-    background-color: var(--color-aubergine); color: white; text-decoration: none;
-    border-radius: 0.5rem; font-weight: 600; transition: background-color 0.2s;
-  }
-  .docsCtaPrimary:hover { background-color: var(--color-aubergine-dark); }
-
-  .docsCtaSecondary {
-    display: inline-flex; align-items: center; padding: 0.75rem 1.5rem;
-    background-color: transparent; color: var(--color-aubergine); text-decoration: none;
-    border: 2px solid var(--color-aubergine); border-radius: 0.5rem; font-weight: 600; transition: all 0.2s;
-  }
-  .docsCtaSecondary:hover { background-color: var(--color-aubergine); color: white; }
-
-  .docsSection { margin-bottom: 3rem; }
-  .docsSectionTitle { font-size: 1.75rem; font-weight: 700; color: var(--color-ink); margin-bottom: 0.5rem; }
-  .docsSectionDesc { font-size: 1rem; color: var(--color-graphite); margin-bottom: 1.5rem; }
-
-  .docsGrid {
-    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 1.5rem;
-  }
-
-  .docsCard {
-    display: block; padding: 1.5rem; background-color: white; border: 1px solid var(--color-fog);
-    border-radius: 0.5rem; text-decoration: none; transition: all 0.2s;
-  }
-  .docsCard:hover { border-color: var(--color-aubergine); box-shadow: 0 4px 12px rgba(0,0,0,0.08); transform: translateY(-2px); }
-  .docsCardIcon { font-size: 2rem; margin-bottom: 1rem; }
-  .docsCardTitle { font-size: 1.25rem; font-weight: 600; color: var(--color-ink); margin-bottom: 0.5rem; }
-  .docsCardDesc { font-size: 0.9375rem; color: var(--color-graphite); line-height: 1.5; }
-
-  @media (max-width: 768px) {
-    .docsTitle { font-size: 2rem; }
-    .docsGrid { grid-template-columns: 1fr; }
-    .docsPaths { grid-template-columns:1fr; }
-  }
+  @media (max-width: 860px) { .docsPaths { grid-template-columns: 1fr; } }
 </style>

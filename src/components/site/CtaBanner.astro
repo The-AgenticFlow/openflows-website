@@ -1,0 +1,47 @@
+---
+import PixelField from './PixelField.astro';
+
+interface Props {
+  title?: string;
+  body?: string;
+  primary?: { label: string; href: string };
+  secondary?: { label: string; href: string; external?: boolean };
+}
+
+const {
+  title = 'Give your team an AI dev team it can audit.',
+  body = 'Install on your Coder environment, point it at a repository, and let the agents ship while your engineers own the architecture.',
+  primary = { label: 'Get started', href: '/docs/getting-started' },
+  secondary = { label: 'Star on GitHub', href: 'https://github.com/The-AgenticFlow/OpenFlows', external: true },
+} = Astro.props;
+---
+
+<section class="cta-wrap">
+  <div class="cta of-panel of-dark" data-reveal="scale">
+    <PixelField cell={34} density={0.07} />
+    <div class="cta-inner of-container">
+      <span class="of-eyebrow">Get started</span>
+      <h2>{title}</h2>
+      <p>{body}</p>
+      <div class="of-actions">
+        <a href={primary.href} class="of-btn of-btn-primary of-btn-lg"><span class="of-sq"></span>{primary.label}</a>
+        <a
+          href={secondary.href}
+          class="of-btn of-btn-ghost of-btn-lg"
+          target={secondary.external ? '_blank' : undefined}
+          rel={secondary.external ? 'noopener noreferrer' : undefined}
+        >
+          {secondary.label}
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<style>
+  .cta-wrap { padding: 0 0 clamp(0.5rem, 1.2vw, 1rem); }
+  .cta { padding: clamp(5rem, 12vw, 9rem) 0; text-align: left; }
+  .cta :global(.of-pixels) { z-index: -1; mask-image: radial-gradient(ellipse 80% 90% at 70% 50%, #000 30%, transparent 80%); -webkit-mask-image: radial-gradient(ellipse 80% 90% at 70% 50%, #000 30%, transparent 80%); }
+  .cta h2 { margin-top: 1.5rem; max-width: 17ch; font-size: clamp(2.1rem, 4.4vw, 3.6rem); letter-spacing: -0.05em; line-height: 1; }
+  .cta p { margin-top: 1.4rem; max-width: 540px; color: var(--of-text-2); font-size: 1.1rem; line-height: 1.6; }
+</style>

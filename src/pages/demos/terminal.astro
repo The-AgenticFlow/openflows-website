@@ -1,35 +1,80 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import TerminalAnimation from '@/react-pages/Terminal';
-import { Callout } from '@/molecules/DocComponents/DocComponents';
-import styles from './Demos.module.css';
+import PixelField from '@/components/site/PixelField.astro';
+import CtaBanner from '@/components/site/CtaBanner.astro';
+import TerminalReplay from '@/organisms/TerminalReplay/TerminalReplay';
+
+const RECAP = [
+  { agent: 'nexus', name: 'NEXUS', text: 'Polls GitHub, discovers open issues, and assigns T-001 to forge-1.' },
+  { agent: 'forge', name: 'FORGE', text: 'Starts an isolated workspace on its own branch and writes PLAN.md.' },
+  { agent: 'sentinel', name: 'SENTINEL', text: 'Approves the plan gate before a single line of code is written.' },
+  { agent: 'forge', name: 'FORGE', text: 'Implements segment by segment; SENTINEL evaluates each one.' },
+  { agent: 'sentinel', name: 'SENTINEL', text: 'Approves the final review, and FORGE opens PR #7.' },
+  { agent: 'vessel', name: 'VESSEL', text: 'Polls CI and squash-merges the PR once every check is green.' },
+  { agent: 'lore', name: 'LORE', text: 'Writes ADR-003 and commits it to the repository.' },
+];
 ---
 
-<BaseLayout title="Terminal Simulation - OpenFlows Demos" description="Watch OpenFlows autonomously discover, plan, implement, review, and merge code">
-  <div class={styles.terminalPage}>
-    <p class={styles.eyebrow}>Demos</p>
-    <h1 class={styles.title}>Terminal Simulation</h1>
-    <p style={{ color: 'var(--color-graphite)', marginBottom: '1.5rem', lineHeight: 1.7 }}>
-      Watch OpenFlows autonomously discover a GitHub issue, plan the implementation, write code, review it, and merge the pull request - all without human intervention.
-    </p>
+<BaseLayout title="Terminal replay · OpenFlows demos" description="Watch OpenFlows autonomously discover, plan, implement, review, and merge code in a replay of a real run.">
+  <main>
+    <section class="of-page-hero of-dark">
+      <PixelField cell={30} density={0.06} />
+      <div class="of-container">
+        <a href="/demos" class="of-back fade-up">← All demos</a>
+        <span class="of-eyebrow fade-up" style="display:flex">Terminal replay</span>
+        <h1 class="fade-up" style="animation-delay:80ms">One issue, start to merge, in your terminal.</h1>
+        <p class="of-lede fade-up" style="animation-delay:160ms">Watch OpenFlows discover a GitHub issue, plan the change, write code, review it, and merge the pull request, with every handoff visible.</p>
+      </div>
+    </section>
 
-    <TerminalAnimation client:load />
+    <section style="padding-bottom: clamp(3rem, 6vw, 5rem)">
+      <div class="of-container">
+        <div class="layout">
+          <div class="fade-up" style="animation-delay:220ms">
+            <TerminalReplay client:load />
+            <p class="note"><span class="of-dot"></span>This is a recorded session. In production, OpenFlows reads your real issues and works on your actual codebase.</p>
+          </div>
 
-    <Callout type="tip" title="This is a simulation">
-      This demo plays a pre-recorded session. In production, OpenFlows reads your real GitHub issues, clones your actual codebase, and writes production code. Try it yourself with the <a href="/docs/getting-started">Quick Start Guide</a>.
-    </Callout>
+          <aside class="recap" data-reveal>
+            <h2>What you are watching</h2>
+            <ol>
+              {RECAP.map((r, i) => (
+                <li data-agent={r.agent}>
+                  <span class="num">{i + 1}</span>
+                  <p><b>{r.name}</b> {r.text}</p>
+                </li>
+              ))}
+            </ol>
+            <a href="/demos/walkthrough" class="of-link">See the files at each step <span aria-hidden="true">→</span></a>
+          </aside>
+        </div>
+      </div>
+    </section>
 
-    <h2 style={{ fontSize: '1.2rem', fontWeight: 600, marginTop: '2rem', marginBottom: '0.75rem', color: 'var(--color-ink)' }}>What you just saw</h2>
-    <ol style={{ color: 'var(--color-graphite)', lineHeight: 1.8, paddingLeft: '1.5rem' }}>
-      <li><strong>NEXUS</strong> polls GitHub, discovers open issues, assigns T-001 to forge-1</li>
-      <li><strong>FORGE</strong> creates an isolated worktree, writes PLAN.md, spawns Claude Code</li>
-      <li><strong>SENTINEL</strong> reviews the plan (CONTRACT.md: AGREED) before any code is written</li>
-      <li><strong>FORGE</strong> implements segment by segment; SENTINEL evaluates each one</li>
-      <li><strong>SENTINEL</strong> final review approved - FORGE opens PR #7 via GitHub MCP</li>
-      <li><strong>VESSEL</strong> polls CI at 10s intervals, squash-merges when green</li>
-      <li><strong>LORE</strong> writes ADR-003 and commits it to the repo</li>
-    </ol>
-  </div>
+    <CtaBanner title="Run it on your own repository." body="The quick start takes one script and one repository. Your first issue moves through the same pipeline you just watched." />
+  </main>
 </BaseLayout>
 
-<style src="./Demos.module.css" />
+<style>
+  .of-back { margin-bottom: 1.5rem; }
+  .layout { display: grid; grid-template-columns: 1.5fr 1fr; gap: 2rem; align-items: start; }
+  .note { display: flex; align-items: center; gap: 0.6rem; margin-top: 1rem; font-size: 0.85rem; color: var(--of-text-3); }
+
+  .recap { position: sticky; top: calc(var(--nav-height) + 1.5rem); padding: 1.6rem; border-radius: 18px; border: 1px solid var(--of-line); background: var(--of-surface); }
+  .recap h2 { font-size: 1.15rem; margin-bottom: 1.25rem; }
+  .recap ol { display: grid; gap: 0.9rem; margin-bottom: 1.5rem; }
+  .recap li { --agent: var(--of-mint); display: flex; gap: 0.8rem; align-items: flex-start; }
+  .recap li[data-agent='nexus'] { --agent: var(--color-agent-nexus); }
+  .recap li[data-agent='forge'] { --agent: var(--color-agent-forge); }
+  .recap li[data-agent='sentinel'] { --agent: var(--color-agent-sentinel); }
+  .recap li[data-agent='vessel'] { --agent: var(--color-agent-vessel); }
+  .recap li[data-agent='lore'] { --agent: var(--color-agent-lore); }
+  .num { display: grid; place-items: center; width: 24px; height: 24px; flex-shrink: 0; border-radius: 7px; border: 1px solid color-mix(in srgb, var(--agent) 40%, transparent); color: var(--agent); font-family: var(--font-mono); font-size: 0.72rem; }
+  .recap p { font-size: 0.9rem; color: var(--of-text-2); line-height: 1.5; }
+  .recap b { font-family: var(--font-mono); font-weight: 500; font-size: 0.82rem; color: var(--agent); }
+
+  @media (max-width: 960px) {
+    .layout { grid-template-columns: 1fr; }
+    .recap { position: static; }
+  }
+</style>

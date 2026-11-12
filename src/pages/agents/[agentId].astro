@@ -1,7 +1,9 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
+import CtaBanner from '@/components/site/CtaBanner.astro';
 import { AGENT_DATA } from '@/data/agents';
-import styles from './AgentDetail.module.css';
+import { AGENT_SUMMARY } from '@/data/agentSummary';
 
 export function getStaticPaths() {
   return Object.keys(AGENT_DATA).map((agentId) => ({
@@ -10,86 +12,272 @@ export function getStaticPaths() {
 }
 
 const { agentId } = Astro.params;
-const agent = AGENT_DATA[agentId];
+const agent = AGENT_DATA[agentId as keyof typeof AGENT_DATA];
+const index = AGENT_SUMMARY.findIndex((a) => a.id === agentId);
+const summary = AGENT_SUMMARY[index];
 
-if (!agent) {
-  return Astro.redirect('/');
+if (!agent || !summary) {
+  return Astro.redirect('/agents');
 }
+
+const prev = AGENT_SUMMARY[(index - 1 + AGENT_SUMMARY.length) % AGENT_SUMMARY.length];
+const next = AGENT_SUMMARY[(index + 1) % AGENT_SUMMARY.length];
+
+const splitStep = (step: string) => {
+  const at = step.indexOf(': ');
+  return at === -1 ? [step, ''] : [step.slice(0, at), step.slice(at + 2)];
+};
+
+const splitPoint = (point: string) => {
+  const at = point.indexOf(': ');
+  return at === -1 || at > 48 ? ['', point] : [point.slice(0, at), point.slice(at + 2)];
+};
 ---
 
-<BaseLayout title={`${agent.name} - OpenFlows`} description={agent.mission}>
-  {/* Header */}
-  <header class={styles.detailHero}>
-    <p class={styles.heroEyebrow}>The OpenFlows Team</p>
-    <h1 class={styles.heroTitle}>{agent.name}</h1>
-    <p class={styles.heroRole}>{agent.role}</p>
-  </header>
+<BaseLayout title={`${agent.name} · ${agent.role} · OpenFlows`} description={agent.mission}>
+  <main style={`--agent:${summary.color}`}>
+    <section class="of-page-hero of-dark detail-hero" style={`--agent:${summary.color}`}>
+      <PixelField cell={30} density={0.06} />
+      <div class="agent-glow" aria-hidden="true"></div>
+      <div class="of-container">
+        <nav class="crumbs fade-up" aria-label="Breadcrumb">
+          <a href="/agents">Agents</a><span aria-hidden="true">/</span><span>{agent.name}</span>
+        </nav>
 
-  {/* Article Body */}
-  <article class={styles.article}>
-    <p class={styles.lead}>{agent.mission}</p>
-
-    {/* Capabilities */}
-    <h2 class={styles.sectionTitle}>Capabilities</h2>
-    <ul class={styles.capList}>
-      {agent.capabilities.map((cap, i) => (
-        <li key={i} class={styles.capItem}>
-          <span class={styles.bullet} />
-          {cap}
-        </li>
-      ))}
-    </ul>
-
-    {/* Workflow */}
-    <h2 class={styles.sectionTitle}>How it works</h2>
-    <ol class={styles.flowList}>
-      {agent.flow.map((step, i) => {
-        const [title, desc] = step.split(': ');
-        return (
-          <li key={i} class={styles.flowItem}>
-            <div class={styles.flowHeading}>
-              <span class={styles.flowNumber}>{String(i + 1).padStart(2, '0')}</span>
-              <span class={styles.flowTitle}>{title}</span>
+        <div class="hero-grid">
+          <div>
+            <div class="hero-badge fade-up" style="animation-delay:60ms">
+              <span class="hero-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={summary.icon} />
+              </span>
+              <span class="of-eyebrow" style="color:var(--agent)">Stage {String(index + 1).padStart(2, '0')} · {agent.role}</span>
             </div>
-            <p>{desc}</p>
-          </li>
-        );
-      })}
-    </ol>
+            <h1 class="agent-name fade-up" style="animation-delay:120ms">{agent.name}</h1>
+            <p class="of-lede fade-up" style="animation-delay:180ms">{agent.mission}</p>
+            <div class="of-actions fade-up" style="animation-delay:240ms">
+              <a href="/docs/getting-started/installation" class="of-btn of-btn-primary">Deploy {agent.name}</a>
+              <a href="/docs/reference/roles-reference" class="of-btn of-btn-ghost">Roles reference</a>
+            </div>
+          </div>
 
-    {/* Human Intervention */}
-    {agent.humanIntervention && (
-      <>
-        <h2 class={styles.sectionTitle}>Human Intervention</h2>
-        <p class={styles.humanIntro}>{agent.humanIntervention.intro}</p>
-        <ul class={styles.capList}>
-          {agent.humanIntervention.points.map((point, i) => (
-            <li key={i} class={styles.capItem}>
-              <span class={styles.bullet} />
-              {point}
-            </li>
-          ))}
-        </ul>
-      </>
-    )}
-
-    {/* CTA */}
-    <section class={styles.cta}>
-      <h3>Deploy {agent.name} on your repo</h3>
-      <p>
-        Install OpenFlows, point it at a GitHub repository with open issues,
-        and {agent.name} will be running in minutes.
-      </p>
-      <div class={styles.actions}>
-        <a href="https://github.com/The-AgenticFlow/OpenFlows" target="_blank" rel="noopener noreferrer" class={styles.btnOutline}>
-          View on GitHub
-        </a>
-        <a href="/docs/getting-started/installation" class={styles.btnCyan}>
-          Installation Guide →
-        </a>
+          <dl class="spec fade-up" style="animation-delay:300ms">
+            <div class="spec-title"><span class="of-dot is-live" style="background:var(--agent);"></span>{agent.name.toLowerCase()}.spec</div>
+            <div><dt>Runs in</dt><dd>{summary.spec.runs}</dd></div>
+            <div><dt>Writes</dt><dd>{summary.spec.writes}</dd></div>
+            <div><dt>Never</dt><dd>{summary.spec.never}</dd></div>
+            <div><dt>Focus</dt><dd class="spec-tags">{summary.tags.map((t) => <span class="of-chip">{t}</span>)}</dd></div>
+          </dl>
+        </div>
       </div>
     </section>
-  </article>
+
+    <section class="of-section" style="padding-top:2rem">
+      <div class="of-container">
+        <div class="of-head" data-reveal>
+          <span class="of-eyebrow" style="color:var(--agent)">How it works</span>
+          <h2>What {agent.name} does, step by step.</h2>
+        </div>
+        <ol class="timeline">
+          {agent.flow.map((step, i) => {
+            const [title, desc] = splitStep(step);
+            return (
+              <li data-reveal>
+                <span class="tl-num">{String(i + 1).padStart(2, '0')}</span>
+                <div class="tl-body">
+                  <h3>{title}</h3>
+                  <p>{desc}</p>
+                </div>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
+    </section>
+
+    <section class="of-section">
+      <div class="of-container">
+        <div class="of-head" data-reveal>
+          <span class="of-eyebrow" style="color:var(--agent)">Capabilities</span>
+          <h2>Built for the job, scoped to it.</h2>
+        </div>
+        <div class="caps" data-reveal-group>
+          {agent.capabilities.map((cap) => (
+            <div class="cap of-card" data-reveal>
+              <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              <span>{cap}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    {agent.humanIntervention && (
+      <section class="of-section">
+        <div class="of-container">
+          <div class="human">
+            <div class="of-head" data-reveal>
+              <span class="of-eyebrow" style="color:var(--agent)">Human in the loop</span>
+              <h2>Where you stay in control.</h2>
+              <p>{agent.humanIntervention.intro}</p>
+            </div>
+            <div class="human-list" data-reveal-group>
+              {agent.humanIntervention.points.map((point) => {
+                const [lead, rest] = splitPoint(point);
+                return (
+                  <div class="human-item" data-reveal>
+                    {lead && <h3>{lead}</h3>}
+                    <p>{rest}</p>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        </div>
+      </section>
+    )}
+
+    <section class="of-section-tight">
+      <div class="of-container">
+        <div class="pager">
+          <a href={`/agents/${prev.id}`} class="pager-link of-card" style={`--agent:${prev.color}`}>
+            <span class="pager-dir">← Previous</span>
+            <span class="pager-name">{prev.name}</span>
+            <span class="pager-role">{prev.role}</span>
+          </a>
+          <a href={`/agents/${next.id}`} class="pager-link of-card is-next" style={`--agent:${next.color}`}>
+            <span class="pager-dir">Next →</span>
+            <span class="pager-name">{next.name}</span>
+            <span class="pager-role">{next.role}</span>
+          </a>
+        </div>
+      </div>
+    </section>
+
+    <CtaBanner
+      title={`Deploy ${agent.name} on your repository.`}
+      body={`Install OpenFlows, point it at a GitHub repository with open issues, and ${agent.name} starts working alongside the rest of the team.`}
+      primary={{ label: 'Installation guide', href: '/docs/getting-started/installation' }}
+    />
+  </main>
 </BaseLayout>
 
-<style src="./AgentDetail.module.css"></style>
+<style>
+  .detail-hero::after { background: radial-gradient(closest-side, color-mix(in srgb, var(--agent) 22%, transparent), transparent); }
+
+  .crumbs { display: flex; gap: 0.5rem; font-size: 0.85rem; color: var(--of-text-3); }
+  .crumbs a:hover { color: var(--of-text); }
+  .crumbs span:last-child { color: var(--of-text-2); }
+
+  .hero-grid { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(2rem, 5vw, 4rem); align-items: end; margin-top: 2.5rem; }
+
+  .hero-badge { display: flex; align-items: center; gap: 0.85rem; }
+  .hero-badge .of-eyebrow::before { display: none; }
+
+  .hero-icon {
+    display: grid;
+    place-items: center;
+    width: 48px;
+    height: 48px;
+    border-radius: 13px;
+    color: var(--agent);
+    border: 1px solid color-mix(in srgb, var(--agent) 40%, transparent);
+    background: color-mix(in srgb, var(--agent) 10%, transparent);
+  }
+
+  .hero-icon svg { width: 24px; height: 24px; }
+
+  .of-page-hero h1.agent-name {
+    max-width: none;
+    font-family: var(--font-mono);
+    font-weight: 600;
+    letter-spacing: 0;
+    font-size: clamp(3rem, 8vw, 6rem);
+    background: linear-gradient(180deg, var(--of-text), var(--of-text-2));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+
+  .spec {
+    display: grid;
+    border-radius: 16px;
+    border: 1px solid var(--of-line-strong);
+    background: var(--of-surface);
+    backdrop-filter: blur(10px);
+    font-size: 0.88rem;
+    overflow: hidden;
+    box-shadow: var(--shadow-xl);
+  }
+
+  .spec > div { display: grid; grid-template-columns: 86px 1fr; gap: 1rem; padding: 0.95rem 1.2rem; }
+  .spec > div + div { border-top: 1px solid var(--of-line); }
+  .spec .spec-title { display: flex; align-items: center; gap: 0.55rem; font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-text-2); background: var(--of-surface); }
+  .spec dt { font-family: var(--font-mono); font-size: 0.7rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--of-text-3); padding-top: 2px; }
+  .spec dd { color: var(--of-text); line-height: 1.45; }
+  .spec-tags { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+  .timeline { position: relative; display: grid; gap: 0.75rem; counter-reset: step; }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 21px;
+    top: 24px;
+    bottom: 24px;
+    width: 1px;
+    background: linear-gradient(180deg, var(--agent), color-mix(in srgb, var(--agent) 10%, transparent));
+  }
+
+  .timeline li { position: relative; display: flex; gap: 1.5rem; }
+
+  .tl-num {
+    position: relative;
+    display: grid;
+    place-items: center;
+    width: 43px;
+    height: 43px;
+    flex-shrink: 0;
+    border-radius: 12px;
+    border: 1px solid color-mix(in srgb, var(--agent) 45%, transparent);
+    background: var(--of-bg);
+    box-shadow: inset 0 0 0 100px color-mix(in srgb, var(--agent) 9%, transparent);
+    font-family: var(--font-mono);
+    font-size: 0.78rem;
+    color: var(--agent);
+  }
+
+  .tl-body { flex: 1; padding: 1.1rem 1.35rem 1.3rem; border-radius: 14px; border: 1px solid var(--of-line); background: var(--of-surface); }
+  .tl-body h3 { font-size: 1.05rem; }
+  .tl-body p { margin-top: 0.45rem; color: var(--of-text-2); line-height: 1.65; font-size: 0.94rem; }
+
+  .caps { display: grid; grid-template-columns: repeat(2, 1fr); gap: 0.75rem; }
+  .cap { display: flex; align-items: flex-start; gap: 0.75rem; padding: 1.1rem 1.25rem; font-size: 0.95rem; line-height: 1.5; }
+  .cap svg { width: 16px; height: 16px; margin-top: 3px; flex-shrink: 0; color: var(--agent); }
+
+  .human { display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(2rem, 5vw, 4rem); align-items: start; }
+  .human .of-head { position: sticky; top: calc(var(--nav-height) + 2rem); }
+  .human-list { display: grid; gap: 0.75rem; }
+  .human-item { padding: 1.35rem 1.5rem; border-radius: 16px; border: 1px solid var(--of-line); border-left: 2px solid var(--agent); background: var(--of-surface); }
+  .human-item h3 { font-size: 1rem; margin-bottom: 0.4rem; }
+  .human-item p { color: var(--of-text-2); line-height: 1.65; font-size: 0.93rem; }
+
+  .pager { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+  .pager-link { display: flex; flex-direction: column; gap: 0.2rem; padding: 1.4rem 1.6rem; }
+  .pager-link.is-next { text-align: right; }
+  .pager-link:hover { border-color: color-mix(in srgb, var(--agent) 40%, transparent); }
+  .pager-dir { font-size: 0.8rem; color: var(--of-text-3); }
+  .pager-name { font-family: var(--font-mono); font-size: 1.25rem; font-weight: 600; color: var(--agent); }
+  .pager-role { font-size: 0.88rem; color: var(--of-text-2); }
+
+  @media (max-width: 900px) {
+    .hero-grid, .human { grid-template-columns: 1fr; }
+    .human .of-head { position: static; }
+    .caps { grid-template-columns: 1fr; }
+  }
+
+  @media (max-width: 560px) {
+    .timeline li { gap: 0.9rem; }
+    .pager { grid-template-columns: 1fr; }
+    .pager-link.is-next { text-align: left; }
+  }
+</style>

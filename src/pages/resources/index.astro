@@ -1,5 +1,7 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
+import PixelField from '@/components/site/PixelField.astro';
+import ContactSection from '@/components/site/ContactSection.astro';
 import { getCollection } from 'astro:content';
 import PostRow from '@/components/blog/PostRow.astro';
 import { getPublishedPosts } from '@/components/blog/blog';
@@ -25,12 +27,16 @@ const tabs = [
 ];
 ---
 
-<BaseLayout title="Resources - OpenFlows" description="Blog posts, research papers, and case studies from the OpenFlows team.">
+<BaseLayout title="Resources · OpenFlows" description="Blog posts, research papers, and case studies from the OpenFlows team.">
+  <section class="of-page-hero of-dark">
+    <PixelField cell={30} density={0.06} />
+    <div class="of-container">
+      <span class="of-eyebrow fade-up">Resources</span>
+      <h1 class="of-lines"><span><span style="--l:0">Learn how teams govern AI delivery.</span></span></h1>
+      <p class="of-lede fade-up" style="animation-delay:250ms">Blog posts, research papers and case studies from the OpenFlows team and community, and a direct line to the maintainers.</p>
+    </div>
+  </section>
   <main class="resources">
-    <header class="resources-header">
-      <h1>Resources</h1>
-      <p>Blog posts, research papers, and case studies from the OpenFlows team and community.</p>
-    </header>
 
     <div class="resources-tabs" role="tablist" aria-label="Resource type">
       {tabs.map((tab, index) => (
@@ -114,6 +120,8 @@ const tabs = [
     </section>
   </main>
 
+  <ContactSection />
+
   <script>
     const tabs = Array.from(document.querySelectorAll<HTMLButtonElement>('.resources-tab'));
 
@@ -154,7 +162,7 @@ const tabs = [
   .resources {
     max-width: var(--max-width-6xl);
     margin: 0 auto;
-    padding: calc(var(--nav-height) + 4rem) 2rem 6rem;
+    padding: clamp(3rem, 6vw, 4.5rem) var(--gutter) 6rem;
   }
 
   .resources-header {
@@ -266,7 +274,7 @@ const tabs = [
 
   @media (max-width: 640px) {
     .resources {
-      padding: calc(var(--nav-height) + 2.5rem) 1rem 4rem;
+      padding: 2.5rem 1rem 4rem;
     }
 
     .resources-tabs {

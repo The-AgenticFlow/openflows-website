@@ -1,24 +1,1330 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import Hero from '@/organisms/Hero/Hero';
-import TrustBar from '@/organisms/TrustBar/TrustBar';
-import FeatureSteps from '@/organisms/FeatureSteps/FeatureSteps';
-import FlowVisual from '@/organisms/FlowVisual/FlowVisual';
-import UseCaseTabs from '@/organisms/UseCaseTabs/UseCaseTabs';
-import IndustryCards from '@/organisms/IndustryCards/IndustryCards';
-import RecentNews from '@/organisms/RecentNews/RecentNews.astro';
-import Stories from '@/organisms/Stories/Stories.astro';
-import GetStartedBanner from '@/organisms/GetStartedBanner/GetStartedBanner';
+import FAQ from '@/organisms/FAQ/FAQ';
+import CtaBanner from '@/components/site/CtaBanner.astro';
+import PixelField from '@/components/site/PixelField.astro';
+import { AGENT_SUMMARY } from '@/data/agentSummary';
+import { getPublishedPosts, getPostHref, formatPostDate, getReadTime } from '@/components/blog/blog';
+
+const posts = (await getPublishedPosts()).slice(0, 3);
+
+const LOGOS = [
+  { name: 'Adorsys', src: '/images/mono-logo-adorsys.png', h: 36 },
+  { name: 'Clemios', src: '/images/mono-logo-clemios.png', h: 56 },
+  { name: 'Rust Cameroon', src: '/images/mono-logo-rust-cameroon.png', h: 58 },
+  { name: 'Rust Nigeria', src: '/images/mono-logo-rust-nigeria.png', h: 58 },
+  { name: 'Rust Africa', src: '/images/mono-logo-rust-africa.png', h: 56 },
+];
+
+// Each stage of the ticket lifecycle, with the artifact that stage produces.
+// Code lines are [className, text] pairs.
+const STAGES = [
+  {
+    agent: 'NEXUS',
+    title: 'Triage and assign',
+    body: 'You open a GitHub issue. NEXUS syncs it into a typed ticket and hands it to an idle FORGE worker in its own fresh Coder workspace.',
+    file: 'ticket · T-142',
+    code: [
+      [['p', '{']],
+      [['k', '  "id"'], ['p', ': '], ['s', '"T-142"'], ['p', ',']],
+      [['k', '  "issue"'], ['p', ': '], ['n', '318'], ['p', ',']],
+      [['k', '  "title"'], ['p', ': '], ['s', '"Rate-limit the /login endpoint"'], ['p', ',']],
+      [['k', '  "phase"'], ['p', ': '], ['s', '"planning"'], ['p', ',']],
+      [['k', '  "worker"'], ['p', ': '], ['s', '"forge-1"'], ['p', ',']],
+      [['k', '  "branch"'], ['p', ': '], ['s', '"forge-1/T-142"']],
+      [['p', '}']],
+    ],
+  },
+  {
+    agent: 'FORGE → SENTINEL',
+    title: 'Plan, then stop at the gate',
+    body: 'FORGE writes PLAN.md and halts. No code is written until SENTINEL approves the plan with a single-use approval that cannot be replayed.',
+    file: 'PLAN.md',
+    code: [
+      [['h', '## Plan · T-142']],
+      [['p', '1. Token-bucket middleware on POST /login']],
+      [['p', '2. Redis counters keyed by IP + account']],
+      [['p', '3. 429 + Retry-After, tests for both paths']],
+      [['p', '']],
+      [['c', 'gate     '], ['p', 'plan_ready']],
+      [['c', 'verdict  '], ['g', 'APPROVED'], ['c', '  · sentinel, round 1']],
+    ],
+  },
+  {
+    agent: 'FORGE',
+    title: 'Build in an isolated workspace',
+    body: 'FORGE implements the approved plan segment by segment with conventional commits and runs the suite. The workspace holds zero LLM keys and zero raw credentials.',
+    file: 'git log --oneline',
+    code: [
+      [['n', 'a91f3c2 '], ['p', 'feat(auth): token-bucket limiter on /login']],
+      [['n', '4be07d1 '], ['p', 'feat(auth): redis-backed counters per IP']],
+      [['n', 'c3d2a90 '], ['p', 'test(auth): cover 429 and Retry-After']],
+      [['p', '']],
+      [['c', '$ npm test']],
+      [['g', '✓ 48 passed'], ['c', ' · 0 failed · 6.2s']],
+    ],
+  },
+  {
+    agent: 'SENTINEL',
+    title: 'Review adversarially',
+    body: 'SENTINEL reviews the diff read-only, on a different model provider if you like, and verifies by running tests in FORGE’s workspace through the audited A2A relay.',
+    file: 'review · PR #318',
+    code: [
+      [['c', 'verify  '], ['p', 'forge-1 → '], ['s', '"npm test -- auth"']],
+      [['g', '        ✓ 12 passed'], ['c', '  (a2a, allowlisted)']],
+      [['p', '']],
+      [['c', 'verdict '], ['g', 'APPROVE']],
+      [['c', 'src/auth/limit.ts:41  '], ['p', 'nit: name the magic 429']],
+      [['c', 'src/auth/limit.ts:63  '], ['p', 'nit: jitter Retry-After']],
+    ],
+  },
+  {
+    agent: 'VESSEL',
+    title: 'Merge only when it is safe',
+    body: 'VESSEL squash-merges only when the PR is approved, conflict-free and CI-green. Conflicts and failing checks go back to the same FORGE worker, context intact.',
+    file: 'vessel · PR #318',
+    code: [
+      [['c', 'checks     '], ['g', '4/4 passing']],
+      [['c', 'review     '], ['g', 'approved']],
+      [['c', 'mergeable  '], ['g', 'true']],
+      [['p', '']],
+      [['k', 'squash-merge '], ['p', '#318 → main']],
+      [['g', '✓ merged'], ['c', ' · issue closed · workspace recycled']],
+    ],
+  },
+  {
+    agent: 'LORE',
+    title: 'Keep the paper trail',
+    body: 'After the merge, LORE records an Architecture Decision Record and updates the changelog, so anyone can reconstruct why the change was made.',
+    file: 'docs/adr/021-login-rate-limit.md',
+    code: [
+      [['h', '# ADR-021 · Rate-limit /login']],
+      [['c', 'Status    '], ['g', 'Accepted']],
+      [['c', 'Context   '], ['p', 'credential stuffing on /login']],
+      [['c', 'Decision  '], ['p', 'token bucket, Redis counters']],
+      [['c', 'Refs      '], ['s', 'T-142, PR #318']],
+    ],
+  },
+];
+
+
+
+
+
+
+const escapeHtml = (text: string) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+const codeHtml = (lines: string[][][]) =>
+  lines.map((line) => line.map(([cls, text]) => `<span class="t-${cls}">${escapeHtml(text)}</span>`).join('')).join('\n');
+
+// Real Console screens, captured from the Console running against demo data.
+const CONSOLE_SCREENS = [
+  { id: 'overview', label: 'Overview', alt: 'OpenFlows Console overview: tenant count, running tenants, GitHub connection and recent activity' },
+  { id: 'tenant', label: 'Agent activity', alt: 'Tenant detail page showing runtime health and the agents working on each ticket' },
+  { id: 'tenants', label: 'Tenants', alt: 'Tenants list with one runtime per GitHub repository and its status' },
+  { id: 'activity', label: 'Operations', alt: 'Activity page listing every lifecycle operation and its result' },
+  { id: 'members', label: 'Members', alt: 'Members page with roles and invitations' },
+];
+
+// Screens that line the walls of the how-it-works tunnel.
+const TUNNEL_IMAGES = [
+  ...CONSOLE_SCREENS.flatMap((sc) => [`/images/console/${sc.id}-light.webp`, `/images/console/${sc.id}-dark.webp`]),
+  '/images/howitworks.png',
+];
+const TUNNEL_SEGMENTS = 9;
+
+const SETUP_COMMAND = './scripts/setup.sh owner/repo --compose';
+const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.'];
 ---
 
-<BaseLayout title="OpenFlows - Autonomous AI Development Team" description="OpenFlows orchestrates autonomous AI agents that discover issues, write code, review it, and merge pull requests without human intervention.">
-  <Hero client:load />
-  <TrustBar client:visible />
-  <FeatureSteps client:visible />
-  <FlowVisual client:visible />
-  <UseCaseTabs client:visible />
-  <IndustryCards client:visible />
-  <RecentNews />
-  <Stories />
-  <GetStartedBanner client:visible />
+<BaseLayout
+  title="OpenFlows · The autonomous AI dev team on your Coder environment"
+  description="OpenFlows is an open-source AI software team that turns GitHub issues into reviewed, merged pull requests inside your self-hosted Coder environment, with a planning gate, adversarial review, and a full audit trail."
+>
+  <main class="home">
+    <!-- ───────── HERO ───────── -->
+    <section class="hero-wrap">
+      <div class="hero of-panel of-dark">
+        <PixelField cell={30} density={0.09} />
+        <div class="hero-shade" aria-hidden="true"></div>
+        <div class="of-container hero-inner">
+          <span class="of-eyebrow fade-up">OpenFlows · Open source · Self-hosted</span>
+          <h1 class="hero-title of-lines">
+            {HEADLINE.map((line, i) => <span><span style={`--l:${i}`}>{line}</span></span>)}
+          </h1>
+          <p class="hero-sub fade-up" style="animation-delay:450ms">
+            OpenFlows sits on top of Coder so your team can focus on architecture while an AI dev team runs
+            safely, securely and with full governance. Every agent action is auditable from issue to merge,
+            for a single developer or a whole company.
+          </p>
+          <div class="hero-cta fade-up" style="animation-delay:560ms">
+            <a href="/docs/getting-started" class="of-btn of-btn-primary of-btn-lg"><span class="of-sq"></span>Install OpenFlows</a>
+            <a href="/demos" class="of-btn of-btn-ghost of-btn-lg"><svg viewBox="0 0 16 16" aria-hidden="true"><path d="M5.5 3.8v8.4L12 8z" fill="currentColor"/></svg>Watch the demo</a>
+          </div>
+          <div class="hero-command fade-up" style="animation-delay:660ms">
+            <div class="of-command">
+              <span class="of-prompt">$</span>
+              <code>{SETUP_COMMAND}</code>
+              <button class="of-copy" data-copy={SETUP_COMMAND} aria-label="Copy setup command">
+                <svg class="of-copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.4" aria-hidden="true"><rect x="5" y="5" width="8.5" height="8.5" rx="1.8"/><path d="M10.5 5V3.8A1.3 1.3 0 0 0 9.2 2.5H3.8a1.3 1.3 0 0 0-1.3 1.3v5.4a1.3 1.3 0 0 0 1.3 1.3H5"/></svg>
+                <svg class="of-copied" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M3.5 8.5l3 3 6-7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+        <a class="hero-strip" href="/blog/delegated-verification-how-sentinel-gets-forge-to-run-code-without-ever-touching-forges-workspace">
+          <span class="of-tag">New</span>
+          <span>Delegated verification: how SENTINEL runs tests without touching FORGE’s workspace</span>
+          <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- ───────── LOGOS ───────── -->
+    <section class="logos" aria-label="Supporters">
+      <div class="of-container">
+        <p class="logos-label">Supported by engineering teams and communities</p>
+        <ul class="logo-row" data-reveal-group>
+          {LOGOS.map((logo) => (
+            <li class="logo" data-reveal="fade">
+              <img src={logo.src} alt={logo.name} style={`height:${logo.h}px`} loading="lazy" />
+              <span class="logo-name" aria-hidden="true">{logo.name}</span>
+            </li>
+          ))}
+        </ul>
+      </div>
+    </section>
+
+    <!-- ───────── PRODUCT ───────── -->
+    <section class="product">
+      <div class="of-container">
+        <div class="product-head">
+          <h2 data-split>Your agents.<br />Your infrastructure.<br />Your rules.</h2>
+          <p>Run a governed AI dev team on self-hosted Coder workspaces, with every handoff, approval and merge on the record.</p>
+        </div>
+
+        <article class="feature feature-wide" data-reveal>
+          <div class="feature-copy">
+            <h3>The OpenFlows Console</h3>
+            <p>Connect GitHub, create one tenant per repository, start and stop its runtime, and see which agent is working on which ticket. Members, roles and the full operations history live in the same place.</p>
+            <a href="/docs/getting-started" class="of-btn of-btn-ghost of-btn-sm">Get the Console</a>
+          </div>
+          <div class="shot shot-wide" id="console-tour">
+            <div class="shot-light" aria-hidden="true"></div>
+            <div class="console-tabs" role="tablist" aria-label="Console screens">
+              {CONSOLE_SCREENS.map((sc, i) => (
+                <button type="button" role="tab" aria-selected={i === 0 ? 'true' : 'false'} data-console-tab={i}>{sc.label}</button>
+              ))}
+            </div>
+            <div class="console-frame" data-scroll-scale>
+              {CONSOLE_SCREENS.map((sc, i) => (
+                <figure class={`console-screen ${i === 0 ? 'is-active' : ''}`} data-console-screen={i}>
+                  <img class="on-light" src={`/images/console/${sc.id}-light.webp`} alt={sc.alt} width="1440" height="900" />
+                  <img class="on-dark" src={`/images/console/${sc.id}-dark.webp`} alt={sc.alt} width="1440" height="900" />
+                </figure>
+              ))}
+            </div>
+          </div>
+        </article>
+
+        <article class="feature" data-reveal>
+          <div class="feature-copy">
+            <h3>Agent workspaces on Coder</h3>
+            <p>Every agent runs in its own ephemeral, governed Coder workspace on its own branch. Model keys stay in the Coder AI Gateway; workspaces only get short-lived, repository-scoped tokens.</p>
+            <a href="/docs/concepts/workspaces" class="of-btn of-btn-ghost of-btn-sm">Explore workspaces</a>
+          </div>
+          <div class="shot">
+            <div class="shot-light" aria-hidden="true"></div>
+            <img class="shot-img" src="/images/howitworks.png" alt="Coder dashboard listing the OpenFlows forge, sentinel and nexus workspaces, all running" loading="lazy" data-parallax="0.05" />
+          </div>
+        </article>
+
+        <article class="feature is-flipped" data-reveal>
+          <div class="feature-copy">
+            <h3>Gated planning and adversarial review</h3>
+            <p>FORGE writes a plan and stops. SENTINEL approves it with a single-use approval, reviews the diff on a different model if you like, and verifies by running tests through the audited A2A relay.</p>
+            <a href="/docs/concepts/planning-gate" class="of-btn of-btn-ghost of-btn-sm">Explore the planning gate</a>
+          </div>
+          <div class="shot">
+            <div class="shot-light" aria-hidden="true"></div>
+            <div class="shot-card of-window" data-parallax="0.05">
+              <div class="of-window-bar"><span class="of-window-dots"><span></span><span></span><span></span></span>review · PR #318</div>
+              <pre class="shot-code"><span class="t-h">## Plan · T-142</span>
+<span class="t-p">1. Token-bucket middleware on POST /login</span>
+<span class="t-p">2. Redis counters keyed by IP + account</span>
+<span class="t-p">3. 429 + Retry-After, tests for both paths</span>
+
+<span class="t-c">plan gate  </span><span class="t-g">APPROVED</span><span class="t-c">  · single-use</span>
+<span class="t-c">verify     </span><span class="t-p">forge-1 → npm test -- auth</span>
+<span class="t-g">           ✓ 12 passed</span><span class="t-c">  (a2a, allowlisted)</span>
+<span class="t-c">verdict    </span><span class="t-g">APPROVE</span><span class="t-c">  · 0 blocking, 2 nits</span></pre>
+            </div>
+          </div>
+        </article>
+
+        <a class="brief" href="/docs/architecture" data-reveal>
+          <div>
+            <h3>Learn how OpenFlows keeps agent work governed and auditable</h3>
+            <span class="of-btn of-btn-primary of-btn-sm"><span class="of-sq"></span>Read the architecture</span>
+          </div>
+          <img src="/images/system-architecture.png" alt="" loading="lazy" />
+        </a>
+      </div>
+    </section>
+
+    <!-- ───────── HOW IT WORKS: scroll tunnel (desktop) ───────── -->
+    <div id="how-it-works"></div>
+    <section class="tunnel-wrap" id="tunnel" style={`--stages:${STAGES.length}`} aria-label="How OpenFlows works, stage by stage">
+      <div class="tunnel-sticky of-panel of-dark">
+        <div class="tunnel-scene" aria-hidden="true">
+          <div class="tunnel-world" data-world>
+            {Array.from({ length: TUNNEL_SEGMENTS * 8 }).map((_, k) => (
+              <div class="tile" data-tile={k}><img src={TUNNEL_IMAGES[(k * 3 + Math.floor(k / 8)) % TUNNEL_IMAGES.length]} alt="" decoding="async" /></div>
+            ))}
+          </div>
+        </div>
+        <div class="tunnel-fog" aria-hidden="true"></div>
+
+        <div class="tunnel-hud">
+          <div class="hud-top">
+            <span class="of-eyebrow">How it works</span>
+            <span class="hud-count"><b id="hud-index">01</b> / {String(STAGES.length).padStart(2, '0')}</span>
+          </div>
+          <div class="hud-copy">
+            {STAGES.map((st, i) => (
+              <div class={`hud-stage ${i === 0 ? 'is-active' : ''}`} data-hud={i}>
+                <p class="hud-agent">{String(i + 1).padStart(2, '0')} · {st.agent}</p>
+                <h3>{st.title}</h3>
+                <p class="hud-body">{st.body}</p>
+              </div>
+            ))}
+          </div>
+          <ol class="hud-steps">
+            {STAGES.map((st, i) => (
+              <li data-hud-step={i} class={i === 0 ? 'is-active' : ''}><span>{String(i + 1).padStart(2, '0')}</span>{st.title}</li>
+            ))}
+          </ol>
+          <div class="hud-progress" aria-hidden="true"><i id="hud-bar"></i></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── HOW IT WORKS ───────── -->
+    <section class="of-section flow-section">
+      <div class="of-container">
+        <div class="split-head" data-reveal>
+          <div>
+            <span class="of-eyebrow">How it works</span>
+            <h2 class="of-h2" data-split>Six handoffs. Every one on the record.</h2>
+          </div>
+          <p class="of-lede">Each issue moves through the same declared flow. Every stage has an owner, a gate and an artifact you can inspect.</p>
+        </div>
+
+        <div class="flow" id="flow" data-reveal="scale">
+          <ol class="flow-tabs" role="tablist" aria-label="Pipeline stages">
+            {STAGES.map((s, i) => (
+              <li>
+                <button role="tab" class="flow-tab" aria-selected={i === 0 ? 'true' : 'false'} data-flow-tab={i}>
+                  <span class="flow-num">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="flow-text">
+                    <span class="flow-agent">{s.agent}</span>
+                    <span class="flow-title">{s.title}</span>
+                  </span>
+                  <span class="flow-bar" aria-hidden="true"><i></i></span>
+                </button>
+              </li>
+            ))}
+          </ol>
+
+          <div class="flow-stage of-dark">
+            <div class="flow-grid" aria-hidden="true"></div>
+            {STAGES.map((s, i) => (
+              <div class={`flow-panel ${i === 0 ? 'is-active' : ''}`} data-flow-panel={i} role="tabpanel">
+                <div class="flow-copy">
+                  <p class="flow-kicker"><span>{String(i + 1).padStart(2, '0')} / 06</span>{s.agent}</p>
+                  <h3>{s.title}</h3>
+                  <p>{s.body}</p>
+                </div>
+                <div class="of-window flow-window">
+                  <div class="of-window-bar"><span class="of-window-dots"><span></span><span></span><span></span></span>{s.file}</div>
+                  <pre set:html={codeHtml(s.code)} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── AGENTS ───────── -->
+    <section class="of-section team-section">
+      <div class="of-container">
+        <div class="split-head" data-reveal>
+          <div>
+            <span class="of-eyebrow">The team</span>
+            <h2 class="of-h2" data-split>Five agents that work like an engineering team.</h2>
+          </div>
+          <p class="of-lede">Not five copies of the same assistant. Each role has its own workspace, permissions, skills and model, and each one is accountable for exactly one part of the job.</p>
+        </div>
+        <div class="crew" id="crew" data-reveal="scale">
+          {AGENT_SUMMARY.map((a, i) => (
+            <article class={`member ${i === 0 ? 'is-open' : ''}`} data-member={i} tabindex="0" aria-expanded={i === 0 ? 'true' : 'false'}>
+              <div class="member-rail" aria-hidden="true">
+                <span class="m-num">{String(i + 1).padStart(2, '0')}</span>
+                <span class="m-vert">{a.name}</span>
+                <span class="m-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" set:html={a.icon} /></span>
+              </div>
+              <div class="member-body">
+                <div class="m-top">
+                  <span class="m-icon m-icon-lg"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" set:html={a.icon} /></span>
+                  <span class="m-role">{String(i + 1).padStart(2, '0')} · {a.role}</span>
+                </div>
+                <h3 class="m-name">{a.name}</h3>
+                <p class="m-tag">{a.tagline}</p>
+                <dl class="m-spec">
+                  <div><dt>Runs in</dt><dd>{a.spec.runs}</dd></div>
+                  <div><dt>Writes</dt><dd>{a.spec.writes}</dd></div>
+                  <div><dt>Never</dt><dd>{a.spec.never}</dd></div>
+                </dl>
+                <a href={`/agents/${a.id}`} class="m-link">Meet {a.name} <span aria-hidden="true">→</span></a>
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── QUICK START ───────── -->
+    <section class="of-section">
+      <div class="of-container">
+        <div class="quick">
+          <div data-reveal>
+            <span class="of-eyebrow">Quick start</span>
+            <h2 class="of-h2" style="margin-top:1.1rem" data-split>From zero to your first merged PR.</h2>
+            <p class="of-lede" style="margin-top:1.2rem">One script creates the GitHub App, starts Coder and Redis, configures the model, pushes templates and connects your repository. Re-run it any time; it skips what is done.</p>
+            <ol class="quick-steps">
+              <li><span>01</span><div><b>Run the setup script</b><p>Published images or release binaries on Linux and macOS, or compile from source.</p></div></li>
+              <li><span>02</span><div><b>Open a GitHub issue</b><p>NEXUS picks it up on the next cycle and assigns a worker.</p></div></li>
+              <li><span>03</span><div><b>Review the pull request</b><p>Approve the gates that need a human. The team does the rest.</p></div></li>
+            </ol>
+            <div class="of-actions">
+              <a href="/docs/getting-started/installation" class="of-btn of-btn-primary"><span class="of-sq"></span>Installation guide</a>
+              <a href="/docs/getting-started/first-issue" class="of-btn of-btn-ghost">First issue walkthrough</a>
+            </div>
+          </div>
+          <div class="of-window" data-reveal="scale">
+            <div class="of-window-bar"><span class="of-window-dots"><span></span><span></span><span></span></span>~/openflows</div>
+            <pre class="term"><span class="t-c"># published images, no compiling</span>
+<span class="t-c">$</span> ./scripts/setup.sh acme/web --compose
+<span class="t-g">✓</span> .env created · GitHub App registered
+<span class="t-g">✓</span> Coder + Redis running
+<span class="t-g">✓</span> LLM configured via Coder AI Gateway
+<span class="t-g">✓</span> Templates pushed · tenant <b>acme/web</b> connected
+<span class="t-g">✓</span> nexus workspace started
+
+<span class="t-c"># or compile from this checkout</span>
+<span class="t-c">$</span> ./scripts/setup.sh acme/web --source
+
+<b>nexus</b> watching acme/web for open issues<span class="cursor"></span></pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ───────── BLOG ───────── -->
+    {posts.length > 0 && (
+      <section class="of-section" style="padding-top:0">
+        <div class="of-container">
+          <div class="split-head" data-reveal>
+            <div>
+              <span class="of-eyebrow">From the blog</span>
+              <h2 class="of-h2" data-split>Notes on building trustworthy agents.</h2>
+            </div>
+            <a href="/blog" class="of-btn of-btn-ghost">All posts</a>
+          </div>
+          <div class="posts" data-reveal-group>
+            {posts.map((post) => (
+              <a href={getPostHref(post)} class="post" data-reveal>
+                <div class="post-cover">
+                  {post.data.cover_image_url ? <img src={post.data.cover_image_url} alt="" loading="lazy" /> : <div class="post-fallback" />}
+                </div>
+                <p class="post-meta">{formatPostDate(post.data.published_at)} · {getReadTime(post)} min read</p>
+                <h3>{post.data.title}</h3>
+              </a>
+            ))}
+          </div>
+        </div>
+      </section>
+    )}
+
+    <!-- ───────── FAQ ───────── -->
+    <section class="of-section" style="padding-top:0">
+      <div class="of-container">
+        <div class="faq">
+          <div data-reveal>
+            <span class="of-eyebrow">FAQ</span>
+            <h2 class="of-h2" style="margin-top:1.1rem" data-split>Questions, answered.</h2>
+            <p class="of-lede" style="margin-top:1.1rem">Can’t find what you need? Ask in <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a> or on <a href="https://discord.gg/gDhK2RQZpY" target="_blank" rel="noopener noreferrer">Discord</a>.</p>
+          </div>
+          <div data-reveal>
+            <FAQ client:visible />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <CtaBanner />
+  </main>
 </BaseLayout>
+
+<script>
+  // Crew: hover, focus or click an agent to expand its panel.
+  const crew = document.getElementById('crew');
+  if (crew) {
+    const members = [...crew.querySelectorAll<HTMLElement>('[data-member]')];
+    const open = (m: HTMLElement) => members.forEach((x) => {
+      const on = x === m;
+      x.classList.toggle('is-open', on);
+      x.setAttribute('aria-expanded', String(on));
+    });
+    const canHover = window.matchMedia('(hover: hover) and (min-width: 1001px)');
+    members.forEach((m) => {
+      m.addEventListener('mouseenter', () => { if (canHover.matches) open(m); });
+      m.addEventListener('focus', () => open(m));
+      m.addEventListener('click', () => open(m));
+    });
+  }
+
+  // Console tour: tabs swap the real Console screen, and advance on their own
+  // until the visitor picks one.
+  const tour = document.getElementById('console-tour');
+  if (tour) {
+    const tabs = [...tour.querySelectorAll<HTMLButtonElement>('[data-console-tab]')];
+    const screens = [...tour.querySelectorAll<HTMLElement>('[data-console-screen]')];
+    let index = 0;
+    let timer = 0;
+    const show = (i: number) => {
+      index = (i + tabs.length) % tabs.length;
+      tabs.forEach((t, k) => t.setAttribute('aria-selected', String(k === index)));
+      screens.forEach((sc, k) => sc.classList.toggle('is-active', k === index));
+    };
+    const auto = () => { timer = window.setInterval(() => show(index + 1), 4500); };
+    tabs.forEach((t, k) => t.addEventListener('click', () => { window.clearInterval(timer); show(k); }));
+    new IntersectionObserver(([e]) => {
+      window.clearInterval(timer);
+      if (e.isIntersecting && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) auto();
+    }, { threshold: 0.3 }).observe(tour);
+  }
+
+  // Scroll tunnel: a corridor whose four walls are lined with screens. Scrolling
+  // flies the camera forward one short hop per stage.
+  const tunnel = document.getElementById('tunnel');
+  const tunnelOn = () => tunnel && getComputedStyle(tunnel).display !== 'none';
+  if (tunnel) {
+    const sticky = tunnel.querySelector<HTMLElement>('.tunnel-sticky')!;
+    const tiles = [...tunnel.querySelectorAll<HTMLElement>('[data-tile]')];
+    const huds = [...tunnel.querySelectorAll<HTMLElement>('[data-hud]')];
+    const steps = [...tunnel.querySelectorAll<HTMLElement>('[data-hud-step]')];
+    const hudIndex = document.getElementById('hud-index');
+    const hudBar = document.getElementById('hud-bar');
+    const N = huds.length;
+    const SEGMENTS = tiles.length / 8;
+    let W = 0, H = 0, D = 0;
+    let current = -1;
+    let smooth = 0;
+    let target = 0;
+
+    // Each segment of the corridor is a ring of 8 tiles: two per wall.
+    const layout = () => {
+      W = sticky.clientWidth;
+      H = sticky.clientHeight;
+      D = Math.round(H * 0.85);
+      tiles.forEach((tile, k) => {
+        const side = k % 8;
+        const wall = side >> 1;
+        const half = side & 1;
+        const vertical = wall < 2;
+        tile.style.width = `${vertical ? D : W / 2}px`;
+        tile.style.height = `${vertical ? H / 2 : D}px`;
+        tile.dataset.wall = String(wall);
+        tile.dataset.half = String(half);
+      });
+    };
+    layout();
+    window.addEventListener('resize', layout);
+
+    // Pause briefly on every stage, then glide to the next.
+    const settle = (f: number) => {
+      const i = Math.floor(f);
+      const t = Math.min(1, Math.max(0, (f - i - 0.15) / 0.7));
+      return i + t * t * (3 - 2 * t);
+    };
+
+    const measure = () => {
+      const rect = tunnel.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const raw = Math.min(1, Math.max(0, -rect.top / total));
+      target = settle(raw * (N - 1) * 0.9999);
+    };
+
+    const render = () => {
+      if (!tunnelOn()) { requestAnimationFrame(render); return; }
+      measure();
+      smooth += (target - smooth) * 0.1;
+      const p = smooth;
+      // Two segments per stage, offset half a segment so a ring of tiles always
+      // starts exactly at the screen edge when the camera rests on a stage.
+      const cam = (p * 2 + 0.5) * D;
+      const span = SEGMENTS * D;
+      const a = W / 2, b = H / 2;
+
+      tiles.forEach((tile, k) => {
+        const seg = Math.floor(k / 8);
+        const wall = Number(tile.dataset.wall);
+        const half = Number(tile.dataset.half);
+        // Depth of the segment's centre, wrapped so tiles recycle to the far end.
+        const zc = -(((seg * D - cam) % span + span) % span);
+        let t = '';
+        if (wall === 0) t = `translate3d(${-a}px, ${-b + (half + 0.5) * b}px, ${zc}px) rotateY(90deg)`;
+        else if (wall === 1) t = `translate3d(${a}px, ${-b + (half + 0.5) * b}px, ${zc}px) rotateY(-90deg)`;
+        else if (wall === 2) t = `translate3d(${-a + (half + 0.5) * a}px, ${-b}px, ${zc}px) rotateX(-90deg)`;
+        else t = `translate3d(${-a + (half + 0.5) * a}px, ${b}px, ${zc}px) rotateX(90deg)`;
+        tile.style.transform = `translate(-50%, -50%) ${t}`;
+        const far = -zc / (span - D);
+        const near = Math.min(1, (-zc - D * 0.25) / (D * 0.25));
+        tile.style.visibility = zc > -D * 0.3 ? 'hidden' : '';
+        tile.style.opacity = Math.max(0, Math.min(near, 1 - far * far)).toFixed(3);
+      });
+
+      const active = Math.min(N - 1, Math.max(0, Math.round(p)));
+      if (active !== current) {
+        current = active;
+        huds.forEach((h, i) => h.classList.toggle('is-active', i === active));
+        steps.forEach((s, i) => {
+          s.classList.toggle('is-active', i === active);
+          s.classList.toggle('is-done', i < active);
+        });
+        if (hudIndex) hudIndex.textContent = String(active + 1).padStart(2, '0');
+      }
+      if (hudBar) hudBar.style.transform = `scaleX(${(p / (N - 1)).toFixed(4)})`;
+      requestAnimationFrame(render);
+    };
+    requestAnimationFrame(render);
+
+    steps.forEach((step, i) => step.addEventListener('click', () => {
+      const rect = tunnel.getBoundingClientRect();
+      const total = rect.height - window.innerHeight;
+      const y = window.scrollY + rect.top + (i / (N - 1)) * total;
+      const lenis = (window as any).__lenis;
+      lenis ? lenis.scrollTo(y, { duration: 1.2 }) : window.scrollTo({ top: y, behavior: 'smooth' });
+    }));
+  }
+
+  // How it works: auto-advancing stage player. Pauses when hovered or off screen.
+  const flow = document.getElementById('flow');
+  if (flow) {
+    const tabs = [...flow.querySelectorAll<HTMLButtonElement>('[data-flow-tab]')];
+    const panels = [...flow.querySelectorAll<HTMLElement>('[data-flow-panel]')];
+    const DURATION = 6000;
+    let index = 0;
+    let timer = 0;
+    let started = 0;
+    let remaining = DURATION;
+    let inView = false;
+    let hovering = false;
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+    const show = (next: number) => {
+      index = (next + panels.length) % panels.length;
+      tabs.forEach((t, i) => {
+        t.setAttribute('aria-selected', String(i === index));
+        t.classList.toggle('is-done', i < index);
+      });
+      panels.forEach((p, i) => p.classList.toggle('is-active', i === index));
+      const list = tabs[index].closest('ol');
+      if (list && list.scrollWidth > list.clientWidth) {
+        list.scrollTo({ left: (tabs[index].parentElement as HTMLElement).offsetLeft - 16, behavior: 'smooth' });
+      }
+      remaining = DURATION;
+      flow.style.setProperty('--flow-dur', `${DURATION}ms`);
+      restartBar();
+      schedule();
+    };
+
+    const restartBar = () => {
+      const bar = tabs[index]?.querySelector<HTMLElement>('.flow-bar i');
+      tabs.forEach((t) => t.querySelector<HTMLElement>('.flow-bar i')?.classList.remove('run'));
+      if (!bar) return;
+      void bar.offsetWidth;
+      bar.classList.add('run');
+      bar.style.animationPlayState = playing() ? 'running' : 'paused';
+    };
+
+    const playing = () => inView && !hovering && !reduceMotion;
+
+    const schedule = () => {
+      clearTimeout(timer);
+      if (!playing()) return;
+      started = performance.now();
+      timer = window.setTimeout(() => show(index + 1), remaining);
+    };
+
+    const pause = () => {
+      if (timer) remaining -= performance.now() - started;
+      clearTimeout(timer);
+      timer = 0;
+      const bar = tabs[index]?.querySelector<HTMLElement>('.flow-bar i');
+      if (bar) bar.style.animationPlayState = 'paused';
+    };
+
+    const resume = () => {
+      const bar = tabs[index]?.querySelector<HTMLElement>('.flow-bar i');
+      if (bar) bar.style.animationPlayState = 'running';
+      schedule();
+    };
+
+    tabs.forEach((t, i) => t.addEventListener('click', () => show(i)));
+    flow.addEventListener('pointerenter', () => { hovering = true; pause(); });
+    flow.addEventListener('pointerleave', () => { hovering = false; if (inView) resume(); });
+    new IntersectionObserver(([entry]) => {
+      inView = entry.isIntersecting;
+      if (inView && !hovering) resume(); else pause();
+    }, { threshold: 0.35 }).observe(flow);
+    flow.addEventListener('keydown', (e) => {
+      if (e.key === 'ArrowDown' || e.key === 'ArrowRight') { e.preventDefault(); show(index + 1); tabs[index].focus(); }
+      if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') { e.preventDefault(); show(index - 1); tabs[index].focus(); }
+    });
+    show(0);
+  }
+
+  // Product console tilts up and grows to full size as it scrolls into view.
+  const scalers = [...document.querySelectorAll<HTMLElement>('[data-scroll-scale]')];
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  let ticking = false;
+  const updateScale = () => {
+    ticking = false;
+    const vh = window.innerHeight;
+    scalers.forEach((el) => {
+      const rect = el.getBoundingClientRect();
+      const t = Math.min(1, Math.max(0, (vh - rect.top) / (vh * 0.75)));
+      const eased = 1 - Math.pow(1 - t, 3);
+      el.style.transform = `perspective(1600px) rotateX(${(1 - eased) * 14}deg) scale(${0.9 + eased * 0.1})`;
+      el.style.opacity = String(0.4 + eased * 0.6);
+    });
+  };
+  if (!reduce && scalers.length) {
+    updateScale();
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        ticking = true;
+        requestAnimationFrame(updateScale);
+      }
+    }, { passive: true });
+  }
+
+</script>
+
+<style>
+  /* ── Hero ── */
+  .hero-wrap { padding-top: calc(var(--nav-height) + 4px); }
+
+  .hero {
+    min-height: min(860px, calc(100svh - var(--nav-height) - 12px));
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+  }
+
+  .hero :global(.of-pixels) { z-index: -2; }
+
+  .hero-shade {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background:
+      linear-gradient(90deg, #0b0b0c 0%, rgba(11, 11, 12, 0.85) 40%, rgba(11, 11, 12, 0.1) 100%),
+      linear-gradient(0deg, #0b0b0c 0%, transparent 35%);
+    pointer-events: none;
+  }
+
+  .hero-inner { padding-top: clamp(4rem, 9vw, 7rem); padding-bottom: clamp(3rem, 6vw, 4.5rem); }
+
+  .hero-title {
+    margin-top: 1.75rem;
+    font-size: var(--font-size-hero);
+    line-height: 0.98;
+    letter-spacing: -0.055em;
+    font-weight: 500;
+  }
+
+  .hero-sub { max-width: 560px; margin-top: 1.75rem; font-size: clamp(1.05rem, 1.5vw, 1.2rem); line-height: 1.6; color: var(--of-text-2); }
+  .hero-cta { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 2.25rem; }
+  .hero-command { margin-top: 1.25rem; max-width: 100%; }
+
+  .hero-strip {
+    display: flex;
+    align-items: center;
+    gap: 0.85rem;
+    padding: 1rem clamp(1rem, 4vw, 2.25rem);
+    border-top: 1px solid var(--of-line);
+    background: rgba(255, 255, 255, 0.02);
+    font-size: 0.9rem;
+    color: var(--of-text);
+    transition: background 0.3s;
+  }
+
+  .hero-strip:hover { background: rgba(255, 255, 255, 0.05); }
+  .hero-strip svg { width: 15px; height: 15px; flex-shrink: 0; transition: transform 0.3s var(--ease-out); }
+  .hero-strip:hover svg { transform: translateX(4px); }
+  .strip-meta { margin-left: auto; font-family: var(--font-mono); font-size: 0.72rem; color: var(--of-text-3); white-space: nowrap; }
+
+  /* ── Logos ── */
+  .logos { padding: clamp(3.5rem, 7vw, 5rem) 0 clamp(3rem, 5vw, 4rem); }
+  .logos-label { text-align: center; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: var(--of-text-3); margin-bottom: 2.75rem; }
+  .logo-row { display: flex; flex-wrap: wrap; justify-content: center; align-items: center; gap: 2.5rem clamp(3rem, 7vw, 6.5rem); }
+  .logo { position: relative; display: flex; align-items: center; justify-content: center; height: 64px; opacity: 0.6; transition: opacity 0.4s var(--ease-out); }
+  .logo:hover { opacity: 1; }
+  .logo img { width: auto; max-width: 220px; object-fit: contain; transition: transform 0.5s var(--ease-out); }
+  .logo:hover img { transform: translateY(-6px) scale(1.04); }
+  .logo-name {
+    position: absolute;
+    left: 50%;
+    top: calc(100% + 0.35rem);
+    transform: translate(-50%, -4px);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.04em;
+    color: var(--of-text-2);
+    white-space: nowrap;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.35s var(--ease-out), transform 0.45s var(--ease-out);
+  }
+  .logo:hover .logo-name { opacity: 1; transform: translate(-50%, 0); }
+  :global([data-theme='dark']) .logo img { filter: invert(1); }
+
+  /* ── Product (feature rows) ── */
+  .product { padding: clamp(3rem, 7vw, 5.5rem) 0 clamp(3rem, 6vw, 4rem); }
+  .product-head { text-align: center; margin-bottom: clamp(3.5rem, 8vw, 6rem); }
+  .product-head h2 { font-size: clamp(2rem, 4vw, 3.2rem); letter-spacing: -0.05em; line-height: 1.02; }
+  .product-head p { max-width: 520px; margin: 1.25rem auto 0; color: var(--of-text-2); font-size: 1.05rem; line-height: 1.6; }
+
+  .feature { display: grid; grid-template-columns: 0.85fr 1.15fr; gap: clamp(2rem, 5vw, 4.5rem); align-items: center; margin-bottom: clamp(3.5rem, 7vw, 5.5rem); }
+  .feature.is-flipped .feature-copy { order: 2; }
+  .feature-copy h3 { font-size: clamp(1.6rem, 2.6vw, 2.15rem); letter-spacing: -0.04em; }
+  .feature-copy p { margin: 0.9rem 0 1.5rem; max-width: 46ch; color: var(--of-text-2); line-height: 1.65; }
+
+  .feature-wide { grid-template-columns: 1fr; gap: 2rem; }
+  .feature-wide .feature-copy { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem 4rem; align-items: end; }
+  .feature-wide .feature-copy p { margin: 0; }
+  .feature-wide .feature-copy a { grid-column: 2; justify-self: start; }
+
+  /* Monochrome light-streak frame, the product shot bleeds off its edge */
+  .shot {
+    position: relative;
+    aspect-ratio: 1.12;
+    border-radius: 20px;
+    overflow: hidden;
+    isolation: isolate;
+    background: #0d0d0f;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.07);
+  }
+
+  .shot-light {
+    position: absolute;
+    inset: -30%;
+    z-index: -1;
+    background:
+      linear-gradient(115deg, transparent 30%, rgba(255, 255, 255, 0.28) 42%, rgba(255, 255, 255, 0.05) 50%, transparent 58%),
+      linear-gradient(115deg, transparent 52%, rgba(255, 255, 255, 0.14) 60%, transparent 68%),
+      radial-gradient(50% 40% at 15% 95%, rgba(255, 255, 255, 0.12), transparent 70%);
+    filter: blur(18px);
+    animation: shotLight 16s ease-in-out infinite alternate;
+  }
+
+  @keyframes shotLight {
+    from { transform: translateX(-6%) rotate(0deg); }
+    to { transform: translateX(6%) rotate(6deg); }
+  }
+
+  .shot-img {
+    position: absolute;
+    left: 9%;
+    top: 11%;
+    width: 112%;
+    max-width: none;
+    border-radius: 12px 0 0 0;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    box-shadow: 0 30px 80px rgba(0, 0, 0, 0.5);
+  }
+
+  .shot-card { position: absolute; left: 9%; top: 13%; width: 100%; border-radius: 12px 0 0 12px; }
+  .shot-code { margin: 0; padding: 1.25rem 1.4rem 1.5rem; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.85; color: #c8c9ce; white-space: pre; }
+
+  .shot-wide { aspect-ratio: auto; padding: clamp(1.5rem, 4vw, 3.5rem) clamp(1rem, 4vw, 3.5rem) 0; }
+  .console-tabs { position: relative; display: flex; flex-wrap: wrap; justify-content: center; gap: 0.35rem; margin-bottom: 1.5rem; }
+  .console-tabs button {
+    padding: 0.45rem 0.9rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: rgba(0, 0, 0, 0.25);
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.82rem;
+    cursor: pointer;
+    transition: color 0.3s, background 0.3s, border-color 0.3s;
+  }
+  .console-tabs button:hover { color: #fff; }
+  .console-tabs button[aria-selected='true'] { color: #0c0c0d; background: #fff; border-color: #fff; }
+  .console-frame {
+    position: relative;
+    max-width: 1080px;
+    margin: 0 auto;
+    aspect-ratio: 1440 / 900;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-bottom: 0;
+    border-radius: 14px 14px 0 0;
+    overflow: hidden;
+    background: #0b0b0c;
+    box-shadow: 0 40px 100px rgba(0, 0, 0, 0.45);
+    transform-origin: 50% 0;
+    will-change: transform;
+  }
+  .console-screen { position: absolute; inset: 0; margin: 0; opacity: 0; transform: scale(1.015); transition: opacity 0.6s var(--ease-out), transform 0.9s var(--ease-out); }
+  .console-screen.is-active { opacity: 1; transform: none; }
+  .console-screen img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: top left; }
+
+  .brief {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 2rem;
+    padding: 1.75rem 0;
+    border-top: 1px solid var(--of-line-strong);
+    border-bottom: 1px solid var(--of-line-strong);
+  }
+
+  .brief h3 { max-width: 26ch; font-size: clamp(1.2rem, 2vw, 1.5rem); letter-spacing: -0.03em; margin-bottom: 1.1rem; }
+  .brief img { width: 200px; aspect-ratio: 16 / 10; object-fit: cover; border-radius: 10px; border: 1px solid var(--of-line); transition: transform 0.6s var(--ease-out); }
+  .brief:hover img { transform: scale(1.04) rotate(-1deg); }
+
+  /* ── Statement ── */
+  .statement { padding: clamp(6rem, 13vw, 11rem) 0; }
+  .statement-text {
+    margin-top: 2rem;
+    max-width: 1000px;
+    font-size: clamp(2rem, 4.6vw, 4rem);
+    line-height: 1.08;
+    letter-spacing: -0.045em;
+    font-weight: 500;
+  }
+
+  /* ── Scroll tunnel ── */
+  .tunnel-wrap { position: relative; height: calc(var(--stages) * 55vh + 100vh); }
+
+  .tunnel-sticky {
+    position: sticky;
+    --th: min(calc(100vh - var(--nav-height) - 96px), 720px);
+    top: calc(var(--nav-height) + (100vh - var(--nav-height) - var(--th)) / 2);
+    width: min(1240px, calc(100% - 48px));
+    height: var(--th);
+    min-height: 520px;
+    margin-inline: auto;
+    overflow: hidden;
+    perspective: 760px;
+    perspective-origin: 50% 50%;
+    background: #070708;
+  }
+
+  .tunnel-scene { position: absolute; inset: 0; transform-style: preserve-3d; }
+  .tunnel-world { position: absolute; left: 50%; top: 50%; width: 0; height: 0; transform-style: preserve-3d; }
+
+  .tile {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 8px;
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+
+  .tile img {
+    display: block;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: left top;
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    background: #111113;
+    filter: brightness(0.86);
+  }
+
+  .tunnel-fog {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background:
+      radial-gradient(ellipse 36% 34% at 50% 52%, rgba(7, 7, 8, 0.94) 25%, rgba(7, 7, 8, 0.6) 62%, transparent 100%),
+      radial-gradient(ellipse 90% 90% at 50% 50%, transparent 55%, rgba(7, 7, 8, 0.35) 100%),
+      linear-gradient(180deg, rgba(7, 7, 8, 0.85), transparent 16%, transparent 76%, rgba(7, 7, 8, 0.9));
+  }
+
+  .tunnel-hud {
+    position: absolute;
+    inset: 0;
+    z-index: 3;
+    display: grid;
+    grid-template-rows: auto 1fr auto auto;
+    padding: clamp(1.75rem, 3.5vw, 3rem);
+    pointer-events: none;
+  }
+
+  .hud-top { display: flex; align-items: center; justify-content: space-between; gap: 1.5rem; }
+  .hud-count { font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-text-3); }
+  .hud-count b { color: var(--of-text); font-weight: 500; }
+
+  .hud-copy { position: relative; place-self: center; width: min(560px, 46vw); height: 280px; text-align: center; }
+  .hud-stage { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+  .hud-stage > * { opacity: 0; transform: translateY(14px) scale(0.96); filter: blur(8px); transition: opacity 0.45s var(--ease-out), transform 0.7s var(--ease-out), filter 0.45s var(--ease-out); }
+  .hud-stage.is-active > * { opacity: 1; transform: none; filter: none; }
+  .hud-stage.is-active > :nth-child(2) { transition-delay: 50ms; }
+  .hud-stage.is-active > :nth-child(3) { transition-delay: 100ms; }
+  .hud-agent { font-family: var(--font-mono); font-size: 0.74rem; letter-spacing: 0.08em; color: #5fe3b0; }
+  .hud-stage h3 { margin-top: 0.9rem; font-size: clamp(2.2rem, 3.8vw, 3.4rem); letter-spacing: -0.045em; line-height: 1.02; }
+  .hud-body { margin-top: 1rem; max-width: 46ch; color: var(--of-text-2); line-height: 1.65; }
+
+  .hud-steps { display: flex; justify-content: center; gap: 0.35rem; pointer-events: auto; }
+  .hud-steps li {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.45rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid var(--of-line);
+    background: rgba(7, 7, 8, 0.6);
+    backdrop-filter: blur(8px);
+    font-size: 0.78rem;
+    color: var(--of-text-3);
+    white-space: nowrap;
+    cursor: pointer;
+    transition: color 0.4s, background 0.4s, border-color 0.4s;
+  }
+  .hud-steps li span { font-family: var(--font-mono); font-size: 0.68rem; }
+  .hud-steps li:hover { color: var(--of-text-2); }
+  .hud-steps li.is-done { color: var(--of-text-2); }
+  .hud-steps li.is-active { color: var(--of-invert); background: var(--of-text); border-color: var(--of-text); }
+
+  .hud-progress { width: min(640px, 60%); justify-self: center; height: 1px; margin-top: 1.25rem; background: var(--of-line-strong); overflow: hidden; }
+  .hud-progress i { display: block; height: 100%; background: var(--of-text); transform: scaleX(0); transform-origin: left; }
+
+  /* Tunnel on capable desktops; tab player elsewhere */
+  .flow-section { display: none; }
+  @media (max-width: 1100px), (prefers-reduced-motion: reduce) {
+    .tunnel-wrap { display: none; }
+    .flow-section { display: block; }
+  }
+  @media (max-width: 1400px) { .hud-steps li { font-size: 0; gap: 0; } .hud-steps li span { font-size: 0.7rem; } }
+
+  /* ── How it works player ── */
+  .flow { display: grid; grid-template-columns: 330px 1fr; gap: 1.25rem; align-items: stretch; }
+
+  .flow-tabs { display: flex; flex-direction: column; gap: 0.35rem; }
+  .flow-tab {
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    width: 100%;
+    padding: 1rem 1.1rem;
+    border-radius: 14px;
+    border: 1px solid transparent;
+    text-align: left;
+    color: var(--of-text-3);
+    overflow: hidden;
+    transition: color 0.4s var(--ease-out), background 0.4s var(--ease-out), border-color 0.4s var(--ease-out);
+  }
+  .flow-tab:hover { color: var(--of-text-2); background: color-mix(in srgb, var(--of-text) 3%, transparent); }
+  .flow-tab[aria-selected='true'] { color: var(--of-text); background: var(--of-surface); border-color: var(--of-line); box-shadow: var(--shadow-sm); }
+  .flow-tab.is-done .flow-num { color: var(--of-text); }
+  .flow-num { font-family: var(--font-mono); font-size: 0.75rem; padding-top: 0.15rem; transition: color 0.4s; }
+  .flow-text { display: flex; flex-direction: column; gap: 0.1rem; }
+  .flow-agent { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.06em; }
+  .flow-title { font-size: 1rem; font-weight: 500; letter-spacing: -0.02em; }
+  .flow-bar { position: absolute; left: 1.1rem; right: 1.1rem; bottom: 0; height: 2px; border-radius: 2px; background: var(--of-line); opacity: 0; transition: opacity 0.3s; }
+  .flow-tab[aria-selected='true'] .flow-bar { opacity: 1; }
+  .flow-bar i { display: block; height: 100%; border-radius: inherit; background: var(--of-text); transform: scaleX(0); transform-origin: left; }
+  .flow-bar i.run { animation: flowBar var(--flow-dur, 6000ms) linear forwards; }
+  @keyframes flowBar { to { transform: scaleX(1); } }
+
+  .flow-stage {
+    position: relative;
+    min-height: 470px;
+    border-radius: 22px;
+    overflow: hidden;
+    isolation: isolate;
+  }
+
+  .flow-grid {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background-image:
+      linear-gradient(to right, rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+      linear-gradient(to bottom, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+    background-size: 44px 44px;
+    mask-image: radial-gradient(ellipse 80% 70% at 75% 40%, #000, transparent 80%);
+    -webkit-mask-image: radial-gradient(ellipse 80% 70% at 75% 40%, #000, transparent 80%);
+  }
+
+  .flow-panel {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-template-columns: 0.9fr 1.1fr;
+    gap: 2.25rem;
+    align-items: center;
+    padding: clamp(1.75rem, 3.5vw, 3rem);
+    pointer-events: none;
+    visibility: hidden;
+  }
+
+  .flow-panel.is-active { pointer-events: auto; visibility: visible; }
+
+  .flow-copy > * { opacity: 0; transform: translateY(14px); filter: blur(4px); transition: opacity 0.6s var(--ease-out), transform 0.8s var(--ease-out), filter 0.6s var(--ease-out); }
+  .flow-panel.is-active .flow-copy > * { opacity: 1; transform: none; filter: none; }
+  .flow-panel.is-active .flow-copy > :nth-child(2) { transition-delay: 70ms; }
+  .flow-panel.is-active .flow-copy > :nth-child(3) { transition-delay: 140ms; }
+
+  .flow-kicker { display: flex; gap: 0.9rem; font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.06em; text-transform: uppercase; color: var(--of-text-2); }
+  .flow-kicker span { color: var(--of-text-3); }
+  .flow-copy h3 { margin-top: 1rem; font-size: clamp(1.6rem, 2.6vw, 2.2rem); letter-spacing: -0.04em; color: var(--of-text); }
+  .flow-copy p:last-child { margin-top: 0.85rem; color: var(--of-text-2); line-height: 1.65; }
+
+  .flow-window {
+    opacity: 0;
+    transform: translateY(24px) scale(0.97);
+    clip-path: inset(0 0 100% 0 round 16px);
+    transition: opacity 0.5s var(--ease-out), transform 0.9s var(--ease-out), clip-path 0.9s var(--ease-out);
+  }
+  .flow-panel.is-active .flow-window { opacity: 1; transform: none; clip-path: inset(0 0 0 0 round 16px); transition-delay: 120ms; }
+  .flow-window pre { margin: 0; padding: 1.25rem 1.4rem 1.5rem; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.85; white-space: pre-wrap; word-break: break-word; color: #c8c9ce; min-height: 220px; }
+
+  .t-k, .flow-window :global(.t-k) { color: #f2f2f0; }
+  .t-p, .flow-window :global(.t-p) { color: #c8c9ce; }
+  .t-s, .flow-window :global(.t-s) { color: #a7a8ae; }
+  .t-n, .flow-window :global(.t-n) { color: #8b8c92; }
+  .t-c, .flow-window :global(.t-c) { color: #66676d; }
+  .t-g, .flow-window :global(.t-g) { color: #5fe3b0; }
+  .t-h, .flow-window :global(.t-h) { color: #ffffff; font-weight: 500; }
+
+  /* ── Split heading ── */
+  .split-head { display: grid; grid-template-columns: 1fr 1fr; gap: 2rem 4rem; align-items: end; margin-bottom: clamp(3rem, 6vw, 4.5rem); }
+  .split-head h2 { margin-top: 1.1rem; }
+  .split-head > a { justify-self: end; }
+
+  .team-section { padding-top: clamp(3rem, 6vw, 5rem); }
+
+  /* ── Crew (expanding agent panels) ── */
+  .crew { display: flex; gap: 0.6rem; height: 480px; }
+
+  .member {
+    position: relative;
+    flex: 1 1 0;
+    min-width: 0;
+    display: flex;
+    border-radius: 20px;
+    border: 1px solid var(--of-line);
+    background: var(--of-surface);
+    overflow: hidden;
+    cursor: pointer;
+    outline: none;
+    transition: flex-grow 0.8s var(--ease-out), background 0.5s var(--ease-out), border-color 0.5s, color 0.5s;
+  }
+
+  .member:hover:not(.is-open) { border-color: var(--of-line-strong); }
+  .member:focus-visible { box-shadow: 0 0 0 2px var(--of-text); }
+
+  .member.is-open {
+    flex-grow: 4.2;
+    cursor: default;
+    background: #0b0b0c;
+    border-color: #0b0b0c;
+    color: #f2f2f0;
+  }
+
+  .member-rail {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 1.4rem 0;
+    transition: opacity 0.35s var(--ease-out);
+  }
+
+  .member.is-open .member-rail { opacity: 0; pointer-events: none; }
+  .m-num { font-family: var(--font-mono); font-size: 0.72rem; color: var(--of-text-3); }
+  .m-vert { writing-mode: vertical-rl; transform: rotate(180deg); font-family: var(--font-mono); font-size: 1.15rem; font-weight: 500; letter-spacing: 0.12em; }
+
+  .m-icon {
+    display: grid;
+    place-items: center;
+    width: 40px;
+    height: 40px;
+    border-radius: 11px;
+    border: 1px solid var(--of-line-strong);
+    color: var(--of-text);
+  }
+
+  .m-icon svg { width: 20px; height: 20px; }
+
+  .member-body {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 420px;
+    padding: clamp(1.5rem, 2.6vw, 2.25rem);
+    opacity: 0;
+    transform: translateX(20px);
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.6s var(--ease-out);
+  }
+
+  .member.is-open .member-body { opacity: 1; transform: none; pointer-events: auto; transition-delay: 0.25s, 0.2s; }
+  .member.is-open .m-icon-lg { border-color: rgba(255, 255, 255, 0.18); color: #f2f2f0; }
+  .m-icon-lg { width: 52px; height: 52px; border-radius: 14px; }
+  .m-icon-lg svg { width: 26px; height: 26px; }
+
+  .member-body::after {
+    content: '';
+    position: absolute;
+    right: -10%;
+    top: -20%;
+    width: 60%;
+    height: 80%;
+    background: radial-gradient(closest-side, rgba(255, 255, 255, 0.07), transparent);
+    pointer-events: none;
+  }
+
+  .m-top { display: flex; align-items: center; justify-content: space-between; }
+  .m-role { font-family: var(--font-mono); font-size: 0.72rem; letter-spacing: 0.08em; text-transform: uppercase; color: #8d8e94; }
+  .m-name { margin-top: auto; font-family: var(--font-mono); font-size: clamp(2.2rem, 3.6vw, 3.2rem); font-weight: 500; letter-spacing: 0.02em; color: #fff; }
+  .m-tag { margin-top: 0.75rem; max-width: 44ch; color: #b6b7bc; line-height: 1.6; }
+
+  .m-spec { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; margin-top: 1.75rem; padding-top: 1.25rem; border-top: 1px solid rgba(255, 255, 255, 0.1); }
+  .m-spec dt { font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; color: #6f7076; }
+  .m-spec dd { margin-top: 0.35rem; font-size: 0.85rem; line-height: 1.45; color: #e2e2e0; }
+
+  .m-link { align-self: flex-start; margin-top: 1.5rem; font-size: 0.9rem; font-weight: 500; color: #fff; background: linear-gradient(currentColor, currentColor) 0 100% / 0 1px no-repeat; transition: background-size 0.4s var(--ease-out); }
+  .m-link:hover { background-size: 100% 1px; }
+
+  :global([data-theme='dark']) .member.is-open { background: #151517; border-color: rgba(255, 255, 255, 0.12); }
+
+  @media (max-width: 1000px) {
+    .crew { flex-direction: column; height: auto; }
+    .member { flex: none; cursor: default; background: #0b0b0c; color: #f2f2f0; border-color: #0b0b0c; }
+    .member-rail { display: none; }
+    .member-body { opacity: 1; transform: none; pointer-events: auto; min-width: 0; }
+    .m-name { margin-top: 1.5rem; }
+    .m-spec { grid-template-columns: 1fr; }
+    .member .m-icon-lg { color: #f2f2f0; border-color: rgba(255, 255, 255, 0.18); }
+  }
+
+  /* ── Layers ── */
+  .layers { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2.5rem, 6vw, 5rem); align-items: center; }
+  .layers-copy h2 { margin: 1.1rem 0 1.3rem; }
+
+  .stack { display: flex; flex-direction: column; }
+  .layer { padding: 1.35rem 1.5rem; border-radius: 16px; border: 1px solid var(--of-line-strong); background: var(--of-surface); }
+  .layer-top { background: #0b0b0c; color: #f2f2f0; border-color: #0b0b0c; }
+  .layer-head { display: flex; align-items: center; gap: 0.6rem; }
+  .layer-head b { font-weight: 500; }
+  .layer-head span { margin-left: auto; font-family: var(--font-mono); font-size: 0.7rem; opacity: 0.55; }
+  .layer-head .coder-mark { display: grid; place-items: center; width: 22px; height: 22px; margin-left: 0; border-radius: 5px; background: var(--of-text); color: var(--of-invert); font-family: var(--font-mono); font-weight: 600; font-size: 0.78rem; opacity: 1; }
+  .layer ul { display: grid; grid-template-columns: 1fr 1fr; gap: 0.5rem 1rem; margin-top: 1.1rem; }
+  .layer li { position: relative; padding-left: 0.95rem; font-size: 0.85rem; line-height: 1.45; opacity: 0.8; }
+  .layer li::before { content: ''; position: absolute; left: 0; top: 0.55em; width: 4px; height: 4px; background: currentColor; }
+  .layer-base { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 0.75rem; border-style: dashed; background: transparent; font-size: 0.9rem; }
+  .layer-base b { font-weight: 500; }
+  .base-chips { display: flex; flex-wrap: wrap; gap: 0.35rem; }
+
+  .layer-link { display: flex; justify-content: center; gap: 4rem; height: 28px; }
+  .layer-link i { position: relative; width: 1px; background: var(--of-line-strong); overflow: hidden; }
+  .layer-link i::after { content: ''; position: absolute; left: 0; width: 1px; height: 10px; background: var(--of-text); animation: packet 1.8s linear infinite; }
+  .layer-link i:nth-child(2)::after { animation-delay: -0.6s; }
+  .layer-link i:nth-child(3)::after { animation-delay: -1.2s; }
+  @keyframes packet { from { top: -10px; } to { top: 28px; } }
+
+  /* ── Demo ── */
+  .demo { padding: clamp(5rem, 11vw, 8rem) 0; }
+  .player-frame { max-width: 1040px; margin: 0 auto; padding: 8px; border-radius: 22px; border: 1px solid var(--of-line); background: rgba(255, 255, 255, 0.02); }
+  .player { position: relative; aspect-ratio: 16 / 9; border-radius: 15px; overflow: hidden; background: #050506; }
+  .player :global(iframe) { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; }
+  .play { position: absolute; inset: 0; display: grid; place-items: center; width: 100%; }
+  .play img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; filter: grayscale(1); opacity: 0.45; transition: transform 1.2s var(--ease-out), opacity 0.5s; }
+  .play:hover img { transform: scale(1.03); opacity: 0.6; }
+  .play-shade { position: absolute; inset: 0; background: radial-gradient(circle, transparent, rgba(5, 5, 6, 0.8)); }
+  .play-btn { position: relative; display: grid; place-items: center; width: 88px; height: 88px; border-radius: 50%; background: #f2f2f0; color: #0b0b0c; transition: transform 0.5s var(--ease-out); }
+  .play:hover .play-btn { transform: scale(1.08); }
+  .play-btn svg { width: 28px; height: 28px; margin-left: 4px; }
+  .play-label { position: absolute; bottom: 1.5rem; font-family: var(--font-mono); font-size: 0.74rem; color: #a2a3a8; }
+  .demo-links { display: flex; justify-content: center; flex-wrap: wrap; gap: 2rem; margin-top: 2rem; }
+
+  /* ── Quick start ── */
+  .quick { display: grid; grid-template-columns: 1fr 1.05fr; gap: clamp(2.5rem, 6vw, 5rem); align-items: center; }
+  .quick-steps { display: grid; margin-top: 2.25rem; border-top: 1px solid var(--of-line-strong); }
+  .quick-steps li { display: flex; gap: 1.25rem; padding: 1.1rem 0; border-bottom: 1px solid var(--of-line-strong); }
+  .quick-steps li > span { font-family: var(--font-mono); font-size: 0.75rem; color: var(--of-text-3); padding-top: 0.15rem; }
+  .quick-steps b { font-weight: 500; }
+  .quick-steps p { font-size: 0.9rem; color: var(--of-text-2); margin-top: 0.15rem; }
+  .term { margin: 0; padding: 1.35rem 1.4rem 1.6rem; font-family: var(--font-mono); font-size: 0.8rem; line-height: 1.85; color: #a7a8ae; white-space: pre-wrap; word-break: break-word; }
+  .term b { color: #f2f2f0; font-weight: 500; }
+  .cursor { display: inline-block; width: 7px; height: 14px; margin-left: 4px; vertical-align: -2px; background: #f2f2f0; animation: of-blink 1s steps(1) infinite; }
+
+  /* ── Posts ── */
+  .posts { display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; }
+  .post { display: block; }
+  .post-cover { aspect-ratio: 16 / 10; border-radius: 14px; overflow: hidden; background: var(--of-surface-2); }
+  .post-cover img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(0.85); transition: transform 1s var(--ease-out), filter 0.6s; }
+  .post:hover .post-cover img { transform: scale(1.04); filter: grayscale(0); }
+  .post-fallback { width: 100%; height: 100%; background: var(--of-surface-3); }
+  .post-meta { margin-top: 1.1rem; font-family: var(--font-mono); font-size: 0.72rem; color: var(--of-text-3); }
+  .post h3 { margin-top: 0.5rem; font-size: 1.2rem; line-height: 1.3; letter-spacing: -0.025em; }
+
+  /* ── FAQ ── */
+  .faq { display: grid; grid-template-columns: 0.8fr 1.2fr; gap: clamp(2rem, 6vw, 5rem); align-items: start; }
+  .faq a { text-decoration: underline; text-underline-offset: 3px; color: var(--of-text); }
+
+  /* ── Responsive ── */
+  @media (max-width: 1000px) {
+    .story-grid, .layers, .quick, .faq, .split-head, .feature, .feature-wide .feature-copy { grid-template-columns: 1fr; }
+    .feature.is-flipped .feature-copy { order: 0; }
+    .feature-wide .feature-copy a { grid-column: auto; }
+    .brief img { display: none; }
+    .split-head > a { justify-self: start; }
+    .flow { grid-template-columns: 1fr; }
+    .flow-tabs { flex-direction: row; overflow-x: auto; scrollbar-width: none; }
+    .flow-tab { min-width: 210px; }
+    .flow-stage { min-height: 580px; }
+    .flow-panel { grid-template-columns: 1fr; align-content: start; gap: 1.5rem; }
+    .cap-grid { grid-template-columns: 1fr 1fr; }
+    .facts { grid-template-columns: 1fr 1fr; }
+    .fact:nth-child(3) { padding-left: 0; border-left: 0; }
+    .fact:nth-child(n + 3) { border-top: 1px solid var(--of-line-strong); }
+    .posts { grid-template-columns: 1fr 1fr; }
+  }
+
+  @media (max-width: 640px) {
+    .cap-grid, .posts { grid-template-columns: 1fr; }
+    .cap { min-height: 0; }
+    .layer ul { grid-template-columns: 1fr; }
+    .strip-meta { display: none; }
+    .hero-title { font-size: clamp(2.1rem, 10.4vw, 2.6rem); }
+    .hero-cta .of-btn { flex: 1 1 auto; }
+    .hero-shade { background: linear-gradient(0deg, #0b0b0c 30%, rgba(11, 11, 12, 0.6)); }
+    .fact { padding: 1.75rem 1rem 1.75rem 0; }
+    .fact + .fact { padding-left: 1rem; }
+  }
+</style>

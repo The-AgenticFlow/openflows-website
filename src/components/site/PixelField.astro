@@ -1,0 +1,126 @@
+---
+// Animated pixel grid: cells fade in and out at random and light up under the
+// pointer. Monochrome by default; a rare cell uses the accent colour.
+interface Props {
+  cell?: number;
+  density?: number;
+  tone?: 'dark' | 'light';
+  class?: string;
+}
+
+const { cell = 28, density = 0.06, tone = 'dark', class: className = '' } = Astro.props;
+---
+
+<canvas
+  class={`of-pixels ${className}`}
+  data-pixel-field
+  data-cell={cell}
+  data-density={density}
+  data-tone={tone}
+  aria-hidden="true"
+></canvas>
+
+<style>
+  .of-pixels {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    display: block;
+    pointer-events: none;
+  }
+</style>
+
+<script>
+  type Cell = { a: number; target: number; speed: number; accent: boolean };
+
+  const reduce = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  function setup(canvas: HTMLCanvasElement) {
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+    const size = Number(canvas.dataset.cell) || 28;
+    const density = Number(canvas.dataset.density) || 0.06;
+    const dark = canvas.dataset.tone !== 'light';
+    const base = dark ? '255,255,255' : '12,12,13';
+    const accent = dark ? '95,227,176' : '15,107,92';
+    const host = canvas.parentElement as HTMLElement;
+
+    let cols = 0;
+    let rows = 0;
+    let cells: Cell[] = [];
+    let visible = false;
+    let raf = 0;
+    let pointer = { x: -1e4, y: -1e4 };
+    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+
+    const resize = () => {
+      const rect = canvas.getBoundingClientRect();
+      canvas.width = Math.round(rect.width * dpr);
+      canvas.height = Math.round(rect.height * dpr);
+      cols = Math.ceil(rect.width / size);
+      rows = Math.ceil(rect.height / size);
+      cells = Array.from({ length: cols * rows }, () => ({ a: 0, target: 0, speed: 0.02, accent: false }));
+      for (const c of cells) {
+        if (Math.random() < density) {
+          c.a = c.target = Math.random() * 0.5;
+        }
+      }
+    };
+
+    const draw = () => {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      const gap = Math.max(1, size * 0.08);
+      for (let i = 0; i < cells.length; i++) {
+        const c = cells[i];
+        if (!reduce) {
+          if (c.a === c.target && Math.random() < density * 0.02) {
+            c.target = Math.random() < 0.5 ? Math.random() * 0.55 + 0.05 : 0;
+            c.speed = 0.008 + Math.random() * 0.02;
+            c.accent = Math.random() < 0.035;
+          }
+          const x = (i % cols) * size + size / 2;
+          const y = Math.floor(i / cols) * size + size / 2;
+          const d = Math.hypot(x - pointer.x, y - pointer.y);
+          if (d < size * 3.2) {
+            c.target = Math.max(c.target, 0.55 * (1 - d / (size * 3.2)));
+            c.speed = 0.08;
+          }
+          const delta = c.target - c.a;
+          c.a = Math.abs(delta) < c.speed ? c.target : c.a + Math.sign(delta) * c.speed;
+          if (c.a === c.target && c.target > 0 && c.speed >= 0.08) c.target = 0;
+        }
+        if (c.a <= 0.01) continue;
+        ctx.fillStyle = `rgba(${c.accent ? accent : base},${(dark ? 0.32 : 0.16) * c.a})`;
+        ctx.fillRect((i % cols) * size + gap, Math.floor(i / cols) * size + gap, size - gap * 2, size - gap * 2);
+      }
+    };
+
+    const loop = () => {
+      draw();
+      if (visible && !reduce) raf = requestAnimationFrame(loop);
+    };
+
+    new ResizeObserver(() => {
+      resize();
+      draw();
+    }).observe(canvas);
+
+    new IntersectionObserver(([entry]) => {
+      visible = entry.isIntersecting;
+      cancelAnimationFrame(raf);
+      if (visible) loop();
+    }).observe(canvas);
+
+    host?.addEventListener('pointermove', (e) => {
+      const rect = canvas.getBoundingClientRect();
+      pointer = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }, { passive: true });
+    host?.addEventListener('pointerleave', () => {
+      pointer = { x: -1e4, y: -1e4 };
+    });
+  }
+
+  document.querySelectorAll<HTMLCanvasElement>('canvas[data-pixel-field]').forEach(setup);
+</script>

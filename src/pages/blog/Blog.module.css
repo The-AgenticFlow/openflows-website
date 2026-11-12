@@ -288,7 +288,7 @@
   letter-spacing: 0.05em;
   padding: var(--space-1) var(--space-3);
   background-color: var(--color-aubergine);
-  color: #fff;
+  color: var(--of-invert);
   border-radius: var(--radius-sm);
 }
 
@@ -613,7 +613,7 @@
   display: inline-block;
   padding: var(--space-3) var(--space-6);
   background: var(--color-aubergine);
-  color: #fff;
+  color: var(--of-invert);
   font-size: var(--font-size-sm);
   font-weight: var(--font-weight-medium);
   border-radius: var(--radius-md);
