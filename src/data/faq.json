@@ -1,0 +1,142 @@
+{
+  "home": [
+    "what-is-openflows",
+    "open-source",
+    "models",
+    "sentinel",
+    "private-repos",
+    "cost"
+  ],
+  "groups": [
+    {
+      "id": "product",
+      "title": "The product",
+      "items": [
+        {
+          "id": "what-is-openflows",
+          "question": "What is OpenFlows, and how does it relate to Coder?",
+          "answer": "OpenFlows is an autonomous AI software team that turns GitHub issues into reviewed pull requests. Coder hosts the isolated workspaces where the agents run; OpenFlows decides how they coordinate. Manager owns organizations, tenants, workspace lifecycle, runtime identity and credential brokerage, and Nexus coordinates planning, review and delivery inside each tenant."
+        },
+        {
+          "id": "open-source",
+          "question": "Is OpenFlows open source?",
+          "answer": "Yes. OpenFlows is MIT licensed and self-hosted on your own Coder environment. You can read the code, run it, change it and [contribute](/docs/contributing)."
+        },
+        {
+          "id": "agent-loop",
+          "question": "How does an issue become a merged pull request?",
+          "answer": "NEXUS turns a GitHub issue into a ticket and assigns a FORGE worker. FORGE writes a plan and stops until SENTINEL approves it, then implements it and opens a pull request. SENTINEL reviews the change, VESSEL merges it once checks pass, and LORE records what was decided. See [How OpenFlows works](/docs/introduction/how-it-works)."
+        },
+        {
+          "id": "write-code",
+          "question": "Do I still review the code?",
+          "answer": "You decide how much. Humans own the issues, the specs and the gates that need a person, and every pull request stays reviewable on GitHub. When an agent hits an ambiguous spec or an unresolvable conflict, the ticket is escalated to a human instead of guessed at."
+        },
+        {
+          "id": "cost",
+          "question": "How much does OpenFlows cost to run?",
+          "answer": "OpenFlows itself is free. Your cost is your own infrastructure and model usage. You control it by choosing a model per role, for example a more careful model for the reviewer and a general coding model for the builder."
+        }
+      ]
+    },
+    {
+      "id": "models",
+      "title": "Models and data",
+      "items": [
+        {
+          "id": "models",
+          "question": "Which models can OpenFlows use?",
+          "answer": "You enable models in the Coder AI settings and assign one to each role in the agent registry. Calls go through your own model gateway in the control plane, so you choose which models your team can use and can switch a role to another model without a restart."
+        },
+        {
+          "id": "ai-calls",
+          "question": "Where do AI calls happen?",
+          "answer": "Model access follows the configured Coder and agent runtime settings. Manager brokers infrastructure credentials. A workspace can receive a scoped bootstrap bundle and short-lived GitHub installation tokens. See the [credential flow](/docs/architecture/credentials)."
+        },
+        {
+          "id": "third-parties",
+          "question": "Is my code sent to third parties?",
+          "answer": "Code is available to the workspace and to the model provider you configure. GitHub also receives repository API and Git traffic. Review the provider, Coder and GitHub data paths before you deploy on sensitive repositories."
+        },
+        {
+          "id": "private-repos",
+          "question": "Can I run OpenFlows on a private repository?",
+          "answer": "Yes, when the GitHub App installation has access to that repository. Manager checks that the repository belongs to the tenant's organization and brokers short-lived, scoped installation tokens. Human GitHub OAuth is used to sign in, not as the runtime Git token."
+        }
+      ]
+    },
+    {
+      "id": "security",
+      "title": "Security and review",
+      "items": [
+        {
+          "id": "workspace",
+          "question": "How does an agent act inside a workspace?",
+          "answer": "Each agent runs in its own isolated, disposable Coder workspace. It registers with Manager, uses tenant-scoped runtime credentials and exchanges task messages with Nexus through the hook and A2A path. Its authority is limited to its tenant, workspace, repository and purpose."
+        },
+        {
+          "id": "sentinel",
+          "question": "How does SENTINEL decide whether to approve work?",
+          "answer": "SENTINEL checks the work for security holes, quality issues and missing tests against the agreed plan. It reviews from its own workspace and never touches the builder's files. When it needs proof, it asks for an allowlisted command to be run in FORGE's workspace. When in doubt, it does not approve."
+        },
+        {
+          "id": "air-gapped",
+          "question": "Can I run OpenFlows air-gapped or on-premises?",
+          "answer": "You can self-host Manager, PostgreSQL, Redis and Coder on your own infrastructure. The GitHub integration needs network access to GitHub for OAuth, App installation, webhooks and API calls, so a fully air-gapped deployment is not supported today."
+        }
+      ]
+    },
+    {
+      "id": "operations",
+      "title": "Running it",
+      "items": [
+        {
+          "id": "stuck",
+          "question": "What happens if work gets stuck or fails?",
+          "answer": "A reconciliation loop re-reads the system on a steady cadence, advances every ticket and repairs what it can, with a limited number of retries. When retries run out, the ticket is parked and escalated to a human with a notification, instead of failing silently."
+        },
+        {
+          "id": "conflicts",
+          "question": "What happens when there are merge conflicts?",
+          "answer": "VESSEL watches CI and detects conflicts early. Fixable conflicts go back to the same FORGE worker with its context intact. A conflict that cannot be resolved is escalated to a human."
+        },
+        {
+          "id": "parallel",
+          "question": "Can several workers run at once?",
+          "answer": "Yes. The agent registry sets how many workers a role may run at once. OpenFlows runs a fleet of worker workspaces in parallel and assigns work to whichever one is free."
+        },
+        {
+          "id": "after-task",
+          "question": "What happens to workspaces after a task?",
+          "answer": "Worker workspaces are short-lived. They are provisioned when work is assigned and can be torn down when no longer needed. Tokens expire or rotate; verify workspace teardown and credential revocation in your own operations."
+        },
+        {
+          "id": "extend",
+          "question": "How do I change the configuration or add a skill?",
+          "answer": "Adding a skill, connecting an MCP server or enabling another model is a configuration change in the agent registry, with no restart. Adding a brand-new role is the one change that touches the code. See the [guides](/docs/guides)."
+        }
+      ]
+    },
+    {
+      "id": "help",
+      "title": "Getting help",
+      "items": [
+        {
+          "id": "broken",
+          "question": "Where do I go if something is broken?",
+          "answer": "Start with the [Troubleshooting](/docs/guides/troubleshooting) guide, which covers setup failures, Coder connectivity, stuck tickets and merge conflicts. If that does not solve it, ask on [Discord](https://discord.gg/gDhK2RQZpY) or open an issue on GitHub."
+        },
+        {
+          "id": "api",
+          "question": "Is there an API reference?",
+          "answer": "OpenFlows is driven through the [command surface](/docs/reference/command-surface), which covers the Console and its command-line equivalents. There is no separate public HTTP API documented yet."
+        },
+        {
+          "id": "security-report",
+          "question": "How do I report a security issue?",
+          "answer": "Report it privately through [GitHub security advisories](https://github.com/The-AgenticFlow/OpenFlows/security/advisories/new). Please do not open a public issue for vulnerabilities."
+        }
+      ]
+    }
+  ]
+}

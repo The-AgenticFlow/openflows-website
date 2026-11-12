@@ -1,12 +1,13 @@
 import { defineConfig } from 'astro/config';
 import react from '@astrojs/react';
 import sitemap from '@astrojs/sitemap';
+import remarkDocs from './src/lib/remark-docs.mjs';
 
 export default defineConfig({
   site: 'https://openflows.dev',
   integrations: [react(), sitemap()],
   output: 'static',
-  redirects: { '/contact': '/resources#contact' },
+  redirects: { '/contact': '/resources#contact', '/docs/resources/faq': '/faq' },
   
   // Preserve existing Vite config
   vite: {
@@ -24,6 +25,7 @@ export default defineConfig({
   
   // Markdown configuration
   markdown: {
+    remarkPlugins: [remarkDocs],
     syntaxHighlight: 'shiki',
     shikiConfig: {
       theme: 'github-dark',

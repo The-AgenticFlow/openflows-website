@@ -95,4 +95,24 @@ const stories = defineCollection({
   }),
 });
 
-export const collections = { authors, blogs, insights, research, stories };
+// Documentation pages. Editable from the CMS; the folder is the docs section
+// and the file name is the page address (index.md is the section overview).
+export const DOCS_SECTIONS = ['Introduction', 'Get Started', 'Core Concepts', 'Architecture', 'Guides', 'Reference', 'Contributing', 'Resources'] as const;
+
+const docs = defineCollection({
+  loader: glob({ pattern: '**/*.md', base: './src/content/docs' }),
+  schema: z.object({
+    title: z.string(),
+    nav_label: z.string().optional(),
+    section: z.enum(DOCS_SECTIONS),
+    order: z.number().default(50),
+    description: z.string().optional(),
+    eyebrow: z.string().optional(),
+    read_time: z.string().optional(),
+    level: z.string().optional(),
+    hidden: z.boolean().optional().default(false),
+  }),
+});
+
+export const collections = {
+  docs, authors, blogs, insights, research, stories };

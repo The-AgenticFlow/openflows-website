@@ -1,0 +1,66 @@
+---
+// Accordion of FAQ items. Native <details>, so it works without JavaScript and
+// a #question-id link opens the right answer (see the script on /faq).
+import type { FaqItem } from '@/data/faq';
+
+interface Props {
+  items: FaqItem[];
+  open?: string;
+}
+
+const { items, open } = Astro.props;
+---
+
+<div class="faq-list">
+  {items.map((item) => (
+    <details class="faq-item" id={item.id} open={item.id === open} data-faq-item data-faq-text={`${item.q} ${item.a.replace(/<[^>]+>/g, ' ')}`.toLowerCase()}>
+      <summary>
+        <span class="faq-q">{item.q}</span>
+        <span class="faq-icon" aria-hidden="true"></span>
+      </summary>
+      <div class="faq-a" set:html={item.a} />
+    </details>
+  ))}
+</div>
+
+<style>
+  .faq-list { border-top: 1px solid var(--of-line); }
+  .faq-item { border-bottom: 1px solid var(--of-line); scroll-margin-top: calc(var(--nav-height) + 24px); }
+  .faq-item[hidden] { display: none; }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1.5rem;
+    padding: 1.3rem 0;
+    cursor: pointer;
+    list-style: none;
+  }
+  summary::-webkit-details-marker { display: none; }
+  summary:focus-visible { outline: 2px solid var(--of-text); outline-offset: 4px; border-radius: 6px; }
+
+  .faq-q { font-size: 1.04rem; font-weight: 500; letter-spacing: -0.015em; color: var(--of-text); transition: color 0.2s; }
+  summary:hover .faq-q { color: var(--of-text); }
+  .faq-item:not([open]) summary:hover .faq-q { color: var(--of-text-2); }
+
+  .faq-icon { position: relative; flex-shrink: 0; width: 28px; height: 28px; border-radius: 50%; border: 1px solid var(--of-line-strong); transition: background 0.3s, border-color 0.3s; }
+  .faq-icon::before, .faq-icon::after { content: ''; position: absolute; left: 50%; top: 50%; width: 10px; height: 1.5px; margin: -0.75px 0 0 -5px; background: var(--of-text-2); transition: transform 0.35s var(--ease-out), background 0.3s; }
+  .faq-icon::after { transform: rotate(90deg); }
+  .faq-item[open] .faq-icon { background: var(--of-text); border-color: var(--of-text); }
+  .faq-item[open] .faq-icon::before, .faq-item[open] .faq-icon::after { background: var(--of-invert); }
+  .faq-item[open] .faq-icon::after { transform: rotate(0deg); }
+
+  .faq-a { max-width: 68ch; padding: 0 3.5rem 1.5rem 0; color: var(--of-text-2); line-height: 1.7; font-size: 0.97rem; }
+  .faq-item[open] .faq-a { animation: faqIn 0.45s var(--ease-out); }
+  .faq-a :global(p + p) { margin-top: 0.8rem; }
+  .faq-a :global(a) { color: var(--of-text); text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--of-line-strong); }
+  .faq-a :global(a:hover) { text-decoration-color: currentColor; }
+
+  @keyframes faqIn {
+    from { opacity: 0; transform: translateY(-6px); }
+    to { opacity: 1; transform: none; }
+  }
+
+  @media (max-width: 640px) { .faq-a { padding-right: 0; } }
+</style>

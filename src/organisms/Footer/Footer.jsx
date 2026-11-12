@@ -18,7 +18,7 @@ const FOOTER_LINKS = [
       { label: 'Documentation', href: '/docs' },
       { label: 'Blog', href: '/blog' },
       { label: 'Demos', href: '/demos' },
-      { label: 'FAQ', href: '/docs/resources/faq' },
+      { label: 'FAQ', href: '/faq' },
     ],
   },
   {

@@ -34,8 +34,7 @@ const prismLanguages = ['bash', 'javascript', 'typescript', 'python', 'rust', 'y
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#f6f5f2" media="(prefers-color-scheme: light)" />
-    <meta name="theme-color" content="#09090a" media="(prefers-color-scheme: dark)" />
+    <meta name="theme-color" content="#09090a" />
     <link rel="icon" type="image/png" href="/openlogo-dark.png" />
     <link rel="apple-touch-icon" href="/openlogo.png" />
 
@@ -52,9 +51,8 @@ const prismLanguages = ['bash', 'javascript', 'typescript', 'python', 'rust', 'y
         root.classList.add('of-js');
         var theme;
         try { theme = localStorage.getItem('of-theme'); } catch (e) {}
-        if (theme !== 'light' && theme !== 'dark') {
-          theme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-        }
+        // Dark is the default; a visitor's own choice from the toggle wins.
+        if (theme !== 'light' && theme !== 'dark') theme = 'dark';
         root.setAttribute('data-theme', theme);
       })();
     </script>

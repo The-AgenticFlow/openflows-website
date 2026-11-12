@@ -1,12 +1,15 @@
 ---
 import BaseLayout from '@/layouts/BaseLayout.astro';
-import FAQ from '@/organisms/FAQ/FAQ';
+import FaqList from '@/components/site/FaqList.astro';
+import { FAQ_HOME, faqItem } from '@/data/faq';
 import CtaBanner from '@/components/site/CtaBanner.astro';
 import PixelField from '@/components/site/PixelField.astro';
 import { AGENT_SUMMARY } from '@/data/agentSummary';
 import { getPublishedPosts, getPostHref, formatPostDate, getReadTime } from '@/components/blog/blog';
 
 const posts = (await getPublishedPosts()).slice(0, 3);
+// The hero strip always points at the newest post, so it never goes stale or 404s.
+const latest = posts[0];
 
 const LOGOS = [
   { name: 'Adorsys', src: '/images/mono-logo-adorsys.png', h: 36 },
@@ -171,11 +174,11 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
             </div>
           </div>
         </div>
-        <a class="hero-strip" href="/blog/delegated-verification-how-sentinel-gets-forge-to-run-code-without-ever-touching-forges-workspace">
+        {latest && <a class="hero-strip" href={getPostHref(latest)}>
           <span class="of-tag">New</span>
-          <span>Delegated verification: how SENTINEL runs tests without touching FORGE’s workspace</span>
+          <span>{latest.data.title}</span>
           <svg viewBox="0 0 16 16" aria-hidden="true"><path d="M3 8h10M9 4l4 4-4 4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        </a>
+        </a>}
       </div>
     </section>
 
@@ -464,9 +467,10 @@ const HEADLINE = ['Orchestrate AI agents', 'on top of your', 'Coder environment.
             <span class="of-eyebrow">FAQ</span>
             <h2 class="of-h2" style="margin-top:1.1rem" data-split>Questions, answered.</h2>
             <p class="of-lede" style="margin-top:1.1rem">Can’t find what you need? Ask in <a href="https://github.com/The-AgenticFlow/OpenFlows/discussions" target="_blank" rel="noopener noreferrer">GitHub Discussions</a> or on <a href="https://discord.gg/gDhK2RQZpY" target="_blank" rel="noopener noreferrer">Discord</a>.</p>
+            <a href="/faq" class="of-btn of-btn-ghost" style="margin-top:1.6rem">All questions</a>
           </div>
           <div data-reveal>
-            <FAQ client:visible />
+            <FaqList items={FAQ_HOME.map(faqItem)} />
           </div>
         </div>
       </div>

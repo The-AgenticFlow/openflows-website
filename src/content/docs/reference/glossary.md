@@ -1,0 +1,37 @@
+---
+title: Glossary
+section: Reference
+order: 1
+description: "A concise reference of the terms used throughout the OpenFlows documentation."
+---
+
+| Term | Meaning |
+| --- | --- |
+| Agent | An AI worker with a single role in the team (for example, the builder). |
+| A2A relay | The internal live task broker used for one job: let the reviewer ask the builder to run a safe command and return evidence. |
+| Allowlist | The fixed set of safe commands the relay will run during delegated verification. |
+| Coordination store | The shared, durable record of truth that tracks all the team’s state. |
+| Controller | The Nexus process that runs one tenant's orchestration loop and requests managed workers. |
+| Control panel / web UI | The operator dashboard for seeing status, editing the team, steering the fleet, and handling escalations. |
+| Escalation | A ticket parked because it needs a human decision - security, ambiguity, architecture, or exhausted retries. |
+| FORGE | The builder role - writes code against an approved plan, creates branches, and opens pull requests. |
+| Human-in-the-loop | The principle that a person stays at the decisions that matter rather than letting the system guess. |
+| LORE | The writer role - documents decisions and updates changelogs after a merge, often disabled by default. |
+| NEXUS | The orchestrator role - picks up issues, coordinates the team, owns failure recovery, and notifies humans. |
+| Plan mode / planning gate | The structural requirement that FORGE writes a plan and halts until SENTINEL approves it before any code is written. |
+| Registry (agent team) | The live, control-plane configuration of the team: roles, counts, models, skills, and tools. |
+| SENTINEL | The reviewer role - adversarially reviews plans and code for security, quality, and test coverage. |
+| SharedStore | Another name for the coordination store. |
+| Skill | A packaged, loadable capability a role can use - the configuration-only way to teach an agent something new. |
+| Tenant | One team bound to one repository, isolated from other tenants. |
+| Ticket | One piece of work, born from an issue, that travels through the lifecycle to merge. |
+| VESSEL | The DevOps role - watches continuous integration, resolves conflicts, merges approved pull requests, and tears down workspaces. |
+| Worker | An agent slot actively assigned to a ticket, running in its own workspace. |
+| Worker slot | A recorded availability slot for a role’s agents, tracked in the coordination store. |
+| Workspace | A short-lived, disposable environment where an agent does its work. |
+
+## Related
+
+- [Roles Reference](/docs/reference/roles-reference) - the five roles defined in detail.
+- [Lifecycle States](/docs/reference/lifecycle-states) - the phases every ticket travels through.
+- [Configuration Reference](/docs/reference/configuration-reference) - the knobs you can set on the team.

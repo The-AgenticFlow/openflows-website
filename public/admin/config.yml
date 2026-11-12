@@ -10,6 +10,11 @@ backend:
 
 publish_mode: editorial_workflow
 
+# Branding shown in the editor.
+site_url: https://openflows.dev
+display_url: https://openflows.dev
+logo_url: /openlogo-light.png
+
 media_folder: "public/uploads"
 public_folder: "/uploads"
 
@@ -18,25 +23,23 @@ slug:
   clean_accents: true
 
 collections:
-  - name: "authors"
-    label: "Authors"
-    label_singular: "Author"
-    folder: "src/content/authors"
-    create: true
-    slug: "{{slug}}"
-    extension: "json"
-    format: "json"
-    identifier_field: "name"
-    summary: "{{name}}"
-    fields:
-      - { label: "Name", name: "name", widget: "string", hint: "Shown on posts exactly as written here." }
-      - { label: "Photo", name: "avatar", widget: "image", required: false, hint: "Square photo, at least 200 px wide. Leave empty to use the GitHub photo below, or initials." }
-      - { label: "GitHub username", name: "github", widget: "string", required: false, hint: "Optional. Uses their public GitHub photo when no photo is uploaded." }
-      - { label: "Role", name: "role", widget: "string", required: false }
-
   - name: "blogs"
-    label: "Blog Posts"
+    label: "Blog posts"
+    label_singular: "Blog post"
+    description: "Engineering essays shown on /blog. New posts go through Workflow: Draft, In review, Ready, then Publish."
     folder: "src/content/blogs"
+    summary: "{{title}}  ·  {{published_at | date('MMM D, YYYY')}}  ·  {{category_id}}"
+    sortable_fields:
+      - { field: "published_at", label: "Date", default_sort: "desc" }
+      - "title"
+      - "category_id"
+    view_filters:
+      - { label: "Published", field: status, pattern: "published" }
+      - { label: "Drafts", field: status, pattern: "draft" }
+      - { label: "Featured", field: is_featured, pattern: true }
+    view_groups:
+      - { label: "Category", field: category_id }
+      - { label: "Year", field: published_at, pattern: "\\d{4}" }
     create: true
     slug: "{{slug}}"
     extension: "md"
@@ -67,8 +70,14 @@ collections:
       - { label: "Content", name: "body", widget: "markdown" }
 
   - name: "research"
-    label: "Research Papers"
+    label: "Research papers"
+    label_singular: "Research paper"
+    description: "Papers and technical reports shown on /research."
     folder: "src/content/research"
+    summary: "{{title}}  ·  {{publish_date | date('MMM D, YYYY')}}"
+    sortable_fields:
+      - { field: "publish_date", label: "Date", default_sort: "desc" }
+      - "title"
     create: true
     slug: "{{slug}}"
     extension: "md"
@@ -93,8 +102,11 @@ collections:
       - { label: "Content", name: "body", widget: "markdown" }
 
   - name: "stories"
-    label: "Success Stories"
+    label: "Case studies"
+    label_singular: "Case study"
+    description: "Stories from teams using OpenFlows, shown on /resources."
     folder: "src/content/stories"
+    summary: "{{title}}"
     create: true
     slug: "{{slug}}"
     extension: "md"
@@ -106,3 +118,266 @@ collections:
       - { label: "URL", name: "href", widget: "string", required: false }
       - { label: "Image URL", name: "image", widget: "string", required: false }
       - { label: "Content", name: "body", widget: "markdown" }
+
+  - name: "docs-introduction"
+    label: "Introduction"
+    label_singular: "Introduction page"
+    description: "Pages in the Introduction section of /docs. Order sets the position in the sidebar; index is the section overview."
+    folder: "src/content/docs/introduction"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    identifier_field: "title"
+    summary: "{{order}}.  {{title}}"
+    sortable_fields:
+      - { field: "order", label: "Order", default_sort: "asc" }
+      - "title"
+    editor: { preview: false }
+    fields:
+      - { label: "Section", name: "section", widget: "hidden", default: "Introduction" }
+      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
+      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
+      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
+      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
+      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
+      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
+      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
+      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+
+  - name: "docs-getting-started"
+    label: "Get Started"
+    label_singular: "Get Started page"
+    description: "Pages in the Get Started section of /docs. Order sets the position in the sidebar; index is the section overview."
+    folder: "src/content/docs/getting-started"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    identifier_field: "title"
+    summary: "{{order}}.  {{title}}"
+    sortable_fields:
+      - { field: "order", label: "Order", default_sort: "asc" }
+      - "title"
+    editor: { preview: false }
+    fields:
+      - { label: "Section", name: "section", widget: "hidden", default: "Get Started" }
+      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
+      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
+      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
+      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
+      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
+      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
+      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
+      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+
+  - name: "docs-concepts"
+    label: "Core Concepts"
+    label_singular: "Core Concepts page"
+    description: "Pages in the Core Concepts section of /docs. Order sets the position in the sidebar; index is the section overview."
+    folder: "src/content/docs/concepts"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    identifier_field: "title"
+    summary: "{{order}}.  {{title}}"
+    sortable_fields:
+      - { field: "order", label: "Order", default_sort: "asc" }
+      - "title"
+    editor: { preview: false }
+    fields:
+      - { label: "Section", name: "section", widget: "hidden", default: "Core Concepts" }
+      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
+      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
+      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
+      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
+      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
+      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
+      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
+      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+
+  - name: "docs-architecture"
+    label: "Architecture"
+    label_singular: "Architecture page"
+    description: "Pages in the Architecture section of /docs. Order sets the position in the sidebar; index is the section overview."
+    folder: "src/content/docs/architecture"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    identifier_field: "title"
+    summary: "{{order}}.  {{title}}"
+    sortable_fields:
+      - { field: "order", label: "Order", default_sort: "asc" }
+      - "title"
+    editor: { preview: false }
+    fields:
+      - { label: "Section", name: "section", widget: "hidden", default: "Architecture" }
+      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
+      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
+      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
+      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
+      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
+      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
+      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
+      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+
+  - name: "docs-guides"
+    label: "Guides"
+    label_singular: "Guides page"
+    description: "Pages in the Guides section of /docs. Order sets the position in the sidebar; index is the section overview."
+    folder: "src/content/docs/guides"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    identifier_field: "title"
+    summary: "{{order}}.  {{title}}"
+    sortable_fields:
+      - { field: "order", label: "Order", default_sort: "asc" }
+      - "title"
+    editor: { preview: false }
+    fields:
+      - { label: "Section", name: "section", widget: "hidden", default: "Guides" }
+      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
+      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
+      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
+      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
+      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
+      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
+      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
+      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+
+  - name: "docs-reference"
+    label: "Reference"
+    label_singular: "Reference page"
+    description: "Pages in the Reference section of /docs. Order sets the position in the sidebar; index is the section overview."
+    folder: "src/content/docs/reference"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    identifier_field: "title"
+    summary: "{{order}}.  {{title}}"
+    sortable_fields:
+      - { field: "order", label: "Order", default_sort: "asc" }
+      - "title"
+    editor: { preview: false }
+    fields:
+      - { label: "Section", name: "section", widget: "hidden", default: "Reference" }
+      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
+      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
+      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
+      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
+      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
+      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
+      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
+      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+
+  - name: "docs-contributing"
+    label: "Contributing"
+    label_singular: "Contributing page"
+    description: "Pages in the Contributing section of /docs. Order sets the position in the sidebar; index is the section overview."
+    folder: "src/content/docs/contributing"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    identifier_field: "title"
+    summary: "{{order}}.  {{title}}"
+    sortable_fields:
+      - { field: "order", label: "Order", default_sort: "asc" }
+      - "title"
+    editor: { preview: false }
+    fields:
+      - { label: "Section", name: "section", widget: "hidden", default: "Contributing" }
+      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
+      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
+      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
+      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
+      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
+      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
+      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
+      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+
+  - name: "docs-resources"
+    label: "Resources"
+    label_singular: "Resources page"
+    description: "Pages in the Resources section of /docs. Order sets the position in the sidebar; index is the section overview."
+    folder: "src/content/docs/resources"
+    create: true
+    slug: "{{slug}}"
+    extension: "md"
+    format: "frontmatter"
+    identifier_field: "title"
+    summary: "{{order}}.  {{title}}"
+    sortable_fields:
+      - { field: "order", label: "Order", default_sort: "asc" }
+      - "title"
+    editor: { preview: false }
+    fields:
+      - { label: "Section", name: "section", widget: "hidden", default: "Resources" }
+      - { label: "Title", name: "title", widget: "string", hint: "The page heading." }
+      - { label: "Sidebar label", name: "nav_label", widget: "string", required: false, hint: "Shorter name for the sidebar. Leave empty to use the title." }
+      - { label: "Order", name: "order", widget: "number", value_type: "int", default: 50, hint: "Position in the sidebar: lower comes first. The overview page uses 0." }
+      - { label: "Description", name: "description", widget: "text", required: false, hint: "One or two sentences shown under the title and in search results." }
+      - { label: "Eyebrow", name: "eyebrow", widget: "string", required: false, hint: "Optional small label above the title." }
+      - { label: "Read time", name: "read_time", widget: "string", required: false, hint: "Optional, for example ~10 min read." }
+      - { label: "Level", name: "level", widget: "select", required: false, options: ["Beginner", "Intermediate", "Advanced"] }
+      - { label: "Hide from sidebar", name: "hidden", widget: "boolean", required: false, default: false, hint: "Keeps the page online but out of the sidebar and search." }
+      - { label: "Content", name: "body", widget: "markdown", hint: "Write in Markdown. Extras: a callout is a quote starting with [!TIP], [!INFO] or [!WARNING] and a title, for example '> [!TIP] Good to know'. A numbered step is a heading like '## 1. Install'. Link cards go in a ```cards block, one '- [Title](/docs/page): description' per line. A diagram goes in a ```mermaid block. Use the + menu to insert these." }
+
+  - name: "site"
+    label: "Site content"
+    label_singular: "Site content"
+    description: "Content that appears across the website, outside the blog and docs."
+    files:
+      - name: "faq"
+        label: "FAQ"
+        file: "src/data/faq.json"
+        editor: { preview: false }
+        description: "Questions on /faq and the homepage. Answers are short Markdown: **bold**, `code` and [links](/docs/...)."
+        fields:
+          - label: "Topics"
+            name: "groups"
+            widget: "list"
+            summary: "{{fields.title}}"
+            collapsed: true
+            fields:
+              - { label: "Topic", name: "title", widget: "string" }
+              - { label: "Anchor", name: "id", widget: "string", required: false, hint: "Short id used in links, for example security. Leave empty to generate it from the topic." }
+              - label: "Questions"
+                name: "items"
+                widget: "list"
+                summary: "{{fields.question}}"
+                collapsed: true
+                fields:
+                  - { label: "Question", name: "question", widget: "string" }
+                  - { label: "Answer", name: "answer", widget: "text", hint: "Separate paragraphs with a blank line." }
+                  - { label: "Anchor", name: "id", widget: "string", required: false, hint: "Used in links like /faq#anchor. Leave empty to generate it from the question." }
+          - { label: "Shown on the homepage", name: "home", widget: "list", hint: "Anchors of the questions to show on the homepage, in order, separated by commas." }
+
+  - name: "authors"
+    label: "Authors"
+    label_singular: "Author"
+    description: "People who write on the site. Blog posts pick their author from this list."
+    folder: "src/content/authors"
+    create: true
+    slug: "{{slug}}"
+    extension: "json"
+    format: "json"
+    identifier_field: "name"
+    summary: "{{name}}"
+    fields:
+      - { label: "Name", name: "name", widget: "string", hint: "Shown on posts exactly as written here." }
+      - { label: "Photo", name: "avatar", widget: "image", required: false, hint: "Square photo, at least 200 px wide. Leave empty to use the GitHub photo below, or initials." }
+      - { label: "GitHub username", name: "github", widget: "string", required: false, hint: "Optional. Uses their public GitHub photo when no photo is uploaded." }
+      - { label: "Role", name: "role", widget: "string", required: false }
